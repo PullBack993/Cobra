@@ -2,17 +2,23 @@ const dataController = require('express').Router();
 const CoinGecko = require('coingecko-api');
 const fs = require('fs');
 
-dataController.get('/list', async (req, res) => {
+dataController.post('/id', async (req, res) => {
   const CoinGeckoClient = new CoinGecko();
-
+  
+  const coinName = req.body.id
   
 
-  
+  try {
+    let data = await CoinGeckoClient.coins.fetch(coinName);
+
+    res.json(data.data)
+  } catch (error) {
+    console.log(error)
+  }
  
-  let data = await CoinGeckoClient.coins.fetch('bitcoin');
-  fs.writeFile('coins.json', {},  (err)=> {console.log(err)})
+
  
  
-})
+});
 
 module.exports = dataController
