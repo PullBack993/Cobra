@@ -1,6 +1,5 @@
 import { createStore } from "vuex";
 
-
 export const state = () => {
   return {
     themeDark: false,
