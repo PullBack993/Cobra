@@ -8,5 +8,5 @@ async function start() {
   expressConfig(app);
   routerConfig(app);
 
-  app.listen(3030, () => console.log('REST Service started!'));
+  app.listen(3030, () => console.log('REST Service started on port 3030'));
 }
