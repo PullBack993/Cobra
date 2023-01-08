@@ -10,7 +10,7 @@ const root = ref("");
 const itemList = ref("");
 const list = ref("");
 let searchParams = ref("");
-let coins = ref({});
+let coin = ref(null);
 const headers = {
   accept: "application/json",
   coinglassSecret: import.meta.env.VITE_VUE_APP_COINGLASS,
@@ -125,30 +125,34 @@ function documentKeyDown(event) {
       // console.log("enter event target");
     }
   } else {
-    if (event.code === "Tab") return;
+    if (event.code === "Tab") {
+      return;
+    }
     open.value = true;
   }
 }
 function onInput() {
   if (searchParams.value.length >= 3) {
     console.log(searchParams.value);
-    let a = [
-      { id: "bitcoin", symbol: "btc" },
-      { id: "etherium", symbol: "eth" },
-    ];
-    const b = a.filer((f) => {
+    let a = dataCoins;
+    const b = a.find((f) => {
       if (f.id === searchParams.value || f.symbol === searchParams.value) {
         return f;
       }
     });
-    console.log(b)
+
+    axios
+      .post("http://localhost:3030/id", b)
+      .then((res) => {
+        coin.value = res.data;
+      })
+      .catch((err) => console.log(err));
   }
 }
 
 onMounted(() => {
   window.addEventListener("keydown", documentKey);
   // getCoin("BTC");
-  // console.log(coins.value);
 });
 </script>
 
@@ -180,16 +184,16 @@ onMounted(() => {
       <div ref="list" class="search__container-list">
         <ul ref="itemList" class="search__container-list-items">
           <li
-            v-for="(coin, index) in ['asd', 'asd', 'asd', 'asd', 'asd', 'asd']"
-            :key="index"
             @click="selectedItem()"
             class="search__container-list-items-current"
-            :index="index"
-            :class="{
-              'search__container-list-items-active': currentItem === index,
-            }"
           >
-            <span>{{ coin }}</span>
+            <div v-if="coin">
+              <img :src="coin?.image.thumb" alt="" />
+              <span>{{ coin?.id }}</span>
+              <span>{{ coin?.tickers[0].last }}</span>
+              <br />
+              <p>{{ coin?.market_data.price_change_percentage_24h }}</p>
+            </div>
           </li>
         </ul>
       </div>
