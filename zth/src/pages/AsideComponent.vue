@@ -43,8 +43,9 @@ function documentClick() {
       e.target.className === "theme dark-icon" ||
       e.target.className === "theme light-icon" ||
       e.target.className === "sidebar darkUnActive is-expand"
-    )
+    ) {
       return;
+    }
     isToggle.value = false;
     destroyClickEvent();
   };
