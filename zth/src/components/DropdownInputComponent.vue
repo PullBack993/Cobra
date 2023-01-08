@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, ref, nextTick } from "vue";
+import dataCoins from "./data/coins.json";
 import axios from "axios";
 let open = ref(false);
 let currentItem = ref(0);
@@ -8,7 +9,7 @@ const input = ref(null);
 const root = ref("");
 const itemList = ref("");
 const list = ref("");
-let searchParams = "";
+let searchParams = ref("");
 let coins = ref({});
 const headers = {
   accept: "application/json",
@@ -17,7 +18,6 @@ const headers = {
 
 const selectedItem = () => {
   // todo select value and clear activeitem/currentitem
-
   open.value = !open.value;
   if (open.value === true) {
     document.addEventListener("click", documentClick);
@@ -69,9 +69,9 @@ function scrollPosition(direction) {
     list.value.scrollTo({ top, behavior: "smooth" });
   });
 }
-function between(a, b, c) {
-  return a > b ? c >= b && c <= a : c >= a && c <= b;
-}
+// function between(a, b, c) {
+//   return a > b ? c >= b && c <= a : c >= a && c <= b;
+// }
 function getCoin(name) {
   axios
     .get(
@@ -87,18 +87,17 @@ function getCoin(name) {
 }
 
 function documentKeyDown(event) {
-  console.log(event.key);
-  if (event.key === "Backspace") {
-    searchParams = searchParams.slice(0, -1);
-    return;
-  }
-  let currentKey = event.keyCode;
-  if (between(65, 90, currentKey) || between(97, 122, currentKey)) {
-    searchParams += event.key;
-  }
-  if (searchParams >= 3) {
-    coins.value = getCoin(searchParams);
-  }
+  // if (event.key === "Backspace") {
+  //   // searchParams = searchParams.slice(0, -1);
+  //   return;
+  // }
+  // let currentKey = event.keyCode;
+  // if (between(65, 90, currentKey) || between(97, 122, currentKey)) {
+  //   // searchParams += event.key;
+  // }
+  // if (searchParams >= 3) {
+  //   coins.value = getCoin(searchParams);
+  // }
   if (event.code === "Escape") {
     open.value = false;
     input?.value.blur();
@@ -108,14 +107,14 @@ function documentKeyDown(event) {
   }
   if (open.value) {
     // TODO currentItem < length - 1 of all elements( after implement axios all )
-    if (event.code === "ArrowDown" ) {
+    if (event.code === "ArrowDown") {
       currentItem.value++;
       scrollPosition(1);
-      console.log(currentItem.value);
+      // console.log(currentItem.value);
     }
     if (event.code === "ArrowUp" && currentItem.value > 0) {
       currentItem.value--;
-      console.log(currentItem);
+      // console.log(currentItem);
       scrollPosition(-1);
     }
     if (event.code === "Enter") {
@@ -123,18 +122,33 @@ function documentKeyDown(event) {
       if (open.value === true) {
         open.value = false;
       }
-      console.log("enter event target");
+      // console.log("enter event target");
     }
   } else {
     if (event.code === "Tab") return;
     open.value = true;
   }
 }
+function onInput() {
+  if (searchParams.value.length >= 3) {
+    console.log(searchParams.value);
+    let a = [
+      { id: "bitcoin", symbol: "btc" },
+      { id: "etherium", symbol: "eth" },
+    ];
+    const b = a.filer((f) => {
+      if (f.id === searchParams.value || f.symbol === searchParams.value) {
+        return f;
+      }
+    });
+    console.log(b)
+  }
+}
 
 onMounted(() => {
   window.addEventListener("keydown", documentKey);
-  getCoin("BTC");
-  console.log(coins.value);
+  // getCoin("BTC");
+  // console.log(coins.value);
 });
 </script>
 
@@ -143,10 +157,12 @@ onMounted(() => {
     <input
       @click="selectInput($event)"
       @keydown="documentKeyDown($event)"
+      @input="onInput"
       type="text"
       class="search__container-input"
       ref="input"
       :class="open ? 'search__container-open' : 'search__container-close'"
+      v-model="searchParams"
     />
     <img
       src="../assets/BaseIcons/key.svg"
@@ -272,7 +288,7 @@ onMounted(() => {
     }
   }
 }
-.search__container-list-items-activ {
+.search__container-list-items-active {
   background-color: white;
   color: $black;
 }
