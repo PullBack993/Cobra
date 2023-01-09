@@ -19,7 +19,7 @@ console.log(req.body.id)
   //   coins.filter((e) 'Binance'.includes(e.target))
   //  } 
 
-  // data.data.tickers = coins
+  data.data.tickers = coins
   // console.log(data.data.tickers)
     res.json(data.data);
   } catch (error) {

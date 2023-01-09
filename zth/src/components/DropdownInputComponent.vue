@@ -116,15 +116,14 @@ function onInput() {
 
     const searchedCoin = allCoins.find((coin) => {
      
-     
       if (
-        coin.id === searchParams.value ||
-        coin.symbol === searchParams.value
+        coin.id === searchParams.value.toLowerCase() ||
+        coin.symbol === searchParams.value.toLocaleLowerCase()
       ) {
         return coin;
       }
     });
-
+  console.log(searchedCoin);
     if (searchedCoin) {
       axios
         .post("http://localhost:3030/id", searchedCoin)
