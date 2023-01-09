@@ -2,20 +2,16 @@
 import { onMounted, ref, nextTick } from "vue";
 import dataCoins from "./data/coins.json";
 import axios from "axios";
+let allCoins = dataCoins;
 let open = ref(false);
 let currentItem = ref(0);
 let activeItem = 0;
-const usdtIcon = ref("");
 const input = ref(null);
 const root = ref("");
 const itemList = ref("");
 const list = ref("");
 let searchParams = ref("");
 let coin = ref(null);
-// const headers = {
-//   accept: "application/json",
-//   coinglassSecret: import.meta.env.VITE_VUE_APP_COINGLASS,
-// };
 
 // const selectedItem = () => {
 //   // todo select value and clear activeitem/currentitem
@@ -71,35 +67,16 @@ function scrollPosition(direction) {
     list.value.scrollTo({ top, behavior: "smooth" });
   });
 }
-// function between(a, b, c) {
-//   return a > b ? c >= b && c <= a : c >= a && c <= b;
-// }
-// function getCoin(name) {
-//   axios
-//     .get(
-//       `https://open-api.coinglass.com/public/v2/perpetual_market?symbol=${name.toUpperCase()}`,
-//       headers
-//     )
-//     .then((response) => {
-//       coins.value = response.data;
-//     })
-//     .catch((exception) => {
-//       console.log(exception);
-//     });
-// }
+function between(a, b, c) {
+  return a > b ? c >= b && c <= a : c >= a && c <= b;
+}
 
 function documentKeyDown(event) {
-  // if (event.key === "Backspace") {
-  //   // searchParams = searchParams.slice(0, -1);
-  //   return;
-  // }
-  // let currentKey = event.keyCode;
-  // if (between(65, 90, currentKey) || between(97, 122, currentKey)) {
-  //   // searchParams += event.key;
-  // }
-  // if (searchParams >= 3) {
-  //   coins.value = getCoin(searchParams);
-  // }
+  let currentKey = event.keyCode;
+  if (between(65, 90, currentKey) || between(97, 122, currentKey)) {
+    // event.preventDefault();
+  }
+
   if (event.code === "Escape") {
     open.value = false;
     input?.value.blur();
@@ -134,44 +111,42 @@ function documentKeyDown(event) {
   }
 }
 function onInput() {
-  axios
-    .post("http://localhost:3030/id", { id: "tether", symbol: "usdt" })
-    .then((res) => {
-      usdtIcon.value = res.data.image.thumb;
-    });
-  console.log(searchParams.value);
+
   if (searchParams.value.length >= 3) {
-    console.log(searchParams.value);
-    let a = dataCoins;
-    const b = a.find((f) => {
-      if (f.id === searchParams.value || f.symbol === searchParams.value) {
-        return f;
+
+    const searchedCoin = allCoins.find((coin) => {
+     
+     
+      if (
+        coin.id === searchParams.value ||
+        coin.symbol === searchParams.value
+      ) {
+        return coin;
       }
     });
 
-    if (b != undefined) {
+    if (searchedCoin) {
       axios
-        .post("http://localhost:3030/id", b)
+        .post("http://localhost:3030/id", searchedCoin)
         .then((res) => {
           coin.value = res.data;
           console.log(res.data);
-        })
-        .catch((err) => console.log(err));
-    } else {
-      axios
-        .post("http://localhost:3030/id", { id: "bitcoin", symbol: "btc" })
-        .then((res) => {
-          coin.value = res.data;
         })
         .catch((err) => console.log(err));
     }
   }
 }
 
-onMounted(() => {
-  window.addEventListener("keydown", documentKey);
-  // getCoin("BTC");
-});
+// onMounted(() => {
+//   window.addEventListener("keydown", documentKey);
+//   axios
+//     .post("http://localhost:3030/id", { id: "bitcoin", symbol: "btc" })
+//     .then((res) => {
+//       coin.value = res.data;
+//       console.log(res.data);
+//     })
+//     .catch((err) => console.log(err));
+// });
 </script>
 
 <template>
@@ -205,11 +180,12 @@ onMounted(() => {
             style="display: flex; padding: 9px 5px"
             class="search__container-list-items-current"
           >
-            <img :src="usdtIcon" alt="" />
+            <img
+              src="../assets/BaseIcons/usdt.png"
+              style="height: 16px"
+              alt=""
+            />
             <p style="font-size: 14px; margin-top: 3px">USDT Price</p>
-            <p style="margin: 0 0 0 auto; font-size: 13px; font-weight: 600">
-              0.98
-            </p>
           </li>
           <hr style="color: darkmagenta" />
           <li
@@ -228,7 +204,7 @@ onMounted(() => {
                 margin-top: 3px;
               "
             >
-              {{ coin?.tickers[16].last }}
+             <p>dasdas</p>
             </p>
             <p
               style="
