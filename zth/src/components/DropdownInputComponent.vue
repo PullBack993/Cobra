@@ -171,35 +171,12 @@ onMounted(() => {
     >
       <div ref="list" class="search__container-list">
         <ul v-if="coin" ref="itemList" class="search__container-list-items">
-          <hr style="color: darkmagenta" />
           <li
-            style="display: flex; padding: 25px 5px"
             class="search__container-list-items-current"
+            v-for="(coin, index) in coin.binance"
+            :key="index"
           >
-            <img :src="coin?.image.thumb" alt="" />
-            <p style="font-size: 13px; margin-top: 3px; font-weight: 600">
-              {{ coin.symbol.toUpperCase() }}/USDT
-            </p>
-            <p
-              style="
-                margin: 0 auto;
-                font-size: 13px;
-                font-weight: 600;
-                margin-top: 3px;
-              "
-            ></p>
-            <p>dasdas</p>
-
-            <p
-              style="
-                color: green;
-                font-size: 14px;
-                font-weight: 600;
-                margin-top: 3px;
-              "
-            >
-              +{{ coin?.market_data.price_change_percentage_24h.toFixed(2) }}%
-            </p>
+            {{ coin.base }}/{{ coin.target }} {{ coin.last }}
           </li>
         </ul>
       </div>
