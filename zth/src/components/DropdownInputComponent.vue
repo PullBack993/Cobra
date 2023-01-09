@@ -111,11 +111,8 @@ function documentKeyDown(event) {
   }
 }
 function onInput() {
-
   if (searchParams.value.length >= 3) {
-
     const searchedCoin = allCoins.find((coin) => {
-     
       if (
         coin.id === searchParams.value.toLowerCase() ||
         coin.symbol === searchParams.value.toLocaleLowerCase()
@@ -123,29 +120,28 @@ function onInput() {
         return coin;
       }
     });
-  console.log(searchedCoin);
     if (searchedCoin) {
       axios
         .post("http://localhost:3030/id", searchedCoin)
         .then((res) => {
           coin.value = res.data;
-          console.log(res.data);
+          console.log(res.data.binance);
         })
         .catch((err) => console.log(err));
     }
   }
 }
 
-// onMounted(() => {
-//   window.addEventListener("keydown", documentKey);
-//   axios
-//     .post("http://localhost:3030/id", { id: "bitcoin", symbol: "btc" })
-//     .then((res) => {
-//       coin.value = res.data;
-//       console.log(res.data);
-//     })
-//     .catch((err) => console.log(err));
-// });
+onMounted(() => {
+  window.addEventListener("keydown", documentKey);
+  axios
+    .post("http://localhost:3030/id", { id: "bitcoin", symbol: "btc" })
+    .then((res) => {
+      coin.value = res.data;
+      console.log(res.data);
+    })
+    .catch((err) => console.log(err));
+});
 </script>
 
 <template>
@@ -175,17 +171,6 @@ function onInput() {
     >
       <div ref="list" class="search__container-list">
         <ul v-if="coin" ref="itemList" class="search__container-list-items">
-          <li
-            style="display: flex; padding: 9px 5px"
-            class="search__container-list-items-current"
-          >
-            <img
-              src="../assets/BaseIcons/usdt.png"
-              style="height: 16px"
-              alt=""
-            />
-            <p style="font-size: 14px; margin-top: 3px">USDT Price</p>
-          </li>
           <hr style="color: darkmagenta" />
           <li
             style="display: flex; padding: 25px 5px"
@@ -193,7 +178,7 @@ function onInput() {
           >
             <img :src="coin?.image.thumb" alt="" />
             <p style="font-size: 13px; margin-top: 3px; font-weight: 600">
-              {{ coin.symbol.toUpperCase() }}/ USDT
+              {{ coin.symbol.toUpperCase() }}/USDT
             </p>
             <p
               style="
@@ -202,9 +187,9 @@ function onInput() {
                 font-weight: 600;
                 margin-top: 3px;
               "
-            >
-             <p>dasdas</p>
-            </p>
+            ></p>
+            <p>dasdas</p>
+
             <p
               style="
                 color: green;
@@ -214,19 +199,6 @@ function onInput() {
               "
             >
               +{{ coin?.market_data.price_change_percentage_24h.toFixed(2) }}%
-            </p>
-          </li>
-          <hr style="color: darkmagenta" />
-          <li
-            style="display: flex; margin-top: 10px; padding: 5px 5px"
-            class="search__container-list-items-current"
-          >
-            <img
-              src="https://assets.coingecko.com/coins/images/1/thumb/bitcoin.png"
-              alt=""
-            />
-            <p style="font-size: 14px; margin-top: 3px">
-              <strong>BTC</strong> Price
             </p>
           </li>
         </ul>
