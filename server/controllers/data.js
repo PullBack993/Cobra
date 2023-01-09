@@ -13,7 +13,7 @@ dataController.post("/id", async (req, res) => {
       target: "BTC",
       target: "ETH",
     };
-    let coins = data.data.tickers.filter((e) => "BTC ETH".includes(e.target));
+    let coins = data.data.tickers.filter((e) => "BTC ETH USDT EUR GBP".includes(e.target));
     if (coins.length > 0) {
       binance = coins.filter((e) => "Binance" === e.market.name);
     }
