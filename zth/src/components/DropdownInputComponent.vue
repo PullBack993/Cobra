@@ -11,10 +11,10 @@ const itemList = ref("");
 const list = ref("");
 let searchParams = ref("");
 let coin = ref(null);
-const headers = {
-  accept: "application/json",
-  coinglassSecret: import.meta.env.VITE_VUE_APP_COINGLASS,
-};
+// const headers = {
+//   accept: "application/json",
+//   coinglassSecret: import.meta.env.VITE_VUE_APP_COINGLASS,
+// };
 
 const selectedItem = () => {
   // todo select value and clear activeitem/currentitem
@@ -27,6 +27,7 @@ const selectedItem = () => {
   }
 };
 function selectInput() {
+  console.log(input.value);
   input?.value.focus();
 
   if (open.value === false) {
@@ -72,19 +73,19 @@ function scrollPosition(direction) {
 // function between(a, b, c) {
 //   return a > b ? c >= b && c <= a : c >= a && c <= b;
 // }
-function getCoin(name) {
-  axios
-    .get(
-      `https://open-api.coinglass.com/public/v2/perpetual_market?symbol=${name.toUpperCase()}`,
-      headers
-    )
-    .then((response) => {
-      coins.value = response.data;
-    })
-    .catch((exception) => {
-      console.log(exception);
-    });
-}
+// function getCoin(name) {
+//   axios
+//     .get(
+//       `https://open-api.coinglass.com/public/v2/perpetual_market?symbol=${name.toUpperCase()}`,
+//       headers
+//     )
+//     .then((response) => {
+//       coins.value = response.data;
+//     })
+//     .catch((exception) => {
+//       console.log(exception);
+//     });
+// }
 
 function documentKeyDown(event) {
   // if (event.key === "Backspace") {
@@ -132,6 +133,7 @@ function documentKeyDown(event) {
   }
 }
 function onInput() {
+  console.log(searchParams.value);
   if (searchParams.value.length >= 3) {
     console.log(searchParams.value);
     let a = dataCoins;
@@ -141,12 +143,22 @@ function onInput() {
       }
     });
 
-    axios
-      .post("http://localhost:3030/id", b)
-      .then((res) => {
-        coin.value = res.data;
-      })
-      .catch((err) => console.log(err));
+    if (b != undefined) {
+      axios
+        .post("http://localhost:3030/id", b)
+        .then((res) => {
+          coin.value = res.data;
+          console.log(res.data);
+        })
+        .catch((err) => console.log(err));
+    } else {
+      axios
+        .post("http://localhost:3030/id", { id: "bitcoin", symbol: "btc" })
+        .then((res) => {
+          coin.value = res.data;
+        })
+        .catch((err) => console.log(err));
+    }
   }
 }
 
@@ -189,8 +201,10 @@ onMounted(() => {
           >
             <div v-if="coin">
               <img :src="coin?.image.thumb" alt="" />
-              <span>{{ coin?.id }}</span>
-              <span>{{ coin?.tickers[0].last }}</span>
+              <span class="search__container-list-items-current-price">{{
+                coin?.symbol.toUpperCase()
+              }}</span>
+              <span>{{ coin?.tickers[1].last }}</span>
               <br />
               <p>{{ coin?.market_data.price_change_percentage_24h }}</p>
             </div>
