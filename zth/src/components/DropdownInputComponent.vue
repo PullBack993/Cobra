@@ -5,6 +5,7 @@ import axios from "axios";
 let open = ref(false);
 let currentItem = ref(0);
 let activeItem = 0;
+const usdtIcon = ref("");
 const input = ref(null);
 const root = ref("");
 const itemList = ref("");
@@ -16,16 +17,16 @@ let coin = ref(null);
 //   coinglassSecret: import.meta.env.VITE_VUE_APP_COINGLASS,
 // };
 
-const selectedItem = () => {
-  // todo select value and clear activeitem/currentitem
-  open.value = !open.value;
-  if (open.value === true) {
-    document.addEventListener("click", documentClick);
-  } else {
-    document.removeEventListener("click", documentClick);
-    document.removeEventListener("click", documentKey);
-  }
-};
+// const selectedItem = () => {
+//   // todo select value and clear activeitem/currentitem
+//   open.value = !open.value;
+//   if (open.value === true) {
+//     document.addEventListener("click", documentClick);
+//   } else {
+//     document.removeEventListener("click", documentClick);
+//     document.removeEventListener("click", documentKey);
+//   }
+// };
 function selectInput() {
   console.log(input.value);
   input?.value.focus();
@@ -133,6 +134,11 @@ function documentKeyDown(event) {
   }
 }
 function onInput() {
+  axios
+    .post("http://localhost:3030/id", { id: "tether", symbol: "usdt" })
+    .then((res) => {
+      usdtIcon.value = res.data.image.thumb;
+    });
   console.log(searchParams.value);
   if (searchParams.value.length >= 3) {
     console.log(searchParams.value);
@@ -194,20 +200,59 @@ onMounted(() => {
       "
     >
       <div ref="list" class="search__container-list">
-        <ul ref="itemList" class="search__container-list-items">
+        <ul v-if="coin" ref="itemList" class="search__container-list-items">
           <li
-            @click="selectedItem()"
+            style="display: flex; padding: 9px 5px"
             class="search__container-list-items-current"
           >
-            <div v-if="coin">
-              <img :src="coin?.image.thumb" alt="" />
-              <span class="search__container-list-items-current-price">{{
-                coin?.symbol.toUpperCase()
-              }}</span>
-              <span>{{ coin?.tickers[1].last }}</span>
-              <br />
-              <p>{{ coin?.market_data.price_change_percentage_24h }}</p>
-            </div>
+            <img :src="usdtIcon" alt="" />
+            <p style="font-size: 14px; margin-top: 3px">USDT Price</p>
+            <p style="margin: 0 0 0 auto; font-size: 13px; font-weight: 600">
+              0.98
+            </p>
+          </li>
+          <hr style="color: darkmagenta" />
+          <li
+            style="display: flex; padding: 25px 5px"
+            class="search__container-list-items-current"
+          >
+            <img :src="coin?.image.thumb" alt="" />
+            <p style="font-size: 13px; margin-top: 3px; font-weight: 600">
+              {{ coin.symbol.toUpperCase() }}/ USDT
+            </p>
+            <p
+              style="
+                margin: 0 auto;
+                font-size: 13px;
+                font-weight: 600;
+                margin-top: 3px;
+              "
+            >
+              {{ coin?.tickers[16].last }}
+            </p>
+            <p
+              style="
+                color: green;
+                font-size: 14px;
+                font-weight: 600;
+                margin-top: 3px;
+              "
+            >
+              +{{ coin?.market_data.price_change_percentage_24h.toFixed(2) }}%
+            </p>
+          </li>
+          <hr style="color: darkmagenta" />
+          <li
+            style="display: flex; margin-top: 10px; padding: 5px 5px"
+            class="search__container-list-items-current"
+          >
+            <img
+              src="https://assets.coingecko.com/coins/images/1/thumb/bitcoin.png"
+              alt=""
+            />
+            <p style="font-size: 14px; margin-top: 3px">
+              <strong>BTC</strong> Price
+            </p>
           </li>
         </ul>
       </div>
