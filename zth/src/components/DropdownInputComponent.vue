@@ -8,27 +8,26 @@ let currentItem = ref(0);
 let activeItem = 0;
 const input = ref(null);
 const root = ref("");
-const itemList = ref("");
+const itemList = ref(null);
 const list = ref("");
 let searchParams = ref("");
 let coin = ref(null);
 
-// const selectedItem = () => {
-//   // todo select value and clear activeitem/currentitem
-//   open.value = !open.value;
-//   if (open.value === true) {
-//     document.addEventListener("click", documentClick);
-//   } else {
-//     document.removeEventListener("click", documentClick);
-//     document.removeEventListener("click", documentKey);
-//   }
-// };
+const selectedItem = () => {
+  open.value = !open.value;
+  if (open.value === true) {
+    document.addEventListener("click", documentClick);
+  } else {
+    document.removeEventListener("click", documentClick);
+    document.removeEventListener("click", documentKey);
+  }
+};
+
 function selectInput() {
-  console.log(input.value);
   input?.value.focus();
 
   if (open.value === false) {
-    document.addEventListener("click", documentClick);
+    addClickEvent();
     open.value = true;
   }
 }
@@ -41,12 +40,16 @@ function documentClick(event) {
   }
 }
 
+function addClickEvent() {
+  document.addEventListener("click", documentClick);
+}
+
 function documentKey(event) {
   if (event.keyCode === 70 && open.value === false) {
     open.value = true;
     event.preventDefault();
     input?.value.focus();
-    document.addEventListener("click", documentClick);
+    addClickEvent();
   }
 }
 function scrollPosition(direction) {
@@ -71,45 +74,63 @@ function between(a, b, c) {
   return a > b ? c >= b && c <= a : c >= a && c <= b;
 }
 
-function documentKeyDown(event) {
-  let currentKey = event.keyCode;
-  if (between(65, 90, currentKey) || between(97, 122, currentKey)) {
-    // event.preventDefault();
-  }
-
-  if (event.code === "Escape") {
-    open.value = false;
-    input?.value.blur();
-    document.removeEventListener("click", documentClick);
-
-    return;
-  }
+function isValidKeyCode(code) {
+  return between(65, 90, code) || between(97, 122, code);
+}
+function handleEnterEvent() {
   if (open.value) {
-    // TODO currentItem < length - 1 of all elements( after implement axios all )
-    if (event.code === "ArrowDown") {
-      currentItem.value++;
-      scrollPosition(1);
-      // console.log(currentItem.value);
-    }
-    if (event.code === "ArrowUp" && currentItem.value > 0) {
-      currentItem.value--;
-      // console.log(currentItem);
-      scrollPosition(-1);
-    }
-    if (event.code === "Enter") {
-      // todo select value and clear activeitem/currentitem
-      if (open.value === true) {
-        open.value = false;
-      }
-      // console.log("enter event target");
-    }
-  } else {
-    if (event.code === "Tab") {
-      return;
-    }
+    open.value = !open.value;
+  }
+}
+
+function handleEscapeEvent() {
+  open.value = false;
+  input?.value.blur();
+  document.removeEventListener("click", documentClick);
+}
+
+function handleArrowDown() {
+  if (open.value) {
+    currentItem.value++;
+    scrollPosition(1);
+  }
+}
+
+function handleArrowUp() {
+  if (open.value && currentItem.value > 0) {
+    currentItem.value--;
+    scrollPosition(-1);
+  }
+}
+
+function handleTabEvent() {
+  if (!open.value) {
     open.value = true;
   }
 }
+
+function documentKeyDown(event) {
+  if (isValidKeyCode(event.keycode)) event.preventDefault();
+
+  switch (event.key) {
+    case "Escape":
+      handleEscapeEvent();
+      break;
+    case "Enter":
+      handleEnterEvent();
+      break;
+    case "ArrowDown":
+      handleArrowDown();
+      break;
+    case "ArrowUp":
+      handleArrowUp();
+      break;
+    case "Tab":
+      handleTabEvent();
+      break;
+  }
+}
+
 function onInput() {
   if (searchParams.value.length >= 3) {
     const searchedCoin = allCoins.find((coin) => {
