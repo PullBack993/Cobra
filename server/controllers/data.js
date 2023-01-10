@@ -9,16 +9,14 @@ dataController.post("/id", async (req, res) => {
 
   try {
     let data = await CoinGeckoClient.coins.fetch(coinName);
-    const searchedTarget = {
-      target: "BTC",
-      target: "ETH",
-    };
-    let coins = data.data.tickers.filter((e) => "BTC ETH USDT EUR GBP".includes(e.target));
+    const searchedTarget = ["BTC", "ETH", "USDT","EUR", "GBP"]
+    let coins = data.data.tickers.filter((e) => searchedTarget.includes(e.target));
     if (coins.length > 0) {
       binance = coins.filter((e) => "Binance" === e.market.name);
     }
 
     data.data.binance = binance;
+    console.log(data.data)
     res.json(data.data);
   } catch (error) {
     console.log(error);

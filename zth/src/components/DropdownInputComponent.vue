@@ -113,6 +113,7 @@ function documentKeyDown(event) {
 function onInput() {
   if (searchParams.value.length >= 3) {
     const searchedCoin = allCoins.find((coin) => {
+      console.log(coin);
       if (
         coin.id === searchParams.value.toLowerCase() ||
         coin.symbol === searchParams.value.toLocaleLowerCase()
@@ -171,6 +172,9 @@ onMounted(() => {
     >
       <div ref="list" class="search__container-list">
         <ul v-if="coin" ref="itemList" class="search__container-list-items">
+          <li class="search__container-list-items-current">
+            {{ coin.symbol }}
+          </li>
           <li
             class="search__container-list-items-current"
             v-for="(coin, index) in coin.binance"
