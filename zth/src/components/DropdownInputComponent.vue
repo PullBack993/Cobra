@@ -148,7 +148,7 @@ function onInput () {
         .post('http://localhost:3030/id', searchedCoin)
         .then((res) => {
           coin.value = res.data
-          // console.log(res.data.binance)
+          console.log(res.data)
         })
         .catch((err) => console.log(err))
     }
@@ -180,6 +180,7 @@ onMounted(() => {
     ">
       <div ref="list" class="search__container-list">
         <ul v-if="coin" ref="itemList" class="search__container-list-items">
+          <div style="color: white"><img :src="coin.image.thumb" alt="">{{ coin.symbol.toUpperCase() }} Price</div>
           <li class="search__container-list-items-current" v-for="(coin, index) in coin.binance" :currentItem="index"
             :key="index">
             {{ coin.base }}/{{ coin.target }} {{ coin.last }}
