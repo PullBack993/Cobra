@@ -3,8 +3,8 @@ const CoinGecko = require("coingecko-api");
 
 dataController.post("/id", async (req, res) => {
   const CoinGeckoClient = new CoinGecko();
-  console.log(req.body.id);
   const coinName = req.body.id;
+  const coin = {};
   let binance = {};
 
   try {
@@ -21,10 +21,21 @@ dataController.post("/id", async (req, res) => {
       }
 
       let uniqueData = [...new Map(binance.map((o) => [o.target, o])).values()];
-      console.log(uniqueData);
+      
+     const percentageData =  data.data.market_data['price_change_24h_in_currency'];
+     const filtered = Object.entries(percentageData)
+     .filter(([key]) => ["btc", "usd", "eth", "gbp", "bnb"].includes(key))
+     .reduce((obj, [key, value]) => {
+      obj[key] = value;
+      return obj;
+    }, {});
 
-      data.data.binance = uniqueData;
-      res.json(data.data);
+    
+      coin.image = data.data.image
+      coin.symbol = data.data.symbol
+      coin.dailyPercentage = filtered
+      coin.market = uniqueData;
+      res.json(coin);
     } else {
       res.json("");
     }
