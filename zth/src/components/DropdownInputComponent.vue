@@ -90,7 +90,7 @@ function handleEscapeEvent () {
 
 function handleArrowDown () {
   if (open.value) {
-    console.log(currentItem.value)
+    // console.log(currentItem.value)
     currentItem.value++
     scrollPosition(1)
   }
@@ -99,7 +99,7 @@ function handleArrowDown () {
 function handleArrowUp () {
   if (open.value && currentItem.value > 0) {
     currentItem.value--
-    console.log(currentItem.value)
+    // console.log(currentItem.value)
     scrollPosition(-1)
   }
 }
@@ -135,7 +135,7 @@ function documentKeyDown (event) {
 function onInput () {
   if (searchParams.value.length >= 3) {
     const searchedCoin = allCoins.find((coin) => {
-      console.log(coin)
+      // console.log(coin)
       if (
         coin.id === searchParams.value.toLowerCase() ||
         coin.symbol === searchParams.value.toLocaleLowerCase()
@@ -148,7 +148,7 @@ function onInput () {
         .post('http://localhost:3030/id', searchedCoin)
         .then((res) => {
           coin.value = res.data
-          console.log(res.data.binance)
+          // console.log(res.data.binance)
         })
         .catch((err) => console.log(err))
     }
@@ -161,7 +161,7 @@ onMounted(() => {
     .post('http://localhost:3030/id', { id: 'bitcoin', symbol: 'btc' })
     .then((res) => {
       coin.value = res.data
-      console.log(res.data)
+      // console.log(res.data)
     })
     .catch((err) => console.log(err))
 })

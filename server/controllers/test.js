@@ -1,5 +1,5 @@
 const fs = require('fs');
-const coinGecko = require('coingecko')
+const CoinGecko = require("coingecko-api");
 
 const CoinGeckoClient = new CoinGecko();
 
@@ -7,7 +7,7 @@ const CoinGeckoClient = new CoinGecko();
 
 async function test() {
  
-    for (let i = 255; i <= 275; i++){
+    for (let i = 253; i <= 270; i++){
         let data = await CoinGeckoClient.coins.all({ page: i })
         console.log(data)
 
@@ -23,10 +23,10 @@ async function test() {
 
 
 
-setTimeout(function () {
-    test()
-}, 50000)
+// setTimeout(function () {
+//     test()
+// }, 40000)
 
 
-// const fetchCoins = require('../../coins.json')
-// console.log(fetchCoins.length)
+const fetchCoins = require('../../coins.json')
+console.log(fetchCoins.length)
