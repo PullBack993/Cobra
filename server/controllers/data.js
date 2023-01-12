@@ -42,12 +42,12 @@ dataController.post("/id", async (req, res) => {
         }
       });
 
-      console.log(uniqueData);
+console.log(data.data.market)
 
       coin.image = data.data.image;
       coin.symbol = data.data.symbol;
-      coin.dailyPercentage = filtered;
       coin.market = uniqueData;
+
 
       res.json(coin);
     } else {

@@ -149,6 +149,7 @@ function onInput () {
         .post('http://localhost:3030/id', searchedCoin)
         .then((res) => {
           coin.value = res.data
+          console.log(res.data)
         })
         .catch((err) => console.log(err))
     }
@@ -190,7 +191,7 @@ onMounted(() => {
           <div style="color: white"><img :src="coin.image.thumb" alt="">{{ coin.symbol.toUpperCase() }} Price</div>
           <li class="search__container-list-items-current" v-for="(coin, index) in coin.market" :currentItem="index"
             :key="index">
-            {{ coin.base }}/{{ coin.target }} {{ coin.last }} - {{ coin.percent }}
+            {{ coin.base }}/{{ coin.target }} {{ coin.last }} - {{ ((coin.percent / coin.last) * 100).toFixed(2)}}%
           </li>
         </ul>
       </div>
