@@ -1,59 +1,77 @@
-const dataController = require("express").Router();
-const CoinGecko = require("coingecko-api");
+const dataController = require('express').Router();
+const CoinGecko = require('coingecko-api');
 
-dataController.post("/id", async (req, res) => {
-	const CoinGeckoClient = new CoinGecko();
-	const coinName = req.body.id;
-	const returnCoinsList = {};
-	let filtredCoinsMarket = {};
-	const searchedTarget = ["BTC", "ETH", "USD", "EUR", "BNB"];
+dataController.post('/id', async (req, res) => {
+  const CoinGeckoClient = new CoinGecko();
+  const coinSymbol = req.body.symbol;
+  const coinName = req.body.id;
+  const returnCoinsList = {};
+  let filtredCoinsMarket = {};
+  let searchedTarget = ['BTC', 'ETH', 'USDT', 'EUR', 'BNB', 'LINK', 'LTC', 'XRP', 'USD'];
+  let coins = [];
 
-	try {
-		let data = await CoinGeckoClient.coins.fetch(coinName);
-		// console.log(data.data.market_data.market_cap_change_percentage_24h_in_currency.usd)
+  try {
+    let data = await CoinGeckoClient.coins.fetch(coinName);
+    // console.log(data.data.market_data.market_cap_change_percentage_24h_in_currency.usd)
 
-		if (data) {
-			let coins = data.data.tickers.filter((coin) =>
-				searchedTarget.includes(coin.target)
-			);
+    if (data) {
+      //TODO it check now just 'BTC' but should check also BITCOIN
+      coins = data.data.tickers.filter(coin => searchedTarget.includes(coin.target));
 
-			if (coins.length > 0) {
-				filtredCoinsMarket = coins.filter((e) =>
-					["Binance", "Bitget"].includes(e.market.name)
-				);
+      //   if (coins.length > 0) {
+      //     filtredCoinsMarket = coins.filter(e =>
+      //       ['Binance', 'Bitget', 'OKX', 'Kraken', 'WhiteBIT'].includes(e.market.name)
+      //     );
+      //     // console.log(coins)
+      //   }
+      //   console.log(filtredCoinsMarket)
+      
 
-				6;
-			}
+		let uniqueData = removeDuplicateCoins(coins);
+      searchedTarget = searchedTarget.filter(coin => coin !== coinSymbol.toUpperCase());
+		
+		//Check this function !!! it doesn't work properly
+		  uniqueData.filter(marketObj => {
+        marketObj.name = coinName;
+        if (marketObj.target === coinName) {
+          element.target = marketObj.base;
+        }
+      });
 
-			console.log(filtredCoinsMarket.length);
-			let uniqueData = [
-				...new Map(
-					filtredCoinsMarket.map((coin) => [coin.target, coin])
-				).values(),
-			];
-			console.log(uniqueData.length);
+      const percentageData = data.data.market_data.market_cap_change_percentage_24h_in_currency;
+      const filtredPercentage = Object.entries(percentageData).filter(([key]) =>
+        searchedTarget.includes(key.toUpperCase())
+      );
 
-			const percentageData =
-				data.data.market_data.market_cap_change_percentage_24h_in_currency;
-			const filtered = Object.entries(percentageData)
-				.filter(([key]) => ["btc", "usd", "eth", "eur", "bnb"].includes(key))
-				.reduce((obj, [key, value]) => {
-					obj[key] = value;
-					return obj;
-				}, {});
+		//todo check this too
+      uniqueData.forEach(marketObj => {
+        filtredPercentage.forEach((element, index) => {
+          if (element[0] === marketObj.target.toLowerCase()) {
+            uniqueData.percentage = element[1];
+          }
+        });
+      });
 
-			returnCoinsList.image = data.data.image;
-			returnCoinsList.symbol = data.data.symbol;
-			returnCoinsList.market = uniqueData;
-			returnCoinsList.precentage = filtered;
+      // console.log(uniqueData)
 
-			// res.json(coin);
-		} else {
-			res.json("");
-		}
-	} catch (error) {
-		console.log(error);
-	}
+      returnCoinsList.image = data.data.image;
+      returnCoinsList.symbol = data.data.symbol;
+      returnCoinsList.market = uniqueData;
+      returnCoinsList.percentage = filtredPercentage;
+
+      res.json(returnCoinsList);
+    } else {
+      res.json('');
+    }
+  } catch (error) {
+    console.log(error);
+  }
 });
 
+function removeDuplicateCoins(coins) {
+  let uniqueData = coins.filter(
+    (coin, index) => coins.map(c => c.base + c.target).indexOf(coin.base + coin.target) === index
+  );
+  return uniqueData;
+}
 module.exports = dataController;
