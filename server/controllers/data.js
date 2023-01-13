@@ -1,31 +1,31 @@
-const dataController = require('express').Router();
-const CoinGecko = require('coingecko-api');
+const dataController = require("express").Router();
+const CoinGecko = require("coingecko-api");
 
-dataController.post('/id', async (req, res) => {
+dataController.post("/id", async (req, res) => {
   const CoinGeckoClient = new CoinGecko();
   const coinSymbol = req.body.symbol;
   const coinName = req.body.id;
   const returnCoinsList = {};
   let filtredCoinsMarket = {};
-  let searchedTarget = ['BTC', 'ETH', 'USDT', 'EUR', 'BNB', 'LINK', 'LTC', 'XRP', 'USD'];
+  let searchedTarget = ["BTC", "ETH", "USDT", "EUR", "BNB", "LINK", "LTC", "XRP", "USD"];
   let coins = [];
 
   try {
     let data = await CoinGeckoClient.coins.fetch(coinName);
     if (data) {
       //TODO it check now just 'BTC' but should check also BITCOIN
-      coins = data.data.tickers.filter(coin => searchedTarget.includes(coin.target));
+      coins = data.data.tickers.filter((coin) => searchedTarget.includes(coin.target));
 
-		let uniqueData = removeDuplicateCoins(coins);
-      searchedTarget = searchedTarget.filter(coin => coin !== coinSymbol.toUpperCase());
-		
-      uniqueData.filter(marketObj => {
-        //TODO if we bitcoin or btc it should allway take btc from input 
+      let uniqueData = removeDuplicateCoins(coins);
+      searchedTarget = searchedTarget.filter((coin) => coin !== coinSymbol.toUpperCase());
+
+      uniqueData.filter((marketObj) => {
+        //TODO if we bitcoin or btc it should allway take btc from input
         if (marketObj.base !== coinSymbol) {
-          const base = marketObj.base
-          const target = marketObj.target
-          marketObj.base = target
-          marketObj.target = base
+          const base = marketObj.base;
+          const target = marketObj.target;
+          marketObj.base = target;
+          marketObj.target = base;
         }
       });
 
@@ -34,26 +34,25 @@ dataController.post('/id', async (req, res) => {
       const filtredPercentage = Object.entries(percentageData).filter(([key]) =>
         searchedTarget.includes(key.toUpperCase())
       );
-        const filtredPriceData = Object.entries(priceData).filter(([key]) =>
-          searchedTarget.includes(key.toUpperCase())
-        );
-
+      const filtredPriceData = Object.entries(priceData).filter(([key]) =>
+        searchedTarget.includes(key.toUpperCase())
+      );
 
       let resData = Object.entries(uniqueData).map(([key, value]) => {
-        let percentage = filtredPercentage.find(el => el[0] === value.target.toLowerCase());
-        let price = filtredPriceData.find(el => el[0] === value.target.toLowerCase());
+        let percentage = filtredPercentage.find((el) => el[0] === value.target.toLowerCase());
+        let price = filtredPriceData.find((el) => el[0] === value.target.toLowerCase());
         return {
           base: value.base,
           target: value.target,
-          price: price ? price[1]: null,
+          price: price ? price[1] : null,
           percentage: percentage ? percentage[1] : null,
         };
-      }); 
-      resData = {...resData, image: data.data.image}
+      });
+      resData = { ...resData, image: data.data.image };
 
       res.json(resData);
     } else {
-      res.json('');
+      res.json("");
     }
   } catch (error) {
     console.log(error);
@@ -62,7 +61,7 @@ dataController.post('/id', async (req, res) => {
 
 function removeDuplicateCoins(coins) {
   let uniqueData = coins.filter(
-    (coin, index) => coins.map(c => c.base + c.target).indexOf(coin.base + coin.target) === index
+    (coin, index) => coins.map((c) => c.base + c.target).indexOf(coin.base + coin.target) === index
   );
   return uniqueData;
 }
