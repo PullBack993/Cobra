@@ -12,7 +12,6 @@
   const list = ref('');
   const searchParams = ref('');
   const coin = ref(null);
-  let percentage = ref(null);
 
   const selectedItem = () => {
     open.value = !open.value;
@@ -133,7 +132,6 @@
   function onInput() {
     if (searchParams.value.length >= 3) {
       const searchedCoin = allCoins.find(coin => {
-        // console.log(coin)
         if (
           coin.id === searchParams.value.toLowerCase() ||
           coin.symbol === searchParams.value.toLocaleLowerCase()
@@ -145,8 +143,7 @@
         axios
           .post('http://localhost:3030/id', searchedCoin)
           .then(res => {
-            coin.value = res.data;
-            console.log(res.data);
+            console.log(res);
           })
           .catch(err => console.log(err));
       }
@@ -185,8 +182,7 @@
       <div ref="list" class="search__container-list">
         <ul v-if="coin" ref="itemList" class="search__container-list-items">
           <div style="color: white">
-            <img :src="coin.image.thumb" alt="" />{{ coin.symbol.toUpperCase() }}
-            Price
+            <img :src="coin.image.thumb" alt="" />{{ coin.symbol.toUpperCase() }} Price
           </div>
           <li
             class="search__container-list-items-current"
