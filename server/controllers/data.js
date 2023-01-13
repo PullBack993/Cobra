@@ -12,54 +12,46 @@ dataController.post('/id', async (req, res) => {
 
   try {
     let data = await CoinGeckoClient.coins.fetch(coinName);
-    // console.log(data.data.market_data.market_cap_change_percentage_24h_in_currency.usd)
-
     if (data) {
       //TODO it check now just 'BTC' but should check also BITCOIN
       coins = data.data.tickers.filter(coin => searchedTarget.includes(coin.target));
 
-      //   if (coins.length > 0) {
-      //     filtredCoinsMarket = coins.filter(e =>
-      //       ['Binance', 'Bitget', 'OKX', 'Kraken', 'WhiteBIT'].includes(e.market.name)
-      //     );
-      //     // console.log(coins)
-      //   }
-      //   console.log(filtredCoinsMarket)
-      
-
 		let uniqueData = removeDuplicateCoins(coins);
       searchedTarget = searchedTarget.filter(coin => coin !== coinSymbol.toUpperCase());
 		
-		//Check this function !!! it doesn't work properly
-		  uniqueData.filter(marketObj => {
-        marketObj.name = coinName;
-        if (marketObj.target === coinName) {
-          element.target = marketObj.base;
+      uniqueData.filter(marketObj => {
+        //TODO if we bitcoin or btc it should allway take btc from input 
+        if (marketObj.base !== coinSymbol) {
+          const base = marketObj.base
+          const target = marketObj.target
+          marketObj.base = target
+          marketObj.target = base
         }
       });
 
       const percentageData = data.data.market_data.market_cap_change_percentage_24h_in_currency;
+      const priceData = data.data.market_data.current_price;
       const filtredPercentage = Object.entries(percentageData).filter(([key]) =>
         searchedTarget.includes(key.toUpperCase())
       );
+        const filtredPriceData = Object.entries(priceData).filter(([key]) =>
+          searchedTarget.includes(key.toUpperCase())
+        );
 
-		//todo check this too
-      uniqueData.forEach(marketObj => {
-        filtredPercentage.forEach((element, index) => {
-          if (element[0] === marketObj.target.toLowerCase()) {
-            uniqueData.percentage = element[1];
-          }
-        });
-      });
 
-      // console.log(uniqueData)
+      let resData = Object.entries(uniqueData).map(([key, value]) => {
+        let percentage = filtredPercentage.find(el => el[0] === value.target.toLowerCase());
+        let price = filtredPriceData.find(el => el[0] === value.target.toLowerCase());
+        return {
+          base: value.base,
+          target: value.target,
+          price: price ? price[1]: null,
+          percentage: percentage ? percentage[1] : null,
+        };
+      }); 
+      resData = {...resData, image: data.data.image}
 
-      returnCoinsList.image = data.data.image;
-      returnCoinsList.symbol = data.data.symbol;
-      returnCoinsList.market = uniqueData;
-      returnCoinsList.percentage = filtredPercentage;
-
-      res.json(returnCoinsList);
+      res.json(resData);
     } else {
       res.json('');
     }
