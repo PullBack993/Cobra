@@ -12,6 +12,7 @@ const itemList = ref(null)
 const list = ref('')
 const searchParams = ref('')
 const coin = ref(null)
+let timeout = ref(null)
 
 const selectedItem = () => {
   open.value = !open.value
@@ -133,37 +134,39 @@ function documentKeyDown(event) {
 }
 
 function onInput() {
-  if (searchParams.value.length >= 3) {
-    let searchedCoin = allCoins.find((coin) => {
-      if (
-        coin?.id === searchParams.value.toLowerCase() ||
-        coin?.symbol === searchParams.value.toLocaleLowerCase()
-      ) {
-        coin.id.toUpperCase()
-        coin.symbol.toUpperCase()
-        return coin
-      }
-    })
+  clearTimeout(timeout.value)
+  timeout.value = setTimeout(() => {
+    // let searcedCoinIndex = 0
+    if (searchParams.value.length >= 3) {
+      let searchedCoin = allCoins.find((coin, index) => {
+        if (
+          coin?.id === searchParams.value.toLowerCase() ||
+          coin?.symbol === searchParams.value.toLocaleLowerCase()
+        ) {
+          return coin
+        }
+      })
 
-    if (searchedCoin) {
-      axios
-        .post('http://localhost:3030/id', searchedCoin)
-        .then((res) => {
-          console.log(res)
-        })
-        .catch((err) => console.log(err))
+      if (searchedCoin) {
+        axios
+          .post('http://localhost:3030/id', searchedCoin)
+          .then((res) => {
+            console.log(res)
+          })
+          .catch((err) => console.log(err))
+      }
     }
-  }
+  }, 500)
 }
 
 onMounted(() => {
   window.addEventListener('keydown', documentKey)
-  // axios
-  // 	.post('http://localhost:3030/id', { id: 'bitcoin', symbol: 'btc' })
-  // 	.then((res) => {
-  // 		coin.value = res.data;
-  // 	})
-  // 	.catch((err) => console.log(err));
+  axios
+    .post('http://localhost:3030/id', { id: 'bitcoin', symbol: 'btc' })
+    .then((res) => {
+      coin.value = res.data
+    })
+    .catch((err) => console.log(err))
 })
 </script>
 
@@ -193,7 +196,7 @@ onMounted(() => {
       "
     >
       <div ref="list" class="search__container-list">
-        <ul v-if="coin" ref="itemList" class="search__container-list-items">
+        <!-- <ul v-if="coin" ref="itemList" class="search__container-list-items">
           <div style="color: white">
             <img :src="coin.image.thumb" alt="" />{{
               coin.symbol.toUpperCase()
@@ -209,7 +212,7 @@ onMounted(() => {
             {{ coin.base }}/{{ coin.target }} {{ coin.last }} -
             {{ ((coin.percent / coin.last) * 100).toFixed(2) }}%
           </li>
-        </ul>
+        </ul> -->
       </div>
     </div>
   </div>
