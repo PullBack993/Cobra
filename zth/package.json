@@ -4,6 +4,7 @@
   "scripts": {
     "build": "vite build",
     "format": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
+    "lint:css": "stylelint '**/*.scss'",
     "dev": "vite",
     "preview": "vite preview"
   },
