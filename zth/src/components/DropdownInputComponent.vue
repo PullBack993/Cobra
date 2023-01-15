@@ -2,6 +2,7 @@
 import { onMounted, ref, nextTick } from 'vue'
 import dataCoins from './data/coins.json'
 import axios from 'axios'
+import HorizontalEllipsisSpinner from './utils/HorizontalEllipsisSpinner.vue';
 const allCoins = dataCoins
 const open = ref(false)
 const currentItem = ref(null)
@@ -161,12 +162,15 @@ function onInput() {
 
 onMounted(() => {
   window.addEventListener('keydown', documentKey)
-  axios
-    .post('http://localhost:3030/id', { id: 'bitcoin', symbol: 'btc' })
-    .then((res) => {
-      coin.value = res.data
-    })
-    .catch((err) => console.log(err))
+  timeout.value = setTimeout(() => {
+    axios
+      .post('http://localhost:3030/id', { id: 'bitcoin', symbol: 'btc' })
+      .then((res) => {
+        coin.value = res.data
+        console.log(coin.value)
+      })
+      .catch((err) => console.log(err))
+  }, 500)
 })
 </script>
 
