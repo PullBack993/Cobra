@@ -31,32 +31,44 @@ dataController.post("/id", async (req, res) => {
 
       if (resData.length <= 1) {
         let price = data.data?.tickers[0]?.converted_last?.usd;
-        return res.json({
-          ...resData,
-          price,
-          target: "usd",
+        if (!price) {
+          price = data.data.market_data.current_price.usd;
+        }
+        let target = { target: "USD" };
+        return res.status(200).json({
+          data: [{ base: coinSymbol, price: price, ...target, ...resData }],
           image: data.data.image,
-          name: coinName.substring(0, 1) + coinName.substring(1),
+          name: coinName.toUpperCase().substring(0, 1) + coinName.toLowerCase().substring(1),
         });
       }
-      res.json({
-        ...resData,
+      res.status(200).json({
+        data: [...resData],
         image: data.data.image,
-        name: coinName.toLowerCase().substring(0, 1) + coinName.substring(1),
+        name: coinName.toUpperCase().substring(0, 1) + coinName.toLowerCase().substring(1),
       });
     } else {
       res.json("");
     }
   } catch (error) {
     console.log(error);
-    res.json("error", error);
+    res.status(404).json("error", error);
   }
 });
+
+function formatNumber(price) {
+  let decimalPart = String(price).split(".");
+  if (decimalPart[1]?.length >= 5) {
+    return (price = price.toFixed(decimalPart[1].length - 2));
+  }
+  return price;
+}
 
 function createResponseObj(uniqueData, filterPercentage, filterPriceData) {
   let responseData = Object.entries(uniqueData).map(([key, { target, base }]) => {
     let [, percentage] = filterPercentage.find((k) => k[0] === target.toLowerCase()) || [];
     let [, price] = filterPriceData.find((k) => k[0] === target.toLowerCase()) || [];
+    price = formatNumber(price)
+    percentage = formatNumber(percentage)
     if (!!price) {
       return {
         price,
@@ -70,7 +82,7 @@ function createResponseObj(uniqueData, filterPercentage, filterPriceData) {
 }
 
 function handleReqData(data, inputCoinSymbol) {
-  let coins = data.data.tickers.filter((coinsObj, index) => {
+  let coins = data.data.tickers?.filter((coinsObj, index) => {
     if (coinsObj.base !== inputCoinSymbol) {
       const base = coinsObj.base;
       const target = coinsObj.target;
