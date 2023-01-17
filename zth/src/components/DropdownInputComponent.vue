@@ -6,6 +6,7 @@ import HorizontalEllipsisSpinner from './utils/HorizontalEllipsisSpinner.vue';
 const allCoins = dataCoins;
 const open = ref(false);
 const currentItem = ref(null);
+const positiveNegativeColor = ref(null);
 let activeScrollItem = 0;
 const input = ref(null);
 const root = ref('');
@@ -245,16 +246,23 @@ onMounted(() => {
             :currentItem="index"
             :key="index"
           >
-            <div class="search__container-list-current--base">
-              {{ coin?.base }}/{{ coin?.target }}
+            <div class="search__container-list-item-container">
+              <div class="search__container-list-current--base">
+                {{ coin?.base }}/{{ coin?.target }}
+              </div>
+              <div
+                :class="Number(coin?.percentage) > 0 ? 'positive' : 'negative'"
+                class="search__container-list-current--price"
+              >
+                {{ coin?.price }}
+              </div>
+              <div
+                :class="Number(coin?.percentage) > 0 ? 'positive' : 'negative'"
+                class="search__container-list-current--percentage"
+              >
+                {{ coin?.percentage }}
+              </div>
             </div>
-            <div class="search__container-list-current--price">
-              {{ coin?.price }}
-            </div>
-            <div class="search__container-list-current--percentage">
-              {{ coin?.percentage }}%
-            </div>
-            <div class="search__container-list-line"></div>
           </li>
         </ul>
       </div>
@@ -273,6 +281,12 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
+.positive {
+  color: $chart-green;
+}
+.negative {
+  color: $chart-red;
+}
 .search__container {
   width: 90%;
   display: flex;
@@ -349,6 +363,7 @@ onMounted(() => {
     &-container {
       display: flex;
       min-height: 2.4rem;
+      margin: 0.5rem 0;
     }
     &-image {
       width: 2rem;
@@ -361,52 +376,61 @@ onMounted(() => {
       margin-left: 1rem;
       display: flex;
       align-items: center;
-      color: white;
+      color: $white;
       font-weight: bold;
+      position: relative;
     }
 
-    &-line {
+    &-top {
       width: 95%;
-      border-bottom: 0.1rem solid $main-purple-dark;
+      border-bottom: 0.1rem solid $main-purple-dark-5;
       margin: auto;
-      padding: 1rem;
+      padding-top: 0.5rem;
+    }
+    &-item-container {
       display: flex;
       justify-content: space-between;
-      position: absolute;
-//TODO check it
-      &:not(:last-child) {
-        border-bottom: none;
-      }
-
-      &-top {
-        width: 95%;
-        border-bottom: 0.1rem solid $main-purple-dark-5;
-        margin: auto;
-        padding-top: 0.5rem;
-      }
     }
 
-    //TODO check current element and index.on match should be like hover efekt
+    //TODO check current element and index.on match should be like hover efect
     &-current {
       font-size: 2rem;
       color: wheat;
       list-style: none;
-      display: flex;
-      justify-content: space-between;
+      &:hover{
+        background-color: $main-purple-dark-5;
+      }
+      &:hover &--base {
+        color: $white;
+        font-weight: 400;
+      }
+      &:hover &--price {
+        color: $chart-green;
+        font-weight: 400;
+      }
+      &:hover &--percentage {
+        color: $chart-green;
+        font-weight: 400;
+      }
+
       &--base,
       &--price,
       &--percentage {
-        font-weight: 600;
-        font-size: 1.4rem;
+        font-weight: 300;
+        font-size: 2rem;
         line-height: 1.71429;
         text-overflow: ellipsis;
+        margin: 1rem;
+        position: relative;
+      }
+      &--base {
+        width: 50%;
       }
       &--price {
+        width: 50%;
       }
-
-      &:hover {
-        background: white;
-        color: $black;
+      &--percentage {
+        width: 20%;
       }
 
       &-active {
@@ -428,6 +452,35 @@ onMounted(() => {
 
   100% {
     opacity: 1;
+  }
+}
+@keyframes leftToRightOpacity {
+  0% {
+    opacity: 0.1;
+    width: 5%;
+  }
+
+  30% {
+    opacity: 0.3;
+    width: 15%;
+  }
+
+  50% {
+    opacity: 0.5;
+    width: 20%;
+  }
+  70% {
+    opacity: 0.5;
+    width: 25%;
+  }
+  80% {
+    opacity: 0.8;
+    width: 30%;
+  }
+
+  100% {
+    opacity: 1;
+    width: 39%;
   }
 }
 

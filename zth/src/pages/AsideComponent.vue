@@ -250,7 +250,7 @@ onMounted(() => {
   .visible {
     padding-left: 1rem;
     font-size: 2rem;
-    font-weight: 600;
+    font-weight: 300;
     color: $main_purple;
     animation: text-out-after 0.15s linear;
   }
