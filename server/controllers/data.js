@@ -10,12 +10,12 @@ dataController.post("/id", async (req, res) => {
   try {
     let data = await CoinGeckoClient.coins.fetch(coinName);
     coinName = coinName.toUpperCase();
-    if (data) {
+    if (data && data.data.tickers) {
       // Sometimes data look like target(USD) base(coinName-BTC) -- right is base base(BTC), target(USD).
       let coins = handleReqData(data, coinSymbol);
 
       // Before remove duplicate,take needed coins.
-      coins = data.data.tickers.filter((coin) => searchedTarget.includes(coin.target));
+      coins = data.data.tickers?.filter((coin) => searchedTarget.includes(coin.target));
       let uniqueData = removeDuplicateCoins(coins);
 
       const percentageData = data.data.market_data.market_cap_change_percentage_24h_in_currency;
@@ -41,17 +41,17 @@ dataController.post("/id", async (req, res) => {
           name: coinName.toUpperCase().substring(0, 1) + coinName.toLowerCase().substring(1),
         });
       }
-      res.status(200).json({
+      return res.status(200).json({
         data: [...resData],
         image: data.data.image,
         name: coinName.toUpperCase().substring(0, 1) + coinName.toLowerCase().substring(1),
       });
     } else {
-      res.json("");
+      return res.status(204).json("");
     }
   } catch (error) {
     console.log(error);
-    res.status(404).json("error", error);
+    return res.status(404).json("error", error);
   }
 });
 
@@ -67,8 +67,8 @@ function createResponseObj(uniqueData, filterPercentage, filterPriceData) {
   let responseData = Object.entries(uniqueData).map(([key, { target, base }]) => {
     let [, percentage] = filterPercentage.find((k) => k[0] === target.toLowerCase()) || [];
     let [, price] = filterPriceData.find((k) => k[0] === target.toLowerCase()) || [];
-    price = formatNumber(price)
-    percentage = formatNumber(percentage)
+    price = formatNumber(price);
+    percentage = formatNumber(percentage);
     if (!!price) {
       return {
         price,
@@ -99,7 +99,7 @@ function handleReqData(data, inputCoinSymbol) {
 }
 
 function removeDuplicateCoins(coins) {
-  let uniqueData = coins.filter(
+  let uniqueData = coins?.filter(
     (coin, index) =>
       coins
         .map((c) => c.base + (c.target = c.target === "USDT" ? "USD" : c.target))
