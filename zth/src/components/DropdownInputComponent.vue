@@ -16,6 +16,7 @@ const searchParams = ref('');
 const coins = ref(null);
 let timeout = ref(0);
 let loading = ref(false);
+let error = ref(false);
 
 const selectedItem = () => {
   open.value = !open.value;
@@ -162,15 +163,21 @@ function onInput() {
             .then((res) => {
               coins.value = res.data;
               loading.value = false;
+              error.value = false;
+
 
               console.log(res);
             })
             .catch((err) => {
               console.log(err);
               loading.value = false;
+              error.value = true;
+
             });
         } else {
           loading.value = false;
+          error.value = false;
+
           coins.value = '';
         }
       }
@@ -178,6 +185,8 @@ function onInput() {
   } catch (err) {
     console.log(err);
     loading.value = false;
+    error.value = true; // check it
+
   }
 }
 
@@ -191,11 +200,13 @@ onMounted(() => {
       .then((res) => {
         console.log(res.data);
         coins.value = res.data;
+        error.value = false;
         loading.value = false;
       })
       .catch((err) => {
         console.log(err);
         loading.value = false;
+        error.value = true;
       });
   }, 500);
 });
@@ -250,17 +261,26 @@ onMounted(() => {
               <div class="search__container-list-current--base">
                 {{ coin?.base }}/{{ coin?.target }}
               </div>
-              <div
-                :class="Number(coin?.percentage) > 0 ? 'positive' : 'negative'"
-                class="search__container-list-current--price"
-              >
-                {{ coin?.price }}
+              <div class="search__container-list-current--container">
+                <div
+                  :class="
+                    Number(coin?.percentage) > 0 ? 'positive' : 'negative'
+                  "
+                  class="search__container-list-current--price"
+                >
+                  {{ coin?.price }}
+                </div>
               </div>
-              <div
-                :class="Number(coin?.percentage) > 0 ? 'positive' : 'negative'"
-                class="search__container-list-current--percentage"
-              >
-                {{ coin?.percentage }}
+
+              <div class="search__container-list-current--container">
+                <div
+                  :class="
+                    Number(coin?.percentage) > 0 ? 'positive' : 'negative'
+                  "
+                  class="search__container-list-current--percentage"
+                >
+                  {{ coin?.percentage }} {{ coin?.percentage ? '%' : '' }}
+                </div>
               </div>
             </div>
           </li>
@@ -271,11 +291,12 @@ onMounted(() => {
       </div>
       <!-- TODO set class/style -->
       <div
-        v-if="!coins && !loading && searchParams.length > 0"
+        v-if="!coins && !loading && searchParams.length && !error > 0"
         class="search__container-list-current--base"
       >
         No results for "{{ searchParams }}"
       </div>
+      <div class="search__container-error" v-if="error">Error</div>
     </div>
   </div>
 </template>
@@ -370,6 +391,7 @@ onMounted(() => {
       min-width: 2rem;
       margin: 0.2rem;
       margin-left: 1rem;
+      animation: topToBottom 0.4s ease-in;
     }
 
     &-coin-name {
@@ -379,6 +401,7 @@ onMounted(() => {
       color: $white;
       font-weight: bold;
       position: relative;
+      animation: topToBottom 0.4s ease-in;
     }
 
     &-top {
@@ -389,7 +412,6 @@ onMounted(() => {
     }
     &-item-container {
       display: flex;
-      justify-content: space-between;
     }
 
     //TODO check current element and index.on match should be like hover efect
@@ -397,40 +419,34 @@ onMounted(() => {
       font-size: 2rem;
       color: wheat;
       list-style: none;
-      &:hover{
-        background-color: $main-purple-dark-5;
+      &:hover {
+        background-color: $input-bg-dark-2;
       }
-      &:hover &--base {
-        color: $white;
-        font-weight: 400;
-      }
-      &:hover &--price {
-        color: $chart-green;
-        font-weight: 400;
-      }
+      &:hover &--base,
+      &:hover &--price,
       &:hover &--percentage {
-        color: $chart-green;
         font-weight: 400;
+      }
+
+      &--container {
+        display: flex;
+        justify-content: flex-end;
+        width: 100%;
       }
 
       &--base,
       &--price,
       &--percentage {
-        font-weight: 300;
+        font-weight: 200;
+        animation: topToBottom 0.4s ease-in;
         font-size: 2rem;
         line-height: 1.71429;
         text-overflow: ellipsis;
         margin: 1rem;
-        position: relative;
       }
+
       &--base {
-        width: 50%;
-      }
-      &--price {
-        width: 50%;
-      }
-      &--percentage {
-        width: 20%;
+        letter-spacing: 0.1rem;
       }
 
       &-active {
