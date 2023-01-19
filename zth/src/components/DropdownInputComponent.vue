@@ -161,10 +161,14 @@ function onInput() {
           axios
             .post('http://localhost:3030/id', searchedCoin)
             .then((res) => {
+              if (!res.data) {
+                loading.value = false;
+                coins.value = '';
+                return (error.value = true);
+              }
               coins.value = res.data;
-              loading.value = false;
               error.value = false;
-
+              loading.value = false;
 
               console.log(res);
             })
@@ -172,7 +176,6 @@ function onInput() {
               console.log(err);
               loading.value = false;
               error.value = true;
-
             });
         } else {
           loading.value = false;
@@ -186,7 +189,6 @@ function onInput() {
     console.log(err);
     loading.value = false;
     error.value = true; // check it
-
   }
 }
 
@@ -198,6 +200,12 @@ onMounted(() => {
     axios
       .post('http://localhost:3030/id', { id: 'bitcoin', symbol: 'btc' })
       .then((res) => {
+        if (!res.data) {
+          loading.value = false;
+          coins.value = '';
+          return (error.value = true);
+        }
+        //TODO remove console.logs
         console.log(res.data);
         coins.value = res.data;
         error.value = false;
@@ -250,7 +258,11 @@ onMounted(() => {
               {{ coins.name }}
             </div>
           </div>
-          <div class="search__container-list-line-top"></div>
+          <div class="search__container-list-info">
+            <div class="search__container-list-symbol">symbol</div>
+            <div class="search__container-list-last">last</div>
+            <div class="search__container-list-last">change%</div>
+          </div>
           <li
             class="search__container-list-current"
             v-for="(coin, index) in coins.data"
@@ -279,7 +291,7 @@ onMounted(() => {
                   "
                   class="search__container-list-current--percentage"
                 >
-                  {{ coin?.percentage }} {{ coin?.percentage ? '%' : '' }}
+                  {{ coin?.percentage }} {{ coin?.percentage ? '%' : '----' }}
                 </div>
               </div>
             </div>
@@ -292,11 +304,11 @@ onMounted(() => {
       <!-- TODO set class/style -->
       <div
         v-if="!coins && !loading && searchParams.length && !error > 0"
-        class="search__container-list-current--base"
+        class="search__container-no-results"
       >
         No results for "{{ searchParams }}"
       </div>
-      <div class="search__container-error" v-if="error">Error</div>
+      <div class="search__container-error" v-if="error && !loading">Error</div>
     </div>
   </div>
 </template>
@@ -346,7 +358,7 @@ onMounted(() => {
     width: auto;
     right: 0;
     left: 0;
-    background: #16083e;
+    background: $bg-dark-purple;
     z-index: 1;
     border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
@@ -379,6 +391,28 @@ onMounted(() => {
       background-color: $main-purple;
       border: 0.5rem solid transparent;
       background-clip: padding-box;
+    }
+    &-info {
+      display: flex;
+    }
+
+    &-symbol,
+    &-last,
+    &-change {
+      font-weight: bold;
+      color: $medium-purple;
+      animation: topToBottom 0.4s ease-in;
+      font-size: 1.3rem;
+      line-height: 1.71429;
+      text-overflow: ellipsis;
+      margin: 1rem;
+    }
+
+    &-last,
+    &-change {
+      display: flex;
+      width: 100%;
+      justify-content: flex-end;
     }
 
     &-container {
@@ -417,7 +451,7 @@ onMounted(() => {
     //TODO check current element and index.on match should be like hover efect
     &-current {
       font-size: 2rem;
-      color: wheat;
+      color: $white;
       list-style: none;
       &:hover {
         background-color: $input-bg-dark-2;
@@ -425,7 +459,8 @@ onMounted(() => {
       &:hover &--base,
       &:hover &--price,
       &:hover &--percentage {
-        font-weight: 400;
+        font-weight: 500;
+        font-size: 1.55rem;
       }
 
       &--container {
@@ -437,9 +472,9 @@ onMounted(() => {
       &--base,
       &--price,
       &--percentage {
-        font-weight: 200;
+        font-weight: 500;
         animation: topToBottom 0.4s ease-in;
-        font-size: 2rem;
+        font-size: 1.5rem;
         line-height: 1.71429;
         text-overflow: ellipsis;
         margin: 1rem;
@@ -450,14 +485,25 @@ onMounted(() => {
       }
 
       &-active {
-        background-color: white;
+        background-color: $white;
         color: $black;
       }
     }
   }
+
   &-spinner {
     display: flex;
     justify-content: center;
+  }
+  &-no-results,
+  &-error {
+    font-weight: 500;
+    animation: topToBottom 0.4s ease-in;
+    font-size: 1.5rem;
+    line-height: 1.71429;
+    text-overflow: ellipsis;
+    margin: 1rem;
+    color: $white;
   }
 }
 
@@ -470,35 +516,5 @@ onMounted(() => {
     opacity: 1;
   }
 }
-@keyframes leftToRightOpacity {
-  0% {
-    opacity: 0.1;
-    width: 5%;
-  }
-
-  30% {
-    opacity: 0.3;
-    width: 15%;
-  }
-
-  50% {
-    opacity: 0.5;
-    width: 20%;
-  }
-  70% {
-    opacity: 0.5;
-    width: 25%;
-  }
-  80% {
-    opacity: 0.8;
-    width: 30%;
-  }
-
-  100% {
-    opacity: 1;
-    width: 39%;
-  }
-}
-
 //TODO responsive searchbar after implement login/register
 </style>
