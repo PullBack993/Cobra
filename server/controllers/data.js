@@ -68,7 +68,7 @@ function createResponseObj(uniqueData, filterPercentage, filterPriceData) {
     let [, percentage] = filterPercentage.find((k) => k[0] === target.toLowerCase()) || [];
     let [, price] = filterPriceData.find((k) => k[0] === target.toLowerCase()) || [];
     price = formatNumber(price);
-    percentage = formatNumber(percentage);
+    percentage = Math.round((percentage + Number.EPSILON) * 100) / 100;
     if (!!price) {
       return {
         price,
