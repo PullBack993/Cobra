@@ -77,7 +77,6 @@ const onDrag = (x) => {
   offset = Math.min(maxPos, Math.max(0, deltaX));
   progress = (offset / maxPos) * 100;
 
-  //emit
 };
 
 const handleStyle = computed(() => {
@@ -112,6 +111,7 @@ const handleStyle = computed(() => {
 
   &:active {
     cursor: grabbing;
+    color: $white
   }
 }
 </style>
