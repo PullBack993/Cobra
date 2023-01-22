@@ -1,0 +1,50 @@
+[
+  {
+    "id": "bitcoin",
+    "symbol": "BTC",
+    "image": "https://assets.coingecko.com/coins/images/1/small/bitcoin.png?1547033579"
+  },
+  {
+    "id": "ethereum",
+    "symbol": "ETH",
+    "image": "https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880"
+  },
+  {
+    "id": "tether",
+    "symbol": "USDT",
+    "image": "https://assets.coingecko.com/coins/images/325/small/Tether.png?1668148663"
+  },
+  {
+    "id": "binancecoin",
+    "symbol": "BNB",
+    "image": "https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png?1644979850"
+  },
+  {
+    "id": "ripple",
+    "symbol": "XRP",
+    "image": "https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png?1605778731"
+  },
+  {
+    "id": "litecoin",
+    "symbol": "LTC",
+    "image": "https://assets.coingecko.com/coins/images/2/small/litecoin.png?1547033580"
+  },
+  {
+    "id": "chainlink",
+    "symbol": "LINK",
+    "image": "https://assets.coingecko.com/coins/images/877/small/chainlink-new-logo.png?1547034700"
+  },
+  {
+    "id": "fantom",
+    "symbol": "FTM",
+    "image": "https://assets.coingecko.com/coins/images/4001/small/Fantom_round.png?1669652346"
+  },
+  {
+    "symbol": "EUR",
+    "image": "https://s2.coinmarketcap.com/static/img/coins/64x64/20641.png"
+  },
+  {
+    "symbol": "USD",
+    "image": "https://s2.coinmarketcap.com/static/img/coins/64x64/20317.png"
+  }
+]

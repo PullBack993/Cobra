@@ -271,12 +271,26 @@ onMounted(() => {
           >
             <div class="search__container-list-item-container">
               <div class="search__container-list-current--base">
+                <img
+                  :src="coins.image.small"
+                  :alt="coins.name"
+                  class="search__container-list-current--target"
+                />
+                <img
+                  :src="coin?.baseImage[0]?.image"
+                  :alt="coin?.baseImage[0]?.symbol"
+                  class="search__container-list-current--baseImg"
+                />
                 {{ coin?.base }}/{{ coin?.target }}
               </div>
               <div class="search__container-list-current--container">
                 <div
                   :class="
-                    Number(coin?.percentage) > 0 ? 'positive' : 'negative'
+                    Number(coin?.percentage) > 0
+                      ? 'positive'
+                      : Number(coin?.percentage) < 0
+                      ? 'negative'
+                      : ''
                   "
                   class="search__container-list-current--price"
                 >
@@ -287,7 +301,11 @@ onMounted(() => {
               <div class="search__container-list-current--container">
                 <div
                   :class="
-                    Number(coin?.percentage) > 0 ? 'positive' : 'negative'
+                    Number(coin?.percentage) > 0
+                      ? 'positive'
+                      : Number(coin?.percentage) < 0
+                      ? 'negative'
+                      : ''
                   "
                   class="search__container-list-current--percentage"
                 >
@@ -408,6 +426,10 @@ onMounted(() => {
       margin: 1rem;
     }
 
+    &-symbol {
+      margin-left: 4rem;
+    }
+
     &-last,
     &-change {
       display: flex;
@@ -426,6 +448,8 @@ onMounted(() => {
       margin: 0.2rem;
       margin-left: 1rem;
       animation: topToBottom 0.4s ease-in;
+      border-radius: 50%;
+      background: $white;
     }
 
     &-coin-name {
@@ -467,6 +491,26 @@ onMounted(() => {
         display: flex;
         justify-content: flex-end;
         width: 100%;
+      }
+
+      &--base {
+        display: flex;
+      }
+
+      &--target {
+        height: 2.5rem;
+        position: relative;
+        margin-right: 2rem;
+        border-radius: 50%;
+        background: $white;
+      }
+
+      &--baseImg {
+        height: 2.5rem;
+        position: absolute;
+        left: 1.5rem;
+        border-radius: 50%;
+        background: $white;
       }
 
       &--base,
