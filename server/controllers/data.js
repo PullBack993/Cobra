@@ -1,6 +1,7 @@
 const dataController = require("express").Router();
 const CoinGecko = require("coingecko-api");
 const { SEARCH_VALUES: searchedTarget } = require("../helpers/utils");
+const coinsImages = require("../helpers/coinsImages.json");
 
 dataController.post("/id", async (req, res) => {
   const CoinGeckoClient = new CoinGecko();
@@ -35,8 +36,11 @@ dataController.post("/id", async (req, res) => {
           price = data.data.market_data.current_price.usd;
         }
         let target = { target: "USD" };
+         let baseImage = coinsImages.filter((coin) => {
+           if (coin.symbol === 'USD') return coin.image;
+         });
         return res.status(200).json({
-          data: [{ base: coinSymbol, price: price, ...target, ...resData }],
+          data: [{ base: coinSymbol, price: price, ...target, ...resData, baseImage }],
           image: data.data.image,
           name: coinName.toUpperCase().substring(0, 1) + coinName.toLowerCase().substring(1),
         });
@@ -67,16 +71,19 @@ function createResponseObj(uniqueData, filterPercentage, filterPriceData) {
   let responseData = Object.entries(uniqueData).map(([key, { target, base }]) => {
     let [, percentage] = filterPercentage.find((k) => k[0] === target.toLowerCase()) || [];
     let [, price] = filterPriceData.find((k) => k[0] === target.toLowerCase()) || [];
-    price = formatNumber(price);
     percentage = Math.round((percentage + Number.EPSILON) * 100) / 100;
-    if (!!price) {
-      return {
-        price,
-        percentage,
-        base,
-        target,
-      };
-    }
+    price = price || uniqueData[key].last;
+    price = formatNumber(price);
+    let baseImage = coinsImages.filter((coin) => {
+      if (coin.symbol === target) return coin.image;
+    });
+    return {
+      price,
+      percentage,
+      base,
+      baseImage,
+      target,
+    };
   });
   return responseData;
 }

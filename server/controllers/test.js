@@ -2,43 +2,68 @@ const fs = require("fs");
 const CoinGecko = require("coingecko-api");
 
 const CoinGeckoClient = new CoinGecko();
-let counter = 0;
+let max = 10;
 
 async function test() {
-  let max = 10;
   for (let i = 1; i <= max; i++) {
-    let data = await CoinGeckoClient.coins.all({ page: i });
-    console.log(counter);
-    counter++;
-    if (!data.data) {
-            await wait();
-    }
+    try {
+      let data = await CoinGeckoClient.coins.all({ page: i });
+      if (!data.data) {
+        await wait(6000);
+      }
 
-    data.data.forEach((element) => {
-      console.log(element.id);
-      const current = { id: element.id, symbol: element.symbol };
-      fs.appendFileSync("coins.json", JSON.stringify(current) + ",", (err) => {
-        console.log(err);
+      data.data.forEach((element) => {
+        console.log(element.image);
+        const current = { id: element.id, symbol: element.symbol, image: element.image.small };
+        fs.appendFileSync("coins.json", JSON.stringify(current) + ",", (err) => {
+          console.log(err);
+        });
       });
-    });
-
-    if (i % 10 === 0) {
-      max += 10;
-      await wait()
-      console.log(max)
+      if (max >= 240) {
+        max += 5;
+        await wait();
+      } else {
+        max += 10;
+        await wait();
+      }
+    } catch (err) {
+      console.log(err);
+      if (max >= 270) {
+        break;
+      }
+      continue;
     }
   }
+}
+let SEARCH_VALUES = [
+  "bitcoin",
+  "ethereum",
+  "tether",
+  "euro",
+  "binancecoin",
+  "chainlink",
+  "litecoin",
+  "ripple",
+  "fantom",
+  "avalanche",
+];
+
+function takeNeeded(data) {
+  data.forEach((el) => {
+    if (SEARCH_VALUES.includes(el.id)) {
+      console.log(el);
+      fs.appendFileSync("coinsNeeded.json", JSON.stringify(el) + ",", (err) => {});
+    }
+  });
 }
 
 async function wait(seconds) {
   console.log("waitttttttttttttttttttttt", new Date().toLocaleTimeString());
-  await new Promise((resolve) => setTimeout(resolve, seconds | 60000));
+  await new Promise((resolve) => setTimeout(resolve, seconds | 120000));
   console.log("gooooooooooooooo ", new Date().toLocaleTimeString());
-  
-  
 }
 
-//TODO take all icon also and set it to search => example img=USD => BTC/USD, img=link BTC/LINK
-test();
-// const fetchCoins = require('../../coins.json')
-// console.log(fetchCoins.length)
+// test();
+// takeNeeded(fetchCoins);
+const fetchCoins = require("../../coins.json");
+console.log(fetchCoins.length);
