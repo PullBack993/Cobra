@@ -5,8 +5,7 @@ import axios from 'axios';
 import HorizontalEllipsisSpinner from './utils/HorizontalEllipsisSpinner.vue';
 const allCoins = dataCoins;
 const open = ref(false);
-const currentItem = ref(null);
-const positiveNegativeColor = ref(null);
+const currentItem = ref(0);
 let activeScrollItem = 0;
 const input = ref(null);
 const root = ref('');
@@ -61,16 +60,21 @@ function scrollPosition(direction) {
     if (!itemList.value) {
       return;
     }
+
     const items = Array.from(
       // TODO change to ref
-      list.value.querySelectorAll('.search__container-list-items-current')
+      list.value.querySelectorAll('.search__container-list-current')
     );
     activeScrollItem = Math.min(
       Math.max(0, activeScrollItem + direction),
       items.length - 1
     );
-    const top = items[activeScrollItem].offsetTop;
 
+    let top = items[activeScrollItem].offsetTop;
+    console.log(top);
+    if (top == 71) {
+      top = 1;
+    }
     list.value.scrollTo({ top, behavior: 'smooth' });
   });
 }
@@ -84,6 +88,9 @@ function isValidKeyCode(code) {
 function handleEnterEvent() {
   if (open.value) {
     open.value = !open.value;
+    input?.value.blur();
+
+    document.removeEventListener('click', documentClick);
   }
 }
 
@@ -94,8 +101,9 @@ function handleEscapeEvent() {
 }
 
 function handleArrowDown() {
-  if (open.value) {
-    // console.log(currentItem.value)
+  console.log(coins.value.data.length);
+  console.log(currentItem.value);
+  if (open.value && coins.value.data.length - 2 >= currentItem.value) {
     currentItem.value++;
     scrollPosition(1);
   }
@@ -104,7 +112,6 @@ function handleArrowDown() {
 function handleArrowUp() {
   if (open.value && currentItem.value > 0) {
     currentItem.value--;
-    // console.log(currentItem.value)
     scrollPosition(-1);
   }
 }
@@ -158,6 +165,8 @@ function onInput() {
         console.log(searchedCoin);
 
         if (searchedCoin) {
+          currentItem.value = 0;
+          activeScrollItem = 0;
           axios
             .post('http://localhost:3030/id', searchedCoin)
             .then((res) => {
@@ -269,12 +278,19 @@ onMounted(() => {
             :currentItem="index"
             :key="index"
           >
-            <div class="search__container-list-item-container">
+            <div
+              class="search__container-list-item-container"
+              :class="
+                index == currentItem
+                  ? 'search__container-list-current-active'
+                  : ''
+              "
+            >
               <div class="search__container-list-current--base">
                 <img
                   :src="coins.image.small"
                   :alt="coins.name"
-                  class="search__container-list-current--target"
+                  class="search__container-list-current--target search__container-list-current-active"
                 />
                 <img
                   :src="coin?.baseImage[0]?.image"
@@ -309,7 +325,7 @@ onMounted(() => {
                   "
                   class="search__container-list-current--percentage"
                 >
-                  {{ coin?.percentage }} {{ coin?.percentage ? '%' : '----' }}
+                  {{ coin?.percentage }} {{ coin?.percentage !== undefined ? '%' : '----' }}
                 </div>
               </div>
             </div>
@@ -529,8 +545,7 @@ onMounted(() => {
       }
 
       &-active {
-        background-color: $white;
-        color: $black;
+        background-color: $white-5;
       }
     }
   }
