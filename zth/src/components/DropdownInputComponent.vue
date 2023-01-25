@@ -317,7 +317,7 @@ onMounted(() => {
               <div class="search__container-list-current--container">
                 <div
                   :class="
-                    Number(coin?.percentage) > 0
+                      Number(coin?.percentage) > 0
                       ? 'positive'
                       : Number(coin?.percentage) < 0
                       ? 'negative'

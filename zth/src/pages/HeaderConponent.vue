@@ -1,6 +1,6 @@
 <script setup>
-import { onMounted, ref } from "vue";
-import DropdownInputComponentVue from "../components/DropdownInputComponent.vue";
+import { onMounted, ref } from 'vue';
+import DropdownInputComponentVue from '../components/DropdownInputComponent.vue';
 </script>
 
 <template>
@@ -23,17 +23,27 @@ import DropdownInputComponentVue from "../components/DropdownInputComponent.vue"
   border-radius: 0.5rem;
 }
 .main {
+  background: linear-gradient(
+    rgba(12, 20, 68, 0.37) 0%,
+    rgba(12, 20, 68, 1) 78%,
+    rgba(44, 16, 65, 1) 99%
+  );
   height: 9.5rem;
-
   .search {
-    border-radius: 6px;
-    width: 35%;
-    display: flex;
-    align-items: center;
+    margin: auto;
+    border-radius: 0.6rem;
+    width: 90%;
     display: flex;
     justify-content: center;
+    align-items: center;
     align-content: center;
     height: 9rem;
+    @media (min-width: $breakpoint_small) {
+      width: 45%;
+    }
+    @media (min-width: $breakpoint_medium) {
+      width: 40%;
+    }
   }
 }
 </style>
