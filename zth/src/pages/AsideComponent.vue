@@ -1,48 +1,51 @@
 <script setup>
-import { RouterLink } from "vue-router";
-import { ref, onMounted } from "vue";
-import { useStore } from "vuex";
-import bgp from "../assets/BaseIcons/bgp.jpeg";
+import { RouterLink } from 'vue-router';
+import { ref, onMounted } from 'vue';
+import { useStore } from 'vuex';
+import bgp from '../assets/BaseIcons/bgp.jpeg';
 
-let isToggle = ref(false);
-let dark = ref(true);
+const isToggle = ref(true);
+const dark = ref(true);
+const displayType = ref('')
 
 const store = useStore();
 
 const toggle = () => {
   isToggle.value = !isToggle.value;
-  console.log(isToggle.value);
   if (isToggle.value === true) {
-    document.addEventListener("click", documentClick);
+    document.addEventListener('click', documentClick);
   } else {
     destroyClickEvent();
   }
 };
 
 const switchTheme = () => {
-  store.commit("TOGGLE");
+  store.commit('TOGGLE');
   dark.value = store.state.themeDark;
   if (dark.value) {
-    document.body.style.background = "white";
+    document.body.style.background = 'white';
   } else {
     document.body.style.background =
-      "linear-gradient(189deg, rgba(29,12,56,1) 0%, rgba(12,20,68,1) 53%, rgba(44,16,65,1) 100%)";
+      'linear-gradient(189deg, rgba(29,12,56,1) 0%, rgba(12,20,68,1) 53%, rgba(44,16,65,1) 100%)';
   }
 };
+////
+displayType.value = 'flex';
+console.log(displayType.value);
 
 function documentClick() {
   document.onclick = (e) => {
-    e.target.appendClass = "active";
+    e.target.appendClass = 'active';
     if (
-      e.target.className === "sidebar-btn" ||
-      e.target.className === "sidebar is-expand" ||
-      e.target.className === "active sidebar-icon" ||
-      e.target.className === "theme" ||
-      e.target.className === "material-symbols-outlined light" ||
-      e.target.className === "material-symbols-outlined dark" ||
-      e.target.className === "theme dark-icon" ||
-      e.target.className === "theme light-icon" ||
-      e.target.className === "sidebar darkUnActive is-expand"
+      e.target.className === 'sidebar-btn' ||
+      e.target.className === 'sidebar is-expand' ||
+      e.target.className === 'active sidebar-icon' ||
+      e.target.className === 'theme' ||
+      e.target.className === 'material-symbols-outlined light' ||
+      e.target.className === 'material-symbols-outlined dark' ||
+      e.target.className === 'theme dark-icon' ||
+      e.target.className === 'theme light-icon' ||
+      e.target.className === 'sidebar darkUnActive is-expand'
     ) {
       return;
     }
@@ -52,12 +55,11 @@ function documentClick() {
 }
 
 function destroyClickEvent() {
-  document.removeEventListener("click", documentClick);
+  document.removeEventListener('click', documentClick);
 }
 
 function tabEvent(event) {
-  if (event.code === "Tab") {
-    console.log("tabevent");
+  if (event.code === 'Tab') {
     return;
   }
 }
@@ -65,12 +67,33 @@ function tabEvent(event) {
 onMounted(() => {
   dark.value = store.state.themeDark;
 });
+
+function onOpen() {
+  if (isToggle.value === true) {
+    isToggle.value = false;
+    destroyClickEvent();
+    console.log(isToggle.value);
+
+    return;
+  } else {
+    isToggle.value = true;
+    document.addEventListener('click', documentClick);
+    console.log(isToggle.value);
+  }
+}
 </script>
 
 <template>
+  <div class="search__lines" @click="toggle()">
+    <span class="search__lines-icon">&nbsp;</span>
+  </div>
   <aside
     class="sidebar"
-    :class="[{ darkUnActive: dark }, `${isToggle ? 'is-expand' : ''}`]"
+    :class="[
+      { darkUnActive: dark },
+      `${isToggle ? 'is-expand' : ''}`,
+      { isOpenAside: isToggle },
+    ]"
   >
     <img :src="`${bgp}`" alt="" class="hero-image" />
     <RouterLink to="/" class="image" :key="home"></RouterLink>
@@ -148,12 +171,12 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .hero-image {
-  -webkit-mask-image: url("../assets/BaseIcons/zth.svg");
+  -webkit-mask-image: url('../assets/BaseIcons/zth.svg');
   -webkit-mask-size: cover;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center;
   -webkit-mask-size: 30%;
-  mask-image: url("../assets/BaseIcons/zth.svg");
+  mask-image: url('../assets/BaseIcons/zth.svg');
   mask-repeat: no-repeat;
   mask-position: center;
   mask-size: 30%;
@@ -163,7 +186,7 @@ onMounted(() => {
 }
 .router-link-active {
   &::after {
-    content: "";
+    content: '';
     position: absolute;
     height: 3.5rem;
     border-left: 0.3rem solid $main-purple;
@@ -191,13 +214,13 @@ onMounted(() => {
 }
 
 .sidebar {
+  display: flex;
   margin: 0;
   width: 8rem;
   height: 100vh;
   max-height: 100vh;
   z-index: 999;
   flex-direction: column;
-  display: flex;
   position: fixed;
   overflow: hidden;
   background-color: $dark_blue;
@@ -224,11 +247,11 @@ onMounted(() => {
       transition: 0.1s all ease-in-out;
 
       .material-symbols-outlined {
-        font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48;
+        font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
       }
 
       &::after {
-        content: "";
+        content: '';
         position: absolute;
         box-shadow: rgba(150, 150, 150, 0.1) 0 2rem 2rem;
       }
@@ -291,7 +314,7 @@ onMounted(() => {
 
     &::before,
     &::after {
-      content: "";
+      content: '';
       position: absolute;
       left: 0;
       transition: all 0.15s ease;
@@ -337,7 +360,7 @@ onMounted(() => {
       width: calc(51%);
       height: 4rem;
       border-radius: 6rem;
-      content: "";
+      content: '';
       transition: background-color 0.15s ease, -webkit-transform 0.3s ease;
       transition: transform 0.3s ease, background-color 0.15s ease;
       transition: transform 0.3s ease, background-color 0.15s ease,
@@ -356,7 +379,7 @@ onMounted(() => {
       margin-right: 1rem;
 
       .material-symbols-outlined {
-        font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48;
+        font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
       }
     }
   }
@@ -411,6 +434,62 @@ onMounted(() => {
     .toggle-dark {
       transform: translateX(40rem);
     }
+  }
+}
+.search__lines {
+  position: absolute;
+  top: 24%;
+  left: 10%;
+  cursor: pointer;
+  height: 50%;
+  width: 6%;
+  pointer-events: auto;
+  z-index: 20;
+  &-icon {
+    display: block;
+    z-index: 10;
+    cursor: pointer;
+
+    &,
+    &::before,
+    &::after {
+      width: 3rem;
+      height: 0.2rem;
+      background-color: $white;
+      display: inline-block;
+      position: absolute;
+      top: 45%;
+      left: 11%;
+      cursor: pointer;
+    }
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+
+    &::before {
+      top: -0.8rem;
+      cursor: pointer;
+    }
+
+    &::after {
+      top: 0.8rem;
+      cursor: pointer;
+    }
+  }
+}
+
+@media (min-width: $breakpoint_small) {
+  .sidebar {
+    display: flex;
+  }
+  .search__lines-icon {
+    display: none;
   }
 }
 </style>

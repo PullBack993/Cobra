@@ -23,11 +23,7 @@ import DropdownInputComponentVue from '../components/DropdownInputComponent.vue'
   border-radius: 0.5rem;
 }
 .main {
-  background: linear-gradient(
-    rgba(12, 20, 68, 0.37) 0%,
-    rgba(12, 20, 68, 1) 78%,
-    rgba(44, 16, 65, 1) 99%
-  );
+  border-bottom: 0.1rem solid $main-purple;
   height: 9.5rem;
   .search {
     margin: auto;
@@ -39,6 +35,7 @@ import DropdownInputComponentVue from '../components/DropdownInputComponent.vue'
     align-content: center;
     height: 9rem;
     @media (min-width: $breakpoint_small) {
+      margin: 0;
       width: 45%;
     }
     @media (min-width: $breakpoint_medium) {

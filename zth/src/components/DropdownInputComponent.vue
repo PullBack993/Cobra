@@ -16,12 +16,15 @@ const coins = ref(null);
 let timeout = ref(0);
 let loading = ref(false);
 let error = ref(false);
+const emit = defineEmits(['click:open'])
+const buttonRef = ref(null);
 
 const selectedItem = () => {
   open.value = !open.value;
   if (open.value === true) {
     document.addEventListener('click', documentClick);
   } else {
+    clearValues();
     document.removeEventListener('click', documentClick);
     document.removeEventListener('click', documentKey);
   }
@@ -33,6 +36,10 @@ function selectInput() {
     addClickEvent();
     open.value = true;
   }
+}
+function clearValues() {
+  currentItem.value = 0;
+  activeScrollItem = 0;
 }
 
 function documentClick(event) {
@@ -85,19 +92,24 @@ function between(a, b, c) {
 function isValidKeyCode(code) {
   return between(65, 90, code) || between(97, 122, code);
 }
+
+// TODO change after implement chart => rout to chart
 function handleEnterEvent() {
   if (open.value) {
-    open.value = !open.value;
+    open.value = false;
     input?.value.blur();
-
+    clearValues();
     document.removeEventListener('click', documentClick);
   }
 }
 
 function handleEscapeEvent() {
-  open.value = false;
-  input?.value.blur();
-  document.removeEventListener('click', documentClick);
+  if (open.value) {
+    open.value = false;
+    input?.value.blur();
+    clearValues();
+    document.removeEventListener('click', documentClick);
+  }
 }
 
 function handleArrowDown() {
@@ -165,8 +177,8 @@ function onInput() {
         console.log(searchedCoin);
 
         if (searchedCoin) {
-          currentItem.value = 0;
-          activeScrollItem = 0;
+          clearValues();
+          //TODO after interceptor implementation remove
           axios
             .post('http://localhost:3030/id', searchedCoin)
             .then((res) => {
@@ -204,8 +216,8 @@ function onInput() {
 onMounted(() => {
   window.addEventListener('keydown', documentKey);
   timeout.value = setTimeout(() => {
+    //TODO after interceptor implementation remove
     loading.value = true;
-
     axios
       .post('http://localhost:3030/id', { id: 'bitcoin', symbol: 'btc' })
       .then((res) => {
@@ -227,6 +239,10 @@ onMounted(() => {
       });
   }, 500);
 });
+
+function onOpen() {
+  emit(buttonRef.value, 'click:open')
+}
 </script>
 
 <template>
@@ -247,6 +263,7 @@ onMounted(() => {
       class="search__container-key"
       @click="selectInput($event)"
     />
+   
     <div
       :class="
         open
@@ -277,6 +294,7 @@ onMounted(() => {
             v-for="(coin, index) in coins.data"
             :currentItem="index"
             :key="index"
+            @click="selectedItem"
           >
             <div
               class="search__container-list-item-container"
@@ -317,7 +335,7 @@ onMounted(() => {
               <div class="search__container-list-current--container">
                 <div
                   :class="
-                      Number(coin?.percentage) > 0
+                    Number(coin?.percentage) > 0
                       ? 'positive'
                       : Number(coin?.percentage) < 0
                       ? 'negative'
@@ -325,7 +343,8 @@ onMounted(() => {
                   "
                   class="search__container-list-current--percentage"
                 >
-                  {{ coin?.percentage }} {{ coin?.percentage !== undefined ? '%' : '----' }}
+                  {{ coin?.percentage }}
+                  {{ coin?.percentage !== undefined ? '%' : '----' }}
                 </div>
               </div>
             </div>
@@ -364,6 +383,7 @@ onMounted(() => {
     height: 5rem;
     border-radius: 1rem;
     border: none;
+    padding-left: 6rem;
   }
 
   &-open {
@@ -412,7 +432,7 @@ onMounted(() => {
     -webkit-tap-highlight-color: transparent;
     overflow: auto;
     overflow-x: hidden;
-    max-height: 21rem;
+    max-height: 33rem;
     border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
 
@@ -512,13 +532,16 @@ onMounted(() => {
       &--base {
         display: flex;
       }
+      &-active {
+        background-color: $white-2;
+      }
 
       &--target {
         height: 2.5rem;
         position: relative;
         margin-right: 2rem;
         border-radius: 50%;
-        background: $white;
+        background-color: $white;
       }
 
       &--baseImg {
@@ -537,15 +560,11 @@ onMounted(() => {
         font-size: 1.5rem;
         line-height: 1.71429;
         text-overflow: ellipsis;
-        margin: 1rem;
+        margin: 0.7rem;
       }
 
       &--base {
         letter-spacing: 0.1rem;
-      }
-
-      &-active {
-        background-color: $white-5;
       }
     }
   }
@@ -564,6 +583,22 @@ onMounted(() => {
     margin: 1rem;
     color: $white;
   }
+}
+
+
+@media (min-width: $breakpoint_small) {
+  .search__container-input{
+    padding-left: 1rem;
+  }
+  .search__container-list{
+    max-height: 22rem
+  }
+  .search__container-list-current--base,
+  .search__container-list-current--price,
+  .search__container-list-current--percentage {
+    margin: 1rem;
+  }
+
 }
 
 @keyframes topToBottom {
