@@ -560,7 +560,7 @@ function onOpen() {
         font-size: 1.5rem;
         line-height: 1.71429;
         text-overflow: ellipsis;
-        margin: 0.7rem;
+        margin: 0.6rem;
       }
 
       &--base {
