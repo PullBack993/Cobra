@@ -4,17 +4,29 @@ import { ref, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import bgp from '../assets/BaseIcons/bgp.jpeg';
 
-const isToggle = ref(true);
+const isToggle = ref(false);
 const dark = ref(true);
-const displayType = ref('')
-
+const opacity = ref('');
 const store = useStore();
+const screenSize = ref(null);
+const width = ref('');
 
 const toggle = () => {
   isToggle.value = !isToggle.value;
+  console.log(isToggle.value);
   if (isToggle.value === true) {
+    if (screenSize.value < 768) {
+      width.value = '8rem';
+      opacity.value = '100';
+      document.dispatchEvent(new Event(''));
+    }
     document.addEventListener('click', documentClick);
   } else {
+    if (screenSize.value < 768) {
+      console.log(opacity.value);
+      width.value = '0rem';
+      opacity.value = '0';
+    }
     destroyClickEvent();
   }
 };
@@ -30,12 +42,11 @@ const switchTheme = () => {
   }
 };
 ////
-displayType.value = 'flex';
-console.log(displayType.value);
 
 function documentClick() {
   document.onclick = (e) => {
     e.target.appendClass = 'active';
+    console.log(e.target.className);
     if (
       e.target.className === 'sidebar-btn' ||
       e.target.className === 'sidebar is-expand' ||
@@ -45,11 +56,17 @@ function documentClick() {
       e.target.className === 'material-symbols-outlined dark' ||
       e.target.className === 'theme dark-icon' ||
       e.target.className === 'theme light-icon' ||
-      e.target.className === 'sidebar darkUnActive is-expand'
+      e.target.className === 'sidebar darkUnActive is-expand' ||
+      e.target.className === 'search__lines' ||
+      e.target.className === 'search__lines-icon'
     ) {
       return;
     }
     isToggle.value = false;
+    if (screenSize.value < 768 && isToggle.value === false) {
+      opacity.value = '0';
+      width.value = '0rem';
+    }
     destroyClickEvent();
   };
 }
@@ -63,31 +80,35 @@ function tabEvent(event) {
     return;
   }
 }
+// change to store
+function onScreenResize() {
+  window.addEventListener('resize', () => {
+    updateScreenWidth();
+  });
+}
+
+function updateScreenWidth() {
+  screenSize.value = window.innerWidth;
+  console.log(screenSize.value);
+  if (screenSize.value < 768) {
+    opacity.value = '0';
+    width.value = '0rem';
+  }
+}
 
 onMounted(() => {
   dark.value = store.state.themeDark;
+  updateScreenWidth();
+  onScreenResize();
 });
-
-function onOpen() {
-  if (isToggle.value === true) {
-    isToggle.value = false;
-    destroyClickEvent();
-    console.log(isToggle.value);
-
-    return;
-  } else {
-    isToggle.value = true;
-    document.addEventListener('click', documentClick);
-    console.log(isToggle.value);
-  }
-}
 </script>
 
 <template>
-  <div class="search__lines" @click="toggle()">
+  <div class="search__lines" @click="toggle($event)">
     <span class="search__lines-icon">&nbsp;</span>
   </div>
   <aside
+    v-bind:style="{ opacity: opacity, width: width }"
     class="sidebar"
     :class="[
       { darkUnActive: dark },
@@ -219,7 +240,7 @@ function onOpen() {
   width: 8rem;
   height: 100vh;
   max-height: 100vh;
-  z-index: 999;
+  z-index: 99;
   flex-direction: column;
   position: fixed;
   overflow: hidden;
@@ -443,11 +464,9 @@ function onOpen() {
   cursor: pointer;
   height: 50%;
   width: 6%;
-  pointer-events: auto;
-  z-index: 20;
+  z-index: 99;
   &-icon {
     display: block;
-    z-index: 10;
     cursor: pointer;
 
     &,
