@@ -13,7 +13,6 @@ const width = ref('');
 
 const toggle = () => {
   isToggle.value = !isToggle.value;
-  console.log(isToggle.value);
   if (isToggle.value === true) {
     if (screenSize.value < 768) {
       width.value = '8rem';
@@ -23,7 +22,6 @@ const toggle = () => {
     document.addEventListener('click', documentClick);
   } else {
     if (screenSize.value < 768) {
-      console.log(opacity.value);
       width.value = '0rem';
       opacity.value = '0';
     }
@@ -46,7 +44,6 @@ const switchTheme = () => {
 function documentClick() {
   document.onclick = (e) => {
     e.target.appendClass = 'active';
-    console.log(e.target.className);
     if (
       e.target.className === 'sidebar-btn' ||
       e.target.className === 'sidebar is-expand' ||
@@ -89,10 +86,13 @@ function onScreenResize() {
 
 function updateScreenWidth() {
   screenSize.value = window.innerWidth;
-  console.log(screenSize.value);
   if (screenSize.value < 768) {
     opacity.value = '0';
     width.value = '0rem';
+  }else {
+    width.value = '8rem';
+    opacity.value = '100';
+    document.dispatchEvent(new Event(''));
   }
 }
 
