@@ -11,6 +11,6 @@ async function start() {
   await databaseConfig(app);
   routerConfig(app);
 
-  const PORT = process.env.PORT || 3000;
+  const PORT = Number(process.env.PORT)
   app.listen(PORT, () => console.log(`App start ==> http://localhost:3000`));
 }
