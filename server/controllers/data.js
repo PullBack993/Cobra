@@ -1,9 +1,23 @@
-const dataController = require("express").Router();
+const router = require("express").Router();
 const CoinGecko = require("coingecko-api");
+const Web3 = require("web3");
 const { SEARCH_VALUES: searchedTarget } = require("../helpers/utils");
 const coinsImages = require("../helpers/coinsImages.json");
 
-dataController.post("/id", async (req, res) => {
+router.post("/balance", async (req, res) => {
+  const address = req.body.name;
+  const web3 = new Web3(
+    new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/180f2e484a334d569d583c2019619046")
+  );
+  getBalance(address);
+
+  async function getBalance(address) {
+    const balance = await web3.eth.getBalance(address);
+    console.log(`Balance of address ${address}:`, web3.utils.fromWei(balance, "ether"));
+  }
+});
+
+router.post("/id", async (req, res) => {
   const CoinGeckoClient = new CoinGecko();
   const coinSymbol = req.body.symbol.toUpperCase();
   let coinName = req.body.id;
@@ -36,9 +50,9 @@ dataController.post("/id", async (req, res) => {
           price = data.data.market_data.current_price.usd;
         }
         let target = { target: "USD" };
-         let baseImage = coinsImages.filter((coin) => {
-           if (coin.symbol === 'USD') return coin.image;
-         });
+        let baseImage = coinsImages.filter((coin) => {
+          if (coin.symbol === "USD") return coin.image;
+        });
         return res.status(200).json({
           data: [{ base: coinSymbol, price: price, ...target, ...resData, baseImage }],
           image: data.data.image,
@@ -115,4 +129,4 @@ function removeDuplicateCoins(coins) {
   return uniqueData;
 }
 
-module.exports = dataController;
+module.exports = router;

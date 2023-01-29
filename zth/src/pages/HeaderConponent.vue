@@ -1,13 +1,18 @@
 <script setup>
 import { onMounted, ref } from 'vue';
-import DropdownInputComponentVue from '../components/DropdownInputComponent.vue';
+import DropdownInputComponent from '../components/DropdownInputComponent.vue';
+import MetaMask from '../components/MetaMask.vue';
 </script>
 
 <template>
   <header>
     <div class="main">
       <div class="search">
-        <DropdownInputComponentVue />
+        <DropdownInputComponent />
+      </div>
+      <div class="meta-mask">
+        <MetaMask />
+
       </div>
     </div>
   </header>
@@ -25,6 +30,8 @@ import DropdownInputComponentVue from '../components/DropdownInputComponent.vue'
 .main {
   border-bottom: 0.1rem solid $main-purple;
   height: 9.5rem;
+  display:flex;
+  justify-content: space-between;
   .search {
     margin: auto;
     border-radius: 0.6rem;
