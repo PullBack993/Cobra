@@ -1,8 +1,8 @@
 require("dotenv/config");
 const express = require("express");
-const databaseConfig = require("./config/database");
-const expressConfig = require("./config/express");
-const routerConfig = require("./config/routes");
+const databaseConfig = require("./src/config/database");
+const expressConfig = require("./src/config/express");
+const routerConfig = require("./src/config/routes");
 
 start();
 async function start() {
@@ -11,6 +11,6 @@ async function start() {
   await databaseConfig(app);
   routerConfig(app);
 
-  const PORT = Number(process.env.PORT)
+  const PORT = process.env.PORT
   app.listen(PORT, () => console.log(`App start ==> http://localhost:3000`));
 }
