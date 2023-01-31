@@ -89,7 +89,7 @@ function updateScreenWidth() {
   if (screenSize.value < 768) {
     opacity.value = '0';
     width.value = '0rem';
-  }else {
+  } else {
     width.value = '8rem';
     opacity.value = '100';
     document.dispatchEvent(new Event(''));
@@ -458,6 +458,7 @@ onMounted(() => {
   }
 }
 .search__lines {
+  animation: leftToRight 0.15s;
   position: absolute;
   top: 24%;
   left: 10%;
@@ -507,8 +508,17 @@ onMounted(() => {
   .sidebar {
     display: flex;
   }
+  .search__lines {
+    display: none;
+  }
   .search__lines-icon {
     display: none;
   }
+}
+
+@keyframes leftToRight {
+  0% {
+      left: 0;
+    }
 }
 </style>

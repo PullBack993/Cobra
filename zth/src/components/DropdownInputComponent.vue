@@ -180,7 +180,7 @@ function onInput() {
           clearValues();
           //TODO after interceptor implementation remove
           axios
-            .post('http://localhost:3030/id', searchedCoin)
+            .post('http://localhost:3000/id', searchedCoin)
             .then((res) => {
               if (!res.data) {
                 loading.value = false;
@@ -219,7 +219,7 @@ onMounted(() => {
     //TODO after interceptor implementation remove
     loading.value = true;
     axios
-      .post('http://localhost:3030/id', { id: 'bitcoin', symbol: 'btc' })
+      .post('http://localhost:3000/id', { id: 'bitcoin', symbol: 'btc' })
       .then((res) => {
         if (!res.data) {
           loading.value = false;
