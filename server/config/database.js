@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 require("dotenv/config");
 
-//TODO after implement atlas change it
+// TODO after implement atlas change it
 const dbName = "zth";
 const connectionString = `mongodb://localhost:27017/${dbName}`;
 module.exports = async (app) => {

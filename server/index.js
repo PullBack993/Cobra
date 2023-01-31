@@ -1,8 +1,8 @@
 require("dotenv/config");
 const express = require("express");
-const databaseConfig = require("./src/config/database");
-const expressConfig = require("./src/config/express");
-const routerConfig = require("./src/config/routes");
+const databaseConfig = require("./config/database");
+const expressConfig = require("./config/express");
+const routerConfig = require("./config/routes");
 
 start();
 async function start() {
