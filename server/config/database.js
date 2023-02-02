@@ -2,8 +2,7 @@ const mongoose = require("mongoose");
 require("dotenv/config");
 
 // TODO after implement atlas change it
-const dbName = "zth";
-const connectionString = `mongodb://localhost:27017/${dbName}`;
+const connectionString = `mongodb://127.0.0.1:27017/zth`;
 module.exports = async (app) => {
   try {
     mongoose.set("strictQuery", false);
