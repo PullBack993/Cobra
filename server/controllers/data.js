@@ -6,16 +6,16 @@ const coinsImages = require("../helpers/coinsImages.json");
 const https = require("https");
 
 router.post("/balance", async (req, res) => {
-  // const address = req.body.name;
-  // const web3 = new Web3(
-  //   new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/180f2e484a334d569d583c2019619046")
-  // );
-  // getBalance(address);
+  const address = req.body.name;
+  const web3 = new Web3(
+    new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/180f2e484a334d569d583c2019619046")
+  );
+  getBalance(address);
 
-  // async function getBalance(address) {
-  //   const balance = await web3.eth.getBalance(address);
-  //   console.log(`Balance of address ${address}:`, web3.utils.fromWei(balance, "ether"));
-  // }
+  async function getBalance(address) {
+    const balance = await web3.eth.getBalance(address);
+    console.log(`Balance of address ${address}:`, web3.utils.fromWei(balance, "ether"));
+  }
   https.get("https://api.ipify.org?format=json", (resp) => {
     resp.setEncoding("utf8");
     let userIp = "";
@@ -24,29 +24,27 @@ router.post("/balance", async (req, res) => {
       console.log("My public IP address is: " + userIp);
     });
     resp.on("end", () => {
-        const parsedData = JSON.parse(userIp);
-      console.log("ipapi", `https://ipapi.co/${parsedData.ip}/json`);
-      https.get(`https://ipapi.co/${parsedData.ip}/json/`, (resp) => {
+      const parsedData = JSON.parse(userIp);
+      const options = {
+        path: `/${parsedData.ip}/json/`,
+        host: 'ipapi.co',
+        port: 443,
+        headers: {'User-Agent': 'nodejs-ipapi-v1.02'}
+      }
+      https.get(options, (resp) => {
         let data = "";
         resp.on("data", (chunk) => {
           data += chunk;
         });
         resp.on("end", () => {
-          console.log(data);
+          data = JSON.parse(data)
+          console.log(data)
         });
       });
     });
     res.status(200).json({ true: true})
   });
-  // https.get(` https://ipapi.co/91.114.215.195/json/`, (res) => {
-  //   let data = "";
-  //   res.on("data", (chunk) => {
-  //     data += chunk;
-  //   });
-  //   res.on("end", () => {
-  //     console.log(data);
-  //   });
-  // });
+
 });
 
 router.post("/id", async (req, res) => {

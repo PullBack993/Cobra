@@ -35,7 +35,7 @@ function getLocation() {
     .then((res) => {
       console.log(res.data);
     })
-    .catch((err) => {
+.catch((err) => {
       console.log(err);
     });
 
