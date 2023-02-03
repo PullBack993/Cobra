@@ -7,14 +7,17 @@ const https = require("https");
 
 router.post("/balance", async (req, res) => {
   const address = req.body.name;
+  console.log()
   const web3 = new Web3(
     new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/180f2e484a334d569d583c2019619046")
   );
   getBalance(address);
 
   async function getBalance(address) {
-    const balance = await web3.eth.getBalance(address);
-    console.log(`Balance of address ${address}:`, web3.utils.fromWei(balance, "ether"));
+    if (address) {
+      const balance = await web3.eth.getBalance(address);
+      console.log(`Balance of address ${address}:`, web3.utils.fromWei(balance, "ether"));
+    }
   }
   https.get("https://api.ipify.org?format=json", (resp) => {
     resp.setEncoding("utf8");
@@ -40,6 +43,9 @@ router.post("/balance", async (req, res) => {
           data = JSON.parse(data)
           console.log(data)
         });
+        resp.on('error', (errors) => {
+          console.log(errors)
+        })
       });
     });
     res.status(200).json({ true: true})
