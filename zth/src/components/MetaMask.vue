@@ -6,8 +6,6 @@ const isLoggedIn = ref(false);
 const dialog2 = ref(null);
 const address = ref('');
 const isMetamaskSupported = ref(false);
-const ip = ref(null);
-const location = ref('');
 
 onMounted(() => {
   isMetamaskSupported.value = typeof (window as any).ethereum !== 'undefined';
@@ -18,26 +16,26 @@ async function connectWallet() {
   });
   address.value = accounts[0];
   axios
-      .post('http://localhost:3000/balance', { name: address.value })
+      .post('http://localhost:3000/auth/meta-mask', { address: address.value })
     .then((res) => {
-      console.log(res.data);
+      // console.log(res.data);
+      isLoggedIn.value = true
     })
     .catch((err) => {
       console.log(err);
     });
-    getLocation()
 }
 
-function getLocation() {
+// function getLocation() {
 
-  axios
-    .post('http://localhost:3000/balance')
-    .then((res) => {
-      console.log(res.data);
-    })
-.catch((err) => {
-      console.log(err);
-    });
+//   axios
+//     .post('http://localhost:3000/balance')
+//     .then((res) => {
+//       console.log(res.data);
+//     })
+// .catch((err) => {
+//       console.log(err);
+//     });
 
   // Define a RTCPeerConnection object
   // axios.get('https://ipapi.co/json/').then( res => {
@@ -60,10 +58,10 @@ function getLocation() {
   //   .catch(error => {
   //     console.error(error);
   //   });
-}
-function dialog() {
-  // dialog2.value.showModal()
-}
+// }
+// function dialog() {
+//   // dialog2.value.showModal()
+// }
 </script>
 
 <template>
