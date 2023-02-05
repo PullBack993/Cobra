@@ -18,8 +18,9 @@ async function connectWallet() {
   axios
       .post('http://localhost:3000/auth/meta-mask', { address: address.value })
     .then((res) => {
-      // console.log(res.data);
+      console.log(res);
       isLoggedIn.value = true
+      localStorage.setItem('token', res.data.ethHash);
     })
     .catch((err) => {
       console.log(err);

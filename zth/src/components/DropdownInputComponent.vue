@@ -1,9 +1,8 @@
 <script setup>
 import { onMounted, ref, nextTick } from 'vue';
-import dataCoins from './data/coins.json';
 import axios from 'axios';
 import HorizontalEllipsisSpinner from './utils/HorizontalEllipsisSpinner.vue';
-const allCoins = dataCoins;
+// const allCoins = dataCoins;
 const open = ref(false);
 const currentItem = ref(0);
 let activeScrollItem = 0;
@@ -18,6 +17,7 @@ let loading = ref(false);
 let error = ref(false);
 const emit = defineEmits(['click:open'])
 const buttonRef = ref(null);
+
 
 const selectedItem = () => {
   open.value = !open.value;
@@ -164,8 +164,10 @@ function onInput() {
     if (timeout?.value === 0 || searchParams?.value.length <= 2) {
       loading.value = false;
     }
-    timeout.value = setTimeout(() => {
+    timeout.value = setTimeout(async () => {
       if (searchParams?.value.length >= 3) {
+        const { default: allCoins } = await import('./data/coins.json');
+        console.log(allCoins)
         let searchedCoin = allCoins.find((coin, index) => {
           if (
             coin?.id === searchParams.value.toLowerCase() ||
@@ -263,7 +265,7 @@ function onOpen() {
       class="search__container-key"
       @click="selectInput($event)"
     />
-   
+
     <div
       :class="
         open
@@ -585,20 +587,18 @@ function onOpen() {
   }
 }
 
-
 @media (min-width: $breakpoint_small) {
-  .search__container-input{
+  .search__container-input {
     padding-left: 1rem;
   }
-  .search__container-list{
-    max-height: 22rem
+  .search__container-list {
+    max-height: 22rem;
   }
   .search__container-list-current--base,
   .search__container-list-current--price,
   .search__container-list-current--percentage {
     margin: 1rem;
   }
-
 }
 
 @keyframes topToBottom {

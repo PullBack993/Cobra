@@ -1,19 +1,9 @@
-import { createStore } from "vuex";
+import { defineStore } from 'pinia';
 
-export const state = () => {
-  return {
+export const useGlobalStore = defineStore('globalStore', {
+  state: () => ({
     themeDark: false,
-  };
-};
+  }),
 
-export const mutations = {
-  TOGGLE(state) {
-    state.themeDark = !state.themeDark;
-  },
-};
+})
 
-const store = createStore({
-  state,
-  mutations,
-});
-export default store;

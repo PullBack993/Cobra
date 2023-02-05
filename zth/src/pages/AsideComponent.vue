@@ -3,6 +3,7 @@ import { RouterLink } from 'vue-router';
 import { ref, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import bgp from '../assets/BaseIcons/bgp.jpeg';
+import { useGlobalStore } from '../store/index'
 
 const isToggle = ref(false);
 const dark = ref(true);
@@ -30,8 +31,8 @@ const toggle = () => {
 };
 
 const switchTheme = () => {
-  store.commit('TOGGLE');
-  dark.value = store.state.themeDark;
+  useGlobalStore.themeDark = !useGlobalStore.themeDark;
+  dark.value = useGlobalStore.themeDark;
   if (dark.value) {
     document.body.style.background = 'white';
   } else {
@@ -97,7 +98,7 @@ function updateScreenWidth() {
 }
 
 onMounted(() => {
-  dark.value = store.state.themeDark;
+  dark.value = useGlobalStore.themeDark;
   updateScreenWidth();
   onScreenResize();
 });
