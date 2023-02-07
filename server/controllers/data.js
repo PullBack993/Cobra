@@ -3,53 +3,6 @@ const router = require("express").Router();
 const CoinGecko = require("coingecko-api");
 const { SEARCH_VALUES: searchedTarget } = require("../helpers/utils");
 const coinsImages = require("../helpers/coinsImages.json");
-const https = require("https");
-
-// router.post("/balance", async (req, res) => {
-//   const address = req.body.name;
-//   console.log();
-//   const web3 = new Web3(new Web3.providers.HttpProvider(process.env.WEB3));
-//   getBalance(address);
-
-//   async function getBalance(address) {
-//     if (address) {
-//       const balance = await web3.eth.getBalance(address);
-//       console.log(`Balance of address ${address}:`, web3.utils.fromWei(balance, "ether"));
-//       // ether;
-//     }
-//   }
-//   https.get(process.env.IPAPIURL, (resp) => {
-//     resp.setEncoding("utf8");
-//     let userIp = "";
-//     resp.on("data", (chunk) => {
-//       userIp += chunk;
-//       console.log("My public IP address is: " + userIp);
-//     });
-//     resp.on("end", () => {
-//       const parsedData = JSON.parse(userIp);
-//       const options = {
-//         path: `/${parsedData.ip}/json/`,
-//         host: process.env.HOSTIPAPI,
-//         port: process.env.PORTIPAPI,
-//         headers: { "User-Agent": "nodejs-ipapi-v1.02" },
-//       };
-//       https.get(options, (resp) => {
-//         let data = "";
-//         resp.on("data", (chunk) => {
-//           data += chunk;
-//         });
-//         resp.on("end", () => {
-//           data = JSON.parse(data);
-//           console.log(data);
-//         });
-//         resp.on("error", (errors) => {
-//           console.log(errors);
-//         });
-//       });
-//     });
-//     res.status(200).json({ true: true });
-//   });
-// });
 
 router.post("/id", async (req, res) => {
   const CoinGeckoClient = new CoinGecko();

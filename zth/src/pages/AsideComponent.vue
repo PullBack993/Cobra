@@ -1,14 +1,13 @@
 <script setup>
 import { RouterLink } from 'vue-router';
 import { ref, onMounted } from 'vue';
-import { useStore } from 'vuex';
 import bgp from '../assets/BaseIcons/bgp.jpeg';
-import { useGlobalStore } from '../store/index'
+import { useGlobalStore } from '../store/global'
 
 const isToggle = ref(false);
 const dark = ref(true);
 const opacity = ref('');
-const store = useStore();
+const store = useGlobalStore();
 const screenSize = ref(null);
 const width = ref('');
 
@@ -31,8 +30,8 @@ const toggle = () => {
 };
 
 const switchTheme = () => {
-  useGlobalStore.themeDark = !useGlobalStore.themeDark;
-  dark.value = useGlobalStore.themeDark;
+  store.themeDark = !store.themeDark;
+  dark.value = store.themeDark;
   if (dark.value) {
     document.body.style.background = 'white';
   } else {
@@ -98,7 +97,7 @@ function updateScreenWidth() {
 }
 
 onMounted(() => {
-  dark.value = useGlobalStore.themeDark;
+  dark.value = store.themeDark;
   updateScreenWidth();
   onScreenResize();
 });

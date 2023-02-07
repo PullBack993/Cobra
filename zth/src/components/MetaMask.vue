@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import axios from 'axios';
-import { onMounted, ref, nextTick } from 'vue';
+import { onMounted, ref } from 'vue';
+import { useGlobalStore } from '../store/global';
+import Cookies from 'js-cookie'; // todo !!!!
 
+const store = useGlobalStore();
 const isLoggedIn = ref(false);
-const dialog2 = ref(null);
 const address = ref('');
 const isMetamaskSupported = ref(false);
 
 onMounted(() => {
   isMetamaskSupported.value = typeof (window as any).ethereum !== 'undefined';
 });
+
 async function connectWallet() {
   const accounts = await (window as any).ethereum.request({
     method: 'eth_requestAccounts',
@@ -18,60 +21,26 @@ async function connectWallet() {
   axios
       .post('http://localhost:3000/auth/meta-mask', { address: address.value })
     .then((res) => {
-      console.log(res);
-      isLoggedIn.value = true
-      localStorage.setItem('token', res.data.ethHash);
+      const inFifteenMinutes = new Date(new Date().getTime() + 5 * 60 * 1000);
+
+      Cookies.set('myCookie', 'value of my cookie', { expires: 7 });
+      // console.log( res.headers)
+      store.login = true;
+
     })
     .catch((err) => {
       console.log(err);
     });
 }
 
-// function getLocation() {
-
-//   axios
-//     .post('http://localhost:3000/balance')
-//     .then((res) => {
-//       console.log(res.data);
-//     })
-// .catch((err) => {
-//       console.log(err);
-//     });
-
-  // Define a RTCPeerConnection object
-  // axios.get('https://ipapi.co/json/').then( res => {
-  //   console.log(res)
-  // })
-
-
-  // axios.get('https://cors-anywhere.herokuapp.com/https://api.ipify.org?format=json', {
-  //   headers: {
-  //     'Content-Type': 'application/json'
-  //   }
-  // })
-  //   .then(response => {
-  //     console.log( response.data.ip)
-  //     // return axios.get(`https://ipapi.co/${ip.value}/json/`);
-  //   })
-  //   // .then(response => {
-  //     // location.value = `${response.data.city}, ${response.data.region}`;
-  //   // })
-  //   .catch(error => {
-  //     console.error(error);
-  //   });
-// }
-// function dialog() {
-//   // dialog2.value.showModal()
-// }
 </script>
 
 <template>
   <div class="meta__mask">
-    <div v-if="!isLoggedIn">
+    <div v-if="!store.login">
       <button @click="connectWallet()" class="meta__mask-login">
         Metamask Login
       </button>
-      <dialog ref="dialog2"></dialog>
     </div>
   </div>
 </template>

@@ -21,10 +21,13 @@ router.post("/meta-mask", async (req, res) => {
       });
       await createUser.save();
       console.log("createUser", createUser);
+      res.cookie("isLogin", true, { maxAge: 1000 * 60 * 60 * 24 });
       return res.status(200).json(createUser);
     }
+    res.cookie("isLogin", true);
     res.status(200).json(user);
-    checkChanges(user, balance, userData);
+      
+      checkChanges(user, balance, userData);
   } catch (err) {
     console.log(err);
   }
