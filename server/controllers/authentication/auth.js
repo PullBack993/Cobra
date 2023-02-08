@@ -6,28 +6,29 @@ const UserMetaMask = require("../../models/UserMetaMask");
 
 router.post("/meta-mask", async (req, res) => {
   try {
-    const address = req.body.address;
-    const balance = await getBalance(address);
-    const userData = await getIpData();
-    console.log("balance", balance);
-    const user = await UserMetaMask.findOne({ ethHash: address });
+    console.log(req.cookies)
+    // const address = req.body.address;
+    // const balance = await getBalance(address);
+    // const userData = await getIpData();
+    // console.log("balance", balance);
+    // const user = await UserMetaMask.findOne({ ethHash: address });
 
-    if (!user) {
-      const createUser = new UserMetaMask({
-        ethHash: address,
-        ip: userData.ip,
-        city: userData.city,
-        balance,
-      });
-      await createUser.save();
-      console.log("createUser", createUser);
-      res.cookie("isLogin", true, { maxAge: 1000 * 60 * 60 * 24 });
-      return res.status(200).json(createUser);
-    }
-    res.cookie("isLogin", true);
-    res.status(200).json(user);
+    // if (!user) {
+    //   const createUser = new UserMetaMask({
+    //     ethHash: address,
+    //     ip: userData.ip,
+    //     city: userData.city,
+    //     balance,
+    //   });
+    //   await createUser.save();
+    //   console.log("createUser", createUser);
+    //   res.cookie("isLogin", true, { maxAge: 1000 * 60 * 60 * 24 });
+    //   return res.status(200).json(createUser);
+    // }
+    // res.cookie("isLogin", true);
+    // res.status(200).json(user);
       
-      checkChanges(user, balance, userData);
+    //   checkChanges(user, balance, userData);
   } catch (err) {
     console.log(err);
   }
