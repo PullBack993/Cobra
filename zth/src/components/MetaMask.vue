@@ -14,23 +14,27 @@ onMounted(() => {
 });
 
 async function connectWallet() {
-console.log(document.cookie)
 
-  // const accounts = await (window as any).ethereum.request({
-  //   method: 'eth_requestAccounts',
-  // });
-  // address.value = accounts[0];
-  // axios
-  //     .post('http://localhost:3000/auth/meta-mask', { address: address.value })
-  //   .then((res) => {
-  //     const one = new Date(new Date().getTime() + 60 * 60 * 1000);
+  // const a = Cookies.get('myCookie')
+  // console.log(a)
+  // axios.post('http://localhost:3000/auth/', {withCredentials: true}).then((res) => {
+  //   console.log(res)
+  // })
+  const accounts = await (window as any).ethereum.request({
+    method: 'eth_requestAccounts',
+  });
+  address.value = accounts[0];
+  axios
+    .post('http://localhost:3000/auth/meta-mask', { address: address.value })
+    .then((res) => {
+      const one = new Date(new Date().getTime() + 61 * 60 * 1000);
 
-  //     Cookies.set('myCookie', 'value of my cookie', { expires: one });
-  //     store.login = true;
-  //   })
-  //   .catch((err) => {
-  //     console.log(err);
-  //   });
+      Cookies.set('myCookie', address.value, { expires: one });
+      store.login = true;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 }
 
 </script>

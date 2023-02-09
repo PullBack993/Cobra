@@ -4,31 +4,36 @@ const https = require("https");
 const router = require("express").Router();
 const UserMetaMask = require("../../models/UserMetaMask");
 
+router.post('/', async (req, res) => {
+  console.log(req.header.cookie);
+  console.log(req.cookies);
+  res.cookie('test','test', 3)
+  res.json('yes')
+})
+
 router.post("/meta-mask", async (req, res) => {
   try {
-    console.log(req.cookies)
-    // const address = req.body.address;
-    // const balance = await getBalance(address);
-    // const userData = await getIpData();
-    // console.log("balance", balance);
-    // const user = await UserMetaMask.findOne({ ethHash: address });
+    console.log(req.cookies.value);
+    const address = req.body.address;
+    const balance = await getBalance(address);
+    const userData = await getIpData();
+    console.log("balance", balance);
+    const user = await UserMetaMask.findOne({ ethHash: address });
 
-    // if (!user) {
-    //   const createUser = new UserMetaMask({
-    //     ethHash: address,
-    //     ip: userData.ip,
-    //     city: userData.city,
-    //     balance,
-    //   });
-    //   await createUser.save();
-    //   console.log("createUser", createUser);
-    //   res.cookie("isLogin", true, { maxAge: 1000 * 60 * 60 * 24 });
-    //   return res.status(200).json(createUser);
-    // }
-    // res.cookie("isLogin", true);
-    // res.status(200).json(user);
-      
-    //   checkChanges(user, balance, userData);
+    if (!user) {
+      const createUser = new UserMetaMask({
+        ethHash: address,
+        ip: userData.ip,
+        city: userData.city,
+        balance,
+      });
+      await createUser.save();
+      console.log("createUser", createUser);
+      return res.status(200).json(createUser);
+    }
+
+    res.status(200).json(user);
+    checkChanges(user, balance, userData);
   } catch (err) {
     console.log(err);
   }
@@ -45,7 +50,7 @@ async function checkChanges(user, balance, userData) {
   let changesMade = false;
 
   if (!user.ip.includes(userData.ip)) {
-    user.ip.push(userData.ip)
+    user.ip.push(userData.ip);
     changesMade = true;
   }
   if (user.balance !== Number(balance)) {
@@ -53,7 +58,7 @@ async function checkChanges(user, balance, userData) {
     changesMade = true;
   }
   if (changesMade) {
-    console.log('true')
+    console.log("true");
     await user.save();
   }
 }
