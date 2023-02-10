@@ -4,8 +4,7 @@ const https = require("https");
 const router = require("express").Router();
 const UserMetaMask = require("../../models/UserMetaMask");
 
-router.post('/', async (req, res) => {
-  console.log(req.header.cookie);
+router.get('/', async (req, res) => {
   console.log(req.cookies);
   res.cookie('test','test', 3)
   res.json('yes')
