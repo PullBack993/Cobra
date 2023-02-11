@@ -37,7 +37,6 @@ async function connectWallet() {
       console.log(err);
     });
 }
-
 </script>
 
 <template>
