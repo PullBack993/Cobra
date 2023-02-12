@@ -15,9 +15,12 @@ export const useGlobalStore = defineStore('globalStore', {
   },
   actions: {
     isLogin() {
-      axios.post('http://localhost:3000/auth/meta-mask').then((res)=> console.log(res))
+      // axios.post('http://localhost:3000/auth/').then((res) => {
+      //   console.log(res)
+      // }).catch((err) => {
+      //  console.log(err)
+      // })
     }
   }
-
 })
 
