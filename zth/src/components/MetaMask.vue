@@ -17,7 +17,7 @@ async function connectWallet() {
   // console.log(document.cookie)
   // const a = Cookies.get('myCookie')
   // console.log(a)
-  // axios.get('http://localhost:3000/auth/', {withCredentials: true}).then((res) => {
+  // axios.get('http://localhost:3000/auth/', {withCredentials: false}).then((res) => {
   //   console.log(res)
   // })
 
@@ -26,9 +26,13 @@ async function connectWallet() {
   });
   address.value = accounts[0];
   axios
-    .post('http://localhost:3000/auth/meta-mask', { address: address.value })
+    .post(
+      'http://localhost:3000/auth/meta-mask',
+      { address: address.value },
+      { withCredentials: true }
+    )
     .then((res) => {
-      const one = new Date(new Date().getTime() + 61 * 60 * 1000);
+      const one = new Date(new Date().getTime() + 1 * 60 * 1000);
 
       Cookies.set('myCookie', address.value, { expires: one });
       store.login = true;
