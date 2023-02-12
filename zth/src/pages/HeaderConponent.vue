@@ -2,14 +2,15 @@
 import { onMounted, ref } from 'vue';
 import AuthPopUpComponent from '../components/AuthPopUpComponent.vue';
 import DropdownInputComponent from '../components/DropdownInputComponent.vue';
-import MetaMask from '../components/MetaMask.vue';
 import { useGlobalStore } from '../store/global'
+
 
 const store = useGlobalStore();
 
 onMounted(() => {
-  store.isLogin()
+  store.isLogin();
 })
+
 </script>
 
 <template>

@@ -1,8 +1,6 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
-import Cookies from 'js-cookie'; 
-
 export const useGlobalStore = defineStore('globalStore', {
   state: () => ({
     themeDark: false,
@@ -15,11 +13,11 @@ export const useGlobalStore = defineStore('globalStore', {
   },
   actions: {
     isLogin() {
-      // axios.post('http://localhost:3000/auth/').then((res) => {
-      //   console.log(res)
-      // }).catch((err) => {
-      //  console.log(err)
-      // })
+      //TODO try catch
+       axios.get('http://localhost:3000/auth/', { withCredentials: true }).then((res) => {
+         console.log(res)
+         this.login = res.data.isLogin
+    })
     }
   }
 })
