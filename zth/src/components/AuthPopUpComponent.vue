@@ -48,7 +48,7 @@ const showDialog = ref(false);
 <style scoped lang="scss">
 .dialog__modal {
     &-openDialog {
-        margin-top: 3rem;
+        margin-top: 3.5rem;
         margin-right: 3rem;
         svg {
             fill: white;
@@ -167,5 +167,13 @@ const showDialog = ref(false);
 
 .form__submit:hover {
     background-color: darkblue;
+}
+
+@media (max-width: $breakpoint_small){
+  .dialog__modal-openDialog {
+    position: absolute;
+    right: 0;
+    margin-right: 5rem;
+  }
 }
 </style>

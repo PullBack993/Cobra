@@ -2,7 +2,6 @@
 import { onMounted, ref } from 'vue';
 import AuthPopUpComponent from '../components/AuthPopUpComponent.vue';
 import DropdownInputComponent from '../components/DropdownInputComponent.vue';
-import MetaMask from '../components/MetaMask.vue';
 import { useGlobalStore } from '../store/global'
 
 const store = useGlobalStore();
@@ -35,6 +34,16 @@ onMounted(() => {
   background-color: $input-bg-dark;
   border-radius: 0.5rem;
 }
+
+.dialog__modal-openDialog {
+  width: 3rem;
+  position: absolute;
+  right: 0;
+  margin-right: 1rem;
+  background-color: $input-bg-dark;
+  border-radius: 0.5rem;
+}
+
 .main {
   border-bottom: 0.1rem solid $main-purple;
   height: 9.5rem;
