@@ -594,10 +594,18 @@ function onOpen() {
   .search__container-list {
     max-height: 22rem;
   }
+ 
   .search__container-list-current--base,
   .search__container-list-current--price,
   .search__container-list-current--percentage {
     margin: 1rem;
+  }
+}
+
+@media (max-width: $breakpoint_small){
+  .search__container-key {
+    display: none;
+    
   }
 }
 
