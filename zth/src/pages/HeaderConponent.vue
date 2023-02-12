@@ -19,7 +19,6 @@ onMounted(() => {
         <DropdownInputComponent />
       </div>
       <div class="meta-mask">
-        <!-- <MetaMask /> -->
         <AuthPopUpComponent/>
 
       </div>
