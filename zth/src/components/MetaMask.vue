@@ -46,7 +46,7 @@ async function connectWallet() {
       <span class="meta__mask-login__icon">
         <img src="../assets/BaseIcons/metamask-icon.png" alt="icon">
       </span>
-      <span class="meta__mask-login__text">Metamask</span>
+      <span class="meta__mask-login__text">Sign in with Metamask</span>
     </button>
   </div>
 </div>
@@ -58,15 +58,13 @@ async function connectWallet() {
   &-login {
     display: flex;
     align-items: center;
-    border: 1px solid #ccc;
-    padding: 15px;
-    height: 50px;
+    padding: 5px 50px;
 
     &__icon {
       margin-right: 10px;
 
       img {
-        height: 35px;
+        height: 20px;
       }
     }
 
