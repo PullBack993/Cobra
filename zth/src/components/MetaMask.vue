@@ -45,21 +45,36 @@ async function connectWallet() {
 
 <template>
   <div class="meta__mask">
-    <div v-if="!store.login">
-      <button @click="connectWallet()" class="meta__mask-login">
-        Metamask Login
-      </button>
-    </div>
+  <div v-if="!store.login">
+    <button @click="connectWallet()" class="meta__mask-login">
+      <span class="meta__mask-login__icon">
+        <img src="../assets/BaseIcons/metamask-icon.png" alt="icon">
+      </span>
+      <span class="meta__mask-login__text">Sign in with Metamask</span>
+    </button>
   </div>
+</div>
 </template>
 
 <style scoped lang="scss">
+
 .meta__mask {
   &-login {
-    color: white;
-    width: 10rem;
-    height: 10rem;
-    margin-right: 2rem;
+    display: flex;
+    align-items: center;
+    padding: 5px 50px;
+
+    &__icon {
+      margin-right: 10px;
+
+      img {
+        height: 20px;
+      }
+    }
+
+    &__text {
+      color:white;
+    }
   }
 }
 </style>

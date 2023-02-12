@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue';
+import AuthPopUpComponent from '../components/AuthPopUpComponent.vue';
 import DropdownInputComponent from '../components/DropdownInputComponent.vue';
 import MetaMask from '../components/MetaMask.vue';
 import { useGlobalStore } from '../store/global'
@@ -18,7 +19,8 @@ onMounted(() => {
         <DropdownInputComponent />
       </div>
       <div class="meta-mask">
-        <MetaMask />
+        <!-- <MetaMask /> -->
+        <AuthPopUpComponent/>
 
       </div>
     </div>
