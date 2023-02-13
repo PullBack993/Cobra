@@ -14,13 +14,6 @@ onMounted(() => {
 });
 
 async function connectWallet() {
-  // console.log(document.cookie)
-  // const a = Cookies.get('myCookie')
-  // console.log(a)
-  // axios.get('http://localhost:3000/auth/', {withCredentials: false}).then((res) => {
-  //   console.log(res)
-  // })
-
   const accounts = await (window as any).ethereum.request({
     method: 'eth_requestAccounts',
   });

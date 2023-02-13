@@ -19,7 +19,7 @@ const showDialog = ref(false);
                     <MetaMask />
                 </button>
                 <p>Or Sign in with E-mail</p>
-                <form class="form">
+                <form class="form" v-on:submit.prevent>
                     <div class="form__field">
                         <label class="form__label">
                             <svg xmlns="http://www.w3.org/2000/svg"

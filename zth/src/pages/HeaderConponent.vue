@@ -4,11 +4,13 @@ import AuthPopUpComponent from '../components/AuthPopUpComponent.vue';
 import DropdownInputComponent from '../components/DropdownInputComponent.vue';
 import { useGlobalStore } from '../store/global'
 
+
 const store = useGlobalStore();
 
 onMounted(() => {
-  store.isLogin()
+  store.isLogin();
 })
+
 </script>
 
 <template>

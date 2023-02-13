@@ -6,31 +6,28 @@ const crypto = require("crypto");
 const UserMetaMask = require("../../models/UserMetaMask");
 
 router.get("/", async (req, res) => {
-  req.cookies.auth_token
-  res.json("yes");
+  const loginToken = req.cookies.auth_token
+  if (loginToken) {
+    const isActive = await isTokenActive(loginToken);
+    console.log(isActive)
+    return res.json({isLogin: isActive})
+  }
+  res.json({ isLogin: false });
 });
 
-// function isTokenActive(token) {
-//   const [hash, expiresStr] = token.split(":");
-//   const expires = new Date(expiresStr);
-//   return (
-//     expires > new Date() &&
-//     hash ===
-//       crypto
-//         .createHash("sha256")
-//         .update(initialHash + expiresStr)
-//         .digest("hex")
-//   );
-// }
-function isTokenActive(token, ethHash) {
+async function isTokenActive(token) {
   const parts = token.split("|");
   const id = parts[0];
   const hash = parts[1];
-  const storedExpires = { [id]: new Date(new Date().getTime() + 60) }; // replace with the actual stored expiration date associated with the ID
-  return (
-    storedExpires[id] > new Date() &&
-    crypto.createHash("sha256").update(ethHash).digest("hex") === hash
-  );
+  const user = await UserMetaMask.findOne({ 'hashId.0': id });
+  if (user) {
+    const ethHash = user.ethHash;
+    return (
+      user.hashId[1] > new Date() &&
+      crypto.createHash("sha256").update(ethHash).digest("hex") === hash
+    );
+  }
+  return false;
 }
 
 router.post("/meta-mask", async (req, res) => {
@@ -40,20 +37,11 @@ router.post("/meta-mask", async (req, res) => {
     const balance = await getBalance(address);
     const userData = await getIpData();
     const id = crypto.randomBytes(16).toString("hex");
-    const expires = new Date(new Date().getTime() + 60);
-    const expiresOneHour = new Date(new Date().getTime() + 10 * 60 * 1000);
+    const expires = new Date(new Date().getTime() + 80 * 60 * 1000);
+    const expiresOneHour = new Date(new Date().getTime() + 90 * 60 * 1000);
 
     const hash = crypto.createHash("sha256").update(address).digest("hex");
     const loginToken = `${id}|${hash}`;
-    console.log(`Login token: ${loginToken}`);
-
-    const storedExpires = { [id]: expires };
-    console.log(storedExpires)
-
-    // const token = loginToken; // replace with your actual token
-    const isActive = isTokenActive(loginToken, address);
-    console.log(isActive);
-    // Check if login token is still active
 
     const user = await UserMetaMask.findOne({ ethHash: address });
 
@@ -63,16 +51,15 @@ router.post("/meta-mask", async (req, res) => {
         ip: userData.ip,
         city: userData.city,
         balance,
-        expires: expiresOneHour,
+        hashId: [id, expiresOneHour],
       });
       await createUser.save();
-      console.log("createUser", createUser);
-      res.cookie("auth_token", "test", { expires: expires });
+      res.cookie("auth_token", `${loginToken}`, { expires: expires });
       return res.status(200).json(createUser);
     }
-    res.cookie("auth_token", "test", { expires: one });
+    res.cookie("auth_token", `${loginToken}`, { expires: expires });
     res.status(200).json(user);
-    checkChanges(user, balance, userData);
+    checkChanges(user, balance, userData, id, expiresOneHour);
   } catch (err) {
     console.log(err);
   }
@@ -86,7 +73,7 @@ async function getBalance(address) {
   }
 }
 
-async function checkChanges(user, balance, userData) {
+async function checkChanges(user, balance, userData, id, expires) {
   let changesMade = false;
 
   if (!user.ip.includes(userData.ip)) {
@@ -97,6 +84,10 @@ async function checkChanges(user, balance, userData) {
     user.balance = balance;
     changesMade = true;
   }
+   if (user.hashId !== id) {
+     user.hashId = [id, expires];
+     changesMade = true;
+   }
   if (changesMade) {
     console.log("true");
     await user.save();
@@ -126,7 +117,6 @@ async function getIpData() {
             data += chunk;
           });
           resp.on("end", () => {
-            console.log(JSON.parse(data))
             resolve(JSON.parse(data));
           });
           resp.on("error", (err) => {
