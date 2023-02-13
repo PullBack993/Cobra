@@ -8,10 +8,18 @@ const store = useGlobalStore();
 const isLoggedIn = ref(false);
 const address = ref('');
 const isMetamaskSupported = ref(false);
+const isConnected = ref((window as any).ethereum.isConnected());
+console.log(isConnected.value)
 
 onMounted(() => {
-  isMetamaskSupported.value = typeof (window as any).ethereum !== 'undefined';
+  isMetamaskSupported.value = typeof (window as any).ethereum !== 'undefined'; //false if no meta-mask
+  
 });
+
+(window as any).ethereum.on('accountsChanged', () => {
+  Cookies.remove('auth_token')
+  store.login = false;
+})
 
 async function connectWallet() {
   const accounts = await (window as any).ethereum.request({
@@ -26,7 +34,6 @@ async function connectWallet() {
     )
     .then((res) => {
       const one = new Date(new Date().getTime() + 1 * 60 * 1000);
-
       Cookies.set('myCookie', address.value, { expires: one });
       store.login = true;
     })
