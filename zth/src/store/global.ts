@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia';
 import axios from 'axios';
+import { defineStore } from 'pinia';
 
 export const useGlobalStore = defineStore('globalStore', {
   state: () => ({
@@ -20,5 +20,6 @@ export const useGlobalStore = defineStore('globalStore', {
     })
     }
   }
+  
 })
 

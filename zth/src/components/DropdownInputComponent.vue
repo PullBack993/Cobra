@@ -2,6 +2,7 @@
 import { onMounted, ref, nextTick } from 'vue';
 import axios from 'axios';
 import HorizontalEllipsisSpinner from './utils/HorizontalEllipsisSpinner.vue';
+import { useGlobalStore } from '../store/global'
 // const allCoins = dataCoins;
 const open = ref(false);
 const currentItem = ref(0);
@@ -17,6 +18,8 @@ let loading = ref(false);
 let error = ref(false);
 const emit = defineEmits(['click:open'])
 const buttonRef = ref(null);
+const store = useGlobalStore();
+const dark = ref(store.themeDark)
 
 
 const selectedItem = () => {
@@ -29,7 +32,6 @@ const selectedItem = () => {
     document.removeEventListener('click', documentKey);
   }
 };
-
 function selectInput() {
   input?.value.focus();
   if (open.value === false) {
@@ -41,7 +43,6 @@ function clearValues() {
   currentItem.value = 0;
   activeScrollItem = 0;
 }
-
 function documentClick(event) {
   if (open.value && event.target && !root.value.contains(event.target)) {
     open.value = false;
@@ -49,11 +50,9 @@ function documentClick(event) {
     document.removeEventListener('click', documentKey);
   }
 }
-
 function addClickEvent() {
   document.addEventListener('click', documentClick);
 }
-
 function documentKey(event) {
   if (event.keyCode === 70 && open.value === false) {
     open.value = true;
@@ -67,7 +66,6 @@ function scrollPosition(direction) {
     if (!itemList.value) {
       return;
     }
-
     const items = Array.from(
       // TODO change to ref
       list.value.querySelectorAll('.search__container-list-current')
@@ -76,7 +74,6 @@ function scrollPosition(direction) {
       Math.max(0, activeScrollItem + direction),
       items.length - 1
     );
-
     let top = items[activeScrollItem].offsetTop;
     console.log(top);
     if (top == 71) {
@@ -88,11 +85,9 @@ function scrollPosition(direction) {
 function between(a, b, c) {
   return a > b ? c >= b && c <= a : c >= a && c <= b;
 }
-
 function isValidKeyCode(code) {
   return between(65, 90, code) || between(97, 122, code);
 }
-
 // TODO change after implement chart => rout to chart
 function handleEnterEvent() {
   if (open.value) {
@@ -102,7 +97,6 @@ function handleEnterEvent() {
     document.removeEventListener('click', documentClick);
   }
 }
-
 function handleEscapeEvent() {
   if (open.value) {
     open.value = false;
@@ -111,7 +105,6 @@ function handleEscapeEvent() {
     document.removeEventListener('click', documentClick);
   }
 }
-
 function handleArrowDown() {
   console.log(coins.value.data.length);
   console.log(currentItem.value);
@@ -120,23 +113,19 @@ function handleArrowDown() {
     scrollPosition(1);
   }
 }
-
 function handleArrowUp() {
   if (open.value && currentItem.value > 0) {
     currentItem.value--;
     scrollPosition(-1);
   }
 }
-
 function handleTabEvent() {
   if (!open.value) {
     open.value = true;
   }
 }
-
 function documentKeyDown(event) {
   if (isValidKeyCode(event.keycode)) event.preventDefault();
-
   switch (event.key) {
     case 'Escape':
       handleEscapeEvent();
@@ -155,10 +144,8 @@ function documentKeyDown(event) {
       break;
   }
 }
-
 function onInput() {
   loading.value = true;
-
   clearTimeout(timeout?.value);
   try {
     if (timeout?.value === 0 || searchParams?.value.length <= 2) {
@@ -177,7 +164,6 @@ function onInput() {
           }
         });
         console.log(searchedCoin);
-
         if (searchedCoin) {
           clearValues();
           //TODO after interceptor implementation remove
@@ -192,7 +178,6 @@ function onInput() {
               coins.value = res.data;
               error.value = false;
               loading.value = false;
-
               console.log(res);
             })
             .catch((err) => {
@@ -203,7 +188,6 @@ function onInput() {
         } else {
           loading.value = false;
           error.value = false;
-
           coins.value = '';
         }
       }
@@ -214,8 +198,8 @@ function onInput() {
     error.value = true; // check it
   }
 }
-
 onMounted(() => {
+
   window.addEventListener('keydown', documentKey);
   timeout.value = setTimeout(() => {
     //TODO after interceptor implementation remove
@@ -241,12 +225,10 @@ onMounted(() => {
       });
   }, 500);
 });
-
 function onOpen() {
   emit(buttonRef.value, 'click:open')
 }
 </script>
-
 <template>
   <div class="search__container" ref="root">
     <input
@@ -256,7 +238,9 @@ function onOpen() {
       type="text"
       class="search__container-input"
       ref="input"
-      :class="open ? 'search__container-open' : 'search__container-close'"
+      :class="[`${open ? 'search__container-open' : 'search__container-close'}`,
+      `${ dark ? 'bg-dark': 'bg-light'}`
+    ]"
       v-model="searchParams"
     />
     <img
@@ -265,7 +249,6 @@ function onOpen() {
       class="search__container-key"
       @click="selectInput($event)"
     />
-
     <div
       :class="
         open
@@ -333,7 +316,6 @@ function onOpen() {
                   {{ coin?.price }}
                 </div>
               </div>
-
               <div class="search__container-list-current--container">
                 <div
                   :class="
@@ -367,7 +349,6 @@ function onOpen() {
     </div>
   </div>
 </template>
-
 <style scoped lang="scss">
 .positive {
   color: $chart-green;
@@ -379,7 +360,6 @@ function onOpen() {
   width: 90%;
   display: flex;
   align-items: center;
-
   &-input {
     width: 100%;
     height: 5rem;
@@ -387,16 +367,13 @@ function onOpen() {
     border: none;
     padding-left: 6rem;
   }
-
   &-open {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
   }
-
   &-close {
     border-radius: 1rem;
   }
-
   &-key {
     width: 3rem;
     position: absolute;
@@ -405,7 +382,6 @@ function onOpen() {
     background-color: $input-bg-dark;
     border-radius: 0.5rem;
   }
-
   &-dropdown {
     animation: topToBottom 0.35s ease-in;
     animation-fill-mode: forwards;
@@ -418,12 +394,10 @@ function onOpen() {
     z-index: 1;
     border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
-
     &--is-open {
       display: none;
     }
   }
-
   &-list {
     border: 0.1rem solid $input-bg-dark;
     border-top: none;
@@ -437,11 +411,9 @@ function onOpen() {
     max-height: 33rem;
     border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
-
     &::-webkit-scrollbar {
       width: 1.2rem;
     }
-
     &::-webkit-scrollbar-thumb {
       height: 5rem;
       background-color: $main-purple;
@@ -451,7 +423,6 @@ function onOpen() {
     &-info {
       display: flex;
     }
-
     &-symbol,
     &-last,
     &-change {
@@ -463,18 +434,15 @@ function onOpen() {
       text-overflow: ellipsis;
       margin: 1rem;
     }
-
     &-symbol {
       margin-left: 4rem;
     }
-
     &-last,
     &-change {
       display: flex;
       width: 100%;
       justify-content: flex-end;
     }
-
     &-container {
       display: flex;
       min-height: 2.4rem;
@@ -489,7 +457,6 @@ function onOpen() {
       border-radius: 50%;
       background: $white;
     }
-
     &-coin-name {
       margin-left: 1rem;
       display: flex;
@@ -499,7 +466,6 @@ function onOpen() {
       position: relative;
       animation: topToBottom 0.4s ease-in;
     }
-
     &-top {
       width: 95%;
       border-bottom: 0.1rem solid $main-purple-dark-5;
@@ -509,7 +475,6 @@ function onOpen() {
     &-item-container {
       display: flex;
     }
-
     //TODO check current element and index.on match should be like hover efect
     &-current {
       font-size: 2rem;
@@ -524,20 +489,17 @@ function onOpen() {
         font-weight: 500;
         font-size: 1.55rem;
       }
-
       &--container {
         display: flex;
         justify-content: flex-end;
         width: 100%;
       }
-
       &--base {
         display: flex;
       }
       &-active {
         background-color: $white-2;
       }
-
       &--target {
         height: 2.5rem;
         position: relative;
@@ -545,7 +507,6 @@ function onOpen() {
         border-radius: 50%;
         background-color: $white;
       }
-
       &--baseImg {
         height: 2.5rem;
         position: absolute;
@@ -553,7 +514,6 @@ function onOpen() {
         border-radius: 50%;
         background: $white;
       }
-
       &--base,
       &--price,
       &--percentage {
@@ -564,13 +524,11 @@ function onOpen() {
         text-overflow: ellipsis;
         margin: 0.6rem;
       }
-
       &--base {
         letter-spacing: 0.1rem;
       }
     }
   }
-
   &-spinner {
     display: flex;
     justify-content: center;
@@ -587,6 +545,12 @@ function onOpen() {
   }
 }
 
+.bg-dark {
+  background-color: black;
+}
+.bg-light {
+  background-color: wheat;
+}
 @media (min-width: $breakpoint_small) {
   .search__container-input {
     padding-left: 1rem;
@@ -601,19 +565,16 @@ function onOpen() {
     margin: 1rem;
   }
 }
-
 @media (max-width: $breakpoint_small){
   .search__container-key {
     display: none;
     
   }
 }
-
 @keyframes topToBottom {
   0% {
     opacity: 0;
   }
-
   100% {
     opacity: 1;
   }

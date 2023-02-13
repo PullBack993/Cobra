@@ -38,7 +38,7 @@ const showDialog = ref(false);
                     </div>
                     <button class="form__submit">Sign In</button>
                 </form>
-
+                <h4>Don't have an account? <button class="dialog__modal-container-signup">Sign Up</button> </h4>
                 <button class="dialog__modal-container-close" @click="showDialog = false">X</button>
             </div>
         </div>
@@ -69,6 +69,7 @@ const showDialog = ref(false);
     }
 
     &-title {
+        margin-top:3rem;
         font-size: 30px;
         color: white;
     }
@@ -78,22 +79,30 @@ const showDialog = ref(false);
         flex-direction: column;
         align-items: center;
         width: 400px;
-        height: 500px;
+        height: 570px;
         border: 0.1rem solid rgba(255, 255, 255, 0.2705882353);
         border-radius: 10px;
         background: linear-gradient(189deg, rgb(29, 12, 56) 0%, rgb(12, 20, 68) 53%, rgb(44, 16, 65) 100%);
         padding: 20px;
 
         p {
-            margin-top: 40px;
+            margin-top: 2rem;
             font-size: 12px;
             color: white;
+        }
+        h4 {
+            color:white;
         }
 
         &-metamask {
             margin: 20px auto;
             background-color: #E8821E;
 
+        }
+        &-signup{
+            cursor:pointer;
+            font-size:17px;
+            color:$main_purple;
         }
 
 
