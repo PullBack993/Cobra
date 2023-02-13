@@ -10,4 +10,7 @@
 
 <style>
 
+.about {
+  margin-top:50px;
+}
 </style>

@@ -124,7 +124,7 @@ const showDialog = ref(false);
     margin-bottom: 20px;
 
     svg {
-        height: 20px;
+        height: 15px;
         fill: white;
         position: absolute;
         left: 10px;
@@ -171,6 +171,7 @@ const showDialog = ref(false);
 
 @media (max-width: $breakpoint_small){
   .dialog__modal-openDialog {
+
     position: absolute;
     right: 0;
     margin-right: 5rem;

@@ -62,7 +62,8 @@ async function connectWallet() {
   &-login {
     display: flex;
     align-items: center;
-    padding: 5px 50px;
+   
+    padding: 10px 60px;
 
     &__icon {
       margin-right: 10px;
