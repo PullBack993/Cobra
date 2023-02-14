@@ -2,18 +2,14 @@
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import { useGlobalStore } from '../store/global';
-import Cookies from 'js-cookie'; // todo !!!!
+import Cookies from 'js-cookie'; 
 
 const store = useGlobalStore();
-const isLoggedIn = ref(false);
 const address = ref('');
 const isMetamaskSupported = ref(false);
-const isConnected = ref((window as any).ethereum.isConnected());
-console.log(isConnected.value)
 
 onMounted(() => {
-  isMetamaskSupported.value = typeof (window as any).ethereum !== 'undefined'; //false if no meta-mask
-  
+  isMetamaskSupported.value = typeof (window as any).ethereum !== 'undefined';
 });
 
 (window as any).ethereum.on('accountsChanged', () => {
@@ -22,6 +18,9 @@ onMounted(() => {
 })
 
 async function connectWallet() {
+  if(!isMetamaskSupported.value){
+    window.alert('add metams')
+  }
   const accounts = await (window as any).ethereum.request({
     method: 'eth_requestAccounts',
   });
@@ -33,9 +32,9 @@ async function connectWallet() {
       { withCredentials: true }
     )
     .then((res) => {
-      const one = new Date(new Date().getTime() + 1 * 60 * 1000);
-      Cookies.set('myCookie', address.value, { expires: one });
-      store.login = true;
+      if (res.data) {
+        store.login = true;
+      }
     })
     .catch((err) => {
       console.log(err);
