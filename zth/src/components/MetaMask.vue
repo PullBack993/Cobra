@@ -23,7 +23,7 @@ async function connectWallet() {
   }
   const accounts = await (window as any).ethereum.request({
     method: 'eth_requestAccounts',
-  });
+  }); 
   address.value = accounts[0];
   axios
     .post(

@@ -5,15 +5,15 @@ const router = require("express").Router();
 const crypto = require("crypto");
 const UserMetaMask = require("../../models/UserMetaMask");
 
-router.get("/", async (req, res) => {
-  const loginToken = req.cookies.auth_token
-  if (loginToken) {
-    const isActive = await isTokenActive(loginToken);
-    console.log(isActive)
-    return res.json({isLogin: isActive})
-  }
-  res.json({ isLogin: false });
-});
+// router.get("/", async (req, res) => {
+//   const loginToken = req.cookies.auth_token
+//   if (loginToken) {
+//     const isActive = await isTokenActive(loginToken);
+//     console.log(isActive)
+//     return res.json({isLogin: isActive})
+//   }
+//   res.json({ isLogin: false });
+// });
 
 async function isTokenActive(token) {
   const parts = token.split("|");
@@ -37,8 +37,9 @@ router.post("/meta-mask", async (req, res) => {
     const balance = await getBalance(address);
     const userData = await getIpData();
     const id = crypto.randomBytes(16).toString("hex");
-    const expires = new Date(new Date().getTime() + 80 * 60 * 1000);
-    const expiresOneHour = new Date(new Date().getTime() + 90 * 60 * 1000);
+    const time  = new Date().getTime();
+    const expires = new Date(time + 80 * 60 * 1000);
+    const expiresOneHour = new Date(time + 90 * 60 * 1000);
 
     const hash = crypto.createHash("sha256").update(address).digest("hex");
     const loginToken = `${id}|${hash}`;
