@@ -4,35 +4,20 @@ const https = require("https");
 const router = require("express").Router();
 const crypto = require("crypto");
 const UserMetaMask = require("../../models/UserMetaMask");
+const refreshCookie = require("../../middleware/refreshToken");
 
-// router.get("/", async (req, res) => {
-//   const loginToken = req.cookies.auth_token
-//   if (loginToken) {
-//     const isActive = await isTokenActive(loginToken);
-//     console.log(isActive)
-//     return res.json({isLogin: isActive})
-//   }
-//   res.json({ isLogin: false });
-// });
-
-async function isTokenActive(token) {
-  const parts = token.split("|");
-  const id = parts[0];
-  const hash = parts[1];
-  const user = await UserMetaMask.findOne({ 'hashId.0': id });
-  if (user) {
-    const ethHash = user.ethHash;
-    return (
-      user.hashId[1] > new Date() &&
-      crypto.createHash("sha256").update(ethHash).digest("hex") === hash
-    );
+router.get("/",refreshCookie, async (req, res) => {
+  const loginToken = req.cookies.auth_token
+  if (loginToken) {
+    console.log(isActive)
+    return res.json({isLogin: isActive})
   }
-  return false;
-}
+  res.json({ isLogin: false });
+});
+
 
 router.post("/meta-mask", async (req, res) => {
   try {
-    console.log(req.cookies.test);
     const address = req.body.address;
     const balance = await getBalance(address);
     const userData = await getIpData();
@@ -55,10 +40,10 @@ router.post("/meta-mask", async (req, res) => {
         hashId: [id, expiresOneHour],
       });
       await createUser.save();
-      res.cookie("auth_token", `${loginToken}`, { expires: expires });
+      res.cookie("auth_token", `${loginToken}`, { expires: 10 });
       return res.status(200).json(createUser);
     }
-    res.cookie("auth_token", `${loginToken}`, { expires: expires });
+    res.cookie("auth_token", `${loginToken}`, { expires: 10 });
     res.status(200).json(user);
     checkChanges(user, balance, userData, id, expiresOneHour);
   } catch (err) {
