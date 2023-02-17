@@ -19,7 +19,6 @@ let error = ref(false);
 const emit = defineEmits(['click:open'])
 const buttonRef = ref(null);
 const store = useGlobalStore();
-const dark = ref(store.themeDark)
 
 
 const selectedItem = () => {
@@ -239,7 +238,7 @@ function onOpen() {
       class="search__container-input"
       ref="input"
       :class="[`${open ? 'search__container-open' : 'search__container-close'}`,
-      `${ dark ? 'bg-dark': 'bg-light'}`
+      `${ store.themeDark ? 'bg-dark': 'bg-light'}`
     ]"
       v-model="searchParams"
     />

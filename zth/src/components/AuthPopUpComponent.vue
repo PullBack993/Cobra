@@ -3,7 +3,6 @@ import { ref } from 'vue';
 import MetaMask from './MetaMask.vue';
 const showDialog = ref(false);
 const showRegForm = ref(false);
-
 const showRegistrationForm = () => {
       showRegForm.value = !showRegForm.value;
     };
@@ -93,7 +92,6 @@ const showRegistrationForm = () => {
             height: 25px;
         }
     }
-
     &-overlay {
         position: fixed;
         top: 0;
@@ -104,14 +102,13 @@ const showRegistrationForm = () => {
         display: flex;
         align-items: center;
         justify-content: center;
+        z-index: 999;
     }
-
     &-title {
         margin-top:3rem;
         font-size: 30px;
         color: white;
     }
-
     &-container {
         display: flex;
         flex-direction: column;
@@ -122,7 +119,6 @@ const showRegistrationForm = () => {
         border-radius: 10px;
         background: linear-gradient(189deg, rgb(29, 12, 56) 0%, rgb(12, 20, 68) 53%, rgb(44, 16, 65) 100%);
         padding: 20px;
-
         p {
             margin-top: 2rem;
             font-size: 12px;
@@ -131,20 +127,15 @@ const showRegistrationForm = () => {
         h4 {
             color:white;
         }
-
         &-metamask {
             margin: 20px auto;
             background-color: #E8821E;
-
         }
         &-signup{
             cursor:pointer;
             font-size:17px;
             color:$main_purple;
         }
-
-
-
         &-close {
             position: absolute;
             right: 20px;
@@ -154,7 +145,6 @@ const showRegistrationForm = () => {
         }
     }
 }
-
 .form {
     display: flex;
     flex-direction: column;
@@ -163,30 +153,24 @@ const showRegistrationForm = () => {
     max-width: 500px;
     padding: 30px;
 }
-
 .form__field {
     display: flex;
     align-items: center;
     width: 100%;
     margin-bottom: 20px;
-
     svg {
         height: 15px;
         fill: white;
         position: absolute;
         left: 10px;
-
     }
 }
-
 .form__label {
     display: flex;
     align-items: center;
     width: 100%;
     position: relative;
 }
-
-
 .form__input {
     width: 100%;
     padding: 10px 40px 10px 60px;
@@ -195,11 +179,9 @@ const showRegistrationForm = () => {
     border-bottom: 1px solid lightgray;
     transition: all 0.3s ease-in-out;
 }
-
 .form__input:focus {
     border-bottom: 1px solid $main_purple;
 }
-
 .form__submit {
     width: 100%;
     padding: 10px;
@@ -211,14 +193,11 @@ const showRegistrationForm = () => {
     cursor: pointer;
     transition: all 0.3s ease-in-out;
 }
-
 .form__submit:hover {
     background-color: darkblue;
 }
-
 @media (max-width: $breakpoint_small){
   .dialog__modal-openDialog {
-
     position: absolute;
     right: 0;
     margin-right: 5rem;
