@@ -19,6 +19,7 @@ const emit = defineEmits(['click:open'])
 const buttonRef = ref(null);
 const store = useGlobalStore();
 
+
 const selectedItem = () => {
   open.value = !open.value;
   if (open.value === true) {
@@ -235,8 +236,10 @@ function onOpen() {
       type="text"
       class="search__container-input"
       ref="input"
-      :class="[`${open ? 'search__container-open' : 'search__container-close'}`, `${store.themeDark ? 'bg-dark': 'bg-light'}`,]"
-      v-model="searchParams"
+      :class="[`${open ? 'search__container-open' : 'search__container-close'}`,
+      `${ store.themeDark ? 'bg-dark': 'bg-light'}`
+    ]"
+       v-model="searchParams"
     />
     <img
       src="../assets/BaseIcons/key.svg"
