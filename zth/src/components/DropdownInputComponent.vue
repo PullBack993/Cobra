@@ -3,7 +3,6 @@ import { onMounted, ref, nextTick } from 'vue';
 import axios from 'axios';
 import HorizontalEllipsisSpinner from './utils/HorizontalEllipsisSpinner.vue';
 import { useGlobalStore } from '../store/global'
-// const allCoins = dataCoins;
 const open = ref(false);
 const currentItem = ref(0);
 let activeScrollItem = 0;
@@ -19,7 +18,10 @@ let error = ref(false);
 const emit = defineEmits(['click:open'])
 const buttonRef = ref(null);
 const store = useGlobalStore();
+<<<<<<< HEAD
 
+=======
+>>>>>>> 47e280675517d1fe74234ac85ef80b83f2601486
 
 const selectedItem = () => {
   open.value = !open.value;
@@ -237,9 +239,13 @@ function onOpen() {
       type="text"
       class="search__container-input"
       ref="input"
+<<<<<<< HEAD
       :class="[`${open ? 'search__container-open' : 'search__container-close'}`,
       `${ store.themeDark ? 'bg-dark': 'bg-light'}`
     ]"
+=======
+      :class="[`${open ? 'search__container-open' : 'search__container-close'}`, `${store.themeDark ? 'bg-dark': 'bg-light'}`,]"
+>>>>>>> 47e280675517d1fe74234ac85ef80b83f2601486
       v-model="searchParams"
     />
     <img
