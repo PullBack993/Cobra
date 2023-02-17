@@ -7,7 +7,7 @@ function generateTokens(user) {
     expiresIn: "30d",
   });
   const accessToken = jwt.sign({ userId: user.id }, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: "15m",
+    expiresIn: "60m",
   });
 
   return { refreshToken, accessToken };
@@ -68,4 +68,4 @@ async function isTokenActive(token) {
   return false;
 }
 
-module.exports = refreshCookie;
+module.exports = { refreshCookie, authenticateAccessToken, refreshAccessToken, generateTokens };
