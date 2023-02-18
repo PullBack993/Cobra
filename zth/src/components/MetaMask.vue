@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import axios from 'axios';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref,defineEmits} from 'vue';
 import { useGlobalStore } from '../store/global';
 import Cookies from 'js-cookie';
 
 const store = useGlobalStore();
 const address = ref('');
 const isMetamaskSupported = ref(false);
+let downloadUrl = ref('')
+
+
 
 onMounted(() => {
   isMetamaskSupported.value = typeof (window as any).ethereum !== 'undefined';
@@ -39,10 +42,14 @@ async function connectWallet() {
     .catch((err) => {
       console.log(err);
     });
-}
-</script>
 
+;
+
+}
+
+</script>
 <template>
+
   <div class="meta__mask">
     <div v-if="!store.login">
       <button @click="connectWallet()" class="meta__mask-login">
