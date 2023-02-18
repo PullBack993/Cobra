@@ -12,16 +12,47 @@ onMounted(() => {
   isMetamaskSupported.value = typeof (window as any).ethereum !== 'undefined';
 });
 
-(window as any).ethereum.on('accountsChanged', () => {
+(window as any).ethereum?.on('accountsChanged', () => {
   Cookies.remove('auth_token')
   store.login = false;
-})
+});
 
 async function connectWallet() {
   if(!isMetamaskSupported.value){
-    window.alert('add metams')
+    const ua = navigator.userAgent;
+    let downloadUrl = '';
+    let browserName = '';
+    let isMobile = false;
+    let platform = '';
+    if(ua.indexOf('Chrome') !== -1){
+      browserName = 'Chrome';
+      downloadUrl = 'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn';
+    } else if(ua.indexOf('Firefox') !== -1){
+      browserName = 'Firefox';
+      downloadUrl = 'https://addons.mozilla.org/en-US/firefox/addon/ether-metamask/';
+    } else if(ua.indexOf('Edge') !== -1){
+      browserName = 'Edge';
+      downloadUrl = 'https://microsoftedge.microsoft.com/addons/detail/metamask/ejbalbakoplchlghecdalmeeeajnimhm';
+    } else if(ua.indexOf('Safari') !== -1){
+      browserName = 'Safari';
+      downloadUrl = 'https://apps.apple.com/us/app/metamask/id1438144202';
+    }
+    if (ua.match(/(iPad|iPhone|iPod)/g)) {
+      platform = 'iOS';
+      isMobile = true;
+    } else if (ua.match(/Android/i)) {
+      platform = 'Android';
+      isMobile = true;
+    }
+    if (isMobile) {
+      window.alert(`Please install MetaMask on your ${platform} device and try again.`);
+    } else {
+      window.alert(`Please install the MetaMask browser extension on ${browserName} and try again.`);
+      window.open(downloadUrl, '_blank');
+    }
+    return;
   }
-  const accounts = await (window as any).ethereum.request({
+  const accounts = await (window as any).ethereum?.request({
     method: 'eth_requestAccounts',
   }); 
   address.value = accounts[0];

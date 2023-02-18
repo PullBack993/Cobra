@@ -7,7 +7,11 @@ const showRegForm = ref(false);
 const store = useGlobalStore();
 
 
-
+if (typeof window.ethereum !== 'undefined') {
+  console.log('Metamask is installed');
+} else {
+  console.log('Metamask is not installed');
+}
 
 const showRegistrationForm = () => {
   showRegForm.value = !showRegForm.value;
@@ -22,6 +26,7 @@ const showRegistrationForm = () => {
       @click="showDialog = true"
       alt="login"
     />
+   
     <div
       v-if="showDialog"
       class="dialog__modal-overlay"
@@ -146,6 +151,13 @@ const showRegistrationForm = () => {
 
 <style scoped lang="scss">
 
+.xmark {
+  fill:white
+}
+
+::deep(.x-mark){
+  fill: yellow;
+}
 .dialog__modal {
   &-openDialog {
     margin-top: 3.5rem;
@@ -234,6 +246,7 @@ const showRegistrationForm = () => {
         height: 15px;
         position: absolute;
         left: 10px;
+        
       }
     }
     &-form__label {
