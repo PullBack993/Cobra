@@ -4,9 +4,9 @@ const https = require("https");
 const router = require("express").Router();
 const crypto = require("crypto");
 const UserMetaMask = require("../../models/UserMetaMask");
-const refreshCookie = require("../../middleware/refreshToken");
+// const refreshCookie = require("../../middleware/refreshToken");
 
-router.get("/",refreshCookie, async (req, res) => {
+router.get("/", async (req, res) => {
   const loginToken = req.cookies.auth_token
   if (loginToken) {
     console.log(isActive)
