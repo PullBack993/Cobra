@@ -68,4 +68,4 @@ async function isTokenActive(token) {
   return false;
 }
 
-module.exports = { refreshCookie, authenticateAccessToken, refreshAccessToken, generateTokens };
+module.exports = {  authenticateAccessToken, refreshAccessToken, generateTokens };
