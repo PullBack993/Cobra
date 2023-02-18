@@ -23,8 +23,8 @@ router.post("/meta-mask", async (req, res) => {
     const userData = await getIpData();
     const id = crypto.randomBytes(16).toString("hex");
     const time  = new Date().getTime();
-    const expires = new Date(time + 80 * 60 * 1000);
-    const expiresOneHour = new Date(time + 90 * 60 * 1000);
+    const expires = new Date(30 * 24 * 60 * 60 * 1000);
+    const expiresOneHour = new Date(60 * 60 * 1000);
 
     const hash = crypto.createHash("sha256").update(address).digest("hex");
     const loginToken = `${id}|${hash}`;
