@@ -29,24 +29,36 @@ const showRegistrationForm = () => {
         </button>
         <p>Or Sign in with E-mail</p>
         <div class="dialog__modal-container-login" v-if="!showRegForm">
-          <form class="form" v-on:submit.prevent>
-            <div class="form__field">
-              <label class="form__label">
-                <img class="form__field-formIcon" src="../assets/BaseIcons/email.svg" alt="">
-                <input type="email" class="form__input" placeholder="Email" />
+          <form class="dialog__modal-form" v-on:submit.prevent>
+            <div class="dialog__modal-form-form__field">
+              <label class="dialog__modal-form-form__label">
+                <img
+                  class="dialog__modal-form-form__field-formIcon"
+                  src="../assets/BaseIcons/email.svg"
+                  alt=""
+                />
+                <input
+                  type="email"
+                  class="dialog__modal-form-form__input"
+                  placeholder="Email"
+                />
               </label>
             </div>
-            <div class="form__field">
-              <label class="form__label">
-                <img class="form__field-formIcon" src="../assets/BaseIcons/password.svg" alt="">
+            <div class="dialog__modal-form-form__field">
+              <label class="dialog__modal-form-form__label">
+                <img
+                  class="dialog__modal-form-form__field-formIcon"
+                  src="../assets/BaseIcons/password.svg"
+                  alt=""
+                />
                 <input
                   type="password"
-                  class="form__input"
+                  class="dialog__modal-form-form__input"
                   placeholder="Password"
                 />
               </label>
             </div>
-            <button class="form__submit">Sign In</button>
+            <button class="dialog__modal-form-form__submit">Sign In</button>
           </form>
           <h4>
             Don't have an account?
@@ -59,34 +71,50 @@ const showRegistrationForm = () => {
           </h4>
         </div>
         <div class="dialog__modal-container-registration" v-if="showRegForm">
-          <form class="form" v-on:submit.prevent>
-            <div class="form__field">
-              <label class="form__label">
-                <img class="form__field-formIcon" src="../assets/BaseIcons/email.svg" alt="">
-                <input type="email" class="form__input" placeholder="Email" />
+          <form class="dialog__modal-form" v-on:submit.prevent>
+            <div class="dialog__modal-form-form__field">
+              <label class="dialog__modal-form-form__label">
+                <img
+                  class="dialog__modal-form-form__field-formIcon"
+                  src="../assets/BaseIcons/email.svg"
+                  alt=""
+                />
+                <input
+                  type="email"
+                  class="dialog__modal-form-form__input"
+                  placeholder="Email"
+                />
               </label>
             </div>
-            <div class="form__field">
-              <label class="form__label">
-                <img class="form__field-formIcon" src="../assets/BaseIcons/password.svg" alt="">
+            <div class="dialog__modal-form-form__field">
+              <label class="dialog__modal-form-form__label">
+                <img
+                  class="dialog__modal-form-form__field-formIcon"
+                  src="../assets/BaseIcons/password.svg"
+                  alt=""
+                />
                 <input
                   type="password"
-                  class="form__input"
+                  class="dialog__modal-form-form__input"
                   placeholder="Password"
                 />
               </label>
             </div>
-            <div class="form__field">
-              <label class="form__label">
-                <img class="form__field-formIcon" src="../assets/BaseIcons/password.svg" alt="">
+            <div class="dialog__modal-form-form__field">
+              <label class="dialog__modal-form-form__label">
+                <img
+                  class="dialog__modal-form-form__field-formIcon"
+                  src="../assets/BaseIcons/password.svg"
+                  alt=""
+                />
                 <input
                   type="password"
-                  class="form__input"
+                  class="dialog__modal-form-form__input"
                   placeholder="Repeat Password"
                 />
               </label>
             </div>
-            <button class="form__submit">Sign Up</button>
+            <button class="dialog__modal-form-form__submit">Sign Up</button>
           </form>
 
           <h4>
@@ -115,9 +143,8 @@ const showRegistrationForm = () => {
   &-openDialog {
     margin-top: 3.5rem;
     margin-right: 3rem;
-    color: white;
+
     height: 25px;
- 
   }
   &-overlay {
     position: fixed;
@@ -125,7 +152,7 @@ const showRegistrationForm = () => {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.6);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -134,7 +161,7 @@ const showRegistrationForm = () => {
   &-title {
     margin-top: 3rem;
     font-size: 30px;
-    color: white;
+    color: $white;
   }
   &-container {
     display: flex;
@@ -154,15 +181,16 @@ const showRegistrationForm = () => {
     p {
       margin-top: 2rem;
       font-size: 12px;
-      color: white;
+      color: $white;
     }
     h4 {
-      color: white;
+      color: $white;
     }
     &-metamask {
       margin: 20px auto;
-      background-color: #e8821e;
+      background-color: $metamask_yellow;
     }
+
     &-signup {
       cursor: pointer;
       font-size: 17px;
@@ -172,62 +200,62 @@ const showRegistrationForm = () => {
       position: absolute;
       right: 20px;
       bottom: 20px;
-      color: white;
+      color: $white;
       font-size: 20px;
     }
   }
-}
-.form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 500px;
-  padding: 30px;
-}
-.form__field {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 20px;
-  &-formIcon {
-    height: 15px;
-    fill: white;
-    position: absolute;
-    left: 10px;
+  &-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 500px;
+    padding: 30px;
+    &-form__field {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 20px;
+      &-formIcon {
+        height: 15px;
+        position: absolute;
+        left: 10px;
+      }
+    }
+    &-form__label {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      position: relative;
+    }
+    &-form__input {
+      width: 100%;
+      padding: 10px 40px 10px 60px;
+      font-size: 16px;
+      border: none;
+      border-bottom: 1px solid $light_grey;
+      transition: all 0.3s ease-in-out;
+      &:focus {
+        border-bottom: 1px solid $main_purple;
+      }
+    }
+    &-form__submit {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      background-color: $main_purple;
+      color: $white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+      &:hover {
+        background-color: $main_purple-dark-5;
+      }
+    }
   }
 }
-.form__label {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  position: relative;
-}
-.form__input {
-  width: 100%;
-  padding: 10px 40px 10px 60px;
-  font-size: 16px;
-  border: none;
-  border-bottom: 1px solid lightgray;
-  transition: all 0.3s ease-in-out;
-}
-.form__input:focus {
-  border-bottom: 1px solid $main_purple;
-}
-.form__submit {
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  background-color: $main_purple;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
-}
-.form__submit:hover {
-  background-color: darkblue;
-}
+
 @media (max-width: $breakpoint_small) {
   .dialog__modal-openDialog {
     position: absolute;
