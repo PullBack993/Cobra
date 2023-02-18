@@ -21,33 +21,25 @@ async function connectWallet() {
   if(!isMetamaskSupported.value){
     const ua = navigator.userAgent;
     let downloadUrl = '';
-    let browserName = '';
     let isMobile = false;
     let platform = '';
-    if(ua.indexOf('Chrome') !== -1){
-      browserName = 'Chrome';
-      downloadUrl = 'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn';
-    } else if(ua.indexOf('Firefox') !== -1){
-      browserName = 'Firefox';
-      downloadUrl = 'https://addons.mozilla.org/en-US/firefox/addon/ether-metamask/';
-    } else if(ua.indexOf('Edge') !== -1){
-      browserName = 'Edge';
-      downloadUrl = 'https://microsoftedge.microsoft.com/addons/detail/metamask/ejbalbakoplchlghecdalmeeeajnimhm';
-    } else if(ua.indexOf('Safari') !== -1){
-      browserName = 'Safari';
-      downloadUrl = 'https://apps.apple.com/us/app/metamask/id1438144202';
-    }
-    if (ua.match(/(iPad|iPhone|iPod)/g)) {
-      platform = 'iOS';
+
+    if(ua.match(/(iPad|iPhone|iPod)/g)){
+      platform = "IOS"
       isMobile = true;
-    } else if (ua.match(/Android/i)) {
+      downloadUrl = 'https://apps.apple.com/us/app/metamask/id1438144202'
+    }else if(ua.match(/Android/i)){
       platform = 'Android';
       isMobile = true;
+      downloadUrl = 'https://play.google.com/store/apps/details?id=io.metamask'
+    }else{
+     downloadUrl = 'https://metamask.io/download.html'
     }
     if (isMobile) {
       window.alert(`Please install MetaMask on your ${platform} device and try again.`);
+      window.open(downloadUrl, '_blank');
     } else {
-      window.alert(`Please install the MetaMask browser extension on ${browserName} and try again.`);
+      window.alert(`Please install the MetaMask browser extension on Browser and try again.`);
       window.open(downloadUrl, '_blank');
     }
     return;
