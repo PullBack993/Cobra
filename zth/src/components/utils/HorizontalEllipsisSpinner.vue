@@ -15,6 +15,7 @@
   position: relative;
   width: 80px;
   height: 80px;
+
   & div {
     position: absolute;
     top: 3.3rem;
@@ -35,16 +36,19 @@
       left: 0.8rem;
       animation: ellipsis-second 0.6s infinite;
     }
+
     &:nth-child(3) {
       background: $main_medium_purple;
       left: 3.2rem;
       animation: ellipsis-second 0.6s infinite;
     }
+
     &:nth-child(3) {
       background: $main_medium_purple;
       left: 3.2rem;
       animation: ellipsis-second 0.6s infinite;
     }
+
     &:nth-child(4) {
       background: $main_plum_purple;
       left: 5.6rem;
@@ -52,7 +56,6 @@
     }
   }
 }
-
 
 @keyframes ellipsis-first {
   0% {

@@ -1,0 +1,56 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "declarationMap": true,
+    "allowJs": true,
+    "sourceMap": true,
+    "strict": true,
+    "strictFunctionTypes": false,
+    "importHelpers": true,
+    "noImplicitReturns": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "experimentalDecorators": true,
+    "target": "es5",
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "lib": [
+      "ESNext.Array",
+      "DOM"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ],
+      "@assets*": [
+        "src/assets/BaseIcons/*"
+      ],
+      "@components/*": [
+        "src/zth/components/*",
+        "src/zth/pages/*"
+      ],
+      "@interfaces/*": [
+        "src/interfaces/*"
+      ],
+      "@utils/*": [
+        "src/components/utils/*"
+      ],
+      "tslib": [
+        "node_modules/tslib/tslib.d.ts"
+      ],
+      "@json/*": [
+        "src/json/*"
+      ],
+      "@svg/*": [
+        "src/assets/BaseIcons/svg/*"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*"
+  ]
+}

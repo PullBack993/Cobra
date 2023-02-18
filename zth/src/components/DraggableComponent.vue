@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed } from 'vue';
 
 let isDragging = false;
 
@@ -11,16 +11,16 @@ let startX = 0;
 
 let startProgress = 0;
 
-let maxPos = 0;
+const maxPos = 0;
 
-let draggable = ref(null);
+const draggable = ref(null);
 
 const onTouchStart = (event) => {
   event.preventDefault();
   onDragStart(event.touches[0].clientX);
 
-  document.addEventListener("touchmove", onTouchMove);
-  document.addEventListener("touchend", onTouchEnd);
+  document.addEventListener('touchmove', onTouchMove);
+  document.addEventListener('touchend', onTouchEnd);
 };
 const onTouchMove = (event) => {
   onDrag(event.touches[0].clientX);
@@ -28,9 +28,8 @@ const onTouchMove = (event) => {
 
 const onTouchEnd = () => {
   onDragEnd();
-
-  document.removeEventListener("touchmove", onTouchMove);
-  document.removeEventListener("touchend", onTouchEnd);
+  document.removeEventListener('touchmove', onTouchMove);
+  document.removeEventListener('touchend', onTouchEnd);
 };
 
 const onDragStart = (x) => {
@@ -41,8 +40,8 @@ const onDragStart = (x) => {
 const onMouseDown = (event) => {
   onDragStart(event.clientX);
 
-  document.addEventListener("mousemove", onMouseMove);
-  document.addEventListener("mouseup", onMouseUp);
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
 };
 
 const onMouseMove = (event) => {
@@ -52,8 +51,8 @@ const onMouseMove = (event) => {
 const onMouseUp = () => {
   onDragEnd();
 
-  document.removeEventListener("mousemove", onMouseMove);
-  document.removeEventListener("mouseup", onMouseUp);
+  document.removeEventListener('mousemove', onMouseMove);
+  document.removeEventListener('mouseup', onMouseUp);
 };
 
 const onDragEnd = () => {
@@ -63,7 +62,7 @@ const onDragEnd = () => {
   isDragging = false;
   console.log(diff);
 
-  //emit
+  // emit
 };
 
 const onDrag = (x) => {
@@ -76,7 +75,6 @@ const onDrag = (x) => {
 
   offset = Math.min(maxPos, Math.max(0, deltaX));
   progress = (offset / maxPos) * 100;
-
 };
 
 const handleStyle = computed(() => {
@@ -111,7 +109,7 @@ const handleStyle = computed(() => {
 
   &:active {
     cursor: grabbing;
-    color: $white
+    color: $white;
   }
 }
 </style>

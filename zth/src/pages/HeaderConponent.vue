@@ -2,15 +2,13 @@
 import { onMounted, ref } from 'vue';
 import AuthPopUpComponent from '../components/AuthPopUpComponent.vue';
 import DropdownInputComponent from '../components/DropdownInputComponent.vue';
-import { useGlobalStore } from '../store/global'
-
+import { useGlobalStore } from '../store/global';
 
 const store = useGlobalStore();
 
 onMounted(() => {
   store.isLogin();
-})
-
+});
 </script>
 
 <template>
@@ -20,8 +18,7 @@ onMounted(() => {
         <DropdownInputComponent />
       </div>
       <div class="meta-mask">
-        <AuthPopUpComponent/>
-
+        <AuthPopUpComponent />
       </div>
     </div>
   </header>
@@ -49,7 +46,7 @@ onMounted(() => {
 .main {
   border-bottom: 0.1rem solid $main-purple;
   height: 9.5rem;
-  display:flex;
+  display: flex;
   justify-content: space-between;
   .search {
     margin: auto;

@@ -2,7 +2,8 @@
 import { onMounted, ref, nextTick } from 'vue';
 import axios from 'axios';
 import HorizontalEllipsisSpinner from './utils/HorizontalEllipsisSpinner.vue';
-import { useGlobalStore } from '../store/global'
+import { useGlobalStore } from '../store/global';
+
 const open = ref(false);
 const currentItem = ref(0);
 let activeScrollItem = 0;
@@ -12,13 +13,12 @@ const itemList = ref(null);
 const list = ref('');
 const searchParams = ref('');
 const coins = ref(null);
-let timeout = ref(0);
-let loading = ref(false);
-let error = ref(false);
-const emit = defineEmits(['click:open'])
+const timeout = ref(0);
+const loading = ref(false);
+const error = ref(false);
+const emit = defineEmits(['click:open']);
 const buttonRef = ref(null);
 const store = useGlobalStore();
-
 
 const selectedItem = () => {
   open.value = !open.value;
@@ -30,13 +30,15 @@ const selectedItem = () => {
     document.removeEventListener('click', documentKey);
   }
 };
-function selectInput() {
+
+const selectInput = () => {
   input?.value.focus();
   if (open.value === false) {
     addClickEvent();
     open.value = true;
   }
-}
+};
+
 function clearValues() {
   currentItem.value = 0;
   activeScrollItem = 0;
@@ -68,10 +70,7 @@ function scrollPosition(direction) {
       // TODO change to ref
       list.value.querySelectorAll('.search__container-list-current')
     );
-    activeScrollItem = Math.min(
-      Math.max(0, activeScrollItem + direction),
-      items.length - 1
-    );
+    activeScrollItem = Math.min(Math.max(0, activeScrollItem + direction), items.length - 1);
     let top = items[activeScrollItem].offsetTop;
     console.log(top);
     if (top == 71) {
@@ -152,8 +151,8 @@ function onInput() {
     timeout.value = setTimeout(async () => {
       if (searchParams?.value.length >= 3) {
         const { default: allCoins } = await import('./data/coins.json');
-        console.log(allCoins)
-        let searchedCoin = allCoins.find((coin, index) => {
+        console.log(allCoins);
+        const searchedCoin = allCoins.find((coin, index) => {
           if (
             coin?.id === searchParams.value.toLowerCase() ||
             coin?.symbol === searchParams.value.toLocaleLowerCase()
@@ -164,7 +163,7 @@ function onInput() {
         console.log(searchedCoin);
         if (searchedCoin) {
           clearValues();
-          //TODO after interceptor implementation remove
+          // TODO after interceptor implementation remove
           axios
             .post('http://localhost:3000/id', searchedCoin)
             .then((res) => {
@@ -197,10 +196,9 @@ function onInput() {
   }
 }
 onMounted(() => {
-
   window.addEventListener('keydown', documentKey);
   timeout.value = setTimeout(() => {
-    //TODO after interceptor implementation remove
+    // TODO after interceptor implementation remove
     loading.value = true;
     axios
       .post('http://localhost:3000/id', { id: 'bitcoin', symbol: 'btc' })
@@ -210,7 +208,7 @@ onMounted(() => {
           coins.value = '';
           return (error.value = true);
         }
-        //TODO remove console.logs
+        // TODO remove console.logs
         console.log(res.data);
         coins.value = res.data;
         error.value = false;
@@ -224,7 +222,7 @@ onMounted(() => {
   }, 500);
 });
 function onOpen() {
-  emit(buttonRef.value, 'click:open')
+  emit(buttonRef.value, 'click:open');
 }
 </script>
 <template>
@@ -236,10 +234,11 @@ function onOpen() {
       type="text"
       class="search__container-input"
       ref="input"
-      :class="[`${open ? 'search__container-open' : 'search__container-close'}`,
-      `${ store.themeDark ? 'bg-dark': 'bg-light'}`
-    ]"
-       v-model="searchParams"
+      :class="[
+        `${open ? 'search__container-open' : 'search__container-close'}`,
+        `${store.themeDark ? 'bg-dark' : 'bg-light'}`,
+      ]"
+      v-model="searchParams"
     />
     <img
       src="../assets/BaseIcons/key.svg"
@@ -247,13 +246,7 @@ function onOpen() {
       class="search__container-key"
       @click="selectInput($event)"
     />
-    <div
-      :class="
-        open
-          ? 'search__container-dropdown'
-          : 'search__container-dropdown--is-open'
-      "
-    >
+    <div :class="open ? 'search__container-dropdown' : 'search__container-dropdown--is-open'">
       <div ref="list" class="search__container-list" v-if="coins && !loading">
         <ul ref="itemList" class="search__container-list-items">
           <div class="search__container-list-container">
@@ -281,11 +274,7 @@ function onOpen() {
           >
             <div
               class="search__container-list-item-container"
-              :class="
-                index == currentItem
-                  ? 'search__container-list-current-active'
-                  : ''
-              "
+              :class="index == currentItem ? 'search__container-list-current-active' : ''"
             >
               <div class="search__container-list-current--base">
                 <img
@@ -556,17 +545,16 @@ function onOpen() {
   .search__container-list {
     max-height: 22rem;
   }
- 
+
   .search__container-list-current--base,
   .search__container-list-current--price,
   .search__container-list-current--percentage {
     margin: 1rem;
   }
 }
-@media (max-width: $breakpoint_small){
+@media (max-width: $breakpoint_small) {
   .search__container-key {
     display: none;
-    
   }
 }
 @keyframes topToBottom {

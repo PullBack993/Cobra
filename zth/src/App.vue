@@ -1,7 +1,7 @@
 <script setup>
-import AsideComponent from "./pages/AsideComponent.vue";
-import HeaderComponent from "./pages/HeaderConponent.vue";
-import { RouterView } from "vue-router";
+import { RouterView } from 'vue-router';
+import AsideComponent from './pages/AsideComponent.vue';
+import HeaderComponent from './pages/HeaderConponent.vue';
 </script>
 
 <template>

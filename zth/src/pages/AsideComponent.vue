@@ -2,7 +2,7 @@
 import { RouterLink } from 'vue-router';
 import { ref, onMounted } from 'vue';
 import bgp from '../assets/BaseIcons/bgp.jpeg';
-import { useGlobalStore } from '../store/global'
+import { useGlobalStore } from '../store/global';
 
 const isToggle = ref(false);
 const dark = ref(true);
@@ -39,8 +39,6 @@ const switchTheme = () => {
       'linear-gradient(189deg, rgba(29,12,56,1) 0%, rgba(12,20,68,1) 53%, rgba(44,16,65,1) 100%)';
   }
 };
-////
-
 function documentClick() {
   document.onclick = (e) => {
     e.target.appendClass = 'active';
@@ -74,7 +72,6 @@ function destroyClickEvent() {
 
 function tabEvent(event) {
   if (event.code === 'Tab') {
-    return;
   }
 }
 // change to store
@@ -110,11 +107,7 @@ onMounted(() => {
   <aside
     v-bind:style="{ opacity: opacity, width: width }"
     class="sidebar"
-    :class="[
-      { darkUnActive: dark },
-      `${isToggle ? 'is-expand' : ''}`,
-      { isOpenAside: isToggle },
-    ]"
+    :class="[{ darkUnActive: dark }, `${isToggle ? 'is-expand' : ''}`, { isOpenAside: isToggle }]"
   >
     <img :src="`${bgp}`" alt="" class="hero-image" />
     <RouterLink to="/" class="image" :key="home"></RouterLink>
@@ -122,10 +115,7 @@ onMounted(() => {
 
     <label for="sidebar-toggle" @click="toggle()" class="sidebar-btn">
       <span
-        :class="[
-          `${isToggle ? 'active' : ''}`,
-          `${dark ? 'sidebar-icon-active' : ''}`,
-        ]"
+        :class="[`${isToggle ? 'active' : ''}`, `${dark ? 'sidebar-icon-active' : ''}`]"
         class="sidebar-icon"
         >&nbsp;</span
       >
@@ -136,36 +126,25 @@ onMounted(() => {
         <p :class="`${isToggle ? 'visible' : 'notVisible'}`">Home</p>
       </RouterLink>
       <RouterLink to="/pass" class="sidebar-home">
-        <span class="material-symbols-outlined sidebar-home-icon">
-          data_usage
-        </span>
+        <span class="material-symbols-outlined sidebar-home-icon"> data_usage </span>
         <p :class="`${isToggle ? 'visible' : 'notVisible'}`">Global Metrics</p>
       </RouterLink>
 
       <RouterLink to="/pass" class="sidebar-home">
-        <span class="material-symbols-outlined sidebar-home-icon">
-          monitoring
-        </span>
+        <span class="material-symbols-outlined sidebar-home-icon"> monitoring </span>
         <p :class="`${isToggle ? 'visible' : 'notVisible'}`">Volume Metrics</p>
       </RouterLink>
 
       <RouterLink to="/about" class="sidebar-home">
-        <span class="material-symbols-outlined sidebar-home-icon">
-          equalizer
-        </span>
-        <p :class="`${isToggle ? 'visible' : 'notVisible'}`">
-          Long/Short Ratio
-        </p>
+        <span class="material-symbols-outlined sidebar-home-icon"> equalizer </span>
+        <p :class="`${isToggle ? 'visible' : 'notVisible'}`">Long/Short Ratio</p>
       </RouterLink>
     </div>
 
     <div
       class="theme"
       @click="switchTheme"
-      :class="[
-        `${dark ? 'light-icon' : 'dark-icon'}`,
-        `${isToggle ? '' : 'toggle'}`,
-      ]"
+      :class="[`${dark ? 'light-icon' : 'dark-icon'}`, `${isToggle ? '' : 'toggle'}`]"
       @keydown="tabEvent($event)"
     >
       <div class="theme-light">
@@ -384,8 +363,7 @@ onMounted(() => {
       content: '';
       transition: background-color 0.15s ease, -webkit-transform 0.3s ease;
       transition: transform 0.3s ease, background-color 0.15s ease;
-      transition: transform 0.3s ease, background-color 0.15s ease,
-        -webkit-transform 0.3s ease;
+      transition: transform 0.3s ease, background-color 0.15s ease, -webkit-transform 0.3s ease;
     }
 
     &-light {
@@ -518,7 +496,7 @@ onMounted(() => {
 
 @keyframes leftToRight {
   0% {
-      left: 0;
-    }
+    left: 0;
+  }
 }
 </style>
