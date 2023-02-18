@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import axios from 'axios';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref,defineEmits} from 'vue';
 import { useGlobalStore } from '../store/global';
 import Cookies from 'js-cookie'; 
-
 const store = useGlobalStore();
 const address = ref('');
 const isMetamaskSupported = ref(false);
+let downloadUrl = ref('')
+
+
 
 onMounted(() => {
   isMetamaskSupported.value = typeof (window as any).ethereum !== 'undefined';
@@ -17,33 +19,35 @@ onMounted(() => {
   store.login = false;
 });
 
+
 async function connectWallet() {
   if(!isMetamaskSupported.value){
     const ua = navigator.userAgent;
-    let downloadUrl = '';
     let isMobile = false;
     let platform = '';
 
     if(ua.match(/(iPad|iPhone|iPod)/g)){
       platform = "IOS"
       isMobile = true;
-      downloadUrl = 'https://apps.apple.com/us/app/metamask/id1438144202'
+      downloadUrl.value = 'https://apps.apple.com/us/app/metamask/id1438144202'
     }else if(ua.match(/Android/i)){
       platform = 'Android';
       isMobile = true;
-      downloadUrl = 'https://play.google.com/store/apps/details?id=io.metamask'
+      downloadUrl.value = 'https://play.google.com/store/apps/details?id=io.metamask'
     }else{
-     downloadUrl = 'https://metamask.io/download.html'
+      downloadUrl.value = 'https://metamask.io/download.html'
+  
     }
     if (isMobile) {
       window.alert(`Please install MetaMask on your ${platform} device and try again.`);
-      window.open(downloadUrl, '_blank');
+      window.open(downloadUrl.value, '_blank');
     } else {
       window.alert(`Please install the MetaMask browser extension on Browser and try again.`);
-      window.open(downloadUrl, '_blank');
+      window.open(downloadUrl.value, '_blank');
     }
     return;
   }
+
   const accounts = await (window as any).ethereum?.request({
     method: 'eth_requestAccounts',
   }); 
@@ -62,10 +66,14 @@ async function connectWallet() {
     .catch((err) => {
       console.log(err);
     });
-}
-</script>
 
+;
+
+}
+
+</script>
 <template>
+
   <div class="meta__mask">
   <div v-if="!store.login">
     <button @click="connectWallet()" class="meta__mask-login">

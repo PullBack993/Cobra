@@ -7,11 +7,6 @@ const showRegForm = ref(false);
 const store = useGlobalStore();
 
 
-if (typeof window.ethereum !== 'undefined') {
-  console.log('Metamask is installed');
-} else {
-  console.log('Metamask is not installed');
-}
 
 const showRegistrationForm = () => {
   showRegForm.value = !showRegForm.value;
@@ -38,6 +33,7 @@ const showRegistrationForm = () => {
         <button class="dialog__modal-container-metamask">
           <MetaMask />
         </button>
+        <p v-if="!isMetamaskSupported">Error</p>
         <p>Or Sign in with E-mail</p>
         <div class="dialog__modal-container--login" v-if="!showRegForm">
           <form class="dialog__modal-form" v-on:submit.prevent>
