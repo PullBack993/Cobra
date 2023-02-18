@@ -1,8 +1,14 @@
 <script setup>
 import { ref } from 'vue';
 import MetaMask from './MetaMask.vue';
+import { useGlobalStore } from '../store/global'
 const showDialog = ref(false);
 const showRegForm = ref(false);
+const store = useGlobalStore();
+
+
+
+
 const showRegistrationForm = () => {
   showRegForm.value = !showRegForm.value;
 };
@@ -21,14 +27,14 @@ const showRegistrationForm = () => {
       class="dialog__modal-overlay"
       @click="showDialog = false"
     >
-      <div class="dialog__modal-container" @click.stop>
+      <div class="dialog__modal-container" @click.stop :class="`${ store.themeDark ? 'bg-dark': 'bg-light'}`">
         <h3 class="dialog__modal-title">Sign In</h3>
         <p>Connect to your MetaMask Wallet</p>
         <button class="dialog__modal-container-metamask">
           <MetaMask />
         </button>
         <p>Or Sign in with E-mail</p>
-        <div class="dialog__modal-container-login" v-if="!showRegForm">
+        <div class="dialog__modal-container--login" v-if="!showRegForm">
           <form class="dialog__modal-form" v-on:submit.prevent>
             <div class="dialog__modal-form-form__field">
               <label class="dialog__modal-form-form__label">
@@ -63,14 +69,14 @@ const showRegistrationForm = () => {
           <h4>
             Don't have an account?
             <button
-              class="dialog__modal-container-signup"
+              class="dialog__modal-container-signupBtn"
               @click="showRegistrationForm"
             >
               Sign Up
             </button>
           </h4>
         </div>
-        <div class="dialog__modal-container-registration" v-if="showRegForm">
+        <div class="dialog__modal-container--registration" v-if="showRegForm">
           <form class="dialog__modal-form" v-on:submit.prevent>
             <div class="dialog__modal-form-form__field">
               <label class="dialog__modal-form-form__label">
@@ -92,7 +98,7 @@ const showRegistrationForm = () => {
                   class="dialog__modal-form-form__field-formIcon"
                   src="../assets/BaseIcons/password.svg"
                   alt=""
-                />
+                /> 
                 <input
                   type="password"
                   class="dialog__modal-form-form__input"
@@ -120,7 +126,7 @@ const showRegistrationForm = () => {
           <h4>
             Have an account?
             <button
-              class="dialog__modal-container-signup"
+              class="dialog__modal-container-signupBtn"
               @click="showRegistrationForm"
             >
               Sign In
@@ -128,10 +134,10 @@ const showRegistrationForm = () => {
           </h4>
         </div>
         <button
-          class="dialog__modal-container-close"
+          class="dialog__modal-container-closeBtn"
           @click="showDialog = false"
         >
-          X
+         <img  class='dialog__modal-container-closeBtn-icon' src="../assets/BaseIcons/xmark.svg" alt="">
         </button>
       </div>
     </div>
@@ -139,11 +145,11 @@ const showRegistrationForm = () => {
 </template>
 
 <style scoped lang="scss">
+
 .dialog__modal {
   &-openDialog {
     margin-top: 3.5rem;
     margin-right: 3rem;
-
     height: 25px;
   }
   &-overlay {
@@ -168,7 +174,7 @@ const showRegistrationForm = () => {
     flex-direction: column;
     align-items: center;
     width: 400px;
-    height: 570px;
+    height: 600px;
     border: 0.1rem solid rgba(255, 255, 255, 0.2705882353);
     border-radius: 10px;
     background: linear-gradient(
@@ -184,24 +190,32 @@ const showRegistrationForm = () => {
       color: $white;
     }
     h4 {
+      display: flex;
+      margin:0 auto;
       color: $white;
+      justify-content: center;
+      align-items: center;
     }
     &-metamask {
       margin: 20px auto;
       background-color: $metamask_yellow;
     }
 
-    &-signup {
+    &-signupBtn {
       cursor: pointer;
-      font-size: 17px;
+      font-size: 18px;
       color: $main_purple;
     }
-    &-close {
+    &-closeBtn {
       position: absolute;
       right: 20px;
       bottom: 20px;
       color: $white;
       font-size: 20px;
+      &-icon{
+        height: 25px;
+        
+      }
     }
   }
   &-form {
@@ -254,6 +268,18 @@ const showRegistrationForm = () => {
       }
     }
   }
+}
+
+.bg-dark {
+  background: black;
+}
+.bg-light {
+  background: linear-gradient(
+      189deg,
+      rgb(29, 12, 56) 0%,
+      rgb(12, 20, 68) 53%,
+      rgb(44, 16, 65) 100%
+    );
 }
 
 @media (max-width: $breakpoint_small) {
