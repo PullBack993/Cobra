@@ -1,7 +1,7 @@
 <script setup>
 import { RouterLink } from 'vue-router';
 import { ref, onMounted } from 'vue';
-import bgp from '../assets/BaseIcons/bgp.jpeg';
+import bgp from "../assets/BaseIcons/bgp.jpeg";
 import { useGlobalStore } from '../store/global';
 
 const isToggle = ref(false);
