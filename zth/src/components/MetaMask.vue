@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import axios from 'axios';
-import { onMounted, ref, defineEmits } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useGlobalStore } from '../store/global';
 import Cookies from 'js-cookie';
 
@@ -9,7 +9,6 @@ const store = useGlobalStore();
 const address = ref('');
 const isMetamaskSupported = ref(false);
 let downloadUrl = ref('');
-const emit = defineEmits(['metamask-data']);
 
 onMounted(() => {
   isMetamaskSupported.value = typeof (window as any).ethereum !== 'undefined';
