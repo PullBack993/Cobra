@@ -5,8 +5,15 @@ import { useGlobalStore } from '../store/global'
 const showDialog = ref(false);
 const showRegForm = ref(false);
 const store = useGlobalStore();
+const isMetamaskSupported = ref(true);
+let downloadUrl = ref('');
 
 
+
+const handleData= (data) => {
+  isMetamaskSupported.value = data.supported;
+  downloadUrl.value = data.url
+  }
 
 const showRegistrationForm = () => {
   showRegForm.value = !showRegForm.value;
@@ -31,7 +38,7 @@ const showRegistrationForm = () => {
         <h3 class="dialog__modal-title">Sign In</h3>
         <p>Connect to your MetaMask Wallet</p>
         <button class="dialog__modal-container-metamask">
-          <MetaMask />
+          <MetaMask v-on:metamask-data="handleData"/>  
         </button>
         <p v-if="!isMetamaskSupported">Error</p>
         <p>Or Sign in with E-mail</p>

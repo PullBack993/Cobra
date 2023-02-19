@@ -11,18 +11,16 @@
     "forceConsistentCasingInFileNames": true,
     "useDefineForClassFields": true,
     "resolveJsonModule": true,
-
-  "types": ["vite/client", "node"],
-  "baseUrl": ".",
-
-  "paths": {
-    "@/*": ["src/*"]
-  },
-  "allowJs": true,
-  "sourceMap": true,
-   
+    "types": ["vite/client", "node"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "allowJs": true,
+    "sourceMap": true,
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "tests/**/*.ts", "src/**/*.vue", "src/main.js"],
-  "exclude": ["node_modules"]
+
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "tests/**/*.ts"],
+  "exclude": ["node_modules", "dist", "public"]
 }
