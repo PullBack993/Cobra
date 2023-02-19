@@ -14,9 +14,13 @@ dist-ssr
 coverage
 *.local
 .env
+.env.local
+.env.*.local
 
-/cypress/videos/
-/cypress/screenshots/
+
+
+/tests/e2e/videos/
+/tests/e2e/screenshots/
 
 # Editor directories and files
 .vscode/*
