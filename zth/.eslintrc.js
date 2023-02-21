@@ -31,13 +31,25 @@ module.exports = {
     },
   },
   rules: {
-    'vue/block-lang': 'error',
+    // 'vue/block-lang': 'error',
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     semi: ['error', 'always'],
     quotes: ['error', 'single'],
     indent: ['error', 2, { SwitchCase: 1 }],
     'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
+    'vue/block-lang': [
+      'error',
+      {
+        script: {
+          lang: ['ts', 'js'],
+        },
+        style: {
+          lang: 'scss',
+        },
+      },
+    ],
+
     'comma-spacing': ['error', { before: false, after: true }],
     'prefer-const': ['error', { destructuring: 'all' }],
     'vuejs-accessibility/click-events-have-key-events': 'off',

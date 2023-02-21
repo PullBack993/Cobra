@@ -1,19 +1,18 @@
 <script setup>
 import { ref } from 'vue';
 import MetaMask from './MetaMask.vue';
-import { useGlobalStore } from '../store/global'
+import { useGlobalStore } from '../store/global';
+
 const showDialog = ref(false);
 const showRegForm = ref(false);
 const store = useGlobalStore();
 const isMetamaskSupported = ref(true);
-let downloadUrl = ref('');
+const downloadUrl = ref('');
 
-
-
-const handleData= (data) => {
+const handleData = (data) => {
   isMetamaskSupported.value = data.supported;
-  downloadUrl.value = data.url
-  }
+  downloadUrl.value = data.url;
+};
 
 const showRegistrationForm = () => {
   showRegForm.value = !showRegForm.value;
@@ -28,22 +27,26 @@ const showRegistrationForm = () => {
       @click="showDialog = true"
       alt="login"
     />
-   
+
     <div
       v-if="showDialog"
       class="dialog__modal-overlay"
       @click="showDialog = false"
     >
-      <div class="dialog__modal-container" @click.stop :class="`${ store.themeDark ? 'bg-dark': 'bg-light'}`">
+      <div
+        class="dialog__modal-container"
+        @click.stop
+        :class="`${store.themeDark ? 'bg-dark' : 'bg-light'}`"
+      >
         <h3 class="dialog__modal-title">Sign In</h3>
         <p>Connect to your MetaMask Wallet</p>
         <button class="dialog__modal-container-metamask">
-          <MetaMask v-on:metamask-data="handleData"/>  
+          <MetaMask @metamask-data="handleData" />
         </button>
         <p v-if="!isMetamaskSupported">Error</p>
         <p>Or Sign in with E-mail</p>
         <div class="dialog__modal-container--login" v-if="!showRegForm">
-          <form class="dialog__modal-form" v-on:submit.prevent>
+          <form class="dialog__modal-form" @submit.prevent>
             <div class="dialog__modal-form-form__field">
               <label class="dialog__modal-form-form__label">
                 <img
@@ -85,7 +88,7 @@ const showRegistrationForm = () => {
           </h4>
         </div>
         <div class="dialog__modal-container--registration" v-if="showRegForm">
-          <form class="dialog__modal-form" v-on:submit.prevent>
+          <form class="dialog__modal-form" @submit.prevent>
             <div class="dialog__modal-form-form__field">
               <label class="dialog__modal-form-form__label">
                 <img
@@ -106,7 +109,7 @@ const showRegistrationForm = () => {
                   class="dialog__modal-form-form__field-formIcon"
                   src="../assets/BaseIcons/password.svg"
                   alt=""
-                /> 
+                />
                 <input
                   type="password"
                   class="dialog__modal-form-form__input"
@@ -145,7 +148,11 @@ const showRegistrationForm = () => {
           class="dialog__modal-container-closeBtn"
           @click="showDialog = false"
         >
-         <img  class='dialog__modal-container-closeBtn-icon' src="../assets/BaseIcons/xmark.svg" alt="">
+          <img
+            class="dialog__modal-container-closeBtn-icon"
+            src="../assets/BaseIcons/xmark.svg"
+            alt=""
+          />
         </button>
       </div>
     </div>
@@ -153,12 +160,11 @@ const showRegistrationForm = () => {
 </template>
 
 <style scoped lang="scss">
-
 .xmark {
-  fill:white
+  fill: white;
 }
 
-::deep(.x-mark){
+::deep(.x-mark) {
   fill: yellow;
 }
 .dialog__modal {
@@ -206,7 +212,7 @@ const showRegistrationForm = () => {
     }
     h4 {
       display: flex;
-      margin:0 auto;
+      margin: 0 auto;
       color: $white;
       justify-content: center;
       align-items: center;
@@ -227,9 +233,8 @@ const showRegistrationForm = () => {
       bottom: 20px;
       color: $white;
       font-size: 20px;
-      &-icon{
+      &-icon {
         height: 25px;
-        
       }
     }
   }
@@ -249,7 +254,6 @@ const showRegistrationForm = () => {
         height: 15px;
         position: absolute;
         left: 10px;
-        
       }
     }
     &-form__label {
@@ -291,11 +295,11 @@ const showRegistrationForm = () => {
 }
 .bg-light {
   background: linear-gradient(
-      189deg,
-      rgb(29, 12, 56) 0%,
-      rgb(12, 20, 68) 53%,
-      rgb(44, 16, 65) 100%
-    );
+    189deg,
+    rgb(29, 12, 56) 0%,
+    rgb(12, 20, 68) 53%,
+    rgb(44, 16, 65) 100%
+  );
 }
 
 @media (max-width: $breakpoint_small) {
