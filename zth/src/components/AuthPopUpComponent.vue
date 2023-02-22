@@ -1,7 +1,10 @@
 <script setup>
 import { ref } from 'vue';
 import MetaMask from './MetaMask.vue';
+import SvgLibrary from './utils/SvgLibrary.vue';
 import { useGlobalStore } from '../store/global';
+import email from '../assets/BaseIcons/email.svg';
+
 
 const showDialog = ref(false);
 const showRegForm = ref(false);
@@ -27,7 +30,8 @@ const showRegistrationForm = () => {
       @click="showDialog = true"
       alt="login"
     />
-
+    <img :src="email"/>
+    <SvgLibrary name="'email'" />
     <div
       v-if="showDialog"
       class="dialog__modal-overlay"

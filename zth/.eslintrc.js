@@ -1,3 +1,5 @@
+const { off } = require("node:process");
+
 module.exports = {
   root: true,
   env: {
@@ -22,7 +24,9 @@ module.exports = {
     'import/resolver': {
       node: {
         extensions: ['.js', '.ts', '.json', '.vue'],
-        moduleDirectory: ['.', 'node_modules'],
+      },
+      webpack: {
+        config: 'webpack/config.base.js',
       },
       alias: {
         map: [['@', './src']],
@@ -47,14 +51,28 @@ module.exports = {
         style: {
           lang: 'scss',
         },
+        devDependencies: true,
+        packageDir: './',
       },
     ],
-
+    'no-use-before-define': ['error', { functions: false, classes: false }],
+    '@typescript-eslint/no-var-requires': 'off',
+    '@typescript-eslint/no-shadow': ['error'],
     'comma-spacing': ['error', { before: false, after: true }],
     'prefer-const': ['error', { destructuring: 'all' }],
     'vuejs-accessibility/click-events-have-key-events': 'off',
     'vuejs-accessibility/label-has-for': 'off',
     'import/prefer-default-export': 'off',
+    'import/extensions': [
+      'error',
+      'ignorePackages',
+      {
+        js: 'never',
+        ts: 'never',
+      },
+      
+    ],
+    'no-shadow': 'off',
     'no-plusplus': 'off',
     'no-const-assign': 1,
     eqeqeq: 1,
