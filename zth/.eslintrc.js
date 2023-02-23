@@ -1,5 +1,3 @@
-const { off } = require("node:process");
-
 module.exports = {
   root: true,
   env: {
@@ -35,7 +33,7 @@ module.exports = {
     },
   },
   rules: {
-    // 'vue/block-lang': 'error',
+    'vue/block-lang': 'error',
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     semi: ['error', 'always'],
@@ -70,7 +68,6 @@ module.exports = {
         js: 'never',
         ts: 'never',
       },
-      
     ],
     'no-shadow': 'off',
     'no-plusplus': 'off',
