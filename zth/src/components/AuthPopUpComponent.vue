@@ -1,7 +1,6 @@
 <script setup>
 import { ref } from 'vue';
 import MetaMask from './MetaMask.vue';
-import SvgLibrary from './utils/SvgLibrary.vue';
 import { useGlobalStore } from '../store/global';
 
 const showDialog = ref(false);

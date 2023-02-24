@@ -3,53 +3,65 @@ const Web3 = require("web3");
 const https = require("https");
 const router = require("express").Router();
 const crypto = require("crypto");
+require("dotenv/config");
+const jwt = require("jsonwebtoken");
 const UserMetaMask = require("../../models/UserMetaMask");
-// const refreshCookie = require("../../middleware/refreshToken");
+const authenticateToken = require("../../middleware/refreshToken");
 
-router.get("/", async (req, res) => {
-  const loginToken = req.cookies.auth_token
-  if (loginToken) {
-    console.log(isActive)
-    return res.json({isLogin: isActive})
-  }
-  res.json({ isLogin: false });
+router.get("/", authenticateToken, async (req, res) => {
+  console.log(req.user)
+  console.log('from / refreshToken =>', req.cookies.zth_rLt_K6u3hTf)
+  console.log('from / accessToken =>', req.cookies.zth_aSt_1xRg9Jd)
+  res.send('test')
+
 });
-
 
 router.post("/meta-mask", async (req, res) => {
   try {
     const address = req.body.address;
     const balance = await getBalance(address);
     const userData = await getIpData();
-    const id = crypto.randomBytes(16).toString("hex");
-    const time  = new Date().getTime();
-    const expires = new Date(30 * 24 * 60 * 60 * 1000);
-    const expiresOneHour = new Date(60 * 60 * 1000);
-
-    const hash = crypto.createHash("sha256").update(address).digest("hex");
-    const loginToken = `${id}|${hash}`;
-
     const user = await UserMetaMask.findOne({ ethHash: address });
 
     if (!user) {
-      const createUser = new UserMetaMask({
+      const [accessToken, refreshToken] = createToken(user.id);
+      const user = new UserMetaMask({
         ethHash: address,
         ip: userData.ip,
         city: userData.city,
         balance,
-        hashId: [id, expiresOneHour],
+        refreshToken
       });
-      await createUser.save();
-      res.cookie("auth_token", `${loginToken}`, { expires: 10 });
-      return res.status(200).json(createUser);
+      await user.save();
+      const oneHour = newDate(new Date(60 * 60 * 1000));
+      const oneWeek = new Date(7 * 24 * 60 * 60 * 1000);
+
+      res.cookie("zth_aSt_1xRg9Jd", accessToken, { expires: oneHour });
+      res.cookie("zth_rLt_K6u3hTf", refreshToken, { expires: oneWeek });
+      return res.status(200).json(user);
     }
-    res.cookie("auth_token", `${loginToken}`, { expires: 10 });
+    const [accessToken, refreshToken] = createToken(user.id);
+    console.log(accessToken, refreshToken);
+
+    const oneHour = new Date(Date.now() + 1 * 60 * 1000);
+    const oneWeek = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+    res.cookie("zth_aSt_1xRg9Jd", accessToken, { expires: oneHour });
+    res.cookie("zth_rLt_K6u3hTf", refreshToken, { expires: oneWeek });
     res.status(200).json(user);
-    checkChanges(user, balance, userData, id, expiresOneHour);
+    checkChanges(user, balance, userData,refreshToken);
   } catch (err) {
     console.log(err);
   }
 });
+
+function createToken(userId) {
+  const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: "60m",
+  });
+  const refreshToken = jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
+  return [accessToken, refreshToken];
+}
 
 async function getBalance(address) {
   const web3 = new Web3(new Web3.providers.HttpProvider(process.env.WEB3));
@@ -59,7 +71,7 @@ async function getBalance(address) {
   }
 }
 
-async function checkChanges(user, balance, userData, id, expires) {
+async function checkChanges(user, balance, userData,refreshToken) {
   let changesMade = false;
 
   if (!user.ip.includes(userData.ip)) {
@@ -70,10 +82,10 @@ async function checkChanges(user, balance, userData, id, expires) {
     user.balance = balance;
     changesMade = true;
   }
-   if (user.hashId !== id) {
-     user.hashId = [id, expires];
-     changesMade = true;
-   }
+  if(user.refreshToken !== refreshToken){
+    user.refreshToken = refreshToken
+    changesMade = true;
+  }
   if (changesMade) {
     console.log("true");
     await user.save();
