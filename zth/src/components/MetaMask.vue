@@ -4,7 +4,7 @@ import { onMounted, ref } from 'vue';
 import { useGlobalStore } from '../store/global';
 import Cookies from 'js-cookie';
 
-const emit = defineEmits(['custom-event']);
+const emit = defineEmits(['metamask-data']);
 const store = useGlobalStore();
 const address = ref('');
 const isMetamaskSupported = ref(false);
