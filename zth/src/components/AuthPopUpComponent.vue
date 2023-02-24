@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue';
+
 import MetaMask from './MetaMask.vue';
 import { useGlobalStore } from '../store/global';
 
@@ -45,36 +46,38 @@ const showRegistrationForm = () => {
         <p v-if="!isMetamaskSupported">Error</p>
         <p>Or Sign in with E-mail</p>
         <div class="dialog__modal-container--login" v-if="!showRegForm">
-          <form class="dialog__modal-form" @submit.prevent>
-            <div class="dialog__modal-form-form__field">
-              <label class="dialog__modal-form-form__label">
+
+          <form class="dialog__modal-form" v-on:submit.prevent>
+            <div class="dialog__modal-form-field">
+              <label class="dialog__modal-form-label">
+
                 <img
-                  class="dialog__modal-form-form__field-formIcon"
+                  class="dialog__modal-form-field-formIcon"
                   src="../assets/BaseIcons/email.svg"
                   alt=""
                 />
                 <input
                   type="email"
-                  class="dialog__modal-form-form__input"
+                  class="dialog__modal-form-input"
                   placeholder="Email"
                 />
               </label>
             </div>
-            <div class="dialog__modal-form-form__field">
-              <label class="dialog__modal-form-form__label">
+            <div class="dialog__modal-form-field">
+              <label class="dialog__modal-form-label">
                 <img
-                  class="dialog__modal-form-form__field-formIcon"
+                  class="dialog__modal-form-field-formIcon"
                   src="../assets/BaseIcons/password.svg"
                   alt=""
                 />
                 <input
                   type="password"
-                  class="dialog__modal-form-form__input"
+                  class="dialog__modal-form-input"
                   placeholder="Password"
                 />
               </label>
             </div>
-            <button class="dialog__modal-form-form__submit">Sign In</button>
+            <button class="dialog__modal-form-submit">Sign In</button>
           </form>
           <h4>
             Don't have an account?
@@ -87,50 +90,51 @@ const showRegistrationForm = () => {
           </h4>
         </div>
         <div class="dialog__modal-container--registration" v-if="showRegForm">
-          <form class="dialog__modal-form" @submit.prevent>
-            <div class="dialog__modal-form-form__field">
-              <label class="dialog__modal-form-form__label">
+          <form class="dialog__modal-form" v-on:submit.prevent>
+            <div class="dialog__modal-form-field">
+              <label class="dialog__modal-form-label">
+
                 <img
-                  class="dialog__modal-form-form__field-formIcon"
+                  class="dialog__modal-form-field-formIcon"
                   src="../assets/BaseIcons/email.svg"
                   alt=""
                 />
                 <input
                   type="email"
-                  class="dialog__modal-form-form__input"
+                  class="dialog__modal-form-input"
                   placeholder="Email"
                 />
               </label>
             </div>
-            <div class="dialog__modal-form-form__field">
-              <label class="dialog__modal-form-form__label">
+            <div class="dialog__modal-form-field">
+              <label class="dialog__modal-form-label">
                 <img
-                  class="dialog__modal-form-form__field-formIcon"
+                  class="dialog__modal-form-field-formIcon"
                   src="../assets/BaseIcons/password.svg"
                   alt=""
                 />
                 <input
                   type="password"
-                  class="dialog__modal-form-form__input"
+                  class="dialog__modal-form-input"
                   placeholder="Password"
                 />
               </label>
             </div>
-            <div class="dialog__modal-form-form__field">
-              <label class="dialog__modal-form-form__label">
+            <div class="dialog__modal-form-field">
+              <label class="dialog__modal-form-label">
                 <img
-                  class="dialog__modal-form-form__field-formIcon"
+                  class="dialog__modal-form-field-formIcon"
                   src="../assets/BaseIcons/password.svg"
                   alt=""
                 />
                 <input
                   type="password"
-                  class="dialog__modal-form-form__input"
+                  class="dialog__modal-form-input"
                   placeholder="Repeat Password"
                 />
               </label>
             </div>
-            <button class="dialog__modal-form-form__submit">Sign Up</button>
+            <button class="dialog__modal-form-submit">Sign Up</button>
           </form>
 
           <h4>
@@ -159,13 +163,7 @@ const showRegistrationForm = () => {
 </template>
 
 <style scoped lang="scss">
-.xmark {
-  fill: white;
-}
 
-::deep(.x-mark) {
-  fill: yellow;
-}
 .dialog__modal {
   &-openDialog {
     margin-top: 3.5rem;
@@ -244,7 +242,7 @@ const showRegistrationForm = () => {
     width: 100%;
     max-width: 500px;
     padding: 30px;
-    &-form__field {
+    &-field {
       display: flex;
       align-items: center;
       width: 100%;
@@ -255,13 +253,13 @@ const showRegistrationForm = () => {
         left: 10px;
       }
     }
-    &-form__label {
+    &-label {
       display: flex;
       align-items: center;
       width: 100%;
       position: relative;
     }
-    &-form__input {
+    &-input {
       width: 100%;
       padding: 10px 40px 10px 60px;
       font-size: 16px;
@@ -272,7 +270,7 @@ const showRegistrationForm = () => {
         border-bottom: 1px solid $main_purple;
       }
     }
-    &-form__submit {
+    &-submit {
       width: 100%;
       padding: 10px;
       font-size: 16px;
