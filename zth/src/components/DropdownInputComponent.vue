@@ -20,6 +20,32 @@ const emit = defineEmits(['click:open']);
 const buttonRef = ref(null);
 const store = useGlobalStore();
 
+function documentKey(event) {
+  if (event.keyCode === 70 && open.value === false) {
+    open.value = true;
+    event.preventDefault();
+    input?.value.focus();
+    addClickEvent();
+  }
+}
+
+function documentClick(event) {
+  if (open.value && event.target && !root.value.contains(event.target)) {
+    open.value = false;
+    document.removeEventListener('click', documentClick);
+    document.removeEventListener('click', documentKey);
+  }
+}
+
+function addClickEvent() {
+  document.addEventListener('click', documentClick);
+}
+
+function clearValues() {
+  currentItem.value = 0;
+  activeScrollItem = 0;
+}
+
 const selectedItem = () => {
   open.value = !open.value;
   if (open.value === true) {
@@ -39,28 +65,6 @@ const selectInput = () => {
   }
 };
 
-function clearValues() {
-  currentItem.value = 0;
-  activeScrollItem = 0;
-}
-function documentClick(event) {
-  if (open.value && event.target && !root.value.contains(event.target)) {
-    open.value = false;
-    document.removeEventListener('click', documentClick);
-    document.removeEventListener('click', documentKey);
-  }
-}
-function addClickEvent() {
-  document.addEventListener('click', documentClick);
-}
-function documentKey(event) {
-  if (event.keyCode === 70 && open.value === false) {
-    open.value = true;
-    event.preventDefault();
-    input?.value.focus();
-    addClickEvent();
-  }
-}
 function scrollPosition(direction) {
   nextTick(() => {
     if (!itemList.value) {
@@ -70,10 +74,13 @@ function scrollPosition(direction) {
       // TODO change to ref
       list.value.querySelectorAll('.search__container-list-current')
     );
-    activeScrollItem = Math.min(Math.max(0, activeScrollItem + direction), items.length - 1);
+    activeScrollItem = Math.min(
+      Math.max(0, activeScrollItem + direction),
+      items.length - 1
+    );
     let top = items[activeScrollItem].offsetTop;
     console.log(top);
-    if (top == 71) {
+    if (top === 71) {
       top = 1;
     }
     list.value.scrollTo({ top, behavior: 'smooth' });
@@ -139,8 +146,23 @@ function documentKeyDown(event) {
     case 'Tab':
       handleTabEvent();
       break;
+    default:
+      break;
   }
 }
+function findCoin(allCoins) {
+  const searchedCoin = allCoins.find((coin) => {
+    if (
+      coin?.id === searchParams.value.toLowerCase() ||
+      coin?.symbol === searchParams.value.toLocaleLowerCase()
+    ) {
+      return coin;
+    }
+    return null;
+  });
+  return searchedCoin;
+}
+
 function onInput() {
   loading.value = true;
   clearTimeout(timeout?.value);
@@ -152,14 +174,7 @@ function onInput() {
       if (searchParams?.value.length >= 3) {
         const { default: allCoins } = await import('./data/coins.json');
         console.log(allCoins);
-        const searchedCoin = allCoins.find((coin, index) => {
-          if (
-            coin?.id === searchParams.value.toLowerCase() ||
-            coin?.symbol === searchParams.value.toLocaleLowerCase()
-          ) {
-            return coin;
-          }
-        });
+        const searchedCoin = findCoin(allCoins);
         console.log(searchedCoin);
         if (searchedCoin) {
           clearValues();
@@ -170,7 +185,8 @@ function onInput() {
               if (!res.data) {
                 loading.value = false;
                 coins.value = '';
-                return (error.value = true);
+                error.value = true;
+                return;
               }
               coins.value = res.data;
               error.value = false;
@@ -206,7 +222,8 @@ onMounted(() => {
         if (!res.data) {
           loading.value = false;
           coins.value = '';
-          return (error.value = true);
+          error.value = true;
+          return;
         }
         // TODO remove console.logs
         console.log(res.data);
@@ -227,26 +244,33 @@ function onOpen() {
 </script>
 <template>
   <div class="search__container" ref="root">
-    <input
-      @click="selectInput($event)"
-      @keydown="documentKeyDown($event)"
-      @input="onInput"
-      type="text"
-      class="search__container-input"
-      ref="input"
-      :class="[
-        `${open ? 'search__container-open' : 'search__container-close'}`,
-        `${store.themeDark ? 'bg-dark' : 'bg-light'}`,
-      ]"
-      v-model="searchParams"
-    />
+      <input
+        @click="selectInput($event)"
+        @keydown="documentKeyDown($event)"
+        @input="onInput"
+        type="text"
+        class="search__container-input"
+        ref="input"
+        :class="[
+          `${open ? 'search__container-open' : 'search__container-close'}`,
+          `${store.themeDark ? 'bg-dark' : 'bg-light'}`,
+        ]"
+        v-model="searchParams"
+        aria-labelledby="search"
+      />
     <img
       src="../assets/BaseIcons/key.svg"
       alt="key-f"
       class="search__container-key"
       @click="selectInput($event)"
     />
-    <div :class="open ? 'search__container-dropdown' : 'search__container-dropdown--is-open'">
+    <div
+      :class="
+        open
+          ? 'search__container-dropdown'
+          : 'search__container-dropdown--is-open'
+      "
+    >
       <div ref="list" class="search__container-list" v-if="coins && !loading">
         <ul ref="itemList" class="search__container-list-items">
           <div class="search__container-list-container">
@@ -274,7 +298,11 @@ function onOpen() {
           >
             <div
               class="search__container-list-item-container"
-              :class="index == currentItem ? 'search__container-list-current-active' : ''"
+              :class="
+                index == currentItem
+                  ? 'search__container-list-current-active'
+                  : ''
+              "
             >
               <div class="search__container-list-current--base">
                 <img

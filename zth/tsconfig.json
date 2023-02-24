@@ -21,6 +21,6 @@
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },
 
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "tests/**/*.ts"],
-  "exclude": ["node_modules", "dist", "public"]
+  "include": ["src/**/*.ts","src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "tests/**/*.ts", "src/**/*.vue"],
+  "types": ["vite-svg-loader", "vite/client"],
 }

@@ -1,7 +1,7 @@
 <script setup>
 import { RouterLink } from 'vue-router';
 import { ref, onMounted } from 'vue';
-import bgp from "../assets/BaseIcons/bgp.jpeg";
+import bgp from '../assets/BaseIcons/bgp.jpeg';
 import { useGlobalStore } from '../store/global';
 
 const isToggle = ref(false);
@@ -105,9 +105,13 @@ onMounted(() => {
     <span class="search__lines-icon">&nbsp;</span>
   </div>
   <aside
-    v-bind:style="{ opacity: opacity, width: width }"
+    :style="{ opacity: opacity, width: width }"
     class="sidebar"
-    :class="[{ darkUnActive: dark }, `${isToggle ? 'is-expand' : ''}`, { isOpenAside: isToggle }]"
+    :class="[
+      { darkUnActive: dark },
+      `${isToggle ? 'is-expand' : ''}`,
+      { isOpenAside: isToggle },
+    ]"
   >
     <img :src="`${bgp}`" alt="" class="hero-image" />
     <RouterLink to="/" class="image" :key="home"></RouterLink>
@@ -115,7 +119,10 @@ onMounted(() => {
 
     <label for="sidebar-toggle" @click="toggle()" class="sidebar-btn">
       <span
-        :class="[`${isToggle ? 'active' : ''}`, `${dark ? 'sidebar-icon-active' : ''}`]"
+        :class="[
+          `${isToggle ? 'active' : ''}`,
+          `${dark ? 'sidebar-icon-active' : ''}`,
+        ]"
         class="sidebar-icon"
         >&nbsp;</span
       >
@@ -126,25 +133,36 @@ onMounted(() => {
         <p :class="`${isToggle ? 'visible' : 'notVisible'}`">Home</p>
       </RouterLink>
       <RouterLink to="/pass" class="sidebar-home">
-        <span class="material-symbols-outlined sidebar-home-icon"> data_usage </span>
+        <span class="material-symbols-outlined sidebar-home-icon">
+          data_usage
+        </span>
         <p :class="`${isToggle ? 'visible' : 'notVisible'}`">Global Metrics</p>
       </RouterLink>
 
       <RouterLink to="/pass" class="sidebar-home">
-        <span class="material-symbols-outlined sidebar-home-icon"> monitoring </span>
+        <span class="material-symbols-outlined sidebar-home-icon">
+          monitoring
+        </span>
         <p :class="`${isToggle ? 'visible' : 'notVisible'}`">Volume Metrics</p>
       </RouterLink>
 
       <RouterLink to="/about" class="sidebar-home">
-        <span class="material-symbols-outlined sidebar-home-icon"> equalizer </span>
-        <p :class="`${isToggle ? 'visible' : 'notVisible'}`">Long/Short Ratio</p>
+        <span class="material-symbols-outlined sidebar-home-icon">
+          equalizer
+        </span>
+        <p :class="`${isToggle ? 'visible' : 'notVisible'}`">
+          Long/Short Ratio
+        </p>
       </RouterLink>
     </div>
 
     <div
       class="theme"
       @click="switchTheme"
-      :class="[`${dark ? 'light-icon' : 'dark-icon'}`, `${isToggle ? '' : 'toggle'}`]"
+      :class="[
+        `${dark ? 'light-icon' : 'dark-icon'}`,
+        `${isToggle ? '' : 'toggle'}`,
+      ]"
       @keydown="tabEvent($event)"
     >
       <div class="theme-light">
@@ -363,7 +381,8 @@ onMounted(() => {
       content: '';
       transition: background-color 0.15s ease, -webkit-transform 0.3s ease;
       transition: transform 0.3s ease, background-color 0.15s ease;
-      transition: transform 0.3s ease, background-color 0.15s ease, -webkit-transform 0.3s ease;
+      transition: transform 0.3s ease, background-color 0.15s ease,
+        -webkit-transform 0.3s ease;
     }
 
     &-light {
