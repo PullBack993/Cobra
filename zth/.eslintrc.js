@@ -33,7 +33,6 @@ module.exports = {
     },
   },
   rules: {
-    'vue/block-lang': 'error',
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     semi: ['error', 'always'],
@@ -49,8 +48,6 @@ module.exports = {
         style: {
           lang: 'scss',
         },
-        devDependencies: true,
-        packageDir: './',
       },
     ],
     'no-use-before-define': ['error', { functions: false, classes: false }],
