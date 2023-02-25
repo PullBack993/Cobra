@@ -1,6 +1,7 @@
-<script setup>
+<script setup lang="ts">
 import { RouterLink } from 'vue-router';
 import { ref, onMounted } from 'vue';
+import Cookies from 'js-cookie';
 import bgp from '../assets/BaseIcons/bgp.jpeg';
 import { useGlobalStore } from '../store/global';
 
@@ -8,8 +9,14 @@ const isToggle = ref(false);
 const dark = ref(true);
 const opacity = ref('');
 const store = useGlobalStore();
-const screenSize = ref(null);
+const screenSize = ref(0);
 const width = ref('');
+
+(window as any).ethereum?.on('accountsChanged', () => {
+  Cookies.remove('zth_rLt_K6u3hTf');
+  Cookies.remove('zth_aSt_1xRg9Jd');
+  store.login = false;
+});
 
 const toggle = () => {
   isToggle.value = !isToggle.value;
@@ -41,19 +48,22 @@ const switchTheme = () => {
 };
 function documentClick() {
   document.onclick = (e) => {
-    e.target.appendClass = 'active';
+    (e.target as HTMLButtonElement).appendClass = 'active';
     if (
-      e.target.className === 'sidebar-btn' ||
-      e.target.className === 'sidebar is-expand' ||
-      e.target.className === 'active sidebar-icon' ||
-      e.target.className === 'theme' ||
-      e.target.className === 'material-symbols-outlined light' ||
-      e.target.className === 'material-symbols-outlined dark' ||
-      e.target.className === 'theme dark-icon' ||
-      e.target.className === 'theme light-icon' ||
-      e.target.className === 'sidebar darkUnActive is-expand' ||
-      e.target.className === 'search__lines' ||
-      e.target.className === 'search__lines-icon'
+      (e.target as HTMLButtonElement).className === 'sidebar-btn' ||
+      (e.target as HTMLButtonElement).className === 'sidebar is-expand' ||
+      (e.target as HTMLButtonElement).className === 'active sidebar-icon' ||
+      (e.target as HTMLButtonElement).className === 'theme' ||
+      (e.target as HTMLButtonElement).className ===
+        'material-symbols-outlined light' ||
+      (e.target as HTMLButtonElement).className ===
+        'material-symbols-outlined dark' ||
+      (e.target as HTMLButtonElement).className === 'theme dark-icon' ||
+      (e.target as HTMLButtonElement).className === 'theme light-icon' ||
+      (e.target as HTMLButtonElement).className ===
+        'sidebar darkUnActive is-expand' ||
+      (e.target as HTMLButtonElement).className === 'search__lines' ||
+      (e.target as HTMLButtonElement).className === 'search__lines-icon'
     ) {
       return;
     }

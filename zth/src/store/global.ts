@@ -9,12 +9,23 @@ export const useGlobalStore = defineStore('globalStore', {
     },
   },
   actions: {
-    isLogin() {
-      // TODO try catch
-      axios.get('http://localhost:3000/auth/', { withCredentials: true }).then((res) => {
-        console.log(res);
-        this.login = res.data.isLogin;
-      });
+    async refreshToken() {
+      /* eslint no-promise-executor-return: "off" */
+      await new Promise((resolve) => setTimeout(resolve, 3600000));
+      await this.isLogin();
+    },
+    async isLogin() {
+      try {
+        const response = await axios.get('http://localhost:3000/auth/', {
+          withCredentials: true,
+        });
+        if (response.status === 200) {
+          this.login = response.data.isLogin;
+          await this.refreshToken();
+        }
+      } catch (error) {
+        console.error(error);
+      }
     },
   },
 });
