@@ -3,7 +3,6 @@ import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import Cookies from 'js-cookie';
 import { useGlobalStore } from '../store/global';
-// import { loginSvg } from '../assets/BaseIcons/loginIcon.svg';
 
 const emit = defineEmits(['metamask-data']);
 const store = useGlobalStore();
@@ -71,10 +70,14 @@ async function connectWallet() {
   <div class="meta__mask">
     <div v-if="!store.login">
       <button class="meta__mask-login" @click="connectWallet()">
-        <span class="meta__mask-login__icon">
-          <img src="../assets/BaseIcons/metamask-icon.png" alt="icon" />
+        <span class="meta__mask-login-container">
+          <img
+            class="meta__mask-login-container-icon"
+            src="../assets/BaseIcons/metamask-icon.png"
+            alt="icon"
+          />
         </span>
-        <span class="meta__mask-login__text">Sign in with Metamask</span>
+        <span class="meta__mask-login-text">Sign in with Metamask</span>
       </button>
     </div>
   </div>
@@ -88,15 +91,15 @@ async function connectWallet() {
 
     padding: 10px 60px;
 
-    &__icon {
+    &-container {
       margin-right: 10px;
 
-      img {
+      &-icon {
         height: 20px;
       }
     }
 
-    &__text {
+    &-text {
       color: white;
     }
   }
