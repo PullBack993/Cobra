@@ -12,8 +12,11 @@ export const useGlobalStore = defineStore('globalStore', {
     isLogin() {
       // TODO try catch
       axios.get('http://localhost:3000/auth/', { withCredentials: true }).then((res) => {
-        console.log(res);
-        this.login = res.data.isLogin;
+        if(res.status === 200){
+          this.login = res.data.isLogin;
+        }
+      }).catch((err) =>{
+        console.log(err);
       });
     },
   },

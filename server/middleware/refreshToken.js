@@ -1,12 +1,11 @@
-const crypto = require("crypto");
 const UserMetaMask = require("../models/UserMetaMask");
 const jwt = require("jsonwebtoken");
 
 const authenticateToken = (req, res, next) => {
   const accessToken = req.cookies.zth_aSt_1xRg9Jd;
   const refreshToken = req.cookies.zth_rLt_K6u3hTf;
-  console.log("access token", accessToken);
-  console.log("refresh token", refreshToken);
+  console.log(accessToken);
+  console.log(refreshToken);
 
   // Check if access token is valid
   jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
@@ -15,30 +14,59 @@ const authenticateToken = (req, res, next) => {
       jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, user) => {
         if (err) {
           // Refresh token expired or invalid, user needs to log in again
+          console.log('err')
           return res.sendStatus(401);
         }
-
         // Generate new access token
-        const newAccessToken = jwt.sign({ userId: user.id }, process.env.ACCESS_TOKEN_SECRET, {
-          expiresIn: "60m",
-        });
-        const refreshToken = jwt.sign({ userId: user.id }, process.env.REFRESH_TOKEN_SECRET, {
-          expiresIn: "7d",
-        });
-        const oneHour = new Date(Date.now() + 60 * 60 * 1000);
-        console.log(oneHour)
-        const oneWeek = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-        res.cookie("zth_rLt_K6u3hTf", refreshToken, { expires: oneWeek });
-        res.cookie("zth_aSt_1xRg9Jd", newAccessToken, { expires: oneHour});
+        const [newAccessToken, refreshToken] = generateToken(user);
+        setCookie(res, newAccessToken, refreshToken);
+        updateUser(user, refreshToken);
         req.user = user;
         next();
       });
     } else {
-      // Access token is valid, attach user data to request object
+      // Access token is valid,generate new accessToken, attach user data to request object
+      const accessToken = generateAccessToken(user);
+      setAccessCookie(res, accessToken);
       req.user = user;
       next();
     }
   });
 };
 
+function generateAccessToken(user) {
+  const newAccessToken = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: "60m",
+  });
+
+  return newAccessToken;
+}
+
+function generateToken(user) {
+  const newAccessToken = generateAccessToken(user);
+  const refreshToken = jwt.sign({ id: user.id }, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: "7d",
+  });
+
+  return [newAccessToken, refreshToken];
+}
+
+async function updateUser(user, refreshToken) {
+  console.log("user", user);
+  const currentUser = await UserMetaMask.findOne({ _id: user.id });
+  console.log(currentUser);
+  currentUser.refreshToken = refreshToken;
+  await currentUser.save();
+}
+
+function setAccessCookie(res, accessToken) {
+  const oneHour = new Date(Date.now() + 61 * 60 * 1000);
+  res.cookie("zth_aSt_1xRg9Jd", accessToken, { expires: oneHour });
+}
+
+function setCookie(res, accessToken, refreshToken) {
+  setAccessCookie(res, accessToken);
+  const oneWeek = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  res.cookie("zth_rLt_K6u3hTf", refreshToken, { expires: oneWeek });
+}
 module.exports = authenticateToken;

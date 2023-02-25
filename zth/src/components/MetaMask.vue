@@ -12,11 +12,7 @@ const downloadUrl = ref('');
 
 onMounted(() => {
   isMetamaskSupported.value = typeof (window as any).ethereum !== 'undefined';
-});
-
-(window as any).ethereum?.on('accountsChanged', () => {
-  Cookies.remove('auth_token');
-  store.login = false;
+ 
 });
 
 async function connectWallet() {
@@ -65,7 +61,7 @@ async function connectWallet() {
       { withCredentials: true }
     )
     .then((res) => {
-      if (res.data) {
+      if (res.data && res.status === 200) {
         store.login = true;
       }
     })

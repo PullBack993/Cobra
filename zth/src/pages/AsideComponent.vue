@@ -1,15 +1,23 @@
-<script setup>
+<script setup lang=ts>
 import { RouterLink } from 'vue-router';
 import { ref, onMounted } from 'vue';
+import Cookies from 'js-cookie';
 import bgp from '../assets/BaseIcons/bgp.jpeg';
 import { useGlobalStore } from '../store/global';
+
 
 const isToggle = ref(false);
 const dark = ref(true);
 const opacity = ref('');
 const store = useGlobalStore();
-const screenSize = ref(null);
+const screenSize = ref(0);
 const width = ref('');
+
+(window as any).ethereum?.on('accountsChanged', () => {
+  Cookies.remove('zth_rLt_K6u3hTf');
+  Cookies.remove('zth_aSt_1xRg9Jd');
+  store.login = false;
+});
 
 const toggle = () => {
   isToggle.value = !isToggle.value;

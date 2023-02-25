@@ -2,18 +2,15 @@ require("dotenv/config");
 const Web3 = require("web3");
 const https = require("https");
 const router = require("express").Router();
-const crypto = require("crypto");
-require("dotenv/config");
 const jwt = require("jsonwebtoken");
 const UserMetaMask = require("../../models/UserMetaMask");
 const authenticateToken = require("../../middleware/refreshToken");
 
 router.get("/", authenticateToken, async (req, res) => {
-  console.log(req.user)
-  console.log('from / refreshToken =>', req.cookies.zth_rLt_K6u3hTf)
-  console.log('from / accessToken =>', req.cookies.zth_aSt_1xRg9Jd)
-  res.send('test')
-
+  console.log(req.user);
+  console.log("from / refreshToken =>", req.cookies.zth_rLt_K6u3hTf);
+  console.log("from / accessToken =>", req.cookies.zth_aSt_1xRg9Jd);
+  res.send("test");
 });
 
 router.post("/meta-mask", async (req, res) => {
@@ -24,42 +21,40 @@ router.post("/meta-mask", async (req, res) => {
     const user = await UserMetaMask.findOne({ ethHash: address });
 
     if (!user) {
-      const [accessToken, refreshToken] = createToken(user.id);
       const user = new UserMetaMask({
         ethHash: address,
         ip: userData.ip,
         city: userData.city,
         balance,
-        refreshToken
       });
       await user.save();
-      const oneHour = newDate(new Date(60 * 60 * 1000));
-      const oneWeek = new Date(7 * 24 * 60 * 60 * 1000);
-
-      res.cookie("zth_aSt_1xRg9Jd", accessToken, { expires: oneHour });
-      res.cookie("zth_rLt_K6u3hTf", refreshToken, { expires: oneWeek });
+      const [accessToken, refreshToken] = createToken(user._id);
+      checkChanges(user, balance, userData, refreshToken);
+      setCookie(res, accessToken, refreshToken);
       return res.status(200).json(user);
     }
-    const [accessToken, refreshToken] = createToken(user.id);
-    console.log(accessToken, refreshToken);
 
-    const oneHour = new Date(Date.now() + 1 * 60 * 1000);
-    const oneWeek = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-
-    res.cookie("zth_aSt_1xRg9Jd", accessToken, { expires: oneHour });
-    res.cookie("zth_rLt_K6u3hTf", refreshToken, { expires: oneWeek });
+    const [accessToken, refreshToken] = createToken(user._id);
+    setCookie(res,accessToken, refreshToken);
     res.status(200).json(user);
-    checkChanges(user, balance, userData,refreshToken);
+    checkChanges(user, balance, userData, refreshToken);
   } catch (err) {
     console.log(err);
   }
 });
 
+function setCookie(res, accessToken, refreshToken) {
+  const oneHour = new Date(Date.now() + 61 * 60 * 1000);
+  const oneWeek = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  res.cookie("zth_aSt_1xRg9Jd", accessToken, { expires: oneHour });
+  res.cookie("zth_rLt_K6u3hTf", refreshToken, { expires: oneWeek });
+}
+
 function createToken(userId) {
-  const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, {
+  const accessToken = jwt.sign({ id: userId }, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: "60m",
   });
-  const refreshToken = jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
+  const refreshToken = jwt.sign({ id: userId }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
   return [accessToken, refreshToken];
 }
 
@@ -71,7 +66,7 @@ async function getBalance(address) {
   }
 }
 
-async function checkChanges(user, balance, userData,refreshToken) {
+async function checkChanges(user, balance, userData, refreshToken) {
   let changesMade = false;
 
   if (!user.ip.includes(userData.ip)) {
@@ -82,8 +77,8 @@ async function checkChanges(user, balance, userData,refreshToken) {
     user.balance = balance;
     changesMade = true;
   }
-  if(user.refreshToken !== refreshToken){
-    user.refreshToken = refreshToken
+  if (user.refreshToken !== refreshToken) {
+    user.refreshToken = refreshToken;
     changesMade = true;
   }
   if (changesMade) {
