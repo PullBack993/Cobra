@@ -6,7 +6,7 @@ import { useGlobalStore } from '../store/global';
 const emit = defineEmits(['metamask-data']);
 const store = useGlobalStore();
 const address = ref('');
-const isMetamaskSupported = ref(false); 
+const isMetamaskSupported = ref(false);
 const downloadUrl = ref('');
 const isMobile = ref(false);
 
@@ -60,9 +60,9 @@ async function connectWallet() {
 </script>
 
 <template>
-  <div class="meta__mask">
+  <div class="meta__mask" @click="connectWallet()">
     <div v-if="!store.login">
-      <button class="meta__mask-login" @click="connectWallet()">
+      <button class="meta__mask-login">
         <span class="meta__mask-login-container">
           <img
             loading="lazy"
