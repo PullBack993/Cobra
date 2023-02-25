@@ -9,6 +9,7 @@ const store = useGlobalStore();
 const address = ref('');
 const isMetamaskSupported = ref(false);
 const downloadUrl = ref('');
+const isMobile = ref(false);
 
 onMounted(() => {
   isMetamaskSupported.value = typeof (window as any).ethereum !== 'undefined';
@@ -18,35 +19,25 @@ onMounted(() => {
 async function connectWallet() {
   if (!isMetamaskSupported.value) {
     const ua = navigator.userAgent;
-    let isMobile = false;
-    let platform = '';
 
     if (ua.match(/(iPad|iPhone|iPod)/g)) {
-      platform = 'IOS';
-      isMobile = true;
       downloadUrl.value = 'https://apps.apple.com/us/app/metamask/id1438144202';
     } else if (ua.match(/Android/i)) {
-      platform = 'Android';
-      isMobile = true;
       downloadUrl.value =
         'https://play.google.com/store/apps/details?id=io.metamask';
     } else {
       downloadUrl.value = 'https://metamask.io/download.html';
     }
-    if (isMobile) {
+    if (isMobile.value) {
       emit('metamask-data', {
         url: downloadUrl.value,
         supported: isMetamaskSupported.value,
       });
-      // window.alert(`Please install MetaMask on your ${platform} device and try again.`);
-      // window.open(downloadUrl.value, '_blank');
     } else {
       emit('metamask-data', {
         url: downloadUrl.value,
         supported: isMetamaskSupported.value,
       });
-      // window.alert(`Please install the MetaMask browser extension on Browser and try again.`);
-      // window.open(downloadUrl.value, '_blank');
     }
     return;
   }
@@ -75,10 +66,14 @@ async function connectWallet() {
   <div class="meta__mask">
     <div v-if="!store.login">
       <button class="meta__mask-login" @click="connectWallet()">
-        <span class="meta__mask-login__icon">
-          <img src="../assets/BaseIcons/metamask-icon.png" alt="icon" />
+        <span class="meta__mask-login-container">
+          <img
+            class="meta__mask-login-container-icon"
+            src="../assets/BaseIcons/metamask-icon.png"
+            alt="icon"
+          />
         </span>
-        <span class="meta__mask-login__text">Sign in with Metamask</span>
+        <span class="meta__mask-login-text">Sign in with Metamask</span>
       </button>
     </div>
   </div>
@@ -92,15 +87,15 @@ async function connectWallet() {
 
     padding: 10px 60px;
 
-    &__icon {
+    &-container {
       margin-right: 10px;
 
-      img {
+      &-icon {
         height: 20px;
       }
     }
 
-    &__text {
+    &-text {
       color: white;
     }
   }
