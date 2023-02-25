@@ -1,19 +1,17 @@
 <script setup lang="ts">
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
-import Cookies from 'js-cookie';
 import { useGlobalStore } from '../store/global';
 
 const emit = defineEmits(['metamask-data']);
 const store = useGlobalStore();
 const address = ref('');
-const isMetamaskSupported = ref(false);
+const isMetamaskSupported = ref(false); 
 const downloadUrl = ref('');
 const isMobile = ref(false);
 
 onMounted(() => {
   isMetamaskSupported.value = typeof (window as any).ethereum !== 'undefined';
- 
 });
 
 async function connectWallet() {
@@ -45,20 +43,19 @@ async function connectWallet() {
     method: 'eth_requestAccounts',
   });
   [address.value] = accounts;
-  axios
-    .post(
+  try {
+    const response = await axios.post(
       'http://localhost:3000/auth/meta-mask',
       { address: address.value },
       { withCredentials: true }
-    )
-    .then((res) => {
-      if (res.data && res.status === 200) {
-        store.login = true;
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+    );
+
+    if (response.data && response.status === 200) {
+      store.login = true;
+    }
+  } catch (err) {
+    console.error(err);
+  }
 }
 </script>
 
@@ -68,6 +65,7 @@ async function connectWallet() {
       <button class="meta__mask-login" @click="connectWallet()">
         <span class="meta__mask-login-container">
           <img
+            loading="lazy"
             class="meta__mask-login-container-icon"
             src="../assets/BaseIcons/metamask-icon.png"
             alt="icon"
