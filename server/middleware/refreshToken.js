@@ -14,7 +14,6 @@ const authenticateToken = (req, res, next) => {
       jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, user) => {
         if (err) {
           // Refresh token expired or invalid, user needs to log in again
-          console.log('err')
           return res.sendStatus(401);
         }
         // Generate new access token
