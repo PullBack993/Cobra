@@ -1,6 +1,9 @@
 <script setup>
 import { ref } from 'vue';
-
+import loginSvg from '../assets/BaseIcons/loginIcon.svg';
+import emailSvg from '../assets/BaseIcons/email.svg';
+import passwordSvg from '../assets/BaseIcons/password.svg';
+import xMarkSvg from '../assets/BaseIcons/xmark.svg';
 import MetaMask from './MetaMask.vue';
 import { useGlobalStore } from '../store/global';
 
@@ -22,12 +25,10 @@ const showRegistrationForm = () => {
 
 <template>
   <div class="dialog__modal">
-    <img
-      src="../assets/BaseIcons/loginIcon.svg"
+    <loginSvg
       class="dialog__modal-openDialog"
       @click="showDialog = true"
-      alt="login"
-    />
+    ></loginSvg>
     <div
       v-if="showDialog"
       class="dialog__modal-overlay"
@@ -64,11 +65,7 @@ const showRegistrationForm = () => {
           <form class="dialog__modal-form" @submit.prevent>
             <div class="dialog__modal-form-field">
               <label class="dialog__modal-form-label">
-                <img
-                  class="dialog__modal-form-field-formIcon"
-                  src="../assets/BaseIcons/email.svg"
-                  alt=""
-                />
+                <emailSvg class="dialog__modal-form-field-formIcon"></emailSvg>
                 <input
                   type="email"
                   class="dialog__modal-form-input"
@@ -78,11 +75,9 @@ const showRegistrationForm = () => {
             </div>
             <div class="dialog__modal-form-field">
               <label class="dialog__modal-form-label">
-                <img
+                <passwordSvg
                   class="dialog__modal-form-field-formIcon"
-                  src="../assets/BaseIcons/password.svg"
-                  alt=""
-                />
+                ></passwordSvg>
                 <input
                   type="password"
                   class="dialog__modal-form-input"
@@ -106,11 +101,7 @@ const showRegistrationForm = () => {
           <form class="dialog__modal-form" @submit.prevent>
             <div class="dialog__modal-form-field">
               <label class="dialog__modal-form-label">
-                <img
-                  class="dialog__modal-form-field-formIcon"
-                  src="../assets/BaseIcons/email.svg"
-                  alt=""
-                />
+                <emailSvg class="dialog__modal-form-field-formIcon"></emailSvg>
                 <input
                   type="email"
                   class="dialog__modal-form-input"
@@ -120,11 +111,9 @@ const showRegistrationForm = () => {
             </div>
             <div class="dialog__modal-form-field">
               <label class="dialog__modal-form-label">
-                <img
+                <passwordSvg
                   class="dialog__modal-form-field-formIcon"
-                  src="../assets/BaseIcons/password.svg"
-                  alt=""
-                />
+                ></passwordSvg>
                 <input
                   type="password"
                   class="dialog__modal-form-input"
@@ -134,11 +123,9 @@ const showRegistrationForm = () => {
             </div>
             <div class="dialog__modal-form-field">
               <label class="dialog__modal-form-label">
-                <img
+                <passwordSvg
                   class="dialog__modal-form-field-formIcon"
-                  src="../assets/BaseIcons/password.svg"
-                  alt=""
-                />
+                ></passwordSvg>
                 <input
                   type="password"
                   class="dialog__modal-form-input"
@@ -163,11 +150,7 @@ const showRegistrationForm = () => {
           class="dialog__modal-container-closeBtn"
           @click="showDialog = false"
         >
-          <img
-            class="dialog__modal-container-closeBtn-icon"
-            src="../assets/BaseIcons/xmark.svg"
-            alt=""
-          />
+          <xMarkSvg class="dialog__modal-container-closeBtn-icon"></xMarkSvg>
         </button>
       </div>
     </div>
@@ -180,6 +163,7 @@ const showRegistrationForm = () => {
     margin-top: 3.5rem;
     margin-right: 3rem;
     height: 25px;
+    fill: white;
   }
   &-overlay {
     position: fixed;

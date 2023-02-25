@@ -3,6 +3,7 @@ import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import Cookies from 'js-cookie';
 import { useGlobalStore } from '../store/global';
+// import { loginSvg } from '../assets/BaseIcons/loginIcon.svg';
 
 const emit = defineEmits(['metamask-data']);
 const store = useGlobalStore();
