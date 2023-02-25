@@ -67,13 +67,14 @@ async function connectWallet() {
 </script>
 
 <template>
-  <div class="meta__mask">
+  <div class="meta__mask" @click="connectWallet()">
     <div v-if="!store.login">
-      <button class="meta__mask-login" @click="connectWallet()">
+      <button class="meta__mask-login">
         <span class="meta__mask-login-container">
           <img
             class="meta__mask-login-container-icon"
             src="../assets/BaseIcons/metamask-icon.png"
+            loading="lazy"
             alt="icon"
           />
         </span>

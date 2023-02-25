@@ -43,9 +43,9 @@ const showRegistrationForm = () => {
         <p class="dialog__modal-container-signMsg">
           Connect to your MetaMask Wallet
         </p>
-        <button class="dialog__modal-container-metamask">
+        <div class="dialog__modal-container-metamask">
           <MetaMask @metamask-data="handleData" />
-        </button>
+        </div>
         <div
           class="dialog__modal-container-errorBlock"
           v-if="!isMetamaskSupported"
@@ -162,7 +162,7 @@ const showRegistrationForm = () => {
   &-openDialog {
     margin-top: 3.5rem;
     margin-right: 3rem;
-    height: 25px;
+    height: 2.5rem;
     fill: white;
   }
   &-overlay {
@@ -179,17 +179,17 @@ const showRegistrationForm = () => {
   }
   &-title {
     margin-top: 3rem;
-    font-size: 30px;
+    font-size: 3rem;
     color: $white;
   }
   &-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 400px;
-    height: 650px;
+    width: 40rem;
+    height: 65rem;
     border: 0.1rem solid rgba(255, 255, 255, 0.2705882353);
-    border-radius: 10px;
+    border-radius: 1rem;
     background: linear-gradient(
       189deg,
       rgb(29, 12, 56) 0%,
@@ -197,26 +197,29 @@ const showRegistrationForm = () => {
       rgb(44, 16, 65) 100%
     );
 
-    padding: 20px;
+    padding: 2rem;
 
     &-metamask {
-      margin: 20px auto;
+      margin: 2rem auto;
       background-color: $metamask_yellow;
     }
     &-errorBlock {
       background-color: transparent;
-      border: 1px solid black;
-      padding: 15px;
-      border-radius: 4px;
-      padding: 0 16px 16px 16px;
+      border: 0.1rem solid black;
+      padding: 1.5rem;
+      border-radius: 0.4rem;
+      padding: 1.6rem;
 
       &-errorMsg {
         color: $chart-red;
-        font-size: 15px;
-        line-height: 30px;
+        font-size: 1.5rem;
+        line-height: 2rem;
+        font-weight: 700;
+        text-align: center;
       }
       &-url {
-        font-size: 13px;
+        font-size: 1.3rem;
+        font-weight: 700;
         color: #00aaff;
         text-decoration: underline;
         cursor: pointer;
@@ -224,24 +227,26 @@ const showRegistrationForm = () => {
     }
 
     &-signMsg {
-      margin-top: 2rem;
-      font-size: 12px;
+      margin-top: 3rem;
+      font-size: 1.4rem;
       color: $white;
     }
 
     &-signupBtn {
+      margin-left: 0.5rem;
       cursor: pointer;
-      font-size: 18px;
+      font-size: 1.8rem;
       color: $main_purple;
+      font-weight: 700;
     }
     &-closeBtn {
       position: absolute;
-      right: 20px;
-      bottom: 20px;
+      right: 2rem;
+      top: 2rem;
       color: $white;
-      font-size: 20px;
+      font-size: 2rem;
       &-icon {
-        height: 25px;
+        height: 2.5rem;
       }
     }
     &-switchBtn {
@@ -257,17 +262,18 @@ const showRegistrationForm = () => {
     flex-direction: column;
     align-items: center;
     width: 100%;
-    max-width: 500px;
-    padding: 30px;
+    max-width: 50rem;
+    padding: 3rem;
     &-field {
       display: flex;
       align-items: center;
       width: 100%;
-      margin-bottom: 20px;
+      margin-bottom: 2rem;
       &-formIcon {
-        height: 15px;
+        height: 1.5rem;
         position: absolute;
-        left: 10px;
+        left: 1rem;
+        fill: $main_purple;
       }
     }
     &-label {
@@ -278,23 +284,23 @@ const showRegistrationForm = () => {
     }
     &-input {
       width: 100%;
-      padding: 10px 40px 10px 60px;
-      font-size: 16px;
+      padding: 1rem 4rem 1rem 6rem;
+      font-size: 1.6rem;
       border: none;
-      border-bottom: 1px solid $light_grey;
+      border-bottom: 0.1rem solid $light_grey;
       transition: all 0.3s ease-in-out;
       &:focus {
-        border-bottom: 1px solid $main_purple;
+        border-bottom: 0.1rem solid $main_purple;
       }
     }
     &-submit {
       width: 100%;
-      padding: 10px;
-      font-size: 16px;
+      padding: 1rem;
+      font-size: 1.6rem;
       background-color: $main_purple;
       color: $white;
       border: none;
-      border-radius: 5px;
+      border-radius: 0.5rem;
       cursor: pointer;
       transition: all 0.3s ease-in-out;
       &:hover {
