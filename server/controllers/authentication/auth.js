@@ -9,11 +9,10 @@ const UserMetaMask = require("../../models/UserMetaMask");
 const authenticateToken = require("../../middleware/refreshToken");
 
 router.get("/", authenticateToken, async (req, res) => {
-  console.log(req.user)
-  console.log('from / refreshToken =>', req.cookies.zth_rLt_K6u3hTf)
-  console.log('from / accessToken =>', req.cookies.zth_aSt_1xRg9Jd)
-  res.send('test')
-
+  console.log(req.user);
+  console.log("from / refreshToken =>", req.cookies.zth_rLt_K6u3hTf);
+  console.log("from / accessToken =>", req.cookies.zth_aSt_1xRg9Jd);
+  res.send("test");
 });
 
 router.post("/meta-mask", async (req, res) => {
@@ -25,14 +24,14 @@ router.post("/meta-mask", async (req, res) => {
 
     if (!user) {
       const [accessToken, refreshToken] = createToken(user.id);
-      const user = new UserMetaMask({
+      const newUser = new UserMetaMask({
         ethHash: address,
         ip: userData.ip,
         city: userData.city,
         balance,
-        refreshToken
+        refreshToken,
       });
-      await user.save();
+      await newUser.save();
       const oneHour = newDate(new Date(60 * 60 * 1000));
       const oneWeek = new Date(7 * 24 * 60 * 60 * 1000);
 
@@ -49,7 +48,7 @@ router.post("/meta-mask", async (req, res) => {
     res.cookie("zth_aSt_1xRg9Jd", accessToken, { expires: oneHour });
     res.cookie("zth_rLt_K6u3hTf", refreshToken, { expires: oneWeek });
     res.status(200).json(user);
-    checkChanges(user, balance, userData,refreshToken);
+    checkChanges(user, balance, userData, refreshToken);
   } catch (err) {
     console.log(err);
   }
@@ -71,7 +70,7 @@ async function getBalance(address) {
   }
 }
 
-async function checkChanges(user, balance, userData,refreshToken) {
+async function checkChanges(user, balance, userData, refreshToken) {
   let changesMade = false;
 
   if (!user.ip.includes(userData.ip)) {
@@ -82,8 +81,8 @@ async function checkChanges(user, balance, userData,refreshToken) {
     user.balance = balance;
     changesMade = true;
   }
-  if(user.refreshToken !== refreshToken){
-    user.refreshToken = refreshToken
+  if (user.refreshToken !== refreshToken) {
+    user.refreshToken = refreshToken;
     changesMade = true;
   }
   if (changesMade) {
