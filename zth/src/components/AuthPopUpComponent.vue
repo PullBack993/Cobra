@@ -39,18 +39,31 @@ const showRegistrationForm = () => {
         :class="`${store.themeDark ? 'bg-dark' : 'bg-light'}`"
       >
         <h3 class="dialog__modal-title">Sign In</h3>
-        <p>Connect to your MetaMask Wallet</p>
+        <p class="dialog__modal-container-signMsg">
+          Connect to your MetaMask Wallet
+        </p>
         <button class="dialog__modal-container-metamask">
           <MetaMask @metamask-data="handleData" />
         </button>
-        <p v-if="!isMetamaskSupported">Error</p>
-        <p>Or Sign in with E-mail</p>
+        <div
+          class="dialog__modal-container-errorBlock"
+          v-if="!isMetamaskSupported"
+        >
+          <p class="dialog__modal-container-errorBlock-errorMsg">
+            Metamask not found.
+          </p>
+          <a
+            class="dialog__modal-container-errorBlock-url"
+            :href="downloadUrl"
+            target="_blank"
+            >Click here to download and install Metamask</a
+          >
+        </div>
+        <p class="dialog__modal-container-signMsg">Or Sign in with E-mail</p>
         <div class="dialog__modal-container--login" v-if="!showRegForm">
-
-          <form class="dialog__modal-form" v-on:submit.prevent>
+          <form class="dialog__modal-form" @submit.prevent>
             <div class="dialog__modal-form-field">
               <label class="dialog__modal-form-label">
-
                 <img
                   class="dialog__modal-form-field-formIcon"
                   src="../assets/BaseIcons/email.svg"
@@ -79,7 +92,7 @@ const showRegistrationForm = () => {
             </div>
             <button class="dialog__modal-form-submit">Sign In</button>
           </form>
-          <h4>
+          <h4 class="dialog__modal-container-switchBtn">
             Don't have an account?
             <button
               class="dialog__modal-container-signupBtn"
@@ -90,10 +103,9 @@ const showRegistrationForm = () => {
           </h4>
         </div>
         <div class="dialog__modal-container--registration" v-if="showRegForm">
-          <form class="dialog__modal-form" v-on:submit.prevent>
+          <form class="dialog__modal-form" @submit.prevent>
             <div class="dialog__modal-form-field">
               <label class="dialog__modal-form-label">
-
                 <img
                   class="dialog__modal-form-field-formIcon"
                   src="../assets/BaseIcons/email.svg"
@@ -137,7 +149,7 @@ const showRegistrationForm = () => {
             <button class="dialog__modal-form-submit">Sign Up</button>
           </form>
 
-          <h4>
+          <h4 class="dialog__modal-container-switchBtn">
             Have an account?
             <button
               class="dialog__modal-container-signupBtn"
@@ -163,7 +175,6 @@ const showRegistrationForm = () => {
 </template>
 
 <style scoped lang="scss">
-
 .dialog__modal {
   &-openDialog {
     margin-top: 3.5rem;
@@ -192,7 +203,7 @@ const showRegistrationForm = () => {
     flex-direction: column;
     align-items: center;
     width: 400px;
-    height: 600px;
+    height: 650px;
     border: 0.1rem solid rgba(255, 255, 255, 0.2705882353);
     border-radius: 10px;
     background: linear-gradient(
@@ -201,22 +212,37 @@ const showRegistrationForm = () => {
       rgb(12, 20, 68) 53%,
       rgb(44, 16, 65) 100%
     );
+
     padding: 20px;
-    p {
-      margin-top: 2rem;
-      font-size: 12px;
-      color: $white;
-    }
-    h4 {
-      display: flex;
-      margin: 0 auto;
-      color: $white;
-      justify-content: center;
-      align-items: center;
-    }
+
     &-metamask {
       margin: 20px auto;
       background-color: $metamask_yellow;
+    }
+    &-errorBlock {
+      background-color: transparent;
+      border: 1px solid black;
+      padding: 15px;
+      border-radius: 4px;
+      padding: 0 16px 16px 16px;
+
+      &-errorMsg {
+        color: $chart-red;
+        font-size: 15px;
+        line-height: 30px;
+      }
+      &-url {
+        font-size: 13px;
+        color: #00aaff;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+    }
+
+    &-signMsg {
+      margin-top: 2rem;
+      font-size: 12px;
+      color: $white;
     }
 
     &-signupBtn {
@@ -233,6 +259,13 @@ const showRegistrationForm = () => {
       &-icon {
         height: 25px;
       }
+    }
+    &-switchBtn {
+      display: flex;
+      margin: 0 auto;
+      color: $white;
+      justify-content: center;
+      align-items: center;
     }
   }
   &-form {
@@ -285,18 +318,6 @@ const showRegistrationForm = () => {
       }
     }
   }
-}
-
-.bg-dark {
-  background: black;
-}
-.bg-light {
-  background: linear-gradient(
-    189deg,
-    rgb(29, 12, 56) 0%,
-    rgb(12, 20, 68) 53%,
-    rgb(44, 16, 65) 100%
-  );
 }
 
 @media (max-width: $breakpoint_small) {

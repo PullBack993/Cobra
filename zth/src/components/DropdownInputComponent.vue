@@ -16,8 +16,8 @@ const coins = ref(null);
 const timeout = ref(0);
 const loading = ref(false);
 const error = ref(false);
-const emit = defineEmits(['click:open']);
-const buttonRef = ref(null);
+// const emit = defineEmits(['click:open']);
+// const buttonRef = ref(null);
 const store = useGlobalStore();
 
 function documentKey(event) {
@@ -238,26 +238,26 @@ onMounted(() => {
       });
   }, 500);
 });
-function onOpen() {
-  emit(buttonRef.value, 'click:open');
-}
+// function onOpen() {
+//   emit(buttonRef.value, 'click:open');
+// }
 </script>
 <template>
   <div class="search__container" ref="root">
-      <input
-        @click="selectInput($event)"
-        @keydown="documentKeyDown($event)"
-        @input="onInput"
-        type="text"
-        class="search__container-input"
-        ref="input"
-        :class="[
-          `${open ? 'search__container-open' : 'search__container-close'}`,
-          `${store.themeDark ? 'bg-dark' : 'bg-light'}`,
-        ]"
-        v-model="searchParams"
-        aria-labelledby="search"
-      />
+    <input
+      @click="selectInput($event)"
+      @keydown="documentKeyDown($event)"
+      @input="onInput"
+      type="text"
+      class="search__container-input"
+      ref="input"
+      :class="[
+        `${open ? 'search__container-open' : 'search__container-close'}`,
+        `${store.themeDark ? 'bg-dark' : 'bg-light'}`,
+      ]"
+      v-model="searchParams"
+      aria-labelledby="search"
+    />
     <img
       src="../assets/BaseIcons/key.svg"
       alt="key-f"
