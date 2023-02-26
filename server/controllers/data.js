@@ -4,6 +4,9 @@ const CoinGecko = require("coingecko-api");
 const { SEARCH_VALUES: searchedTarget } = require("../helpers/utils");
 const coinsImages = require("../helpers/coinsImages.json");
 
+router.get('/', async(req,res) => {
+  res.send('DB is connected')
+})
 router.post("/id", async (req, res) => {
   const CoinGeckoClient = new CoinGecko();
   const coinSymbol = req.body.symbol.toUpperCase();

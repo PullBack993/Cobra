@@ -70,6 +70,7 @@ const showRegistrationForm = () => {
                   type="email"
                   class="dialog__modal-form-input"
                   placeholder="Email"
+                  autocomplete="off"
                 />
               </label>
             </div>
@@ -82,6 +83,7 @@ const showRegistrationForm = () => {
                   type="password"
                   class="dialog__modal-form-input"
                   placeholder="Password"
+                  autocomplete="off"
                 />
               </label>
             </div>
@@ -106,6 +108,7 @@ const showRegistrationForm = () => {
                   type="email"
                   class="dialog__modal-form-input"
                   placeholder="Email"
+                  autocomplete="off"
                 />
               </label>
             </div>
@@ -118,6 +121,7 @@ const showRegistrationForm = () => {
                   type="password"
                   class="dialog__modal-form-input"
                   placeholder="Password"
+                  autocomplete="off"
                 />
               </label>
             </div>
@@ -130,6 +134,7 @@ const showRegistrationForm = () => {
                   type="password"
                   class="dialog__modal-form-input"
                   placeholder="Repeat Password"
+                  autocomplete="off"
                 />
               </label>
             </div>
@@ -270,9 +275,9 @@ const showRegistrationForm = () => {
       width: 100%;
       margin-bottom: 2rem;
       &-formIcon {
-        height: 1.5rem;
+        height: 1.8rem;
         position: absolute;
-        left: 1rem;
+        left: 1.5rem;
         fill: $main_purple;
       }
     }
