@@ -5,7 +5,7 @@ const { SEARCH_VALUES: searchedTarget } = require("../helpers/utils");
 const coinsImages = require("../helpers/coinsImages.json");
 
 router.get('/', async(req,res) => {
-  res.send('DB is connected')
+  res.json('DB is connected')
 })
 router.post("/id", async (req, res) => {
   const CoinGeckoClient = new CoinGecko();
