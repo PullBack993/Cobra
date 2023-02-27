@@ -6,7 +6,8 @@ const coinsImages = require("../helpers/coinsImages.json");
 
 router.get('/', async(req,res) => {
   res.json('DB is connected')
-})
+});
+
 router.post("/id", async (req, res) => {
   const CoinGeckoClient = new CoinGecko();
   const coinSymbol = req.body.symbol.toUpperCase();

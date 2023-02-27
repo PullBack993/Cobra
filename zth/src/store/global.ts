@@ -27,5 +27,19 @@ export const useGlobalStore = defineStore('globalStore', {
         console.error(error);
       }
     },
+    async a() {
+      try{
+        const response = await axios.post('http://localhost:3000/exchange/long-short', 
+          {time: 'h1', symbol: 'BTC'},          
+          { withCredentials: true},
+        );
+
+        if (response.status === 200) {
+          console.log(response);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
   },
 });

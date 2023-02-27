@@ -10,7 +10,7 @@ router.get("/", authenticateToken, async (req, res) => {
   console.log(req.user);
   console.log("from / refreshToken =>", req.cookies.zth_rLt_K6u3hTf);
   console.log("from / accessToken =>", req.cookies.zth_aSt_1xRg9Jd);
-  res.send("test");
+  res.status(200).json({ isLogin: true });
 });
 
 router.post("/meta-mask", async (req, res) => {
