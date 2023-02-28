@@ -11,7 +11,10 @@ html {
   font-size: 62.5%; // Root font size 10px=1rem
   scroll-behavior: smooth;
   pointer-events: auto;
+  max-width: 1500px;
+  margin: auto;
 }
+
 body {
   min-height: 100vh;
   margin: 0;
@@ -27,9 +30,9 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
 body *{
   font-family:  "Segoe UI", sans-serif;
-
 }
 
 main{

@@ -406,7 +406,7 @@ onMounted(() => {
     right: 0;
     left: 0;
     background: $bg-dark-purple;
-    z-index: 1;
+    z-index: 20;
     border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
     &--is-open {
@@ -560,12 +560,12 @@ onMounted(() => {
   }
 }
 
-.bg-dark {
-  background-color: black;
-}
-.bg-light {
-  background-color: wheat;
-}
+// .bg-dark {
+//   background-color: black;
+// }
+// .bg-light {
+//   background-color: wheat;
+// }
 @media (min-width: $breakpoint_small) {
   .search__container-input {
     padding-left: 1rem;

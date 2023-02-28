@@ -467,7 +467,7 @@ onMounted(() => {
 .search__lines {
   animation: leftToRight 0.15s;
   position: absolute;
-  top: 24%;
+  top: 10%;
   left: 10%;
   cursor: pointer;
   height: 50%;
