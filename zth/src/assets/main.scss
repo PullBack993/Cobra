@@ -59,6 +59,8 @@ input {
   padding: 0 1rem;
   color: $input-color-dark;
   background: $input-bg-dark;
+  border-radius: $border-middle;
+  border: none;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

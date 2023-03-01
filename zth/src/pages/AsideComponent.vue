@@ -467,12 +467,12 @@ onMounted(() => {
 .search__lines {
   animation: leftToRight 0.15s;
   position: absolute;
-  top: 10%;
+  top: 2.5rem;
   left: 10%;
   cursor: pointer;
-  height: 50%;
-  width: 6%;
+  width: 4.7rem;
   z-index: 99;
+  height: 4.9rem;
   &-icon {
     display: block;
     cursor: pointer;
