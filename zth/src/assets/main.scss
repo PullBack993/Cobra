@@ -6,6 +6,7 @@
   padding: 0;
   position: relative;
   font-weight: normal;
+  scroll-behavior: smooth;
 }
 html {
   font-size: 62.5%; // Root font size 10px=1rem
@@ -59,7 +60,7 @@ input {
   padding: 0 1rem;
   color: $input-color-dark;
   background: $input-bg-dark;
-  border-radius: $border-middle;
+  border-radius: $border-light;
   border: none;
   text-overflow: ellipsis;
   white-space: nowrap;

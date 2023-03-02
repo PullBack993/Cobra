@@ -51,11 +51,11 @@ function generateToken(user) {
 }
 
 async function updateUser(user, refreshToken) {
-  console.log("user", user);
   const currentUser = await UserMetaMask.findOne({ _id: user.id });
-  console.log(currentUser);
-  currentUser.refreshToken = refreshToken;
-  await currentUser.save();
+  if (currentUser.refreshToken) {
+    currentUser.refreshToken = refreshToken;
+    await currentUser.save();
+  }
 }
 
 function setAccessCookie(res, accessToken) {

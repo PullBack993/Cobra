@@ -434,6 +434,7 @@ onMounted(() => {
       background-color: $main-purple;
       border: 0.5rem solid transparent;
       background-clip: padding-box;
+      border-radius: 5rem;
     }
     &-info {
       display: flex;
