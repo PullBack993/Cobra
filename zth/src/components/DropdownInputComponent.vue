@@ -2,12 +2,10 @@
 import { onMounted, ref, nextTick } from 'vue';
 import axios from 'axios';
 import HorizontalEllipsisSpinner from './utils/HorizontalEllipsisSpinner.vue';
-import { useGlobalStore } from '../store/global';
+import InputField from './InputField.vue';
 
-const open = ref(false);
 const currentItem = ref(0);
 let activeScrollItem = 0;
-const input = ref(null);
 const root = ref('');
 const itemList = ref(null);
 const list = ref('');
@@ -16,56 +14,16 @@ const coins = ref(null);
 const timeout = ref(0);
 const loading = ref(false);
 const error = ref(false);
-// const emit = defineEmits(['click:open']);
-// const buttonRef = ref(null);
-const store = useGlobalStore();
-
-function documentKey(event) {
-  if (event.keyCode === 70 && open.value === false) {
-    open.value = true;
-    event.preventDefault();
-    input?.value.focus();
-    addClickEvent();
-  }
-}
-
-function documentClick(event) {
-  if (open.value && event.target && !root.value.contains(event.target)) {
-    open.value = false;
-    document.removeEventListener('click', documentClick);
-    document.removeEventListener('click', documentKey);
-  }
-}
-
-function addClickEvent() {
-  document.addEventListener('click', documentClick);
-}
-
-function clearValues() {
-  currentItem.value = 0;
-  activeScrollItem = 0;
-}
-
-const selectedItem = () => {
-  open.value = !open.value;
-  if (open.value === true) {
-    document.addEventListener('click', documentClick);
-  } else {
-    clearValues();
-    document.removeEventListener('click', documentClick);
-    document.removeEventListener('click', documentKey);
-  }
-};
-
-const selectInput = () => {
-  input?.value.focus();
-  if (open.value === false) {
-    addClickEvent();
-    open.value = true;
-  }
-};
+const open = ref(false);
+const coinsLength = ref(0);
 
 function scrollPosition(direction) {
+  console.log('direction', direction);
+  if (direction === 1) {
+    currentItem.value++;
+  } else {
+    currentItem.value--;
+  }
   nextTick(() => {
     if (!itemList.value) {
       return;
@@ -86,70 +44,28 @@ function scrollPosition(direction) {
     list.value.scrollTo({ top, behavior: 'smooth' });
   });
 }
-function between(a, b, c) {
-  return a > b ? c >= b && c <= a : c >= a && c <= b;
+
+function handelClearValue() {
+  currentItem.value = 0;
+  activeScrollItem = 0;
 }
-function isValidKeyCode(code) {
-  return between(65, 90, code) || between(97, 122, code);
-}
-// TODO change after implement chart => rout to chart
-function handleEnterEvent() {
-  if (open.value) {
+function documentClick(event) {
+  if (open.value && event.target) {
     open.value = false;
-    input?.value.blur();
-    clearValues();
     document.removeEventListener('click', documentClick);
   }
 }
-function handleEscapeEvent() {
-  if (open.value) {
-    open.value = false;
-    input?.value.blur();
-    clearValues();
+
+const selectedItem = () => {
+  open.value = !open.value;
+  if (open.value === true) {
+    document.addEventListener('click', documentClick);
+  } else {
+    handelClearValue();
     document.removeEventListener('click', documentClick);
   }
-}
-function handleArrowDown() {
-  console.log(coins.value.data.length);
-  console.log(currentItem.value);
-  if (open.value && coins.value.data.length - 2 >= currentItem.value) {
-    currentItem.value++;
-    scrollPosition(1);
-  }
-}
-function handleArrowUp() {
-  if (open.value && currentItem.value > 0) {
-    currentItem.value--;
-    scrollPosition(-1);
-  }
-}
-function handleTabEvent() {
-  if (!open.value) {
-    open.value = true;
-  }
-}
-function documentKeyDown(event) {
-  if (isValidKeyCode(event.keycode)) event.preventDefault();
-  switch (event.key) {
-    case 'Escape':
-      handleEscapeEvent();
-      break;
-    case 'Enter':
-      handleEnterEvent();
-      break;
-    case 'ArrowDown':
-      handleArrowDown();
-      break;
-    case 'ArrowUp':
-      handleArrowUp();
-      break;
-    case 'Tab':
-      handleTabEvent();
-      break;
-    default:
-      break;
-  }
-}
+};
+
 function findCoin(allCoins) {
   const searchedCoin = allCoins.find((coin) => {
     if (
@@ -163,7 +79,8 @@ function findCoin(allCoins) {
   return searchedCoin;
 }
 
-function onInput() {
+function onInput(value) {
+  searchParams.value = value;
   loading.value = true;
   clearTimeout(timeout?.value);
   try {
@@ -177,18 +94,20 @@ function onInput() {
         const searchedCoin = findCoin(allCoins);
         console.log(searchedCoin);
         if (searchedCoin) {
-          clearValues();
-          // TODO after interceptor implementation remove
+          handelClearValue();
           axios
             .post('http://localhost:3000/id', searchedCoin)
             .then((res) => {
               if (!res.data) {
                 loading.value = false;
                 coins.value = '';
+                coinsLength.value = 0;
                 error.value = true;
                 return;
               }
               coins.value = res.data;
+              coinsLength.value = res.data.data.length;
+
               error.value = false;
               loading.value = false;
               console.log(res);
@@ -202,6 +121,7 @@ function onInput() {
           loading.value = false;
           error.value = false;
           coins.value = '';
+          coinsLength.value = 0;
         }
       }
     }, 500);
@@ -212,9 +132,7 @@ function onInput() {
   }
 }
 onMounted(() => {
-  window.addEventListener('keydown', documentKey);
   timeout.value = setTimeout(() => {
-    // TODO after interceptor implementation remove
     loading.value = true;
     axios
       .post('http://localhost:3000/id', { id: 'bitcoin', symbol: 'btc' })
@@ -222,12 +140,14 @@ onMounted(() => {
         if (!res.data) {
           loading.value = false;
           coins.value = '';
+          coinsLength.value = 0;
           error.value = true;
           return;
         }
         // TODO remove console.logs
-        console.log(res.data);
         coins.value = res.data;
+        coinsLength.value = res.data.data.length;
+
         error.value = false;
         loading.value = false;
       })
@@ -235,35 +155,33 @@ onMounted(() => {
         console.log(err);
         loading.value = false;
         error.value = true;
+        coinsLength.value = 0;
       });
   }, 500);
 });
-// function onOpen() {
-//   emit(buttonRef.value, 'click:open');
-// }
+
+function onOpen(value) {
+  open.value = value;
+}
 </script>
 <template>
   <div class="search__container" ref="root">
-    <input
-      @click="selectInput($event)"
-      @keydown="documentKeyDown($event)"
-      @input="onInput"
-      type="text"
-      class="search__container-input"
-      ref="input"
-      :class="[
-        `${open ? 'search__container-open' : 'search__container-close'}`,
-        `${store.themeDark ? 'bg-dark' : 'bg-light'}`,
-      ]"
-      v-model="searchParams"
-      aria-labelledby="search"
+    <InputField
+      :current-item="currentItem"
+      :root="root"
+      :open="open"
+      :coins="coinsLength"
+      @on-input="onInput"
+      @open="onOpen"
+      @clear-values="handelClearValue"
+      @scroll-direction="scrollPosition"
     />
     <img
       src="../assets/BaseIcons/key.svg"
       alt="key-f"
       class="search__container-key"
-      @click="selectInput($event)"
     />
+    <!-- @click="selectInput($event)" -->
     <div
       :class="
         open
@@ -375,20 +293,20 @@ onMounted(() => {
   width: 90%;
   display: flex;
   align-items: center;
-  &-input {
-    width: 100%;
-    height: 5rem;
-    border-radius: 1rem;
-    border: none;
-    padding-left: 6rem;
-  }
-  &-open {
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-  }
-  &-close {
-    border-radius: 1rem;
-  }
+  // &-input {
+  //   width: 100%;
+  //   height: 5rem;
+  //   border-radius: 1rem;
+  //   border: none;
+  //   padding-left: 6rem;
+  // }
+  // &-open {
+  //   border-bottom-left-radius: 0;
+  //   border-bottom-right-radius: 0;
+  // }
+  // &-close {
+  //   border-radius: 1rem;
+  // }
   &-key {
     width: 3rem;
     position: absolute;
@@ -568,9 +486,6 @@ onMounted(() => {
 //   background-color: wheat;
 // }
 @media (min-width: $breakpoint_small) {
-  .search__container-input {
-    padding-left: 1rem;
-  }
   .search__container-list {
     max-height: 22rem;
   }

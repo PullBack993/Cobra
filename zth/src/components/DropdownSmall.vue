@@ -13,11 +13,17 @@ const props = withDefaults(defineProps<Props>(), {
 function selectedItem(event: Event) {
   console.log(event.target);
 }
+
+
 const open = ref(true);
 </script>
 
 <template>
-  <input class="long__short-value" @focus="open = !open" @blur="open = false" />
+  <input
+    class="long__short-value"
+    @focus="open = !open"
+    @blur="open = false"
+  />
   <Arrow-Icon
     class="long__short-arrow-icon"
     :class="open ? 'long__short-arrow-rotate' : ''"
@@ -58,7 +64,7 @@ const open = ref(true);
   &-arrow-icon {
     position: absolute;
     right: 2.8rem;
-    top: 2.6rem;
+    top: 2.9rem;
     transition: all 0.3s ease;
   }
   &-arrow-rotate {
