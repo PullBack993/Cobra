@@ -16,9 +16,9 @@ const loading = ref(false);
 const error = ref(false);
 const open = ref(false);
 const coinsLength = ref(0);
+const topElement = ref();
 
 function scrollPosition(direction) {
-  console.log('direction', direction);
   if (direction === 1) {
     currentItem.value++;
   } else {
@@ -28,16 +28,14 @@ function scrollPosition(direction) {
     if (!itemList.value) {
       return;
     }
-    const items = Array.from(
-      // TODO change to ref
-      list.value.querySelectorAll('.search__container-list-current')
-    );
+
+    const items = Array.from(itemList.value);
     activeScrollItem = Math.min(
       Math.max(0, activeScrollItem + direction),
       items.length - 1
     );
     let top = items[activeScrollItem].offsetTop;
-    console.log(top);
+    console.log('top dropdown', top);
     if (top === 71) {
       top = 1;
     }
@@ -48,6 +46,7 @@ function scrollPosition(direction) {
 function handelClearValue() {
   currentItem.value = 0;
   activeScrollItem = 0;
+  topElement?.value?.scrollIntoView();
 }
 function documentClick(event) {
   if (open.value && event.target) {
@@ -171,6 +170,7 @@ function onOpen(value) {
       :root="root"
       :open="open"
       :coins="coinsLength"
+      :prevent="false"
       @on-input="onInput"
       @open="onOpen"
       @clear-values="handelClearValue"
@@ -190,8 +190,8 @@ function onOpen(value) {
       "
     >
       <div ref="list" class="search__container-list" v-if="coins && !loading">
-        <ul ref="itemList" class="search__container-list-items">
-          <div class="search__container-list-container">
+        <ul class="search__container-list-items">
+          <div ref="topElement" class="search__container-list-container">
             <img
               class="search__container-list-image"
               loading="lazy"
@@ -208,8 +208,9 @@ function onOpen(value) {
             <div class="search__container-list-last">change%</div>
           </div>
           <li
-            class="search__container-list-current"
             v-for="(coin, index) in coins.data"
+            class="search__container-list-current"
+            ref="itemList"
             :currentItem="index"
             :key="index"
             @click="selectedItem"
@@ -283,6 +284,10 @@ function onOpen(value) {
   </div>
 </template>
 <style scoped lang="scss">
+:deep(.input) {
+  padding-left: 6rem;
+
+}
 .positive {
   color: $chart-green;
 }
@@ -293,20 +298,7 @@ function onOpen(value) {
   width: 90%;
   display: flex;
   align-items: center;
-  // &-input {
-  //   width: 100%;
-  //   height: 5rem;
-  //   border-radius: 1rem;
-  //   border: none;
-  //   padding-left: 6rem;
-  // }
-  // &-open {
-  //   border-bottom-left-radius: 0;
-  //   border-bottom-right-radius: 0;
-  // }
-  // &-close {
-  //   border-radius: 1rem;
-  // }
+
   &-key {
     width: 3rem;
     position: absolute;
@@ -479,12 +471,6 @@ function onOpen(value) {
   }
 }
 
-// .bg-dark {
-//   background-color: black;
-// }
-// .bg-light {
-//   background-color: wheat;
-// }
 @media (min-width: $breakpoint_small) {
   .search__container-list {
     max-height: 22rem;

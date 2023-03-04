@@ -7,12 +7,16 @@ interface Props {
   open: boolean;
   root: HTMLElement;
   coins?: number;
+  prevent?: boolean;
+  value?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   currentItem: 0,
   open: false,
   coins: 0,
+  prevent: true,
+  value: '',
 });
 const emit = defineEmits([
   'keyArrow',
@@ -20,13 +24,30 @@ const emit = defineEmits([
   'clearValues',
   'scrollDirection',
   'open',
+  'enter:event',
 ]);
 
 const dropDownOpen = ref(props.open);
-const searchParams = ref('');
+const searchParams = ref(props.value);
+const selectedItem = ref(props.currentItem);
 const input = ref<HTMLInputElement>();
 const store = useGlobalStore();
 const lengthCoins = ref(0);
+
+watch(
+  () => props.currentItem,
+  (newValue) => {
+    selectedItem.value = newValue;
+  }
+);
+
+watch(
+  () => props.value,
+  (newValue) => {
+    searchParams.value = newValue;
+  }
+);
+
 watch(
   () => props.coins,
   (newLength) => {
@@ -49,6 +70,8 @@ const selectInput = () => {
   if (dropDownOpen.value === false) {
     addClickEvent();
     emit('open', true);
+    emit('scrollDirection', 0);
+
   }
 };
 function addClickEvent() {
@@ -57,7 +80,11 @@ function addClickEvent() {
 
 function documentKey(event: Event) {
   const { key } = event as KeyboardEvent;
-  if (key === 'f' || (key === 'F' && dropDownOpen.value === false)) {
+  if (
+    (key === 'f' || key === 'F') &&
+    dropDownOpen.value === false &&
+    !props.prevent
+  ) {
     emit('open', true);
     event.preventDefault();
     input?.value?.focus();
@@ -98,7 +125,7 @@ function documentKeyDown(event: KeyboardEvent) {
 }
 
 function handleArrowUp() {
-  if (dropDownOpen.value && props.currentItem > 0) {
+  if (dropDownOpen.value && selectedItem.value > 0) {
     emit('scrollDirection', -1);
   }
 }
@@ -108,17 +135,17 @@ function handleTabEvent() {
   }
 }
 function handleArrowDown() {
-  if (dropDownOpen.value && props.coins - 2 >= props.currentItem) {
+  if (dropDownOpen.value && props.coins - 2 >= selectedItem.value) {
     emit('scrollDirection', 1);
   }
 }
 
 function handleEnterEvent() {
   if (dropDownOpen.value) {
-    emit('open', false);
     input?.value?.blur();
-    emit('clearValues', '');
     document.removeEventListener('click', documentClick);
+    emit('enter:event');
+    emit('open', false);
   }
 }
 
@@ -168,7 +195,6 @@ function onInput() {
   height: 5rem;
   border-radius: 1rem;
   border: none;
-  padding-left: 6rem;
   padding-right: 2.7rem;
   &-open {
     border-bottom-left-radius: 0;
