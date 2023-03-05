@@ -2,12 +2,14 @@
 import { ref, nextTick } from 'vue';
 import ArrowIcon from '../assets/BaseIcons/arrow.svg';
 import InputField from './InputField.vue';
+import allCoins from './data/coinglass.json';
 
 interface Props {
   data: string[]; // symbol or period of time
 }
 
 const props = withDefaults(defineProps<Props>(), {});
+const emit = defineEmits(['newValue:input']);
 
 let activeScrollItem = 0;
 const currentIndexItem = ref(0);
@@ -18,14 +20,23 @@ const open = ref(false);
 const root = ref<HTMLElement>();
 const topElement = ref<HTMLElement>();
 const currentValue = ref(props.data[0]);
+const coins = ref(allCoins);
 
 function selectedItem(event: Event) {
-  currentIndexItem.value = (
-    event.target as HTMLElement
-  )?.attributes?.currentItem?.value;
-
+  const currentItemValue = (event.target as HTMLElement)?.getAttribute(
+    'currentItem'
+  );
+  if (currentItemValue !== null) {
+    const currentItemNumber = Number(currentItemValue);
+    if (!Number.isNaN(currentItemNumber)) {
+      currentIndexItem.value = currentItemNumber;
+      activeScrollItem = currentIndexItem.value;
+    }
+  }
   currentValue.value = (event.target as HTMLElement).textContent || '';
+  emit('newValue:input', currentValue.value);
   open.value = false;
+
   scrollPosition(0);
 }
 function scrollPosition(direction: number) {
@@ -52,8 +63,18 @@ function scrollPosition(direction: number) {
     }
   });
 }
-function onInput() {
-  console.log('on input');
+function onInput(value: string) {
+  if (value) {
+    const searchedCoin = findCoin(value);
+    if (searchedCoin.length > 0) {
+      coins.value = searchedCoin;
+      console.log(coins.value);
+    } else {
+      coins.value = [{ name: 'No result' }];
+    }
+  } else {
+    coins.value = allCoins;
+  }
 }
 
 function onOpen(value: boolean) {
@@ -69,15 +90,26 @@ function handelClearValue() {
 
 function enterEvent() {
   if (itemList.value) {
-    const selectedValue = (itemList.value[currentIndexItem.value] as HTMLElement)
-      .textContent;
-
-    currentValue.value = selectedValue || '';
-    currentIndexItem.value = (
+    const selectedValue = (
       itemList.value[currentIndexItem.value] as HTMLElement
-    )?.attributes?.currentItem?.value;
+    ).textContent;
+    currentValue.value = selectedValue || '';
+    emit('newValue:input', currentValue.value);
+    currentIndexItem.value = Number(
+      (
+        itemList.value[currentIndexItem.value] as HTMLElement
+      )?.attributes.getNamedItem('currentItem')?.value
+    );
+    activeScrollItem = currentIndexItem.value;
     scrollPosition(0);
   }
+}
+
+function findCoin(value: string) {
+  const searchedCoins = allCoins.filter((coin: { name: string }) =>
+    coin?.name.includes(value.toUpperCase())
+  );
+  return searchedCoins;
 }
 </script>
 
@@ -111,13 +143,13 @@ function enterEvent() {
           <li
             class="long__short-item"
             ref="itemList"
-            v-for="(name, index) in props.data"
+            v-for="(a, index) in coins"
             :currentItem="index"
             :key="index"
             @click="selectedItem"
             :class="index === currentIndexItem ? 'long__short-active' : ''"
           >
-            {{ name }}
+            {{ a.name }}
           </li>
         </ul>
       </div>
@@ -176,10 +208,9 @@ function enterEvent() {
     -webkit-tap-highlight-color: transparent;
     overflow: auto;
     overflow-x: hidden;
-    max-height: 20rem;
+    max-height: 19.5rem;
     border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
-    height: 19.5rem;
 
     &::-webkit-scrollbar {
       width: 1.2rem;

@@ -89,7 +89,6 @@ function onInput(value) {
     timeout.value = setTimeout(async () => {
       if (searchParams?.value.length >= 3) {
         const { default: allCoins } = await import('./data/coins.json');
-        console.log(allCoins);
         const searchedCoin = findCoin(allCoins);
         console.log(searchedCoin);
         if (searchedCoin) {

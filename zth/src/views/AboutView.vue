@@ -1,20 +1,25 @@
 <script setup lang="ts">
+import {ref} from 'vue';
 import DropdownSmall from '../components/DropdownSmall.vue';
 
 const data = ['BTC', 'ETH', 'ETC', 'SOL', 'CHZ', 'TWT', 'LINK', 'FTM', 'EOS'];
+const currentValue = ref('BTC');
+function valueChange(value) {
+  currentValue.value = value;
+}
 </script>
 
 <template>
   <div class="long__short">
     <div class="long__short-col">
       <div class="long__short-title">
-        <span>Exchange BTC Long/Short Ration</span>
+        <span>Exchange {{currentValue}} Long/Short Ration</span>
       </div>
 
       <div class="long__short-chart-select">
         <div class="long__short-chart-select-item">
           <div class="long__short-symbol">Symbol</div>
-          <DropdownSmall :data="data" />
+          <DropdownSmall :data="data" @new-value:input="valueChange" />
         </div>
         <div class="long__short-chart-select-item">
           <div class="long__short-period">Period</div>

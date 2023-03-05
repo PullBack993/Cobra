@@ -1,0 +1,626 @@
+[
+    {
+        "name": "BTC"
+    },
+    {
+        "name": "ETH"
+    },
+    {
+        "name": "XRP"
+    },
+    {
+        "name": "LTC"
+    },
+    {
+        "name": "BNB"
+    },
+    {
+        "name": "DOGE"
+    },
+    {
+        "name": "SOL"
+    },
+    {
+        "name": "APT"
+    },
+    {
+        "name": "MATIC"
+    },
+    {
+        "name": "EOS"
+    },
+    {
+        "name": "ADA"
+    },
+    {
+        "name": "DOT"
+    },
+    {
+        "name": "OP"
+    },
+    {
+        "name": "ETC"
+    },
+    {
+        "name": "LINK"
+    },
+    {
+        "name": "APE"
+    },
+    {
+        "name": "BCH"
+    },
+    {
+        "name": "AVAX"
+    },
+    {
+        "name": "DYDX"
+    },
+    {
+        "name": "LDO"
+    },
+    {
+        "name": "FMT"
+    },
+    {
+        "name": "GMT"
+    },
+    {
+        "name": "ATOM"
+    },
+    {
+        "name": "TRX"
+    },
+    {
+        "name": "NEAR"
+    },
+    {
+        "name": "AXS"
+    },
+    {
+        "name": "GALA"
+    },
+    {
+        "name": "CRV"
+    },
+    {
+        "name": "SAND"
+    },
+    {
+        "name": "SNX"
+    },
+    {
+        "name": "CFX"
+    },
+    {
+        "name": "AGIX"
+    },
+    {
+        "name": "YFI"
+    },
+    {
+        "name": "BLUR"
+    },
+    {
+        "name": "UNI"
+    },
+    {
+        "name": "STX"
+    },
+    {
+        "name": "100SHIB"
+    },
+    {
+        "name": "MANA"
+    },
+    {
+        "name": "NEO"
+    },
+    {
+        "name": "DASH"
+    },
+    {
+        "name": "CHZ"
+    },
+    {
+        "name": "AAVE"
+    },
+    {
+        "name": "KLAY"
+    },
+    {
+        "name": "GRT"
+    },
+    {
+        "name": "MASK"
+    },
+    {
+        "name": "SHIB"
+    },
+    {
+        "name": "SUSHI"
+    },
+    {
+        "name": "XMR"
+    },
+    {
+        "name": "BNX"
+    },
+    {
+        "name": "WAVES"
+    },
+    {
+        "name": "MAGIC"
+    },
+    {
+        "name": "MKR"
+    },
+    {
+        "name": "REN"
+    },
+    {
+        "name": "ICP"
+    },
+    {
+        "name": "100LUNC"
+    },
+    {
+        "name": "XLM"
+    },
+    {
+        "name": "ENS"
+    },
+    {
+        "name": "ALGO"
+    },
+    {
+        "name": "EGLD"
+    },
+    {
+        "name": "FET"
+    },
+    {
+        "name": "ZEC"
+    },
+    {
+        "name": "IMX"
+    },
+    {
+        "name": "PEOPLE"
+    },
+    {
+        "name": "THETA"
+    },
+    {
+        "name": "XTZ"
+    },
+    {
+        "name": "STG"
+    },
+    {
+        "name": "AR"
+    },
+    {
+        "name": "HOOK"
+    },
+    {
+        "name": "ANKR"
+    },
+    {
+        "name": "SSV"
+    },
+    {
+        "name": "OCEAN"
+    },
+    {
+        "name": "ZIL"
+    },
+    {
+        "name": "FXS"
+    },
+    {
+        "name": "RUNE"
+    },
+    {
+        "name": "XEN"
+    },
+    {
+        "name": "COMP"
+    },
+    {
+        "name": "LUNA2"
+    },
+    {
+        "name": "MINA"
+    },
+    {
+        "name": "KSM"
+    },
+    {
+        "name": "LRC"
+    },
+    {
+        "name": "BIT"
+    },
+    {
+        "name": "1NCH"
+    },
+    {
+        "name": "ZRX"
+    },
+    {
+        "name": "LUNC"
+    },
+    {
+        "name": "VET"
+    },
+    {
+        "name": "FLOW"
+    },
+    {
+        "name": "ROSE"
+    },
+    {
+        "name": "RNDR"
+    },
+    {
+        "name": "TRB"
+    },
+    {
+        "name": "QTUM"
+    },
+    {
+        "name": "HBAR"
+    },
+    {
+        "name": "ENJ"
+    },
+    {
+        "name": "ZEN"
+    },
+    {
+        "name": "GMX"
+    },
+    {
+        "name": "IOST"
+    },
+    {
+        "name": "SFP"
+    },
+    {
+        "name": "BSV"
+    },
+    {
+        "name": "SXP"
+    },
+    {
+        "name": "KNC"
+    },
+    {
+        "name": "SHIB1000"
+    },
+    {
+        "name": "INJ"
+    },
+    {
+        "name": "RSR"
+    },
+    {
+        "name": "CORE"
+    },
+    {
+        "name": "LIT"
+    },
+    {
+        "name": "KAVA"
+    },
+    {
+        "name": "COCOS"
+    },
+    {
+        "name": "CELO"
+    },
+    {
+        "name": "AUDIO"
+    },
+    {
+        "name": "C98"
+    },
+    {
+        "name": "STORJ"
+    },
+    {
+        "name": "UNFI"
+    },
+    {
+        "name": "LINA"
+    },
+    {
+        "name": "ALH"
+    },
+    {
+        "name": "GAL"
+    },
+    {
+        "name": "BAND"
+    },
+    {
+        "name": "JASMY"
+    },
+    {
+        "name": "IOTA"
+    },
+    {
+        "name": "HIGH"
+    },
+    {
+        "name": "ALPHA"
+    },
+    {
+        "name": "ALICE"
+    },
+    {
+        "name": "WOO"
+    },
+    {
+        "name": "OMG"
+    },
+    {
+        "name": "COTI"
+    },
+    {
+        "name": "BEL"
+    },
+    {
+        "name": "REEF"
+    },
+    {
+        "name": "BTCDOM"
+    },
+    {
+        "name": "HOT"
+    },
+    {
+        "name": "T"
+    },
+    {
+        "name": "1000BONK"
+    },
+    {
+        "name": "DENT"
+    },
+    {
+        "name": "MTL"
+    },
+    {
+        "name": "BLZ"
+    },
+    {
+        "name": "LUNA"
+    },
+    {
+        "name": "ASTR"
+    },
+    {
+        "name": "BAKE"
+    },
+    {
+        "name": "FLM"
+    },
+    {
+        "name": "BAT"
+    },
+    {
+        "name": "SKL"
+    },
+    {
+        "name": "CHR"
+    },
+    {
+        "name": "RLC"
+    },
+    {
+        "name": "ETHW"
+    },
+    {
+        "name": "IOTX"
+    },
+    {
+        "name": "CELR"
+    },
+    {
+        "name": "CVX"
+    },
+    {
+        "name": "ONT"
+    },
+    {
+        "name": "ATA"
+    },
+    {
+        "name": "DODO"
+    },
+    {
+        "name": "TWT"
+    },
+    {
+        "name": "CTK"
+    },
+    {
+        "name": "OGN"
+    },
+    {
+        "name": "ANT"
+    },
+    {
+        "name": "PHB"
+    },
+    {
+        "name": "CRO"
+    },
+    {
+        "name": "HNT"
+    },
+    {
+        "name": "QNT"
+    },
+    {
+        "name": "DAR"
+    },
+    {
+        "name": "STMX"
+    },
+    {
+        "name": "ICX"
+    },
+    {
+        "name": "DGB"
+    },
+    {
+        "name": "HT"
+    },
+    {
+        "name": "AMB"
+    },
+    {
+        "name": "HKN"
+    },
+    {
+        "name": "API3"
+    },
+    {
+        "name": "LOOKS"
+    },
+    {
+        "name": "YFII"
+    },
+    {
+        "name": "ARPA"
+    },
+    {
+        "name": "AKRO"
+    },
+    {
+        "name": "CTSI"
+    },
+    {
+        "name": "TOMO"
+    },
+    {
+        "name": "SPELL"
+    },
+    {
+        "name": "GFT"
+    },
+    {
+        "name": "SLP"
+    },
+    {
+        "name": "YGG"
+    },
+    {
+        "name": "TLM"
+    },
+    {
+        "name": "CKB"
+    },
+    {
+        "name": "TON"
+    },
+    {
+        "name": "USDC"
+    },
+    {
+        "name": "PERP"
+    },
+    {
+        "name": "LEVER"
+    },
+    {
+        "name": "USTC"
+    },
+    {
+        "name": "FOOTBALL"
+    },
+    {
+        "name": "1000XEC"
+    },
+    {
+        "name": "FITFI"
+    },
+    {
+        "name": "ILV"
+    },
+    {
+        "name": "GLMR"
+    },
+    {
+        "name": "AGLD"
+    },
+    {
+        "name": "CVC"
+    },
+    {
+        "name": "FLOKI"
+    },
+    {
+        "name": "CEL"
+    },
+    {
+        "name": "BUSD"
+    },
+    {
+        "name": "PAXG"
+    },
+    {
+        "name": "DEFI"
+    },
+    {
+        "name": "RSS3"
+    },
+    {
+        "name": "1000FLOKI"
+    },
+    {
+        "name": "XCH"
+    },
+    {
+        "name": "JST"
+    },
+    {
+        "name": "BICO"
+    },
+    {
+        "name": "KDA"
+    },
+    {
+        "name": "BSW"
+    },
+    {
+        "name": "SWEAT"
+    },
+    {
+        "name": "CSPR"
+    },
+    {
+        "name": "DORA"
+    },
+    {
+        "name": "BLUEBIRD"
+    },
+    {
+        "name": "UMA"
+    },
+    {
+        "name": "SUN"
+    },
+    {
+        "name": "BMEX"
+    },
+    {
+        "name": "SC"
+    },
+    {
+        "name": "RPL"
+    }
+]

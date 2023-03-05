@@ -66,6 +66,7 @@ onMounted(() => {
 });
 
 const selectInput = () => {
+  console.log('yes')
   input?.value?.focus();
   if (dropDownOpen.value === false) {
     addClickEvent();
