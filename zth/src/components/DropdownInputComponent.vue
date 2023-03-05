@@ -283,9 +283,9 @@ function onOpen(value) {
   </div>
 </template>
 <style scoped lang="scss">
+//TODO adjust f butto
 :deep(.input) {
-  padding-left: 6rem;
-
+  padding-left: 5rem;
 }
 .positive {
   color: $chart-green;
@@ -471,6 +471,9 @@ function onOpen(value) {
 }
 
 @media (min-width: $breakpoint_small) {
+  :deep(.input) {
+    padding-left: 1rem;
+  }
   .search__container-list {
     max-height: 22rem;
   }

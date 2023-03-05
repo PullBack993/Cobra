@@ -156,7 +156,7 @@ onMounted(() => {
         <p :class="`${isToggle ? 'visible' : 'notVisible'}`">Volume Metrics</p>
       </RouterLink>
 
-      <RouterLink to="/about" class="sidebar-home">
+      <RouterLink to="/long-short" class="sidebar-home">
         <span class="material-symbols-outlined sidebar-home-icon">
           equalizer
         </span>

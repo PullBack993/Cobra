@@ -9,6 +9,8 @@ interface Props {
   coins?: number;
   prevent?: boolean;
   value?: string;
+  noResult?: boolean
+
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -17,6 +19,7 @@ const props = withDefaults(defineProps<Props>(), {
   coins: 0,
   prevent: true,
   value: '',
+  noResult: false
 });
 const emit = defineEmits([
   'keyArrow',
@@ -33,6 +36,15 @@ const selectedItem = ref(props.currentItem);
 const input = ref<HTMLInputElement>();
 const store = useGlobalStore();
 const lengthCoins = ref(0);
+const savedValue = ref(props.value);
+const isResult = ref(false);
+
+watch(
+  () => props.noResult,
+  (newValue) => {
+    isResult.value = newValue;
+  }
+);
 
 watch(
   () => props.currentItem,
@@ -45,6 +57,7 @@ watch(
   () => props.value,
   (newValue) => {
     searchParams.value = newValue;
+    savedValue.value = newValue;
   }
 );
 
@@ -59,50 +72,14 @@ watch(
   () => props.open,
   (newValue) => {
     dropDownOpen.value = newValue;
+    addClickEvent();
   }
 );
+
 onMounted(() => {
   window.addEventListener('keydown', documentKey);
 });
 
-const selectInput = () => {
-  console.log('yes')
-  input?.value?.focus();
-  if (dropDownOpen.value === false) {
-    addClickEvent();
-    emit('open', true);
-    emit('scrollDirection', 0);
-
-  }
-};
-function addClickEvent() {
-  document.addEventListener('click', documentClick);
-}
-
-function documentKey(event: Event) {
-  const { key } = event as KeyboardEvent;
-  if (
-    (key === 'f' || key === 'F') &&
-    dropDownOpen.value === false &&
-    !props.prevent
-  ) {
-    emit('open', true);
-    event.preventDefault();
-    input?.value?.focus();
-    addClickEvent();
-  }
-}
-function documentClick(event: Event) {
-  if (
-    dropDownOpen.value &&
-    event.target &&
-    !props.root.contains(event.target as HTMLElement)
-  ) {
-    emit('open', false);
-    document.removeEventListener('click', documentClick);
-    document.removeEventListener('click', documentKey);
-  }
-}
 function documentKeyDown(event: KeyboardEvent) {
   switch (event.key) {
     case 'Escape':
@@ -125,16 +102,66 @@ function documentKeyDown(event: KeyboardEvent) {
   }
 }
 
+function selectInput() {
+  input?.value?.focus();
+  if (dropDownOpen.value === false) {
+    addClickEvent();
+    emit('open', true);
+    emit('scrollDirection', 0);
+  } else {
+    input?.value?.blur();
+    emit('open', false);
+    emit('scrollDirection', 0);
+    document.removeEventListener('click', documentClick);
+  }
+}
+
+function addClickEvent() {
+  document.addEventListener('click', documentClick);
+}
+
+function documentKey(event: Event) {
+  const { key } = event as KeyboardEvent;
+  if (
+    (key === 'f' || key === 'F') &&
+    dropDownOpen.value === false &&
+    !props.prevent
+  ) {
+    emit('open', true);
+    event.preventDefault();
+    input?.value?.focus();
+    addClickEvent();
+  }
+}
+
+function documentClick(event: Event) {
+  if (
+    dropDownOpen.value &&
+    event.target &&
+    !props.root.contains(event.target as HTMLElement)
+  ) {
+    emit('open', false);
+    document.removeEventListener('click', documentClick);
+    document.removeEventListener('click', documentKey);
+    console.log(searchParams.value);
+    if (!searchParams.value || isResult.value) {
+      searchParams.value = savedValue.value;
+    }
+  }
+}
+
 function handleArrowUp() {
   if (dropDownOpen.value && selectedItem.value > 0) {
     emit('scrollDirection', -1);
   }
 }
+
 function handleTabEvent() {
   if (!dropDownOpen.value) {
-    emit('open', true);
+    emit('open', false);
   }
 }
+
 function handleArrowDown() {
   if (dropDownOpen.value && props.coins - 2 >= selectedItem.value) {
     emit('scrollDirection', 1);
@@ -147,6 +174,8 @@ function handleEnterEvent() {
     document.removeEventListener('click', documentClick);
     emit('enter:event');
     emit('open', false);
+  } else {
+    selectInput();
   }
 }
 

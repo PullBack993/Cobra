@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import { ref, nextTick } from 'vue';
 import ArrowIcon from '../assets/BaseIcons/arrow.svg';
+import SearchIcon from '../assets/BaseIcons/search.svg';
 import InputField from './InputField.vue';
-import allCoins from './data/coinglass.json';
 
 interface Props {
   data: string[]; // symbol or period of time
+  withArrowIcon?: boolean;
 }
 
-const props = withDefaults(defineProps<Props>(), {});
+const props = withDefaults(defineProps<Props>(), {
+  withArrowIcon: false,
+});
 const emit = defineEmits(['newValue:input']);
 
 let activeScrollItem = 0;
@@ -20,7 +23,9 @@ const open = ref(false);
 const root = ref<HTMLElement>();
 const topElement = ref<HTMLElement>();
 const currentValue = ref(props.data[0]);
-const coins = ref(allCoins);
+const data = ref<string | string[]>(props.data);
+const savedValue = ref(props.data[0]);
+const noResult = ref(false);
 
 function selectedItem(event: Event) {
   const currentItemValue = (event.target as HTMLElement)?.getAttribute(
@@ -67,13 +72,16 @@ function onInput(value: string) {
   if (value) {
     const searchedCoin = findCoin(value);
     if (searchedCoin.length > 0) {
-      coins.value = searchedCoin;
-      console.log(coins.value);
+      data.value = searchedCoin;
+      noResult.value = false;
     } else {
-      coins.value = [{ name: 'No result' }];
+      data.value = ['No results'];
+      noResult.value = true;
     }
   } else {
-    coins.value = allCoins;
+    noResult.value = false;
+    currentValue.value = savedValue.value;
+    data.value = props.data;
   }
 }
 
@@ -106,10 +114,14 @@ function enterEvent() {
 }
 
 function findCoin(value: string) {
-  const searchedCoins = allCoins.filter((coin: { name: string }) =>
-    coin?.name.includes(value.toUpperCase())
+  const searchedCoins = props.data.filter((coin: string) =>
+    coin?.includes(value.toUpperCase())
   );
   return searchedCoins;
+}
+
+function selectInput() {
+  open.value = true;
 }
 </script>
 
@@ -119,6 +131,7 @@ function findCoin(value: string) {
       class="long__short-value"
       :current-item="currentIndexItem"
       v-if="root"
+      :no-result="noResult"
       :root="root"
       :open="open"
       :coins="coinsLength"
@@ -129,7 +142,22 @@ function findCoin(value: string) {
       @scroll-direction="scrollPosition"
       @enter:event="enterEvent"
     />
-
+    <Arrow-Icon
+      @click="selectInput"
+      :class="[
+        open && !withArrowIcon
+          ? 'long__short-arrow-invisible'
+          : 'long__short-icon long__short-changed-icon',
+        open ? 'long__short-arrow-rotate' : 'long__short-arrow-icon',
+      ]"
+    ></Arrow-Icon>
+    <Search-Icon
+      :class="[
+        open && !withArrowIcon
+          ? 'long__short-icon long__short-changed-icon'
+          : 'long__short-arrow-invisible',
+      ]"
+    ></Search-Icon>
     <div
       class="long__short-dropdown-symbol"
       :class="
@@ -143,13 +171,13 @@ function findCoin(value: string) {
           <li
             class="long__short-item"
             ref="itemList"
-            v-for="(a, index) in coins"
+            v-for="(name, index) in data"
             :currentItem="index"
             :key="index"
             @click="selectedItem"
             :class="index === currentIndexItem ? 'long__short-active' : ''"
           >
-            {{ a.name }}
+            {{ name }}
           </li>
         </ul>
       </div>
@@ -169,16 +197,28 @@ function findCoin(value: string) {
   }
   &-active {
     background-color: $white-2;
+    transition: all 0.3s ease;
+  }
+  &-icon {
+    display: block;
+    position: absolute;
+    right: 0.8rem;
+    top: 0.8rem;
+    cursor: pointer;
+  }
+  &-changed-icon {
+    animation: topToBottom 0.35s ease-in;
   }
   &-arrow-icon {
-    position: absolute;
-    right: 2.8rem;
-    top: 2.9rem;
+    transform: rotate(0);
     transition: all 0.3s ease;
   }
   &-arrow-rotate {
-    transform: rotate(180deg);
+    transform: rotate(-180deg);
     transition: all 0.3s ease;
+  }
+  &-arrow-invisible {
+    display: none;
   }
 
   &-dropdown-symbol {

@@ -10,7 +10,7 @@ router.post("/long-short", async (req, res) => {
     hostname: process.env.BASE_URL,
     port: null,
     path: `/public/v2/long_short?time_type=${time}&symbol=${symbol}`,
-    headers: {   accept: 'application/json', coinglassSecret: "233f9d28b54f4a5e8f86c849035aef1a" },
+    headers: { accept: "application/json", coinglassSecret: process.env.COING_KEY },
   };
   https.get(options, (response) => {
     let data = "";
@@ -20,7 +20,7 @@ router.post("/long-short", async (req, res) => {
     });
     response.on("end", () => {
       console.log(data);
-      res.json(data)
+      res.json(data);
     });
   });
 });
