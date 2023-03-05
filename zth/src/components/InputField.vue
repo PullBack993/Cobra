@@ -9,8 +9,7 @@ interface Props {
   coins?: number;
   prevent?: boolean;
   value?: string;
-  noResult?: boolean
-
+  noResult?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -19,7 +18,7 @@ const props = withDefaults(defineProps<Props>(), {
   coins: 0,
   prevent: true,
   value: '',
-  noResult: false
+  noResult: false,
 });
 const emit = defineEmits([
   'keyArrow',
@@ -37,12 +36,12 @@ const input = ref<HTMLInputElement>();
 const store = useGlobalStore();
 const lengthCoins = ref(0);
 const savedValue = ref(props.value);
-const isResult = ref(false);
+const isNotResult = ref(false);
 
 watch(
   () => props.noResult,
   (newValue) => {
-    isResult.value = newValue;
+    isNotResult.value = newValue;
   }
 );
 
@@ -56,8 +55,12 @@ watch(
 watch(
   () => props.value,
   (newValue) => {
-    searchParams.value = newValue;
-    savedValue.value = newValue;
+    if (newValue !== 'No results') {
+      searchParams.value = newValue;
+      savedValue.value = newValue;
+    } else {
+      isNotResult.value = true;
+    }
   }
 );
 
@@ -143,10 +146,12 @@ function documentClick(event: Event) {
     emit('open', false);
     document.removeEventListener('click', documentClick);
     document.removeEventListener('click', documentKey);
-    console.log(searchParams.value);
-    if (!searchParams.value || isResult.value) {
+    if (!searchParams.value || isNotResult.value) {
       searchParams.value = savedValue.value;
     }
+  } else if (isNotResult.value) {
+    searchParams.value = savedValue.value;
+    emit('onInput', searchParams.value);
   }
 }
 
@@ -157,7 +162,7 @@ function handleArrowUp() {
 }
 
 function handleTabEvent() {
-  if (!dropDownOpen.value) {
+  if (dropDownOpen.value) {
     emit('open', false);
   }
 }
@@ -169,13 +174,18 @@ function handleArrowDown() {
 }
 
 function handleEnterEvent() {
-  if (dropDownOpen.value) {
+  if (dropDownOpen.value && !isNotResult.value) {
     input?.value?.blur();
     document.removeEventListener('click', documentClick);
     emit('enter:event');
     emit('open', false);
+    if (!searchParams.value || isNotResult) {
+      searchParams.value = savedValue.value;
+    }
   } else {
     selectInput();
+    searchParams.value = savedValue.value;
+    emit('onInput', searchParams.value);
   }
 }
 
@@ -190,7 +200,7 @@ function handleEscapeEvent() {
 }
 
 function onInput() {
-  searchParams.value = searchParams.value.replace(/[^a-zA-Z1]/g, '');
+  searchParams.value = searchParams.value.replace(/[^a-zA-Z1234567890]/g, '');
   emit('onInput', searchParams.value);
 }
 </script>
@@ -206,7 +216,6 @@ function onInput() {
       `${open ? 'input-open' : 'input-close'}`,
       `${store.themeDark ? 'bg-dark' : 'bg-light'}`,
     ]"
-    pattern="[a-zA-Z]+"
     v-model="searchParams"
     aria-labelledby="search"
   />
