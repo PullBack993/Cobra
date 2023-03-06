@@ -10,6 +10,7 @@ interface Props {
   prevent?: boolean;
   value?: string;
   noResult?: boolean;
+  readonly?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -28,7 +29,6 @@ const emit = defineEmits([
   'open',
   'enter:event',
 ]);
-
 const dropDownOpen = ref(props.open);
 const searchParams = ref(props.value);
 const selectedItem = ref(props.currentItem);
@@ -149,6 +149,10 @@ function documentClick(event: Event) {
     if (!searchParams.value || isNotResult.value) {
       searchParams.value = savedValue.value;
     }
+    if (searchParams.value !== savedValue.value) {
+      searchParams.value = savedValue.value;
+      emit('onInput', searchParams.value);
+    }
   } else if (isNotResult.value) {
     searchParams.value = savedValue.value;
     emit('onInput', searchParams.value);
@@ -209,6 +213,7 @@ function onInput() {
     @click="selectInput()"
     @keydown="documentKeyDown($event)"
     @input="onInput"
+    :readonly="readonly"
     type="text"
     class="input"
     ref="input"

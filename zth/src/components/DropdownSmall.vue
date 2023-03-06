@@ -7,10 +7,13 @@ import InputField from './InputField.vue';
 interface Props {
   data: string[]; // symbol or period of time
   withArrowIcon?: boolean;
+  readonly?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   withArrowIcon: false,
+  readonly: false,
+
 });
 const emit = defineEmits(['newValue:input']);
 
@@ -24,7 +27,6 @@ const root = ref<HTMLElement>();
 const topElement = ref<HTMLElement>();
 const currentValue = ref(props.data[0]);
 const data = ref<string | string[]>(props.data);
-const savedValue = ref(props.data[0]);
 const noResult = ref(false);
 
 function selectedItem(event: Event) {
@@ -78,10 +80,8 @@ function onInput(value: string) {
       data.value = ['No results'];
       noResult.value = true;
     }
-  } else {
-    noResult.value = false;
-    currentValue.value = savedValue.value;
-    data.value = props.data;
+  } else{
+    data.value = props.data
   }
 }
 
@@ -136,6 +136,7 @@ function selectInput() {
       :open="open"
       :coins="coinsLength"
       :value="currentValue"
+      :readonly="readonly"
       @on-input="onInput"
       @open="onOpen"
       @clear-values="handelClearValue"
@@ -188,7 +189,7 @@ function selectInput() {
 <style scoped lang="scss">
 .long__short {
   &-value {
-    max-width: 11rem;
+    max-width: 12rem;
     cursor: pointer;
     font-size: 1.6rem;
     font-weight: 500;

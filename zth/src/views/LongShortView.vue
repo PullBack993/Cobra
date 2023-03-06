@@ -3,8 +3,6 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import DropdownSmall from '../components/DropdownSmall.vue';
 import allCoins from '../components/data/coinglass.json';
-import ArrowIcon from '../assets/BaseIcons/arrow.svg';
-import SearchIcon from '../assets/BaseIcons/search.svg';
 
 const data = allCoins;
 const currentValue = ref('BTC');
@@ -71,6 +69,7 @@ function reqData() {
           <div class="long__short-period">Period</div>
           <DropdownSmall
             :with-arrow-icon="true"
+            :readonly="true"
             :data="[
               '5 minutes',
               '15 minutes',
