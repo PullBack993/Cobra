@@ -27,7 +27,7 @@ module.exports = {
         config: 'webpack/config.base.js',
       },
       alias: {
-        map: [['@', './src']],
+        map: [['@', 'src']],
         extensions: ['.ts', '.js', '.vue'],
       },
     },

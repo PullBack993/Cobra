@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-import DropdownSmall from '../components/DropdownSmall.vue';
+import DropdownSmall from '@/components/DropdownSmall.vue';
+import GraphicLongShort from '@/components/GraphicLongShort.vue';
 import allCoins from '../components/data/coinglass.json';
 
-const data = allCoins;
+const allowsCoins = allCoins;
 const currentValue = ref('BTC');
 const currentTime = ref('m5');
 
@@ -20,11 +21,12 @@ function timeChange(value: string) {
 onMounted(() => {
   reqData();
 });
+
 function reqData() {
   // loading.value = true;
-  const data1 = { time: currentTime.value, symbol: currentValue.value };
+  const coinData = { time: currentTime.value, symbol: currentValue.value };
   axios
-    .post('http://localhost:3000/exchange/long-short', data1)
+    .post('http://localhost:3000/exchange/long-short', coinData)
     .then((res) => {
       console.log(res);
       // if (!res.data) {
@@ -60,10 +62,7 @@ function reqData() {
       <div class="long__short-chart-select">
         <div class="long__short-chart-select-item">
           <div class="long__short-symbol">Symbol</div>
-          <DropdownSmall
-            :data="data"
-            @new-value:input="valueChange"
-          />
+          <DropdownSmall :data="allowsCoins" @new-value:input="valueChange" />
         </div>
         <div class="long__short-chart-select-item">
           <div class="long__short-period">Period</div>
@@ -85,6 +84,7 @@ function reqData() {
       </div>
     </div>
   </div>
+  <GraphicLongShort></GraphicLongShort>
 </template>
 
 <style scoped lang="scss">
@@ -126,7 +126,5 @@ function reqData() {
     font-size: 1.6rem;
     font-weight: 500;
   }
- 
- 
 }
 </style>

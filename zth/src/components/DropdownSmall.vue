@@ -7,13 +7,12 @@ import InputField from './InputField.vue';
 interface Props {
   data: string[]; // symbol or period of time
   withArrowIcon?: boolean;
-  readonly?: boolean
+  readonly?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   withArrowIcon: false,
   readonly: false,
-
 });
 const emit = defineEmits(['newValue:input']);
 
@@ -80,8 +79,9 @@ function onInput(value: string) {
       data.value = ['No results'];
       noResult.value = true;
     }
-  } else{
-    data.value = props.data
+  } else {
+    data.value = props.data;
+    scrollPosition(0);
   }
 }
 
@@ -101,7 +101,7 @@ function enterEvent() {
     const selectedValue = (
       itemList.value[currentIndexItem.value] as HTMLElement
     ).textContent;
-    currentValue.value = selectedValue || '';
+    currentValue.value = selectedValue || ''; 
     emit('newValue:input', currentValue.value);
     currentIndexItem.value = Number(
       (
