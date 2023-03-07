@@ -101,7 +101,7 @@ function enterEvent() {
     const selectedValue = (
       itemList.value[currentIndexItem.value] as HTMLElement
     ).textContent;
-    currentValue.value = selectedValue || ''; 
+    currentValue.value = selectedValue || '';
     emit('newValue:input', currentValue.value);
     currentIndexItem.value = Number(
       (
@@ -184,6 +184,7 @@ function selectInput() {
       </div>
     </div>
   </div>
+  <br />
 </template>
 
 <style scoped lang="scss">
@@ -223,7 +224,6 @@ function selectInput() {
   }
 
   &-dropdown-symbol {
-    animation: topToBottom 0.35s ease-in;
     margin-top: 0.3rem;
     width: 11rem;
     background: $bg-dark-purple;
@@ -246,12 +246,15 @@ function selectInput() {
     padding: 0.5rem 0;
     display: block;
     scrollbar-width: thin;
-    -webkit-tap-highlight-color: transparent;
     overflow: auto;
     overflow-x: hidden;
     max-height: 19.5rem;
     border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
+    position: absolute;
+    z-index: 3;
+    width: 12rem;
+    background-color: $bg-dark-purple;
 
     &::-webkit-scrollbar {
       width: 1.2rem;

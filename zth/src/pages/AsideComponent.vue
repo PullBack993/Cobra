@@ -119,7 +119,7 @@ onMounted(() => {
     class="sidebar"
     :class="[
       { darkUnActive: dark },
-      `${isToggle ? 'is-expand' : ''}`,
+      `${isToggle ? 'is-expand' : 'test'}`,
       { isOpenAside: isToggle },
     ]"
   >
@@ -198,6 +198,9 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
+.test {
+  transform: translateX(-25rem);
+}
 .hero-image {
   -webkit-mask-image: url('../assets/BaseIcons/zth.svg');
   -webkit-mask-size: cover;
@@ -512,6 +515,11 @@ onMounted(() => {
 }
 
 @media (min-width: $breakpoint_small) {
+
+  //TODO change class name/Adjust all classes
+  .test {
+    transform: translateX(0);
+  }
   .sidebar {
     display: flex;
   }

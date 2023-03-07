@@ -5,8 +5,8 @@
       <div class="graphic__ratio-exchange">
         <div class="bybt-exname-logo graphic__ratio-exchange--logo">
           <img
-            style="margin-top: -3px; width: 2.4rem; height: 2.4rem"
-            alt="a"
+            class="graphic__ratio-exchange--image"
+            alt="btc"
             src="https://cdn.coinglasscdn.com/static/coins/btc@2x.png"
           />
           <div class="graphic__ratio-exchange-name">BTC Statistics&nbsp;</div>
@@ -17,7 +17,7 @@
         <div>
           <div class="graphic__ratio-progress">
             <div class="graphic__ratio-long"></div>
-            <div class="bybt-ls-rate graphic__ratio-values-container">
+            <div class="graphic__ratio-values-container">
               <div class="graphic__ratio-long-value">68.81%</div>
               <div class="graphic__ratio-short-value">31.19%</div>
             </div>
@@ -30,6 +30,7 @@
 
 <style scoped lang="scss">
 .graphic__ratio {
+  margin: 1rem;
   &-container {
     display: flex;
     -webkit-flex-flow: row wrap;
@@ -39,7 +40,7 @@
     row-gap: 2rem;
 
     position: absolute;
-    line-height: 35px;
+    line-height: 3.5rem;
     width: 100%;
   }
   &-exchange {
@@ -62,6 +63,10 @@
       -moz-box-align: center;
       align-items: center;
     }
+    &--image {
+      width: 2.4rem;
+      height: 2.4rem;
+    }
   }
   &-main {
     display: block;
@@ -71,27 +76,27 @@
     max-width: 83.33333333%;
     position: relative;
   }
-  &-view {
-  }
   &-progress {
-    background-color: red;
+    background-color: $chart-red;
     position: relative;
-    height: 35px;
+    height: 3.5rem;
     display: flex;
+    border-radius: 1rem;
   }
   &-long {
     text-align: right;
-    padding-right: 10px;
     -webkit-transition: all 0.3s linear;
     -moz-transition: all 0.3s linear;
     transition: all 0.3s linear;
-    background-color: green;
-    color: green;
-    width: 68.81%;
+    background-color: $chart-green;
+    width: 50%;
+    border-radius: 1rem 0rem 0 1rem;
+    border-style: none outset none none;
+    border-right-color: $black;
   }
   &-values-container {
     position: absolute;
-    line-height: 35px;
+    line-height: 3.5rem;
     width: 100%;
     display: flex;
   }
