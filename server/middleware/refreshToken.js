@@ -52,7 +52,7 @@ function generateToken(user) {
 
 async function updateUser(user, refreshToken) {
   const currentUser = await UserMetaMask.findOne({ _id: user.id });
-  if (currentUser.refreshToken) {
+  if (currentUser?.refreshToken) {
     currentUser.refreshToken = refreshToken;
     await currentUser.save();
   }
