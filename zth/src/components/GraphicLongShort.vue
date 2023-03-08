@@ -1,18 +1,20 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
+import placeHolderLoader from './utils/PlaceHolderLoader.vue';
 
 interface Props {
   coins?: any;
+  loading: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {});
 const coinsData = ref();
-
+const loadingLength = ref(12);
+console.log(props.coins);
 watch(
   () => props.coins,
   (value) => {
     [coinsData.value] = value;
-    console.log(coinsData.value.list[0]);
   }
 );
 </script>
@@ -96,9 +98,45 @@ watch(
       </div>
     </div>
   </div>
+  <div v-if="!coinsData || loading">
+    <div v-for="(_, index) in loadingLength" :key="index">
+      <div class="loader">
+        <placeHolderLoader
+          class="a"
+          :loader-width="15"
+          width-unit="%"
+          :loader-height="3"
+        ></placeHolderLoader>
+
+        <placeHolderLoader
+          class="a"
+          :loader-width="82"
+          width-unit="%"
+          :loader-height="3"
+        ></placeHolderLoader>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped lang="scss">
+.loader {
+  display: flex;
+}
+.a {
+  margin: 1rem;
+  border-radius: 1rem;
+  &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 10rem;
+    color: black;
+    right: 0;
+    bottom: 0;
+    top: 0;
+  }
+}
 .graphic__ratio {
   margin: 1rem;
   row-gap: 4rem;

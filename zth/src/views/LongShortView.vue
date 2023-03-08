@@ -9,6 +9,8 @@ const allowsCoins = allCoins;
 const currentValue = ref('BTC');
 const currentTime = ref('m5');
 const coins = ref();
+const intervalId = ref(0);
+const loading = ref(false);
 
 function valueChange(value: string) {
   currentValue.value = value; // ETH req
@@ -24,8 +26,19 @@ onMounted(() => {
   reqData();
 });
 
+watch(
+  () => [currentTime.value, currentValue.value],
+  ([newTime, newSymbol]) => {
+    clearInterval(intervalId.value);
+    loading.value = true;
+    coins.value = [];
+
+    reqData();
+    intervalId.value = Number(setInterval(reqData, 10000));
+  }
+);
+
 function reqData() {
-  // loading.value = true;
   const coinData = { time: currentTime.value, symbol: currentValue.value };
   axios
     .post('http://localhost:3000/exchange/long-short', coinData)
@@ -33,6 +46,7 @@ function reqData() {
       if (res.status === 200) {
         coins.value = res.data.data;
       }
+      loading.value = false;
       // JSON.stringify(res.data)
       // coins.value = res.data;
       // if (!res.data) {
@@ -50,14 +64,15 @@ function reqData() {
       //   loading.value = false;
     })
     .catch((err) => {
-      console.log(err);
+      loading.value = false;
+      console.error(err);
       //   loading.value = false;
       //   error.value = true;
       //   coinsLength.value = 0;
     });
 }
 
-setInterval(reqData, 10000);
+intervalId.value = Number(setInterval(reqData, 10000));
 </script>
 
 <template>
@@ -92,7 +107,7 @@ setInterval(reqData, 10000);
       </div>
     </div>
   </div>
-  <GraphicLongShort :coins="coins"></GraphicLongShort>
+  <GraphicLongShort :loading="loading" :coins="coins"></GraphicLongShort>
 </template>
 
 <style scoped lang="scss">

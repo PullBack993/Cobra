@@ -74,7 +74,7 @@ function onInput(value: string) {
     const searchedCoin = findCoin(value);
     if (searchedCoin.length > 0) {
       data.value = searchedCoin;
-      
+
       noResult.value = false;
     } else {
       data.value = ['No results'];
@@ -100,13 +100,13 @@ function handelClearValue() {
 function enterEvent() {
   if (itemList.value) {
     const selectedValue = (
-      itemList.value[currentIndexItem.value] as HTMLElement
+      itemList?.value[currentIndexItem?.value] as HTMLElement
     ).textContent;
     currentValue.value = selectedValue || '';
     emit('newValue:input', currentValue.value);
     currentIndexItem.value = Number(
       (
-        itemList.value[currentIndexItem.value] as HTMLElement
+        itemList?.value[currentIndexItem?.value] as HTMLElement
       )?.attributes.getNamedItem('currentItem')?.value
     );
     activeScrollItem = currentIndexItem.value;
