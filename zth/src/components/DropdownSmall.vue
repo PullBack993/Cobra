@@ -74,6 +74,7 @@ function onInput(value: string) {
     const searchedCoin = findCoin(value);
     if (searchedCoin.length > 0) {
       data.value = searchedCoin;
+      
       noResult.value = false;
     } else {
       data.value = ['No results'];

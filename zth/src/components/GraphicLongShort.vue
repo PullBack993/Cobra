@@ -1,25 +1,95 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref, watch } from 'vue';
+
+interface Props {
+  coins?: any;
+}
+
+const props = withDefaults(defineProps<Props>(), {});
+const coinsData = ref();
+
+watch(
+  () => props.coins,
+  (value) => {
+    [coinsData.value] = value;
+    console.log(coinsData.value.list[0]);
+  }
+);
+</script>
 <template>
-  <div class="graphic__ratio">
-    <div class="graphic__ratio-container">
-      <div class="graphic__ratio-exchange">
-        <div class="bybt-exname-logo graphic__ratio-exchange--logo">
-          <img
-            class="graphic__ratio-exchange--image"
-            alt="btc"
-            src="https://cdn.coinglasscdn.com/static/coins/btc@2x.png"
-          />
-          <div class="graphic__ratio-exchange-name">BTC Statistics&nbsp;</div>
+  <div v-if="coinsData">
+    <div class="graphic__ratio">
+      <div class="graphic__ratio-container">
+        <div class="graphic__ratio-exchange">
+          <div class="graphic__ratio-exchange--logo">
+            <img
+              class="graphic__ratio-exchange--image"
+              alt="btc"
+              loading="lazy"
+              :src="coinsData?.symbolLogo"
+            />
+            <div class="graphic__ratio-exchange-name">
+              {{ coinsData?.symbol }} Statistics&nbsp;
+            </div>
+          </div>
+        </div>
+
+        <div class="graphic__ratio-main">
+          <div>
+            <div class="graphic__ratio-progress">
+              <div
+                class="graphic__ratio-long"
+                :style="{ width: Number(coinsData?.longRate) + '%' }"
+              ></div>
+              <div class="graphic__ratio-values-container">
+                <div class="graphic__ratio-long-value">
+                  {{ coinsData?.longRate }}%
+                </div>
+                <div class="graphic__ratio-short-value">
+                  {{ coinsData?.shortRate }}%
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+    </div>
 
-      <div class="graphic__ratio-main">
-        <div>
-          <div class="graphic__ratio-progress">
-            <div class="graphic__ratio-long"></div>
-            <div class="graphic__ratio-values-container">
-              <div class="graphic__ratio-long-value">68.81%</div>
-              <div class="graphic__ratio-short-value">31.19%</div>
+    <div
+      class="graphic__ratio"
+      v-for="(data, index) in coinsData.list"
+      :key="index"
+    >
+      <div class="graphic__ratio-container">
+        <div class="graphic__ratio-exchange">
+          <div class="graphic__ratio-exchange--logo">
+            <img
+              class="graphic__ratio-exchange--image"
+              alt="btc"
+              loading="lazy"
+              :src="data.exchangeLogo"
+            />
+            <div class="graphic__ratio-exchange-name">
+              {{ data.exchangeName }}
+            </div>
+          </div>
+        </div>
+
+        <div class="graphic__ratio-main">
+          <div>
+            <div class="graphic__ratio-progress">
+              <div
+                class="graphic__ratio-long"
+                :style="{ width: Number(data.longRate) + '%' }"
+              ></div>
+              <div class="graphic__ratio-values-container">
+                <div class="graphic__ratio-long-value">
+                  {{ data.longRate }}%
+                </div>
+                <div class="graphic__ratio-short-value">
+                  {{ data.shortRate }}%
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -31,15 +101,14 @@
 <style scoped lang="scss">
 .graphic__ratio {
   margin: 1rem;
+  row-gap: 4rem;
+
   &-container {
     display: flex;
     -webkit-flex-flow: row wrap;
     -moz-box-orient: horizontal;
     -moz-box-direction: normal;
     flex-flow: row wrap;
-    row-gap: 2rem;
-
-    position: absolute;
     line-height: 3.5rem;
     width: 100%;
   }

@@ -19,8 +19,7 @@ router.post("/long-short", async (req, res) => {
       data += chung;
     });
     response.on("end", () => {
-      console.log(data);
-      res.json(data);
+      res.json(JSON.parse(data));
     });
   });
 });

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
 import DropdownSmall from '@/components/DropdownSmall.vue';
 import GraphicLongShort from '@/components/GraphicLongShort.vue';
@@ -8,9 +8,11 @@ import allCoins from '../components/data/coinglass.json';
 const allowsCoins = allCoins;
 const currentValue = ref('BTC');
 const currentTime = ref('m5');
+const coins = ref();
 
 function valueChange(value: string) {
   currentValue.value = value; // ETH req
+  console.log(currentValue.value);
 }
 
 function timeChange(value: string) {
@@ -28,7 +30,11 @@ function reqData() {
   axios
     .post('http://localhost:3000/exchange/long-short', coinData)
     .then((res) => {
-      console.log(res);
+      if (res.status === 200) {
+        coins.value = res.data.data;
+      }
+      // JSON.stringify(res.data)
+      // coins.value = res.data;
       // if (!res.data) {
       //     loading.value = false;
       //     coins.value = '';
@@ -50,6 +56,8 @@ function reqData() {
       //   coinsLength.value = 0;
     });
 }
+
+setInterval(reqData, 10000);
 </script>
 
 <template>
@@ -84,7 +92,7 @@ function reqData() {
       </div>
     </div>
   </div>
-  <GraphicLongShort></GraphicLongShort>
+  <GraphicLongShort :coins="coins"></GraphicLongShort>
 </template>
 
 <style scoped lang="scss">
