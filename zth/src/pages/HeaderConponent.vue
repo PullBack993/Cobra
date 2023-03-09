@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import AuthPopUpComponent from '../components/AuthPopUpComponent.vue';
-import DropdownInputComponent from '../components/DropdownInputComponent.vue';
+import DropdownInputComponent from '../components/DropDownSearchBar.vue';
 import { useGlobalStore } from '../store/global';
 
 const store = useGlobalStore();

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
-import DropdownSmall from '@/components/DropdownSmall.vue';
+import DropdownSmall from '@/components/DropDownLongShort.vue';
 import GraphicLongShort from '@/components/GraphicLongShort.vue';
 import allCoins from '../components/data/coinglass.json';
 

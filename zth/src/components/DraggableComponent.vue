@@ -62,7 +62,6 @@ const onDragEnd = () => {
   isDragging = false;
   console.log(diff);
 
-  // emit
 };
 
 const onDrag = (x) => {
