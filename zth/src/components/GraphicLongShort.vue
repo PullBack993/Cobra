@@ -105,14 +105,14 @@ watch(
           class="a"
           :loader-width="15"
           width-unit="%"
-          :loader-height="3"
+          :loader-height="2.5"
         ></placeHolderLoader>
 
         <placeHolderLoader
           class="a"
           :loader-width="82"
           width-unit="%"
-          :loader-height="3"
+          :loader-height="2.5"
         ></placeHolderLoader>
       </div>
     </div>

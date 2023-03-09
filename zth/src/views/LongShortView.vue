@@ -137,6 +137,10 @@ intervalId.value = Number(setInterval(reqData, 10000));
     flex: 1 0 100%;
     justify-content: flex-end;
     &-item {
+      position: relative;
+height: 3rem;
+width: 14rem;
+margin-bottom: 2rem;
       padding-right: 2rem;
       font-weight: 300;
       color: white;

@@ -196,7 +196,7 @@ function selectInput() {
     font-size: 1.6rem;
     font-weight: 500;
     height: 3rem;
-    position: relative;
+    position: absolute;
   }
   &-active {
     background-color: $white-2;
@@ -229,6 +229,8 @@ function selectInput() {
     width: 11rem;
     background: $bg-dark-purple;
     border-radius: $border-light;
+    top: 3.2rem;
+
 
     &--is-open {
       display: none;
