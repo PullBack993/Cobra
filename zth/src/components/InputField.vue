@@ -153,7 +153,8 @@ function documentClick(event: Event) {
       searchParams.value = savedValue.value;
       emit('onInput', searchParams.value);
     }
-  } else if (isNotResult.value) {
+  }
+  if (isNotResult.value) {
     searchParams.value = savedValue.value;
     emit('onInput', searchParams.value);
   }
@@ -207,6 +208,7 @@ function onInput() {
   searchParams.value = searchParams.value.replace(/[^a-zA-Z1234567890]/g, '');
   emit('onInput', searchParams.value);
 }
+
 </script>
 <template>
   <input

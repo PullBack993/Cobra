@@ -18,6 +18,7 @@ const emit = defineEmits(['newValue:input']);
 
 let activeScrollItem = 0;
 const currentIndexItem = ref(0);
+const savedValue = ref();
 const itemList = ref(null);
 const list = ref<HTMLElement>();
 const coinsLength = ref(props.data.length);
@@ -36,13 +37,13 @@ function selectedItem(event: Event) {
     const currentItemNumber = Number(currentItemValue);
     if (!Number.isNaN(currentItemNumber)) {
       currentIndexItem.value = currentItemNumber;
+      console.log('selected item', currentIndexItem.value);
       activeScrollItem = currentIndexItem.value;
     }
   }
   currentValue.value = (event.target as HTMLElement).textContent || '';
   emit('newValue:input', currentValue.value);
   open.value = false;
-
   scrollPosition(0);
 }
 function scrollPosition(direction: number) {
@@ -70,17 +71,27 @@ function scrollPosition(direction: number) {
   });
 }
 function onInput(value: string) {
+  if (currentIndexItem.value != 0) {
+    savedValue.value = currentIndexItem.value;
+  }
   if (value) {
+    console.log('input', currentIndexItem.value);
+    // savedValue.value = currentIndexItem.value;
+    // console.log('second', currentIndexItem.value)
     const searchedCoin = findCoin(value);
     if (searchedCoin.length > 0) {
       data.value = searchedCoin;
-
       noResult.value = false;
+      currentIndexItem.value = 0;
     } else {
+      currentIndexItem.value = savedValue.value;
       data.value = ['No results'];
       noResult.value = true;
     }
   } else {
+    console.log('else', currentIndexItem.value);
+    currentIndexItem.value = savedValue.value;
+    // currentIndexItem.value = savedValue.value;
     data.value = props.data;
     scrollPosition(0);
   }
@@ -109,6 +120,7 @@ function enterEvent() {
         itemList?.value[currentIndexItem?.value] as HTMLElement
       )?.attributes.getNamedItem('currentItem')?.value
     );
+    console.log('selected item enter', currentIndexItem.value);
     activeScrollItem = currentIndexItem.value;
     scrollPosition(0);
   }
@@ -230,7 +242,6 @@ function selectInput() {
     background: $bg-dark-purple;
     border-radius: $border-light;
     top: 3.2rem;
-
 
     &--is-open {
       display: none;
