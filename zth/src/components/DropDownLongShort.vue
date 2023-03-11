@@ -37,8 +37,9 @@ function selectedItem(event: Event) {
     const currentItemNumber = Number(currentItemValue);
     if (!Number.isNaN(currentItemNumber)) {
       currentIndexItem.value = currentItemNumber;
-      console.log('selected item', currentIndexItem.value);
       activeScrollItem = currentIndexItem.value;
+      savedValue.value = currentIndexItem.value;
+
     }
   }
   currentValue.value = (event.target as HTMLElement).textContent || '';
@@ -71,7 +72,7 @@ function scrollPosition(direction: number) {
   });
 }
 function onInput(value: string) {
-  if (currentIndexItem.value != 0) {
+  if (currentIndexItem.value !== 0) {
     savedValue.value = currentIndexItem.value;
   }
   if (value) {
@@ -89,7 +90,6 @@ function onInput(value: string) {
       noResult.value = true;
     }
   } else {
-    console.log('else', currentIndexItem.value);
     currentIndexItem.value = savedValue.value;
     // currentIndexItem.value = savedValue.value;
     data.value = props.data;
@@ -120,8 +120,8 @@ function enterEvent() {
         itemList?.value[currentIndexItem?.value] as HTMLElement
       )?.attributes.getNamedItem('currentItem')?.value
     );
-    console.log('selected item enter', currentIndexItem.value);
     activeScrollItem = currentIndexItem.value;
+    savedValue.value = currentIndexItem.value;
     scrollPosition(0);
   }
 }

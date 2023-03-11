@@ -37,6 +37,7 @@ body *{
 }
 
 main{
+  margin: 1rem;
   @media (min-width: $breakpoint_small){
     margin: 0 0 0 8.5rem;
   }
@@ -64,4 +65,8 @@ input {
   border: none;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+li,ul{
+  list-style: none;
 }

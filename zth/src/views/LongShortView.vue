@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, onUnmounted } from 'vue';
 import axios from 'axios';
 import DropdownSmall from '@/components/DropDownLongShort.vue';
 import GraphicLongShort from '@/components/GraphicLongShort.vue';
@@ -24,6 +24,10 @@ function timeChange(value: string) {
 }
 onMounted(() => {
   reqData();
+});
+
+onUnmounted(() => {
+  clearInterval(intervalId.value);
 });
 
 watch(
@@ -76,41 +80,44 @@ intervalId.value = Number(setInterval(reqData, 10000));
 </script>
 
 <template>
-  <div class="long__short">
-    <div class="long__short-col">
-      <div class="long__short-title">
-        <span>Exchange {{ currentValue }} Long/Short Ration</span>
-      </div>
-
-      <div class="long__short-chart-select">
-        <div class="long__short-chart-select-item">
-          <div class="long__short-symbol">Symbol</div>
-          <DropdownSmall :data="allowsCoins" @new-value:input="valueChange" />
+  <div class="main-long__short">
+    <div class="long__short">
+      <div class="long__short-col">
+        <div class="long__short-title">
+          <span>Exchange {{ currentValue }} Long/Short Ration</span>
         </div>
-        <div class="long__short-chart-select-item">
-          <div class="long__short-period">Period</div>
-          <DropdownSmall
-            :with-arrow-icon="true"
-            :readonly="true"
-            :data="[
-              '5 minutes',
-              '15 minutes',
-              '30 minutes',
-              '1 hour',
-              '4 hour',
-              '12 hour',
-              '24 hour',
-            ]"
-            @new-value:input="timeChange"
-          />
+
+        <div class="long__short-chart-select">
+          <div class="long__short-chart-select-item">
+            <div class="long__short-symbol">Symbol</div>
+            <DropdownSmall :data="allowsCoins" @new-value:input="valueChange" />
+          </div>
+          <div class="long__short-chart-select-item">
+            <div class="long__short-period">Period</div>
+            <DropdownSmall
+              :with-arrow-icon="true"
+              :readonly="true"
+              :data="[
+                '5 minutes',
+                '15 minutes',
+                '30 minutes',
+                '1 hour',
+                '4 hour',
+                '12 hour',
+                '24 hour',
+              ]"
+              @new-value:input="timeChange"
+            />
+          </div>
         </div>
       </div>
     </div>
+    <GraphicLongShort :loading="loading" :coins="coins"></GraphicLongShort>
   </div>
-  <GraphicLongShort :loading="loading" :coins="coins"></GraphicLongShort>
 </template>
 
 <style scoped lang="scss">
+
 .long__short {
   display: flex;
   margin: 1rem;
@@ -138,9 +145,9 @@ intervalId.value = Number(setInterval(reqData, 10000));
     justify-content: flex-end;
     &-item {
       position: relative;
-height: 3rem;
-width: 14rem;
-margin-bottom: 2rem;
+      height: 3rem;
+      width: 14rem;
+      margin-bottom: 2rem;
       padding-right: 2rem;
       font-weight: 300;
       color: white;
