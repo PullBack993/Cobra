@@ -1,4 +1,47 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import axios from 'axios';
+import { onMounted, ref } from 'vue';
+
+const coins = ref();
+
+onMounted(() => {
+  reqData();
+});
+
+function reqData() {
+  // const coinData = { time: currentTime.value, symbol: currentValue.value };
+  axios
+    .get('http://localhost:3000/exchange/daily-return')
+    .then((res) => {
+      console.log(res.data);
+      if (res.status === 200) {
+      }
+      // loading.value = false;
+      // JSON.stringify(res.data)
+      // coins.value = res.data;
+      // if (!res.data) {
+      //     loading.value = false;
+      //     coins.value = '';
+      //     coinsLength.value = 0;
+      //     error.value = true;
+      //     return;
+      //   }
+      //   // TODO remove console.logs
+      //   coins.value = res.data;
+      //   coinsLength.value = res.data.data.length;
+
+      //   error.value = false;
+      //   loading.value = false;
+    })
+    .catch((err) => {
+      // loading.value = false;
+      console.error(err);
+      //   loading.value = false;
+      //   error.value = true;
+      //   coinsLength.value = 0;
+    });
+}
+</script>
 
 <template>
   <table class="returns">

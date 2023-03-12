@@ -8,8 +8,14 @@ import HeaderComponent from './pages/HeaderConponent.vue';
   <AsideComponent />
   <main>
     <HeaderComponent />
-    <div>
+    <div class="main">
       <router-view></router-view>
     </div>
   </main>
 </template>
+
+<style lang="scss">
+.main {
+  margin: 1rem;
+}
+</style>

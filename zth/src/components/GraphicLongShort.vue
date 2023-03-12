@@ -102,14 +102,14 @@ watch(
     <div v-for="(_, index) in loadingLength" :key="index">
       <div class="loader">
         <placeHolderLoader
-          class="a"
+          class="loader-spliter"
           :loader-width="15"
           width-unit="%"
           :loader-height="2.5"
         ></placeHolderLoader>
 
         <placeHolderLoader
-          class="a"
+          class="loader-spliter"
           :loader-width="82"
           width-unit="%"
           :loader-height="2.5"
@@ -122,19 +122,19 @@ watch(
 <style scoped lang="scss">
 .loader {
   display: flex;
-}
-.a {
-  margin: 1rem;
-  border-radius: 1rem;
-  &::before {
-    content: '';
-    display: block;
-    position: absolute;
-    left: 10rem;
-    color: black;
-    right: 0;
-    bottom: 0;
-    top: 0;
+  &-spliter {
+    margin: 1rem;
+    border-radius: 1rem;
+    &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      left: 10rem;
+      color: black;
+      right: 0;
+      bottom: 0;
+      top: 0;
+    }
   }
 }
 .graphic__ratio {

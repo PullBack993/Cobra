@@ -38,6 +38,7 @@ body *{
 
 main{
   margin: 1rem;
+  overflow: auto;
   @media (min-width: $breakpoint_small){
     margin: 0 0 0 8.5rem;
   }
