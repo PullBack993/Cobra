@@ -60,7 +60,7 @@ function calculateWeeklyChanges(data) {
     if (startOfWeek.getDate() <= date.getDate()) {
       differenceOnDaysBack = date.getDate() - startOfWeek.getDate();
     } else {
-      i = +1
+      i += 1
       continue;
     }
 
@@ -114,7 +114,7 @@ function getWeek(timestamp) {
   // Calculate the timestamp of the start of the week (Sunday)
   const startOfWeekTimestamp = timestamp - dayOfWeek * 86400000;
   // Calculate the timestamp of the end of the week (Saturday)
-  const endOfWeekTimestamp = startOfWeekTimestamp + 7 * 86400000;
+  const endOfWeekTimestamp = startOfWeekTimestamp + 6 * 86400000;
   // Create new Date objects for the start and end of the week
   const startOfWeek = new Date(startOfWeekTimestamp);
   const endOfWeek = new Date(endOfWeekTimestamp);

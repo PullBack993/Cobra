@@ -136,9 +136,9 @@ function getWeek(timestamp) {
   // Calculate the day of the week (0 = Sunday, 1 = Monday, etc.)
   const dayOfWeek = date.getDay();
   // Calculate the timestamp of the start of the week (Sunday)
-  const startOfWeekTimestamp = timestamp - dayOfWeek * 86400000;
+  const startOfWeekTimestamp = timestamp - dayOfWeek + 1 * 86400000;
   // Calculate the timestamp of the end of the week (Saturday)
-  const endOfWeekTimestamp = startOfWeekTimestamp + 6 * 86400000;
+  const endOfWeekTimestamp = startOfWeekTimestamp + 7 * 86400000;
   // Create new Date objects for the start and end of the week
   const startOfWeek = new Date(startOfWeekTimestamp);
   const endOfWeek = new Date(endOfWeekTimestamp);
