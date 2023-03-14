@@ -48,15 +48,13 @@ router.get("/daily-return", async (req, res) => {
   });
 });
 
-
-
 function calculateWeeklyChanges(data) {
   // Create an object to store the weekly changes
   const weeklyChanges = {};
   let weekCounter = 1;
 
   // Loop through the data
-  for (let i = 138; i < data.length; ) {
+  for (let i = 869; i < data.length; ) {
     // Get the date from the timestamp
     const date = new Date(data[i].createTime); // Sat Jan 01 2011 01:00:00 GMT+0100 (Central European Standard Time)
     if (!date) {
@@ -69,6 +67,7 @@ function calculateWeeklyChanges(data) {
     const weekend = getWeek(date);
     const startOfWeek = weekend.startOfWeek;
     const endOfWeek = weekend.endOfWeek;
+
 
     // Check if the week is already in the weeklyChanges object
     if (!weeklyChanges[year]) {
@@ -84,9 +83,6 @@ function calculateWeeklyChanges(data) {
     let differenceOnDaysBack = 0;
     if (startOfWeek.getDate() <= date.getDate()) {
       differenceOnDaysBack = date.getDate() - startOfWeek.getDate();
-    } else {
-      i += 1;
-      continue;
     }
 
     let differenceOnDaysForward = 0;
@@ -135,9 +131,9 @@ function getWeek(timestamp) {
   const date = new Date(timestamp);
   // Calculate the day of the week (0 = Sunday, 1 = Monday, etc.)
   const dayOfWeek = date.getDay();
-  // Calculate the timestamp of the start of the week (Sunday)
-  const startOfWeekTimestamp = timestamp - dayOfWeek + 1 * 86400000;
-  // Calculate the timestamp of the end of the week (Saturday)
+  // Calculate the timestamp of the start of the week (Monday)
+  const startOfWeekTimestamp = timestamp - (dayOfWeek - 1)* 86400000;
+  // Calculate the timestamp of the end of the week (Sunday)
   const endOfWeekTimestamp = startOfWeekTimestamp + 7 * 86400000;
   // Create new Date objects for the start and end of the week
   const startOfWeek = new Date(startOfWeekTimestamp);
@@ -149,7 +145,6 @@ function getWeek(timestamp) {
   };
 }
 
-
 function getWeekNumber(date) {
   const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
   const dayNum = d.getUTCDay() || 7;
@@ -157,27 +152,6 @@ function getWeekNumber(date) {
   const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
   return [d.getUTCFullYear(), Math.ceil(((d - yearStart) / 86400000 + 1) / 7)];
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 function calculatePercentDifference(data, month, type) {
   const years = {};
