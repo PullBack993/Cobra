@@ -31,7 +31,8 @@ function calculateWeeklyChanges(data) {
   let weekCounter = 1;
 
   // Loop through the data
-  for (let i = 4521; i < data.length; ) { // 869 begin 2013 => 4521 1.1.2023
+  for (let i = 4521; i < data.length; ) {
+    // 869 begin 2013 => 4521 1.1.2023
     // Get the date from the timestamp
     const date = new Date(data[i].createTime); // Sat Jan 01 2011 01:00:00 GMT+0100 (Central European Standard Time)
     if (!date) {
@@ -44,10 +45,6 @@ function calculateWeeklyChanges(data) {
     const weekend = getWeek(date);
     const startOfWeek = weekend.startOfWeek;
     const endOfWeek = weekend.endOfWeek;
-    if(startOfWeek.getFullYear() != year){
-      i += 1
-      continue
-    }
 
     // Check if the week is already in the weeklyChanges object
     if (!weeklyChanges[year]) {
@@ -113,9 +110,9 @@ function getWeek(timestamp) {
   // Calculate the day of the week (0 = Sunday, 1 = Monday, etc.)
   const dayOfWeek = date.getDay();
   // Calculate the timestamp of the start of the week (Sunday)
-  const startOfWeekTimestamp = timestamp - (dayOfWeek - 1) * 86400000;
+  const startOfWeekTimestamp = timestamp - dayOfWeek * 86400000;
   // Calculate the timestamp of the end of the week (Saturday)
-  const endOfWeekTimestamp = startOfWeekTimestamp + 6 * 86400000;
+  const endOfWeekTimestamp = startOfWeekTimestamp + 7 * 86400000;
   // Create new Date objects for the start and end of the week
   const startOfWeek = new Date(startOfWeekTimestamp);
   const endOfWeek = new Date(endOfWeekTimestamp);
