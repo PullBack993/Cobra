@@ -19,7 +19,7 @@ https.get(options, (response) => {
   response.on("end", () => {
     // console.log(JSON.parse(data))
     const parseData = JSON.parse(data);
-    const generatedData = calculateWeeklyChanges(parseData.data, 1, "daily");
+    const generatedData = calculatePercentDifferenceDaily(parseData.data, 1, "daily");
     console.log(generatedData);
     // res.json(generatedData);
   });
@@ -65,7 +65,6 @@ function calculateWeeklyChanges(data) {
     let differenceOnDaysForward = 0;
     if (endOfWeek.getDate() >= date.getDate()) {
       differenceOnDaysForward = endOfWeek.getDate() - date.getDate();
-      console.log(differenceOnDaysForward);
       if (differenceOnDaysForward === 0) {
         differenceOnDaysForward += 7;
       }
@@ -73,33 +72,23 @@ function calculateWeeklyChanges(data) {
       const month = date.getMonth();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
       differenceOnDaysForward = daysInMonth - date.getDate() + endOfWeek.getDate();
-      console.log("diferent", differenceOnDaysForward);
     }
 
     // Calculate the percentage difference between the start and end of the week
     if (!data[i + differenceOnDaysForward]) {
-      i += differenceOnDaysForward;
-      continue;
+      differenceOnDaysForward = data.length - i - 1; // 3days
     }
     const difference =
       ((data[i + differenceOnDaysForward].price - data[i - differenceOnDaysBack].price) /
         data[i - differenceOnDaysBack].price) *
       100;
     weeklyChanges[year][weekCounter].difference += difference;
-    console.log("difference", difference);
-    console.log("i", i);
 
     i += differenceOnDaysForward | 7;
-    console.log("i", i);
 
     weekCounter += 1;
   }
-  // // Calculate the average difference for each week
-  // for (const year in weeklyChanges) {
-  //   for (const week in weeklyChanges[year]) {
-  //     weeklyChanges[year][week].difference /= data.length;
-  //   }
-  // }
+
   console.log(weeklyChanges);
   return weeklyChanges;
 }
@@ -123,14 +112,7 @@ function getWeek(timestamp) {
   };
 }
 
-// Helper function to get the week number of a date
-function getWeekNumber(date) {
-  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-  const dayNum = d.getUTCDay() || 7;
-  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  return [d.getUTCFullYear(), Math.ceil(((d - yearStart) / 86400000 + 1) / 7)];
-}
+
 
 function calculatePercentDifferenceDaily(data, month, type) {
   const years = {};

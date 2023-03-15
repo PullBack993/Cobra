@@ -41,7 +41,7 @@ router.get("/daily-return", async (req, res) => {
     response.on("end", () => {
       // console.log(JSON.parse(data))
       const parseData = JSON.parse(data);
-      const generatedData = calculateWeeklyChanges(parseData.data, 1, "daily");
+      const generatedData = calculatePercentDifference(parseData.data, 1, "daily");
       console.log(generatedData);
       res.json(generatedData);
     });
@@ -52,7 +52,9 @@ function calculateWeeklyChanges(data) {
   const weeklyChanges = {};
   let weekCounter = 1;
 
-  for (let i = 869; i < data.length; ) {
+  for (let i = 869; i < data.length; ) { 
+    // 869 begin 2013 => 4521 1.1.2023
+
     const date = new Date(data[i].createTime); 
     if (!date) {
       return;
@@ -81,7 +83,6 @@ function calculateWeeklyChanges(data) {
     let differenceOnDaysForward = 0;
     if (endOfWeek.getDate() >= date.getDate()) {
       differenceOnDaysForward = endOfWeek.getDate() - date.getDate();
-      console.log(differenceOnDaysForward);
       if (differenceOnDaysForward === 0) {
         differenceOnDaysForward += 7;
       }
@@ -89,28 +90,24 @@ function calculateWeeklyChanges(data) {
       const month = date.getMonth();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
       differenceOnDaysForward = daysInMonth - date.getDate() + endOfWeek.getDate();
-      console.log("diferent", differenceOnDaysForward);
     }
 
-    if (!data[i + differenceOnDaysForward]) {
-      i += differenceOnDaysForward;
-      continue;
-    }
+      //Last week of year(not full) calculate difference 
+      if (!data[i + differenceOnDaysForward]) {
+        differenceOnDaysForward = data.length - i - 1; 
+      }
+
     const difference =
       ((data[i + differenceOnDaysForward].price - data[i - differenceOnDaysBack].price) /
         data[i - differenceOnDaysBack].price) *
       100;
     weeklyChanges[year][weekCounter].difference += difference;
-    console.log("difference", difference);
-    console.log("i", i);
 
     i += differenceOnDaysForward | 7;
-    console.log("i", i);
 
     weekCounter += 1;
   }
 
-  console.log(weeklyChanges);
   return weeklyChanges;
 }
 
