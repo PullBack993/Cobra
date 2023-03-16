@@ -19,11 +19,81 @@ https.get(options, (response) => {
   response.on("end", () => {
     // console.log(JSON.parse(data))
     const parseData = JSON.parse(data);
-    const generatedData = calculatePercentDifferenceDaily(parseData.data, 1, "daily");
+    const generatedData = calculateQuarterly(parseData.data, 1, "daily");
     console.log(generatedData);
     // res.json(generatedData);
   });
 });
+
+function calculateQuarterly(data){
+  for (let i = 4156; i < data.length; ) {
+    // Step 1: Convert timestamp into a Date object
+  const date = new Date(data[i].createTime);
+
+  // Step 2: Determine the quarter
+  const quarter = Math.floor(date.getMonth() / 3) + 1;
+
+  // Step 3: Get the starting and ending dates of the quarter
+  const year = date.getFullYear();
+  const startDate = new Date(year, (quarter - 1) * 3, 1);
+  const endDate = new Date(year, quarter * 3, 0);
+
+  // Step 4: Retrieve the prices for the starting and ending dates of the quarter
+  // You will need to replace the below sample prices with your actual data
+  const differenceInDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24 ) + 1);
+  console.log(differenceInDays)
+  const startPrice = data[i].price
+  const endPrice = data[i  + differenceInDays].price
+  console.log((endPrice - startPrice) / endPrice * 100)
+  i += differenceInDays
+  // Step 5: Calculate the percentage change in prices
+
+  }
+}
+
+function calculateMonthlyChanges(data) {
+  const monthlyChanges = {};
+
+  for (let i = 4521; i < data.length; ) {
+    const date = new Date(data[i].createTime);
+    if (!data) return;
+
+    const day = date.getDate();
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const daysInMonth = new Date(year, month, 0).getDate() ;
+
+    if (!monthlyChanges[year]) {
+      monthlyChanges[year] = {};
+      monthlyChanges[year][month] = { difference: 0 };
+    }
+
+    if (!monthlyChanges[year][month]) {
+      monthlyChanges[month] = {};
+    }
+
+    let differenceToNextMonth = daysInMonth; // 27
+    let differenceToBegin = 0;
+    if (day > 1) {
+      differenceToNextMonth = daysInMonth - day;
+      differenceToBegin = day - 1;
+    }
+    const lastData = new Date(data[data.length - 1].createTime).getDate();
+    if (daysInMonth > lastData && !data[i + daysInMonth]) {
+      differenceToNextMonth = lastData - 1
+      
+    }
+    // if month not full is then should calculate until day today
+    const difference =
+      ((data[i + differenceToNextMonth].price - data[i - differenceToBegin].price) /
+        data[i - differenceToBegin].price) *
+      100;
+    monthlyChanges[year][month] = difference;
+
+    i += differenceToNextMonth + 1;
+    console.log(monthlyChanges);
+  }
+}
 
 function calculateWeeklyChanges(data) {
   // Create an object to store the weekly changes
@@ -111,8 +181,6 @@ function getWeek(timestamp) {
     endOfWeek,
   };
 }
-
-
 
 function calculatePercentDifferenceDaily(data, month, type) {
   const years = {};

@@ -41,12 +41,56 @@ router.get("/daily-return", async (req, res) => {
     response.on("end", () => {
       // console.log(JSON.parse(data))
       const parseData = JSON.parse(data);
-      const generatedData = calculatePercentDifference(parseData.data, 1, "daily");
+      const generatedData = calculateMonthlyChanges(parseData.data, 1, "daily");
       console.log(generatedData);
       res.json(generatedData);
     });
   });
 });
+
+function calculateMonthlyChanges(data) {
+  const monthlyChanges = {};
+
+  for (let i = 4521; i < data.length; ) {
+    const date = new Date(data[i].createTime);
+    if (!data) return;
+
+    const day = date.getDate();
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const daysInMonth = new Date(year, month, 0).getDate() ;
+
+    if (!monthlyChanges[year]) {
+      monthlyChanges[year] = {};
+      monthlyChanges[year][month] = { difference: 0 };
+    }
+
+    if (!monthlyChanges[year][month]) {
+      monthlyChanges[month] = {};
+    }
+
+    let differenceToNextMonth = daysInMonth; // 27
+    let differenceToBegin = 0;
+    if (day > 1) {
+      differenceToNextMonth = daysInMonth - day;
+      differenceToBegin = day - 1;
+    }
+    const lastData = new Date(data[data.length - 1].createTime).getDate();
+    if (daysInMonth > lastData && !data[i + daysInMonth]) {
+      differenceToNextMonth = lastData - 1
+      
+    }
+    // if month not full is then should calculate until day today
+    const difference =
+      ((data[i + differenceToNextMonth].price - data[i - differenceToBegin].price) /
+        data[i - differenceToBegin].price) *
+      100;
+    monthlyChanges[year][month] = difference;
+
+    i += differenceToNextMonth + 1;
+  }
+  return monthlyChanges
+}
 
 function calculateWeeklyChanges(data) {
   const weeklyChanges = {};
