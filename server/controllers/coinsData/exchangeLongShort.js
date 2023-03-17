@@ -41,7 +41,7 @@ router.get("/daily-return", async (req, res) => {
     response.on("end", () => {
       // console.log(JSON.parse(data))
       const parseData = JSON.parse(data);
-      const generatedData = calculateMonthlyChanges(parseData.data, 1, "daily");
+      const generatedData = calculatePercentDifference(parseData.data, 3, "daily");
       console.log(generatedData);
       res.json(generatedData);
     });
@@ -76,14 +76,16 @@ function calculateMonthlyChanges(data) {
       differenceToBegin = day - 1;
     }
     const lastData = new Date(data[data.length - 1].createTime).getDate();
+    
     if (daysInMonth > lastData && !data[i + daysInMonth]) {
       differenceToNextMonth = lastData - 1
-      
     }
+    console.log('next', data[i + differenceToNextMonth].price)
+    console.log('before', data[i - differenceToBegin - 1].price)
     // if month not full is then should calculate until day today
     const difference =
-      ((data[i + differenceToNextMonth].price - data[i - differenceToBegin].price) /
-        data[i - differenceToBegin].price) *
+      ((data[i + differenceToNextMonth].price - data[i - differenceToBegin - 1].price) /
+        data[i - differenceToBegin - 1].price) *
       100;
     monthlyChanges[year][month] = difference;
 
@@ -171,7 +173,7 @@ function getWeek(timestamp) {
 function calculatePercentDifference(data, month, type) {
   const years = {};
 
-  for (let i = 4521; i < data.length; i++) {
+  for (let i = 4156; i < data.length; i++) {
     const date = new Date(data[i].createTime);
     const year = date.getFullYear(); //Mon Aug 16 2010 02:00:00 GMT+0200 (Central European Summer Time)
     const monthIndex = date.getMonth() + 1; // 08
@@ -190,9 +192,10 @@ function calculatePercentDifference(data, month, type) {
       const currentPrice = data[i].price;
 
       const calculatePercentageChange = ((currentPrice - prevPrice) / prevPrice) * 100;
-
-      years[year][day] = {};
-      years[year][day] = { change: calculatePercentageChange };
+      if(!years[year][month]){
+        years[year][month] = {};
+      }
+      years[year][month][day] = { change: calculatePercentageChange };
     }
     // if (monthIndex === parseInt(month) && type === "daily") {
     //   if (currentYear === null) {

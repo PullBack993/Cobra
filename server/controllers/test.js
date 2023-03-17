@@ -19,7 +19,7 @@ https.get(options, (response) => {
   response.on("end", () => {
     // console.log(JSON.parse(data))
     const parseData = JSON.parse(data);
-    const generatedData = calculateQuarterly(parseData.data, 1, "daily");
+    const generatedData = calculatePercentDifferenceDaily(parseData.data, 1, "daily");
     console.log(generatedData);
     // res.json(generatedData);
   });
@@ -202,8 +202,10 @@ function calculatePercentDifferenceDaily(data, month, type) {
       const prevPrice = data[i - 1].price;
       const currentPrice = data[i].price;
 
-      const calculatePercentageChange = ((prevPrice - currentPrice) / prevPrice) * 100;
-      years[year][day] = {};
+      const calculatePercentageChange = ((currentPrice - prevPrice) / prevPrice) * 100;
+      if(!years[year][month]){
+        years[year][month] = {};
+      }
       years[year][day] = { difference: calculatePercentageChange };
     }
   }
@@ -211,6 +213,50 @@ function calculatePercentDifferenceDaily(data, month, type) {
     years,
   };
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // const CoinGeckoClient = new CoinGecko();
 // let max = 10;
