@@ -2,6 +2,7 @@
 // const CoinGecko = require("coingecko-api");
 const https = require("https");
 require("dotenv/config");
+const BtcChangeIndicator = require("../models/BtcChange");
 
 const options = {
   method: "GET",
@@ -19,36 +20,67 @@ https.get(options, (response) => {
   response.on("end", () => {
     // console.log(JSON.parse(data))
     const parseData = JSON.parse(data);
-    const generatedData = calculatePercentDifferenceDaily(parseData.data, 1, "daily");
+    const generatedData = calculateQuarterly(parseData.data, 1, "daily");
     console.log(generatedData);
     // res.json(generatedData);
   });
 });
 
-function calculateQuarterly(data){
-  for (let i = 4156; i < data.length; ) {
+function calculateQuarterly(data) {
+  const quarterly = {};
+  let isFullQuarter = false;
+  for (let i = 503; i < data.length; ) {
     // Step 1: Convert timestamp into a Date object
-  const date = new Date(data[i].createTime);
+    let date = new Date(data[i].createTime);
+    const year = date.getFullYear();
+    const firstDayOfMonth = new Date(year, date.getMonth(), 1);
+    let differenceBackDay = 0;
+    if (firstDayOfMonth.getDate() !== date.getDate()) {
+      console.log(firstDayOfMonth)
+      console.log(date)
+      console.log(firstDayOfMonth.getDate())
+      console.log(date.getDate())
+      differenceBackDay = date.getDate() - firstDayOfMonth.getDate();
+      i -= differenceBackDay;
+    }
+    const quarter = Math.floor(date.getMonth() / 3) + 1;
 
-  // Step 2: Determine the quarter
-  const quarter = Math.floor(date.getMonth() / 3) + 1;
+    // Step 3: Get the starting and ending dates of the quarter
+    const startDate = new Date(year, (quarter - 1) * 3, 1);
+    const endDate = new Date(year, quarter * 3, 0);
 
-  // Step 3: Get the starting and ending dates of the quarter
-  const year = date.getFullYear();
-  const startDate = new Date(year, (quarter - 1) * 3, 1);
-  const endDate = new Date(year, quarter * 3, 0);
+    // Step 4: Retrieve the prices for the starting and ending dates of the quarter
+    // You will need to replace the below sample prices with your actual data
+    let differenceInDays = Math.ceil(
+      (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24) 
+    );
+    if (!data[i + differenceInDays]) {
+      differenceInDays = data.length - 1 - i;
+      isFullQuarter = true;
+      console.log(differenceInDays);
+    }
 
-  // Step 4: Retrieve the prices for the starting and ending dates of the quarter
-  // You will need to replace the below sample prices with your actual data
-  const differenceInDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24 ) + 1);
-  console.log(differenceInDays)
-  const startPrice = data[i].price
-  const endPrice = data[i  + differenceInDays].price
-  console.log((endPrice - startPrice) / endPrice * 100)
-  i += differenceInDays
-  // Step 5: Calculate the percentage change in prices
+    if (!quarterly[year]) {
+      quarterly[year] = {};
+      quarterly[year][quarter] = { difference: 0 };
+    }
+    console.log(differenceInDays);
+    console.log('startDate',new Date(data[i ].createTime))
+    console.log('endDate',new Date(data[i  + differenceInDays].createTime))
+    const startPrice = data[i].price;
+    const endPrice = data[i + differenceInDays].price;
 
+    const percentageDifference = calculateDifference(startPrice, endPrice);
+    quarterly[year][quarter] = percentageDifference;
+    if (isFullQuarter) {
+      i += differenceInDays + 2;
+    }
+    i += differenceInDays + 1;
+
+    // Step 5: Calculate the percentage change in prices
   }
+  console.log(quarterly);
+  return quarterly;
 }
 
 function calculateMonthlyChanges(data) {
@@ -61,7 +93,7 @@ function calculateMonthlyChanges(data) {
     const day = date.getDate();
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
-    const daysInMonth = new Date(year, month, 0).getDate() ;
+    const daysInMonth = new Date(year, month, 0).getDate();
 
     if (!monthlyChanges[year]) {
       monthlyChanges[year] = {};
@@ -80,19 +112,23 @@ function calculateMonthlyChanges(data) {
     }
     const lastData = new Date(data[data.length - 1].createTime).getDate();
     if (daysInMonth > lastData && !data[i + daysInMonth]) {
-      differenceToNextMonth = lastData - 1
-      
+      differenceToNextMonth = lastData - 1;
     }
     // if month not full is then should calculate until day today
     const difference =
-      ((data[i + differenceToNextMonth].price - data[i - differenceToBegin].price) /
-        data[i - differenceToBegin].price) *
-      100;
+      calculateDifference()(
+        (data[i + differenceToNextMonth].price - data[i - differenceToBegin].price) /
+          data[i - differenceToBegin].price
+      ) * 100;
     monthlyChanges[year][month] = difference;
 
     i += differenceToNextMonth + 1;
     console.log(monthlyChanges);
   }
+}
+
+function calculateDifference(startPrice, endPrice) {
+  return ((endPrice - startPrice) / startPrice) * 100;
 }
 
 function calculateWeeklyChanges(data) {
@@ -203,7 +239,7 @@ function calculatePercentDifferenceDaily(data, month, type) {
       const currentPrice = data[i].price;
 
       const calculatePercentageChange = ((currentPrice - prevPrice) / prevPrice) * 100;
-      if(!years[year][month]){
+      if (!years[year][month]) {
         years[year][month] = {};
       }
       years[year][day] = { difference: calculatePercentageChange };
@@ -213,50 +249,6 @@ function calculatePercentDifferenceDaily(data, month, type) {
     years,
   };
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // const CoinGeckoClient = new CoinGecko();
 // let max = 10;

@@ -1,6 +1,7 @@
 require("dotenv/config");
 const router = require("express").Router();
 const https = require("https");
+const BtcChangeIndicator = require("../../models/BtcChange");
 
 router.post("/long-short", async (req, res) => {
   console.log(req.body);
@@ -38,27 +39,95 @@ router.get("/daily-return", async (req, res) => {
     response.on("data", (chung) => {
       data += chung;
     });
-    response.on("end", () => {
+    response.on("end", async () => {
       // console.log(JSON.parse(data))
       const parseData = JSON.parse(data);
-      const generatedData = calculatePercentDifference(parseData.data, 3, "daily");
+      const generatedData = calculateQuarterly(parseData.data, 3, "daily");
+      if (generatedData) {
+        const a = new BtcChangeIndicator({
+          name: "BTC",
+          TimeFrameName: "Quarter",
+          Timestamp: generatedData,
+        });
+        await a.save();
+
+        console.log(a);
+      }
       console.log(generatedData);
       res.json(generatedData);
     });
   });
 });
 
+function calculateQuarterly(data) {
+  const quarterly = {};
+  let isFullQuarter = false
+  for (let i = 503; i < data.length; ) {
+    // Step 1: Convert timestamp into a Date object
+    const date = new Date(data[i].createTime);
+
+    // Step 2: Determine the quarter
+    const quarter = Math.floor(date.getMonth() / 3) + 1;
+
+    // Step 3: Get the starting and ending dates of the quarter
+    const year = date.getFullYear();
+    const startDate = new Date(year, (quarter - 1) * 3, 1);
+    const endDate = new Date(year, quarter * 3, 0);
+
+    // Step 4: Retrieve the prices for the starting and ending dates of the quarter
+    // You will need to replace the below sample prices with your actual data
+    let differenceInDays = Math.ceil(
+      (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24) + 1
+    );
+    if(!data[i + differenceInDays]){
+      differenceInDays = (data.length - 1) - i 
+      isFullQuarter = true
+      console.log(differenceInDays)      
+    }
+
+    if (!quarterly[year]) {
+      quarterly[year] = {};
+      quarterly[year][quarter] = { difference: 0 };
+    }
+    console.log(differenceInDays);
+    const startPrice = data[i].price;
+    const endPrice = data[i + differenceInDays].price;
+
+    
+    const percentageDifference = calculateDifference(startPrice, endPrice)
+    quarterly[year][quarter] = percentageDifference;
+    if(isFullQuarter){
+      i += differenceInDays + 2;
+
+    }
+    i += differenceInDays;
+
+    // Step 5: Calculate the percentage change in prices
+  }
+  return quarterly
+}
+
+
+
+function calculateDifference(startPrice, endPrice){
+  return  ((endPrice - startPrice) / startPrice) * 100;
+}
+
+
+
+
+
 function calculateMonthlyChanges(data) {
   const monthlyChanges = {};
 
-  for (let i = 4521; i < data.length; ) {
+  for (let i = 503; i < data.length; ) {
     const date = new Date(data[i].createTime);
     if (!data) return;
 
     const day = date.getDate();
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
-    const daysInMonth = new Date(year, month, 0).getDate() ;
+    const daysInMonth = new Date(year, month, 0).getDate();
 
     if (!monthlyChanges[year]) {
       monthlyChanges[year] = {};
@@ -76,12 +145,12 @@ function calculateMonthlyChanges(data) {
       differenceToBegin = day - 1;
     }
     const lastData = new Date(data[data.length - 1].createTime).getDate();
-    
+
     if (daysInMonth > lastData && !data[i + daysInMonth]) {
-      differenceToNextMonth = lastData - 1
+      differenceToNextMonth = lastData - 1;
     }
-    console.log('next', data[i + differenceToNextMonth].price)
-    console.log('before', data[i - differenceToBegin - 1].price)
+    console.log("next", data[i + differenceToNextMonth].price);
+    console.log("before", data[i - differenceToBegin - 1].price);
     // if month not full is then should calculate until day today
     const difference =
       ((data[i + differenceToNextMonth].price - data[i - differenceToBegin - 1].price) /
@@ -91,17 +160,17 @@ function calculateMonthlyChanges(data) {
 
     i += differenceToNextMonth + 1;
   }
-  return monthlyChanges
+  return monthlyChanges;
 }
 
 function calculateWeeklyChanges(data) {
   const weeklyChanges = {};
   let weekCounter = 1;
 
-  for (let i = 869; i < data.length; ) { 
+  for (let i = 503; i < data.length; ) {
     // 869 begin 2013 => 4521 1.1.2023
 
-    const date = new Date(data[i].createTime); 
+    const date = new Date(data[i].createTime);
     if (!date) {
       return;
     }
@@ -138,10 +207,10 @@ function calculateWeeklyChanges(data) {
       differenceOnDaysForward = daysInMonth - date.getDate() + endOfWeek.getDate();
     }
 
-      //Last week of year(not full) calculate difference 
-      if (!data[i + differenceOnDaysForward]) {
-        differenceOnDaysForward = data.length - i - 1; 
-      }
+    //Last week of year(not full) calculate difference
+    if (!data[i + differenceOnDaysForward]) {
+      differenceOnDaysForward = data.length - i - 1;
+    }
 
     const difference =
       ((data[i + differenceOnDaysForward].price - data[i - differenceOnDaysBack].price) /
@@ -170,58 +239,59 @@ function getWeek(timestamp) {
   };
 }
 
-function calculatePercentDifference(data, month, type) {
+function calculatePercentDifference(data, type) {
   const years = {};
 
-  for (let i = 4156; i < data.length; i++) {
+  for (let i = 503; i < data.length; i++) {
     const date = new Date(data[i].createTime);
     const year = date.getFullYear(); //Mon Aug 16 2010 02:00:00 GMT+0200 (Central European Summer Time)
-    const monthIndex = date.getMonth() + 1; // 08
+    const month = date.getMonth() + 1; // 08
     const day = date.getDate(); // 01
 
     if (!years[year]) {
       years[year] = {};
     }
 
-    if (type === "daily" && monthIndex === month) {
-      if (!data[i - 1]) {
-        years[year][day] = {};
-        continue;
-      }
-      const prevPrice = data[i - 1].price;
-      const currentPrice = data[i].price;
-
-      const calculatePercentageChange = ((currentPrice - prevPrice) / prevPrice) * 100;
-      if(!years[year][month]){
-        years[year][month] = {};
-      }
-      years[year][month][day] = { change: calculatePercentageChange };
+    if (!data[i - 1]) {
+      years[year][day] = {};
+      continue;
     }
-    // if (monthIndex === parseInt(month) && type === "daily") {
-    //   if (currentYear === null) {
-    //     currentYear = year;
-    //     currentMonth = monthIndex;
-    //   }
+    if (!years[year][month]) {
+      years[year][month] = {};
+    }
+    const prevPrice = data[i - 1].price;
+    const currentPrice = data[i].price;
 
-    //   if (year !== currentYear || monthIndex !== currentMonth) {
-    //     // reached the end of the month
-    //     days[currentDay] = (lastPrice - data[currentDay - 2].price) / data[currentDay - 2].price;
-
-    //     // reset for next month
-    //     currentYear = year;
-    //     currentMonth = monthIndex;
-    //     currentDay = 1;
-    //     lastPrice = null;
-    //   }
-
-    //   if (lastPrice !== null) {
-    //     days[currentDay] = (item.price - lastPrice) / lastPrice;
-    //   }
-
-    //   lastPrice = item.price;
-    //   currentDay++;
-    // }
+    const calculatePercentageChange = ((currentPrice - prevPrice) / prevPrice) * 100;
+    if (!years[year][month]) {
+      years[year][month] = {};
+    }
+    years[year][month][day] = { change: calculatePercentageChange };
   }
+  // if (monthIndex === parseInt(month) && type === "daily") {
+  //   if (currentYear === null) {
+  //     currentYear = year;
+  //     currentMonth = monthIndex;
+  //   }
+
+  //   if (year !== currentYear || monthIndex !== currentMonth) {
+  //     // reached the end of the month
+  //     days[currentDay] = (lastPrice - data[currentDay - 2].price) / data[currentDay - 2].price;
+
+  //     // reset for next month
+  //     currentYear = year;
+  //     currentMonth = monthIndex;
+  //     currentDay = 1;
+  //     lastPrice = null;
+  //   }
+
+  //   if (lastPrice !== null) {
+  //     days[currentDay] = (item.price - lastPrice) / lastPrice;
+  //   }
+
+  //   lastPrice = item.price;
+  //   currentDay++;
+  // }
   return {
     years,
   };
