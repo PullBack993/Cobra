@@ -37,9 +37,11 @@ body *{
 }
 
 main{
-  margin: 1rem;
+  margin: 0;
   overflow: auto;
+  height: 100vh;
   @media (min-width: $breakpoint_small){
+    margin: 1rem;
     margin: 0 0 0 8.5rem;
   }
 }

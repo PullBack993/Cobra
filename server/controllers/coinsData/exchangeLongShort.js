@@ -1,5 +1,6 @@
 require("dotenv/config");
 const router = require("express").Router();
+const { truncateSync } = require("fs");
 const https = require("https");
 const BtcChangeIndicator = require("../../models/BtcChange");
 
@@ -25,64 +26,92 @@ router.post("/long-short", async (req, res) => {
   });
 });
 
-router.get("/daily-return", async (req, res) => {
-  const options = {
-    method: "GET",
-    hostname: process.env.BASE_URL,
-    port: null,
-    path: "/public/v2/index/bitcoin_profitable_days",
-    headers: { accept: "application/json", coinglassSecret: process.env.COING_KEY },
-  };
-  https.get(options, (response) => {
-    let data = "";
-
-    response.on("data", (chung) => {
-      data += chung;
+router.post("/daily-return", async (req, res) => {
+  const data = req.body;
+  if (data.type === "day") {
+    const month = data.month;
+    let test = await BtcChangeIndicator.find({
+      "Timestamp.years": { $exists: true },
+      TimeFrameName: "Day",
     });
-    response.on("end", async () => {
-      // console.log(JSON.parse(data))
-      const parseData = JSON.parse(data);
-      const generatedData = calculateQuarterly(parseData.data, 3, "daily");
-      if (generatedData) {
-        const a = new BtcChangeIndicator({
-          name: "BTC",
-          TimeFrameName: "Quarter",
-          Timestamp: generatedData,
-        });
-        await a.save();
-
-        console.log(a);
-      }
-      console.log(generatedData);
-      res.json(generatedData);
+    let filterData = Object.values(test[0].Timestamp.years).filter((year) => {
+      console.log(year[1])
+      return year[1];
     });
-  });
+    console.log(filterData)
+    // const month = data.month;
+    // const year = data.year;
+    // const searchedYear = `Timestamp.years.${year}`;
+    // const query = { [searchedYear]: { $exists: true }, TimeFrameName: "Day" };
+    // console.log(query)
+    // BtcChangeIndicator.findOne(query)
+    //   .then((doc) => {
+    //     console.log(doc);
+    //     const monthData = doc.Timestamp.years;
+    //     res.json(monthData);
+    //   })
+    //   .catch((err) => {
+    //     console.error(err);
+    //     res.json(err);
+    //   });
+  }
+  // const options = {
+  //   method: "GET",
+  //   hostname: process.env.BASE_URL,
+  //   port: null,
+  //   path: "/public/v2/index/bitcoin_profitable_days",
+  //   headers: { accept: "application/json", coinglassSecret: process.env.COING_KEY },
+  // };
+  // https.get(options, (response) => {
+  //   let data = "";
+
+  //   response.on("data", (chung) => {
+  //     data += chung;
+  //   });
+  //   response.on("end", async () => {
+  //     // console.log(JSON.parse(data))
+  //     const parseData = JSON.parse(data);
+  //     const generatedData = calculatePercentDifferenceDaily(parseData.data, 3, "daily");
+  //     if (generatedData) {
+  //       const a = new BtcChangeIndicator({
+  //         name: "BTC",
+  //         TimeFrameName: "Month",
+  //         Timestamp: generatedData,
+  //       });
+  //       await a.save();
+
+  //       console.log(a);
+  //     }
+  //     console.log(generatedData);
+  //     res.json(generatedData);
+  //   });
+  // });
 });
 
 function calculateQuarterly(data) {
   const quarterly = {};
-  let isFullQuarter = false
-  for (let i = 503; i < data.length; ) {
-    // Step 1: Convert timestamp into a Date object
-    const date = new Date(data[i].createTime);
 
-    // Step 2: Determine the quarter
+  for (let i = 503; i < data.length; ) {
+    let date = new Date(data[i].createTime);
+    const year = date.getFullYear();
+    const firstDayOfMonth = new Date(year, date.getMonth(), 1);
+    let differenceBackDay = 0;
+    if (firstDayOfMonth.getDate() !== date.getDate()) {
+      differenceBackDay = date.getDate() - firstDayOfMonth.getDate();
+      i -= differenceBackDay;
+    }
     const quarter = Math.floor(date.getMonth() / 3) + 1;
 
-    // Step 3: Get the starting and ending dates of the quarter
-    const year = date.getFullYear();
     const startDate = new Date(year, (quarter - 1) * 3, 1);
     const endDate = new Date(year, quarter * 3, 0);
 
-    // Step 4: Retrieve the prices for the starting and ending dates of the quarter
-    // You will need to replace the below sample prices with your actual data
     let differenceInDays = Math.ceil(
-      (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24) + 1
+      (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
     );
-    if(!data[i + differenceInDays]){
-      differenceInDays = (data.length - 1) - i 
-      isFullQuarter = true
-      console.log(differenceInDays)      
+    if (!data[i + differenceInDays]) {
+      differenceInDays = data.length - 1 - i;
+      isFullQuarter = true;
+      console.log(differenceInDays);
     }
 
     if (!quarterly[year]) {
@@ -90,32 +119,22 @@ function calculateQuarterly(data) {
       quarterly[year][quarter] = { difference: 0 };
     }
     console.log(differenceInDays);
+    console.log("startDate", new Date(data[i].createTime));
+    console.log("endDate", new Date(data[i + differenceInDays].createTime));
     const startPrice = data[i].price;
     const endPrice = data[i + differenceInDays].price;
 
-    
-    const percentageDifference = calculateDifference(startPrice, endPrice)
-    quarterly[year][quarter] = percentageDifference;
-    if(isFullQuarter){
-      i += differenceInDays + 2;
-
-    }
-    i += differenceInDays;
-
-    // Step 5: Calculate the percentage change in prices
+    const percentageDifference = calculateDifference(startPrice, endPrice);
+    quarterly[year][quarter] = { difference: percentageDifference };
+    i += differenceInDays + 1;
   }
-  return quarterly
+  console.log(quarterly);
+  return quarterly;
 }
 
-
-
-function calculateDifference(startPrice, endPrice){
-  return  ((endPrice - startPrice) / startPrice) * 100;
+function calculateDifference(startPrice, endPrice) {
+  return ((endPrice - startPrice) / startPrice) * 100;
 }
-
-
-
-
 
 function calculateMonthlyChanges(data) {
   const monthlyChanges = {};
@@ -156,7 +175,7 @@ function calculateMonthlyChanges(data) {
       ((data[i + differenceToNextMonth].price - data[i - differenceToBegin - 1].price) /
         data[i - differenceToBegin - 1].price) *
       100;
-    monthlyChanges[year][month] = difference;
+    monthlyChanges[year][month] = { difference: difference };
 
     i += differenceToNextMonth + 1;
   }
@@ -239,7 +258,7 @@ function getWeek(timestamp) {
   };
 }
 
-function calculatePercentDifference(data, type) {
+function calculatePercentDifferenceDaily(data, type) {
   const years = {};
 
   for (let i = 503; i < data.length; i++) {
@@ -266,7 +285,7 @@ function calculatePercentDifference(data, type) {
     if (!years[year][month]) {
       years[year][month] = {};
     }
-    years[year][month][day] = { change: calculatePercentageChange };
+    years[year][month][day] = { difference: calculatePercentageChange };
   }
   // if (monthIndex === parseInt(month) && type === "daily") {
   //   if (currentYear === null) {

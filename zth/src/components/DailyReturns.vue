@@ -5,16 +5,19 @@ import { onMounted, ref } from 'vue';
 const coins = ref();
 
 onMounted(() => {
-  reqData();
+  const month = 3;
+  const type = 'day';
+  const year = '2023';
+  reqData(month, type, year);
 });
 
-function reqData() {
+function reqData( month: number, type: string, year: string) {
   // const coinData = { time: currentTime.value, symbol: currentValue.value };
   axios
-    .get('http://localhost:3000/exchange/daily-return')
+    .post('http://localhost:3000/exchange/daily-return', {month, type, year})
     .then((res) => {
-      console.log(res.data);
       if (res.status === 200) {
+        console.log(res.data)
       }
       // loading.value = false;
       // JSON.stringify(res.data)
