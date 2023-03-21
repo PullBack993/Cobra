@@ -28,64 +28,26 @@ router.post("/long-short", async (req, res) => {
 
 router.post("/daily-return", async (req, res) => {
   const data = req.body;
+  const today = new Date();
+  const yearDiff = new Array(today.getFullYear() - 2012 + 1).fill(0);
+  let result = {};
+
   if (data.type === "day") {
     const month = data.month;
-    let test = await BtcChangeIndicator.find({
-      "Timestamp.years": { $exists: true },
-      TimeFrameName: "Day",
+    const searchParams = {};
+    yearDiff.forEach((_, index) => {
+      searchParams[`Timestamp.years.${2012 + index}.${month}`] = 1;
     });
-    let filterData = Object.values(test[0].Timestamp.years).filter((year) => {
-      console.log(year[1])
-      return year[1];
-    });
-    console.log(filterData)
-    // const month = data.month;
-    // const year = data.year;
-    // const searchedYear = `Timestamp.years.${year}`;
-    // const query = { [searchedYear]: { $exists: true }, TimeFrameName: "Day" };
-    // console.log(query)
-    // BtcChangeIndicator.findOne(query)
-    //   .then((doc) => {
-    //     console.log(doc);
-    //     const monthData = doc.Timestamp.years;
-    //     res.json(monthData);
-    //   })
-    //   .catch((err) => {
-    //     console.error(err);
-    //     res.json(err);
-    //   });
+
+    result = await BtcChangeIndicator.find(
+      { [`Timestamp.years.2012.${month}`]: { $exists: true } },
+      searchParams
+    );
   }
-  // const options = {
-  //   method: "GET",
-  //   hostname: process.env.BASE_URL,
-  //   port: null,
-  //   path: "/public/v2/index/bitcoin_profitable_days",
-  //   headers: { accept: "application/json", coinglassSecret: process.env.COING_KEY },
-  // };
-  // https.get(options, (response) => {
-  //   let data = "";
-
-  //   response.on("data", (chung) => {
-  //     data += chung;
-  //   });
-  //   response.on("end", async () => {
-  //     // console.log(JSON.parse(data))
-  //     const parseData = JSON.parse(data);
-  //     const generatedData = calculatePercentDifferenceDaily(parseData.data, 3, "daily");
-  //     if (generatedData) {
-  //       const a = new BtcChangeIndicator({
-  //         name: "BTC",
-  //         TimeFrameName: "Month",
-  //         Timestamp: generatedData,
-  //       });
-  //       await a.save();
-
-  //       console.log(a);
-  //     }
-  //     console.log(generatedData);
-  //     res.json(generatedData);
-  //   });
-  // });
+  if (data.type === "week") {
+    result = await BtcChangeIndicator.find({ TimeFrameName: "Week" });
+  }
+  res.json(result);
 });
 
 function calculateQuarterly(data) {

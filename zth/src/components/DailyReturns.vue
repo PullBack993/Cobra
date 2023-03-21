@@ -6,11 +6,12 @@ const coins = ref();
 
 onMounted(() => {
   const month = 3;
-  const type = 'day';
+  const type = 'week';
   const year = '2023';
   reqData(month, type, year);
 });
-
+// DAY => month: 3, type: day, year: 2023 => DAY
+// WEEK => month: 0, type: week, year 2023
 function reqData( month: number, type: string, year: string) {
   // const coinData = { time: currentTime.value, symbol: currentValue.value };
   axios
