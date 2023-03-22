@@ -1,24 +1,26 @@
 <script setup lang="ts">
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
+import DropdownSmall from '@/components/DropDownLongShort.vue';
 
 const coins = ref();
+const currentType = ['a', 'b', 'c'];
 
 onMounted(() => {
   const month = 3;
-  const type = 'week';
+  const type = 'quarter';
   const year = '2023';
   reqData(month, type, year);
 });
 // DAY => month: 3, type: day, year: 2023 => DAY
 // WEEK => month: 0, type: week, year 2023
-function reqData( month: number, type: string, year: string) {
+function reqData(month: number, type: string, year: string) {
   // const coinData = { time: currentTime.value, symbol: currentValue.value };
   axios
-    .post('http://localhost:3000/exchange/daily-return', {month, type, year})
+    .post('http://localhost:3000/exchange/daily-return', { month, type, year })
     .then((res) => {
       if (res.status === 200) {
-        console.log(res.data)
+        console.log(res.data);
       }
       // loading.value = false;
       // JSON.stringify(res.data)
@@ -48,21 +50,23 @@ function reqData( month: number, type: string, year: string) {
 </script>
 
 <template>
+  <div class="returns__select-time">Symbol</div>
+  <DropdownSmall :data="currentType" />
   <table class="returns">
-    <tr class="returns-date">
-      <th class="returns-date--item">Time</th>
-      <th class="returns-date--item">January</th>
-      <th class="returns-date--item">February</th>
-      <th class="returns-date--item">March</th>
-      <th class="returns-date--item">April</th>
-      <th class="returns-date--item"><span>May</span></th>
-      <th class="returns-date--item"><span>June</span></th>
-      <th class="returns-date--item"><span>July</span></th>
-      <th class="returns-date--item"><span>August</span></th>
-      <th class="returns-date--item"><span>September</span></th>
-      <th class="returns-date--item"><span>October</span></th>
-      <th class="returns-date--item"><span>November</span></th>
-      <th class="returns-date--item"><span>December</span></th>
+    <tr class="returns__date">
+      <th class="returns__date--item">Time</th>
+      <th class="return__date--item">January</th>
+      <th class="returns__date--item">February</th>
+      <th class="returns__date--item">March</th>
+      <th class="returns__date--item">April</th>
+      <th class="returns__date--item"><span>May</span></th>
+      <th class="returns__date--item"><span>June</span></th>
+      <th class="returns__date--item"><span>July</span></th>
+      <th class="returns__date--item"><span>August</span></th>
+      <th class="returns__date--item"><span>September</span></th>
+      <th class="returns__date--item"><span>October</span></th>
+      <th class="returns__date--item"><span>November</span></th>
+      <th class="returns__date--item"><span>December</span></th>
     </tr>
     <tr class="returns-year1">
       <td class="returns-year--item">2023</td>
@@ -105,7 +109,7 @@ function reqData( month: number, type: string, year: string) {
       // padding: 1rem;
     }
   }
-  &-date {
+  &__date {
     // display: flex;
     // list-style: none;
     color: white;

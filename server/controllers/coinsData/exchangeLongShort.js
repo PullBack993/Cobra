@@ -47,6 +47,12 @@ router.post("/daily-return", async (req, res) => {
   if (data.type === "week") {
     result = await BtcChangeIndicator.find({ TimeFrameName: "Week" });
   }
+  if (data.type === "month") {
+    result = await BtcChangeIndicator.find({ TimeFrameName: "Month" });
+  }
+  if (data.type === "quarter") {
+    result = await BtcChangeIndicator.find({ TimeFrameName: "Quarter" });
+  }
   res.json(result);
 });
 
