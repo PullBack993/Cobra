@@ -31,7 +31,7 @@ router.post("/daily-return", async (req, res) => {
   const today = new Date();
   const yearDiff = new Array(today.getFullYear() - 2012 + 1).fill(0);
   let result = {};
-
+  
   if (data.type === "day") {
     const month = data.month;
     const searchParams = {};

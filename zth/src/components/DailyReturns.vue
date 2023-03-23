@@ -3,12 +3,13 @@ import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import DropdownSmall from '@/components/DropDownLongShort.vue';
 
-const coins = ref();
+const data = ref();
+const days = ref<string[]>();
 const currentType = ['a', 'b', 'c'];
 
 onMounted(() => {
-  const month = 3;
-  const type = 'quarter';
+  const month = 1;
+  const type = 'day';
   const year = '2023';
   reqData(month, type, year);
 });
@@ -21,6 +22,10 @@ function reqData(month: number, type: string, year: string) {
     .then((res) => {
       if (res.status === 200) {
         console.log(res.data);
+        // res.data[0].Timestamp => Quarter
+        data.value = Object.values(res.data[0].Timestamp.years['2012']['1']);
+        
+        days.value = Object.keys(data.value['2012']['1']);
       }
       // loading.value = false;
       // JSON.stringify(res.data)
@@ -50,88 +55,118 @@ function reqData(month: number, type: string, year: string) {
 </script>
 
 <template>
-  <div class="returns__select-time">Symbol</div>
-  <DropdownSmall :data="currentType" />
-  <table class="returns">
-    <tr class="returns__date">
-      <th class="returns__date--item">Time</th>
-      <th class="return__date--item">January</th>
-      <th class="returns__date--item">February</th>
-      <th class="returns__date--item">March</th>
-      <th class="returns__date--item">April</th>
-      <th class="returns__date--item"><span>May</span></th>
-      <th class="returns__date--item"><span>June</span></th>
-      <th class="returns__date--item"><span>July</span></th>
-      <th class="returns__date--item"><span>August</span></th>
-      <th class="returns__date--item"><span>September</span></th>
-      <th class="returns__date--item"><span>October</span></th>
-      <th class="returns__date--item"><span>November</span></th>
-      <th class="returns__date--item"><span>December</span></th>
+  <div class="returns">
+    <div class="returns__chart-select-item">
+      <div class="returns__chart-select-item">Month</div>
+      <DropdownSmall
+        :data="[
+          'January',
+          'February',
+          'March',
+          'April',
+          'May',
+          'June',
+          'July',
+          'August',
+          'September',
+          'October',
+          'November',
+          'December',
+        ]"
+        :readonly="true"
+        :with-arrow-icon="true"
+      />
+    </div>
+    <div class="returns__chart-select-item">
+      <div class="returns__chart-select-item">Type</div>
+
+      <DropdownSmall
+        :data="['Daily', 'Weekly', 'Monthly', 'Quarterly']"
+        :readonly="true"
+        :with-arrow-icon="true"
+      />
+    </div>
+    <div class="returns__chart-select-item">
+      <div class="returns__chart-select-item">Symbol</div>
+
+      <DropdownSmall :data="['BTC']" :readonly="true" :with-arrow-icon="true" />
+    </div>
+  </div>
+
+  <table class="returns__table" v-if="data">
+    <tr class="returns__table-date">
+      <th class="returns__table-date--time">Time</th>
+      <th class="returns__table-date--item" v-for="(day, i) in days" :key="i">
+        {{ day }}
+      </th>
     </tr>
-    <tr class="returns-year1">
-      <td class="returns-year--item">2023</td>
-      <td class="returns-percentage--ratio">39.63%</td>
-      <td class="returns-percentage--ratio">0.03%</td>
-      <td class="returns-percentage--ratio">-13.53%</td>
+    <tr class="returns__table" v-for="(time, index) in data" :key="index">
+      <td class="returns__table-year--item">{{ index }}</td>
+      <td class="returns__table-year-percentage--ratio">
+        {{ time }}
+      </td>
     </tr>
-    <tr class="returns-year1">
-      <td class="returns-year--item">2022</td>
-      <td class="returns-percentage--ratio">-15.6%</td>
-      <td class="returns-percentage--ratio">-15.6%</td>
-      <td class="returns-percentage--ratio">-15.6%</td>
-      <td class="returns-percentage--ratio">-15.6%</td>
-      <td class="returns-percentage--ratio">-15.6%</td>
-      <td class="returns-percentage--ratio">-37.28%</td>
-      <td class="returns-percentage--ratio">16.8%</td>
-      <td class="returns-percentage--ratio">-13.88%</td>
-      <td class="returns-percentage--ratio">-3.12%</td>
-      <td class="returns-percentage--ratio">-5.56%</td>
-      <td class="returns-percentage--ratio">-16.23%</td>
-      <td class="returns-percentage--ratio">-3.59%</td>
-    </tr>
+
+    <tr />
   </table>
 </template>
 
 <style lang="scss" scoped>
 .returns {
+  display: flex;
+  flex: 1 0 100%;
+  justify-content: flex-end;
+  &__chart-select-item {
+    margin-left: 1.1rem;
+    margin-bottom: 0.5rem;
+    font-size: 1.6rem;
+    font-weight: 500;
+    width: 12rem;
+    color: white;
+  }
+}
+
+.returns__table {
   font-family: arial, sans-serif;
   border-collapse: collapse;
   width: 100%;
   color: white;
-  &-year {
-    color: wheat;
-    // float: left;
-    // margin-right: 2rem;
-    &--item {
-      border: 1px solid #dddddd;
-      text-align: left;
-      padding: 8px;
-      // padding: 1rem;
-    }
-  }
-  &__date {
-    // display: flex;
-    // list-style: none;
-    color: white;
-    // padding: 1rem;
-    &--item {
-      border: 1px solid #dddddd;
-      text-align: left;
-      padding: 8px;
-      text-align: center;
+  margin-top: 4rem;
 
-      // margin-right: 1rem;
-      // padding-right: 1rem;
-    }
-  }
-  &-percentage {
-    // display: flex;
+  &-year-percentage {
     &--ratio {
       text-align: center;
-      // visibility: unset;
-      // padding: 1rem;
-      // background: green;
-      // margin-right: 1rem;
+    }
+  }
+
+  &-year--item {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+  &-date {
+    color: white;
+
+    &--item {
+      border: 1px solid #dddddd;
+      text-align: center;
+
+      padding: 8px;
+    }
+    &--time {
+      text-align: left;
+    }
+  }
+  &-date {
+    color: white;
+    &--item {
+      position: relative;
+      height: 3rem;
+      width: 14rem;
+      margin-bottom: 2rem;
+      padding-right: 2rem;
+      font-weight: 300;
+      color: white;
     }
   }
 }

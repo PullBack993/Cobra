@@ -51,28 +51,11 @@ function reqData() {
         coins.value = res.data.data;
       }
       loading.value = false;
-      // JSON.stringify(res.data)
-      // coins.value = res.data;
-      // if (!res.data) {
-      //     loading.value = false;
-      //     coins.value = '';
-      //     coinsLength.value = 0;
-      //     error.value = true;
-      //     return;
-      //   }
-      //   // TODO remove console.logs
-      //   coins.value = res.data;
-      //   coinsLength.value = res.data.data.length;
-
-      //   error.value = false;
-      //   loading.value = false;
     })
     .catch((err) => {
       loading.value = false;
       console.error(err);
-      //   loading.value = false;
-      //   error.value = true;
-      //   coinsLength.value = 0;
+    
     });
 }
 
