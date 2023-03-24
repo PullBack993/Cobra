@@ -5,6 +5,7 @@ import DropdownSmall from '@/components/DropDownLongShort.vue';
 
 const data = ref();
 const days = ref<string[]>();
+const a = ref();
 const currentType = ['a', 'b', 'c'];
 
 onMounted(() => {
@@ -23,9 +24,11 @@ function reqData(month: number, type: string, year: string) {
       if (res.status === 200) {
         console.log(res.data);
         // res.data[0].Timestamp => Quarter
-        data.value = Object.values(res.data[0].Timestamp.years['2012']['1']);
-        
-        days.value = Object.keys(data.value['2012']['1']);
+        a.value = res.data[0].Timestamp.years;
+        data.value = Object.values(a.value['2012']);
+        console.log(a.value);
+
+        days.value = Object.keys(a.value['2012']['1']);
       }
       // loading.value = false;
       // JSON.stringify(res.data)
@@ -100,14 +103,17 @@ function reqData(month: number, type: string, year: string) {
         {{ day }}
       </th>
     </tr>
-    <tr class="returns__table" v-for="(time, index) in data" :key="index">
+    <tr class="returns__table" v-for="(time, index) in a" :key="index">
       <td class="returns__table-year--item">{{ index }}</td>
-      <td class="returns__table-year-percentage--ratio">
-        {{ time }}
+      <td
+        class="returns__table-year-percentage--ratio"
+        v-for="(d, i) in days"
+        :key="i"
+      >
+        {{ Object.values(a[index])[0][d].difference }}
       </td>
     </tr>
 
-    <tr />
   </table>
 </template>
 
