@@ -47,15 +47,12 @@ function reqData() {
   axios
     .post('http://localhost:3000/exchange/long-short', coinData)
     .then((res) => {
-      if (res.status === 200) {
-        coins.value = res.data.data;
-      }
+      coins.value = res.data.data;
       loading.value = false;
     })
     .catch((err) => {
       loading.value = false;
       console.error(err);
-    
     });
 }
 
@@ -100,7 +97,6 @@ intervalId.value = Number(setInterval(reqData, 10000));
 </template>
 
 <style scoped lang="scss">
-
 .long__short {
   display: flex;
   margin: 1rem;

@@ -3,27 +3,67 @@ const router = require("express").Router();
 const { truncateSync } = require("fs");
 const https = require("https");
 const BtcChangeIndicator = require("../../models/BtcChange");
+const puppeteer = require("puppeteer");
 
 router.post("/long-short", async (req, res) => {
-  console.log(req.body);
-  const time = req.body.time;
-  const symbol = req.body.symbol.toUpperCase();
-  const options = {
-    hostname: process.env.BASE_URL,
-    port: null,
-    path: `/public/v2/long_short?time_type=${time}&symbol=${symbol}`,
-    headers: { accept: "application/json", coinglassSecret: process.env.COING_KEY },
-  };
-  https.get(options, (response) => {
-    let data = "";
+  (async () => {
+    try {
+      const browser = await puppeteer.launch();
+      const page = await browser.newPage();
 
-    response.on("data", (chung) => {
-      data += chung;
-    });
-    response.on("end", () => {
-      res.json(JSON.parse(data));
-    });
-  });
+      await page.goto("https://www.coinglass.com/LongShortRatio");
+
+      await page.click(".ant-select-selection-search");
+      await page.type('.ant-select-selection-search', 'ETH');
+      await page.keyboard.press("Enter");
+
+      await page.waitForSelector(".bybt-ls-rate");
+
+      const elements = await page.$$(".bybt-ls-rate");
+
+      const numbers = await Promise.all(
+        elements.map(async (element) => {
+          const firstNumberHandle = await element.evaluateHandle((el) =>
+            el.querySelector("div:first-child").textContent.trim()
+          );
+          const secondNumberHandle = await element.evaluateHandle((el) =>
+            el.querySelector("div:last-child").textContent.trim()
+          );
+          const firstNumber = await firstNumberHandle.jsonValue();
+          const secondNumber = await secondNumberHandle.jsonValue();
+          return [parseFloat(firstNumber), parseFloat(secondNumber)];
+        })
+      );
+
+      console.log(numbers); // should output an array of arrays containing the parsed numbers
+
+      await browser.close();
+    } catch (err) {
+      console.log(err);
+    }
+  })();
+  res.json("");
+
+  // console.log(req.body);
+  // const time = req.body.time;
+  // const symbol = req.body.symbol.toUpperCase();
+  // const options = {
+  //   hostname: process.env.BASE_URL,
+  //   port: null,
+  //   path: `/public/v2/long_short?time_type=${time}&symbol=${symbol}`,
+  //   headers: { accept: "application/json", coinglassSecret: process.env.COING_KEY },
+  // };
+  // https.get(options, (response) => {
+  //   let data = "";
+
+  //   response.on("data", (chung) => {
+  //     data += chung;
+  //   });
+  //   response.on("end", () => {
+  //     console.log(JSON.parse(data));
+  //     res.json(JSON.parse(data));
+  //   });
+  // });
 });
 
 router.post("/daily-return", async (req, res) => {
@@ -31,7 +71,7 @@ router.post("/daily-return", async (req, res) => {
   const today = new Date();
   const yearDiff = new Array(today.getFullYear() - 2012 + 1).fill(0);
   let result = {};
-  
+
   if (data.type === "day") {
     const month = data.month;
     const searchParams = {};

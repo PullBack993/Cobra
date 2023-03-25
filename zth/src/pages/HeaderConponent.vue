@@ -8,7 +8,7 @@ const store = useGlobalStore();
 
 onMounted(() => {
   store.isLogin();
-  store.a();
+  // store.a();
 });
 </script>
 

@@ -12,7 +12,6 @@ html {
   font-size: 62.5%; // Root font size 10px=1rem
   scroll-behavior: smooth;
   pointer-events: auto;
-  max-width: 1500px;
   margin: auto;
 }
 
@@ -37,9 +36,9 @@ body *{
 }
 
 main{
+  max-width: 150rem;
   margin: 0;
-  overflow: auto;
-  height: 100vh;
+  overflow: hidden;
   @media (min-width: $breakpoint_small){
     margin: 1rem;
     margin: 0 0 0 8.5rem;

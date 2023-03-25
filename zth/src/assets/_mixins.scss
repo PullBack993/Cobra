@@ -1,0 +1,15 @@
+@mixin customHorizontalScrollbar ($height: 0.8rem, $color: $main-purple, $border-radius: 1rem){
+    //Firefox
+    scrollbar-color: $color transparent;
+    -webkit-tap-highlight-color: transparent;
+
+    // Chrome
+    &::-webkit-scrollbar {
+        height: $height
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: $color;
+        border-radius: $border-radius;
+    }
+}

@@ -5,7 +5,7 @@ import DropdownSmall from '@/components/DropDownLongShort.vue';
 
 const data = ref();
 const days = ref<string[]>();
-const a = ref();
+const baseData = ref();
 const currentType = ['a', 'b', 'c'];
 
 onMounted(() => {
@@ -24,11 +24,10 @@ function reqData(month: number, type: string, year: string) {
       if (res.status === 200) {
         console.log(res.data);
         // res.data[0].Timestamp => Quarter
-        a.value = res.data[0].Timestamp.years;
-        data.value = Object.values(a.value['2012']);
-        console.log(a.value);
+        baseData.value = res.data[0].Timestamp.years;
+        data.value = Object.values(baseData.value['2012']);
 
-        days.value = Object.keys(a.value['2012']['1']);
+        days.value = Object.keys(baseData.value['2012']['1']);
       }
       // loading.value = false;
       // JSON.stringify(res.data)
@@ -95,26 +94,26 @@ function reqData(month: number, type: string, year: string) {
       <DropdownSmall :data="['BTC']" :readonly="true" :with-arrow-icon="true" />
     </div>
   </div>
-
-  <table class="returns__table" v-if="data">
-    <tr class="returns__table-date">
-      <th class="returns__table-date--time">Time</th>
-      <th class="returns__table-date--item" v-for="(day, i) in days" :key="i">
-        {{ day }}
-      </th>
-    </tr>
-    <tr class="returns__table" v-for="(time, index) in a" :key="index">
-      <td class="returns__table-year--item">{{ index }}</td>
-      <td
-        class="returns__table-year-percentage--ratio"
-        v-for="(d, i) in days"
-        :key="i"
-      >
-        {{ Object.values(a[index])[0][d].difference }}
-      </td>
-    </tr>
-
-  </table>
+  <div class="returns__container">
+    <table class="returns__table" v-if="data">
+      <tr class="returns__table-date">
+        <th class="returns__table-date--time">Time</th>
+        <th class="returns__table-date--item" v-for="(day, i) in days" :key="i">
+          {{ day }}
+        </th>
+      </tr>
+      <tr class="returns__table" v-for="(time, index) in baseData" :key="index">
+        <td class="returns__table-year--item">{{ index }}</td>
+        <td
+          class="returns__table-year-percentage--ratio"
+          v-for="(d, i) in days"
+          :key="i"
+        >
+          {{ Object.values(baseData[index])[0][d].difference.toFixed(2) }}
+        </td>
+      </tr>
+    </table>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -122,6 +121,15 @@ function reqData(month: number, type: string, year: string) {
   display: flex;
   flex: 1 0 100%;
   justify-content: flex-end;
+
+  &__container {
+    display: flex;
+    flex-flow: wrap;
+    width: 100%;
+    overflow: auto;
+    @include customHorizontalScrollbar()
+  }
+
   &__chart-select-item {
     margin-left: 1.1rem;
     margin-bottom: 0.5rem;
@@ -134,7 +142,7 @@ function reqData(month: number, type: string, year: string) {
 
 .returns__table {
   font-family: arial, sans-serif;
-  border-collapse: collapse;
+  // border-collapse: collapse;
   width: 100%;
   color: white;
   margin-top: 4rem;
@@ -142,6 +150,7 @@ function reqData(month: number, type: string, year: string) {
   &-year-percentage {
     &--ratio {
       text-align: center;
+      background-color: $chart-green;
     }
   }
 
@@ -150,22 +159,12 @@ function reqData(month: number, type: string, year: string) {
     text-align: left;
     padding: 8px;
   }
+
   &-date {
     color: white;
-
     &--item {
       border: 1px solid #dddddd;
       text-align: center;
-
-      padding: 8px;
-    }
-    &--time {
-      text-align: left;
-    }
-  }
-  &-date {
-    color: white;
-    &--item {
       position: relative;
       height: 3rem;
       width: 14rem;
@@ -173,6 +172,7 @@ function reqData(month: number, type: string, year: string) {
       padding-right: 2rem;
       font-weight: 300;
       color: white;
+      min-width: 10rem;
     }
   }
 }
