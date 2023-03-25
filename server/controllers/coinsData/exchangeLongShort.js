@@ -4,18 +4,26 @@ const { truncateSync } = require("fs");
 const https = require("https");
 const BtcChangeIndicator = require("../../models/BtcChange");
 const puppeteer = require("puppeteer");
+let isRequestDone = true;
 
 router.post("/long-short", async (req, res) => {
-  (async () => {
+  console.log("request made");
+  if (!isRequestDone) {
+    return;
+  }
+  let a = (async () => {
     try {
+      isRequestDone = false;
       const browser = await puppeteer.launch();
       const page = await browser.newPage();
 
       await page.goto("https://www.coinglass.com/LongShortRatio");
 
-      await page.click(".ant-select-selection-search");
-      await page.type('.ant-select-selection-search', 'ETH');
+      await page.click("#rc_select_2");
+      await page.type("#rc_select_2", "GALA");
+
       await page.keyboard.press("Enter");
+      await page.waitForTimeout(800);
 
       await page.waitForSelector(".bybt-ls-rate");
 
@@ -36,6 +44,7 @@ router.post("/long-short", async (req, res) => {
       );
 
       console.log(numbers); // should output an array of arrays containing the parsed numbers
+      isRequestDone = true;
 
       await browser.close();
     } catch (err) {

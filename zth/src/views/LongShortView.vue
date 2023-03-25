@@ -56,7 +56,7 @@ function reqData() {
     });
 }
 
-intervalId.value = Number(setInterval(reqData, 10000));
+intervalId.value = Number(setInterval(reqData, 12000));
 </script>
 
 <template>
