@@ -5,32 +5,114 @@ const https = require("https");
 const BtcChangeIndicator = require("../../models/BtcChange");
 const puppeteer = require("puppeteer");
 let isRequestDone = true;
+let browserActive = false;
+let browser;
+let searchedValue = "";
+let searchedValueOld = "";
 
 router.post("/long-short", async (req, res) => {
-  console.log("request made");
-  if (!isRequestDone) {
-    return;
+  const symbol = req.body.symbol.toUpperCase();
+  searchedValue = req.body.symbol;
+  const time = req.body.time;
+  console.log(time)
+
+
+  const result = [];
+  console.log(req.body.symbol !== searchedValueOld);
+  console.log("req body", req.body.symbol);
+  console.log('old value', searchedValueOld)
+
+  if (!isRequestDone && (req.body.symbol !== searchedValueOld) && browserActive) {
+    console.log(req.body.symbol)
+    console.log("cancel");
+    browser.close();
   }
-  let a = (async () => {
+  
+  if(!isRequestDone && (req.body.symbol === searchedValueOld) ){
+    console.log('return')
+    return
+  }
+  searchedValueOld = req.body.symbol;
+  (async () => {
     try {
       isRequestDone = false;
-      const browser = await puppeteer.launch();
+      // { headless: false, defaultViewport: false } for Debugging
+
+      browser = await puppeteer.launch({headless: false, defaultViewport: false });
+      browserActive = true
       const page = await browser.newPage();
 
       await page.goto("https://www.coinglass.com/LongShortRatio");
 
       await page.click("#rc_select_2");
-      await page.type("#rc_select_2", "GALA");
-
+      await page.type("#rc_select_2", `${symbol}`);
       await page.keyboard.press("Enter");
+
+      await page.click("#rc_select_3"); /// check if it 5 min (default) else should select another value
+      await page.waitForSelector('.ant-select-item.ant-select-item-option')
+      const options = await page.$$('.ant-select-item.ant-select-item-option');
+      let desiredOption = null;
+      for (let i = 0; i < options.length; i++) {
+        const optionTitle = await options[i].getProperty('title');
+        const titleValue = await optionTitle.jsonValue();
+        if (titleValue === '12 hours') {
+          desiredOption = options[i];
+          break;
+        }
+      }
+    
+      // Click the desired option
+      await page.waitForTimeout(800);
+      if (desiredOption) {
+        await desiredOption.click();
+      }
+ 
+      // await page.keyboard.press("Enter");
+
+
       await page.waitForTimeout(800);
 
       await page.waitForSelector(".bybt-ls-rate");
+      const src = await page.$eval(".bybt-exname-logo img", (img) => img.src);
 
+      const firstNumber = await page.$eval(".bybt-ls-rate div:first-child", (div) =>
+        div.textContent.trim()
+      );
+      const secondNumber = await page.$eval(".bybt-ls-rate div:last-child", (div) =>
+        div.textContent.trim()
+      );
+      result.push({
+        symbol: symbol,
+        symbolLogo: src,
+        longRate: firstNumber,
+        shortRate: secondNumber,
+        list: [],
+      });
       const elements = await page.$$(".bybt-ls-rate");
 
+      const titles = await page.evaluate(() => {
+        const elements = document.querySelectorAll(".bybt-font-normal"); // get all elements with class name 'bybt-font-normal'
+        const values = [];
+        for (let i = 0; i < elements.length; i++) {
+          values.push(elements[i].textContent.trim()); // extract the text content of each element and add to the array
+        }
+        return values;
+      });
+
+      const exchanges = await page.$$eval(".bybt-font-normal", (elements) =>
+        elements.map((el) => el.textContent.trim())
+      );
+      console.log(exchanges);
+
+      const exchangeLogos = await page.$$eval("div.shou div.bybt-exname-logo > img", (imgs) =>
+        imgs.map((img) => img.getAttribute("src"))
+      );
+      console.log(exchangeLogos);
+
       const numbers = await Promise.all(
-        elements.map(async (element) => {
+        elements.map(async (element, index) => {
+          if (index === 0) return;
+
           const firstNumberHandle = await element.evaluateHandle((el) =>
             el.querySelector("div:first-child").textContent.trim()
           );
@@ -39,19 +121,32 @@ router.post("/long-short", async (req, res) => {
           );
           const firstNumber = await firstNumberHandle.jsonValue();
           const secondNumber = await secondNumberHandle.jsonValue();
-          return [parseFloat(firstNumber), parseFloat(secondNumber)];
+
+          result[0].list.push({
+            longRate: parseFloat(firstNumber),
+            shortRate: parseFloat(secondNumber),
+            exchangeLogo: exchangeLogos[index - 1],
+            exchangeName: titles[index],
+          });
         })
       );
 
-      console.log(numbers); // should output an array of arrays containing the parsed numbers
+      // console.log(numbers); // should output an array of arrays containing the parsed numbers
       isRequestDone = true;
+      console.log(result);
+      res.json(result);
 
       await browser.close();
+      browserActive = false;
     } catch (err) {
+      isRequestDone = true;
       console.log(err);
+      res.status(500).send("Something went wrong");
+      await browser.close();
     }
   })();
-  res.json("");
+
+  // res.json("");
 
   // console.log(req.body);
   // const time = req.body.time;

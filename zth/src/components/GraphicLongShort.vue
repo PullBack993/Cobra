@@ -45,10 +45,10 @@ watch(
               ></div>
               <div class="graphic__ratio-values-container">
                 <div class="graphic__ratio-long-value">
-                  {{ coinsData?.longRate }}%
+                  {{ coinsData?.longRate }}
                 </div>
                 <div class="graphic__ratio-short-value">
-                  {{ coinsData?.shortRate }}%
+                  {{ coinsData?.shortRate }}
                 </div>
               </div>
             </div>
