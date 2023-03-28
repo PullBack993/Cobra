@@ -255,33 +255,33 @@ function selectInput() {
     font-weight: 500;
   }
 
-  // &-list {
-  //   border-top: none;
-  //   scrollbar-color: $main-purple transparent;
-  //   padding: 0.5rem 0;
-  //   display: block;
-  //   scrollbar-width: thin;
-  //   overflow: auto;
-  //   overflow-x: hidden;
-  //   max-height: 19.5rem;
-  //   border-bottom-left-radius: 1rem;
-  //   border-bottom-right-radius: 1rem;
-  //   position: absolute;
-  //   z-index: 3;
-  //   width: 12rem;
-  //   background-color: $bg-dark-purple;
+  &-list {
+    border-top: none;
+    scrollbar-color: $main-purple transparent;
+    padding: 0.5rem 0;
+    display: block;
+    scrollbar-width: thin;
+    overflow: auto;
+    overflow-x: hidden;
+    max-height: 19.5rem;
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    position: absolute;
+    z-index: 3;
+    width: 12rem;
+    background-color: $bg-dark-purple;
 
-  //   &::-webkit-scrollbar {
-  //     width: 1.2rem;
-  //     border-radius: 5rem;
-  //   }
-  //   &::-webkit-scrollbar-thumb {
-  //     background-color: $main-purple;
-  //     border: 0.5rem solid transparent;
-  //     background-clip: padding-box;
-  //     border-radius: 5rem;
-  //   }
-  // }
+    &::-webkit-scrollbar {
+      width: 1.2rem;
+      border-radius: 5rem;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: $main-purple;
+      border: 0.5rem solid transparent;
+      background-clip: padding-box;
+      border-radius: 5rem;
+    }
+  }
  
 
   &-items {

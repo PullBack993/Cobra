@@ -4,8 +4,8 @@ const CoinGecko = require("coingecko-api");
 const { SEARCH_VALUES: searchedTarget } = require("../helpers/utils");
 const coinsImages = require("../helpers/coinsImages.json");
 
-router.get('/', async(req,res) => {
-  res.json('DB is connected')
+router.get("/", async (req, res) => {
+  res.json("DB is connected");
 });
 
 router.post("/id", async (req, res) => {
@@ -60,7 +60,7 @@ router.post("/id", async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    return res.json("error", error);
+    res.json("error", error);
   }
 });
 

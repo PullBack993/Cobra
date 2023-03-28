@@ -13,7 +13,8 @@ let searchedValueOld = "";
 router.post("/long-short", async (req, res) => {
   const symbol = req.body.symbol.toUpperCase();
   searchedValue = req.body.symbol;
-  const time = req.body.time;
+  const time = '5 minutes'
+  // req.body.time;
   console.log(time)
 
 
@@ -22,10 +23,14 @@ router.post("/long-short", async (req, res) => {
   console.log("req body", req.body.symbol);
   console.log('old value', searchedValueOld)
 
-  if (!isRequestDone && (req.body.symbol !== searchedValueOld) && browserActive) {
+  if (!isRequestDone && (req.body.symbol !== searchedValueOld) ) {
     console.log(req.body.symbol)
     console.log("cancel");
-    browser.close();
+    try{
+      await  browser.close();
+    }catch(err){
+      console.err(err)
+    }
   }
   
   if(!isRequestDone && (req.body.symbol === searchedValueOld) ){
@@ -35,42 +40,44 @@ router.post("/long-short", async (req, res) => {
   searchedValueOld = req.body.symbol;
   (async () => {
     try {
+      console.log('puppeteer active')
       isRequestDone = false;
       // { headless: false, defaultViewport: false } for Debugging
 
-      browser = await puppeteer.launch({headless: false, defaultViewport: false });
+      browser = await puppeteer.launch( { headless: false });
       browserActive = true
       const page = await browser.newPage();
 
       await page.goto("https://www.coinglass.com/LongShortRatio");
 
-      await page.click("#rc_select_2");
-      await page.type("#rc_select_2", `${symbol}`);
-      await page.keyboard.press("Enter");
-
-      await page.click("#rc_select_3"); /// check if it 5 min (default) else should select another value
-      await page.waitForSelector('.ant-select-item.ant-select-item-option')
-      const options = await page.$$('.ant-select-item.ant-select-item-option');
+      if(symbol !== 'BTC'){
+        await page.click("#rc_select_2"); // select coin
+        await page.type("#rc_select_2", `${symbol}`);
+        await page.keyboard.press("Enter");
+      }
       let desiredOption = null;
-      for (let i = 0; i < options.length; i++) {
-        const optionTitle = await options[i].getProperty('title');
-        const titleValue = await optionTitle.jsonValue();
-        if (titleValue === '12 hours') {
-          desiredOption = options[i];
-          break;
+
+      if(time !== '5 minutes') {  /// check if it 5 min (default) else should select another value
+        await page.click("#rc_select_3");
+        await page.waitForSelector('.ant-select-item.ant-select-item-option')
+        const options = await page.$$('.ant-select-item.ant-select-item-option');
+        for (let i = 0; i < options.length; i++) {
+          const optionTitle = await options[i].getProperty('title');
+          const titleValue = await optionTitle.jsonValue();
+          if (titleValue === '12 hours') {
+            desiredOption = options[i];
+            break;
+          }
         }
       }
     
       // Click the desired option
-      await page.waitForTimeout(800);
+      
       if (desiredOption) {
         await desiredOption.click();
       }
- 
-      // await page.keyboard.press("Enter");
+      await new Promise(resolve => setTimeout(resolve, 500));
 
-
-      await page.waitForTimeout(800);
 
       await page.waitForSelector(".bybt-ls-rate");
       const src = await page.$eval(".bybt-exname-logo img", (img) => img.src);
@@ -134,7 +141,7 @@ router.post("/long-short", async (req, res) => {
       // console.log(numbers); // should output an array of arrays containing the parsed numbers
       isRequestDone = true;
       console.log(result);
-      res.json(result);
+      res.status(200).json(result);
 
       await browser.close();
       browserActive = false;
