@@ -1,164 +1,170 @@
 require("dotenv/config");
 const router = require("express").Router();
-const { truncateSync } = require("fs");
 const https = require("https");
 const BtcChangeIndicator = require("../../models/BtcChange");
 const puppeteer = require("puppeteer");
 let isRequestDone = true;
-let browserActive = false;
 let browser;
-let searchedValue = "";
 let searchedValueOld = "";
 
 router.post("/long-short", async (req, res) => {
-  const symbol = req.body.symbol.toUpperCase();
-  searchedValue = req.body.symbol;
-  const time = '5 minutes'
-  // req.body.time;
-  console.log(time)
+  console.log(req.body);
+  let { time, symbol } = req.body;
+  time = "5 minutes";
 
+  let result = [];
 
-  const result = [];
-  console.log(req.body.symbol !== searchedValueOld);
-  console.log("req body", req.body.symbol);
-  console.log('old value', searchedValueOld)
-
-  if (!isRequestDone && (req.body.symbol !== searchedValueOld) ) {
-    console.log(req.body.symbol)
-    console.log("cancel");
-    try{
-      await  browser.close();
-    }catch(err){
-      console.err(err)
-    }
+  if (!isRequestDone && symbol !== searchedValueOld && browser) {
+    console.log("Cancelling previous request...");
+    await browser.close();
+    browser = null;
+    result = [];
   }
-  
-  if(!isRequestDone && (req.body.symbol === searchedValueOld) ){
-    console.log('return')
-    return
+  console.log(browser?.eventsMap)
+  if (!isRequestDone && symbol === searchedValueOld) {
+    console.log("Request in progress, returning...");
+    return;
   }
-  searchedValueOld = req.body.symbol;
+  searchedValueOld = symbol;
   (async () => {
     try {
-      console.log('puppeteer active')
-      isRequestDone = false;
-      // { headless: false, defaultViewport: false } for Debugging
+      if (!browser && isRequestDone) {
+        browser = await puppeteer.launch();
 
-      browser = await puppeteer.launch( { headless: false });
-      browserActive = true
-      const page = await browser.newPage();
+        isRequestDone = false;
+        console.log("Launching browser...");
 
-      await page.goto("https://www.coinglass.com/LongShortRatio");
+        const page = await browser.newPage();
+        // { headless: false, defaultViewport: false } for Debugging
 
-      if(symbol !== 'BTC'){
-        await page.click("#rc_select_2"); // select coin
-        await page.type("#rc_select_2", `${symbol}`);
-        await page.keyboard.press("Enter");
-      }
-      let desiredOption = null;
+        console.log("Creating new page...");
+        if (page) {
+          console.log("Go to coinglass...");
+          await page.goto("https://www.coinglass.com/LongShortRatio");
+        }
 
-      if(time !== '5 minutes') {  /// check if it 5 min (default) else should select another value
-        await page.click("#rc_select_3");
-        await page.waitForSelector('.ant-select-item.ant-select-item-option')
-        const options = await page.$$('.ant-select-item.ant-select-item-option');
-        for (let i = 0; i < options.length; i++) {
-          const optionTitle = await options[i].getProperty('title');
-          const titleValue = await optionTitle.jsonValue();
-          if (titleValue === '12 hours') {
-            desiredOption = options[i];
-            break;
+        if (symbol !== "BTC") {
+          await page.click("#rc_select_2"); // select coin
+          await page.type("#rc_select_2", `${symbol}`);
+          await new Promise((resolve) => setTimeout(resolve, 800));
+
+          await page.keyboard.press("Enter");
+        }
+        let desiredOption = null;
+
+        if (time !== "5 minutes") {
+          /// check if it 5 min (default) else should select another value
+          await page.click("#rc_select_3");
+          await page.waitForSelector(".ant-select-item.ant-select-item-option");
+          const options = await page.$$(".ant-select-item.ant-select-item-option");
+          for (let i = 0; i < options.length; i++) {
+            const optionTitle = await options[i].getProperty("title");
+            const titleValue = await optionTitle.jsonValue();
+            if (titleValue === "12 hours") {
+              desiredOption = options[i];
+              break;
+            }
           }
         }
-      }
-    
-      // Click the desired option
-      
-      if (desiredOption) {
-        await desiredOption.click();
-      }
-      await new Promise(resolve => setTimeout(resolve, 500));
 
-
-      await page.waitForSelector(".bybt-ls-rate");
-      const src = await page.$eval(".bybt-exname-logo img", (img) => img.src);
-
-      const firstNumber = await page.$eval(".bybt-ls-rate div:first-child", (div) =>
-        div.textContent.trim()
-      );
-      const secondNumber = await page.$eval(".bybt-ls-rate div:last-child", (div) =>
-        div.textContent.trim()
-      );
-      result.push({
-        symbol: symbol,
-        symbolLogo: src,
-        longRate: firstNumber,
-        shortRate: secondNumber,
-        list: [],
-      });
-      const elements = await page.$$(".bybt-ls-rate");
-
-      const titles = await page.evaluate(() => {
-        const elements = document.querySelectorAll(".bybt-font-normal"); // get all elements with class name 'bybt-font-normal'
-        const values = [];
-        for (let i = 0; i < elements.length; i++) {
-          values.push(elements[i].textContent.trim()); // extract the text content of each element and add to the array
+        if (desiredOption) {
+          await desiredOption.click();
         }
-        return values;
-      });
+        await new Promise((resolve) => setTimeout(resolve, 700));
 
-      const exchanges = await page.$$eval(".bybt-font-normal", (elements) =>
-        elements.map((el) => el.textContent.trim())
-      );
-      console.log(exchanges);
+        await page.waitForSelector(".bybt-ls-rate");
+        const src = await page.$eval(".bybt-exname-logo img", (img) => img.src);
 
-      const exchangeLogos = await page.$$eval("div.shou div.bybt-exname-logo > img", (imgs) =>
-        imgs.map((img) => img.getAttribute("src"))
-      );
-      console.log(exchangeLogos);
+        const firstNumber = await page.$eval(".bybt-ls-rate div:first-child", (div) =>
+          div.textContent.trim()
+        );
+        const secondNumber = await page.$eval(".bybt-ls-rate div:last-child", (div) =>
+          div.textContent.trim()
+        );
+        result.push({
+          symbol: symbol,
+          symbolLogo: src,
+          longRate: firstNumber,
+          shortRate: secondNumber,
+          list: [],
+        });
+        const elements = await page.$$(".bybt-ls-rate");
 
-      const numbers = await Promise.all(
-        elements.map(async (element, index) => {
-          if (index === 0) return;
+        const titles = await page.evaluate(() => {
+          const elements = document.querySelectorAll(".bybt-font-normal"); // get all elements with class name 'bybt-font-normal'
+          const values = [];
+          for (let i = 0; i < elements.length; i++) {
+            values.push(elements[i].textContent.trim()); // extract the text content of each element and add to the array
+          }
+          return values;
+        });
 
-          const firstNumberHandle = await element.evaluateHandle((el) =>
-            el.querySelector("div:first-child").textContent.trim()
-          );
-          const secondNumberHandle = await element.evaluateHandle((el) =>
-            el.querySelector("div:last-child").textContent.trim()
-          );
-          const firstNumber = await firstNumberHandle.jsonValue();
-          const secondNumber = await secondNumberHandle.jsonValue();
+        const exchanges = await page.$$eval(".bybt-font-normal", (elements) =>
+          elements.map((el) => el.textContent.trim())
+        );
+        console.log(exchanges);
 
-          result[0].list.push({
-            longRate: parseFloat(firstNumber),
-            shortRate: parseFloat(secondNumber),
-            exchangeLogo: exchangeLogos[index - 1],
-            exchangeName: titles[index],
-          });
-        })
-      );
+        const exchangeLogos = await page.$$eval("div.shou div.bybt-exname-logo > img", (imgs) =>
+          imgs.map((img) => img.getAttribute("src"))
+        );
+        console.log(exchangeLogos);
 
-      // console.log(numbers); // should output an array of arrays containing the parsed numbers
+        const numbers = await Promise.all(
+          elements.map(async (element, index) => {
+            if (index === 0) return;
+
+            const firstNumberHandle = await element.evaluateHandle((el) =>
+              el.querySelector("div:first-child").textContent.trim()
+            );
+            const secondNumberHandle = await element.evaluateHandle((el) =>
+              el.querySelector("div:last-child").textContent.trim()
+            );
+            const firstNumber = await firstNumberHandle.jsonValue();
+            const secondNumber = await secondNumberHandle.jsonValue();
+
+            result[0].list.push({
+              longRate: parseFloat(firstNumber),
+              shortRate: parseFloat(secondNumber),
+              exchangeLogo: exchangeLogos[index - 1],
+              exchangeName: titles[index],
+            });
+          })
+        );
+
+        // console.log(numbers); // should output an array of arrays containing the parsed numbers
+        isRequestDone = true;
+        console.log(result);
+        res.status(200).json(result);
+        if (browser) {
+          await browser.close();
+          browser = null;
+        }
+        browserActive = false;
+        return;
+      }
+      if (browser) {
+        await browser.close();
+        browser = null;
+      }
       isRequestDone = true;
-      console.log(result);
-      res.status(200).json(result);
-
-      await browser.close();
-      browserActive = false;
+      result = [];
     } catch (err) {
       isRequestDone = true;
       console.log(err);
       res.status(500).send("Something went wrong");
-      await browser.close();
+      if (browser) {
+        await browser.close();
+        browser = null;
+      }
+      result = [];
     }
   })();
-
-  // res.json("");
 
   // console.log(req.body);
   // const time = req.body.time;
   // const symbol = req.body.symbol.toUpperCase();
   // const options = {
+  //   method: "GET",
   //   hostname: process.env.BASE_URL,
   //   port: null,
   //   path: `/public/v2/long_short?time_type=${time}&symbol=${symbol}`,

@@ -2,7 +2,7 @@
 // const CoinGecko = require("coingecko-api");
 const https = require("https");
 require("dotenv/config");
-const BtcChangeIndicator = require("../models/BtcChange");
+// const BtcChangeIndicator = require("../models/BtcChange");
 
 const options = {
   method: "GET",
@@ -11,20 +11,20 @@ const options = {
   path: "/public/v2/index/bitcoin_profitable_days",
   headers: { accept: "application/json", coinglassSecret: "233f9d28b54f4a5e8f86c849035aef1a" },
 };
-// https.get(options, (response) => {
-//   let data = "";
+https.get(options, (response) => {
+  let data = "";
 
-//   response.on("data", (chung) => {
-//     data += chung;
-//   });
-//   response.on("end", () => {
-//     // console.log(JSON.parse(data))
-//     const parseData = JSON.parse(data);
-//     const generatedData = calculateQuarterly(parseData.data, 1, "daily");
-//     console.log(generatedData);
-//     // res.json(generatedData);
-//   });
-// });
+  response.on("data", (chung) => {
+    data += chung;
+  });
+  response.on("end", () => {
+    // console.log(JSON.parse(data))
+    const parseData = JSON.parse(data);
+    // const generatedData = calculateQuarterly(parseData.data, 1, "daily");
+    console.log(parseData);
+    // res.json(generatedData);
+  });
+});
 
 function calculateQuarterly(data) {
   const quarterly = {};
