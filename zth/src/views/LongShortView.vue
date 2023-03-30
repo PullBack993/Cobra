@@ -7,7 +7,7 @@ import allCoins from '../components/data/coinglass.json';
 
 const allowsCoins = allCoins;
 const currentValue = ref('BTC');
-const currentTime = ref('m5');
+const currentTime = ref('5 minutes');
 const coins = ref();
 const intervalId = ref(0);
 const loading = ref(false);
@@ -18,10 +18,9 @@ function valueChange(value: string) {
 }
 
 function timeChange(value: string) {
-  const timeSplit = value.split(' ');
-  const time = timeSplit[1].charAt(0) + timeSplit[0];
-  currentTime.value = time;
+  currentTime.value = value;
 }
+
 onMounted(() => {
   reqData();
 });
@@ -83,9 +82,9 @@ intervalId.value = Number(setInterval(reqData, 12000));
                 '15 minutes',
                 '30 minutes',
                 '1 hour',
-                '4 hour',
-                '12 hour',
-                '24 hour',
+                '4 hours',
+                '12 hours',
+                '24 hours',
               ]"
               @new-value:input="timeChange"
             />

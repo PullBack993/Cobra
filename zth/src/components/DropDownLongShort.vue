@@ -39,7 +39,6 @@ function selectedItem(event: Event) {
       currentIndexItem.value = currentItemNumber;
       activeScrollItem = currentIndexItem.value;
       savedValue.value = currentIndexItem.value;
-
     }
   }
   currentValue.value = (event.target as HTMLElement).textContent || '';

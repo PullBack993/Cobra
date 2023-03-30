@@ -10,7 +10,8 @@ let searchedValueOld = "";
 router.post("/long-short", async (req, res) => {
   console.log(req.body);
   let { time, symbol } = req.body;
-  time = "5 minutes";
+  console.log(time);
+  console.log(`${time}`, "24 hours");
 
   let result = [];
 
@@ -20,7 +21,7 @@ router.post("/long-short", async (req, res) => {
     browser = null;
     result = [];
   }
-  console.log(browser?.eventsMap)
+  console.log(browser?.eventsMap);
   if (!isRequestDone && symbol === searchedValueOld) {
     console.log("Request in progress, returning...");
     return;
@@ -29,13 +30,13 @@ router.post("/long-short", async (req, res) => {
   (async () => {
     try {
       if (!browser && isRequestDone) {
+        // { headless: false, defaultViewport: false } for Debugging
         browser = await puppeteer.launch();
 
         isRequestDone = false;
         console.log("Launching browser...");
 
         const page = await browser.newPage();
-        // { headless: false, defaultViewport: false } for Debugging
 
         console.log("Creating new page...");
         if (page) {
@@ -46,7 +47,7 @@ router.post("/long-short", async (req, res) => {
         if (symbol !== "BTC") {
           await page.click("#rc_select_2"); // select coin
           await page.type("#rc_select_2", `${symbol}`);
-          await new Promise((resolve) => setTimeout(resolve, 800));
+          await new Promise((resolve) => setTimeout(resolve, 500));
 
           await page.keyboard.press("Enter");
         }
@@ -60,7 +61,8 @@ router.post("/long-short", async (req, res) => {
           for (let i = 0; i < options.length; i++) {
             const optionTitle = await options[i].getProperty("title");
             const titleValue = await optionTitle.jsonValue();
-            if (titleValue === "12 hours") {
+            await new Promise((resolve) => setTimeout(resolve, 50));
+            if (titleValue === time) {
               desiredOption = options[i];
               break;
             }
