@@ -6,12 +6,11 @@ import DropdownSmall from '@/components/DropDownLongShort.vue';
 const data = ref();
 const days = ref<string[]>();
 const baseData = ref();
-const currentType = ['a', 'b', 'c'];
 
 onMounted(() => {
   const month = 1;
-  const type = 'day';
-  const year = '2023';
+  const type = 'week';
+  const year = new Date().getFullYear().toString();
   reqData(month, type, year);
 });
 // DAY => month: 3, type: day, year: 2023 => DAY
@@ -29,29 +28,10 @@ function reqData(month: number, type: string, year: string) {
 
         days.value = Object.keys(baseData.value['2012']['1']);
       }
-      // loading.value = false;
-      // JSON.stringify(res.data)
-      // coins.value = res.data;
-      // if (!res.data) {
-      //     loading.value = false;
-      //     coins.value = '';
-      //     coinsLength.value = 0;
-      //     error.value = true;
-      //     return;
-      //   }
-      //   // TODO remove console.logs
-      //   coins.value = res.data;
-      //   coinsLength.value = res.data.data.length;
-
-      //   error.value = false;
-      //   loading.value = false;
+  
     })
     .catch((err) => {
-      // loading.value = false;
       console.error(err);
-      //   loading.value = false;
-      //   error.value = true;
-      //   coinsLength.value = 0;
     });
 }
 </script>
