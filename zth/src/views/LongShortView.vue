@@ -27,6 +27,9 @@ onMounted(() => {
 
 onUnmounted(() => {
   clearInterval(intervalId.value);
+
+  axios
+    .post('http://localhost:3000/exchange/long-short', {exit: true})
 });
 
 watch(
@@ -37,7 +40,7 @@ watch(
     coins.value = [];
 
     reqData();
-    intervalId.value = Number(setInterval(reqData, 12000));
+    intervalId.value = Number(setInterval(reqData, 13000));
   }
 );
 
@@ -56,7 +59,8 @@ function reqData() {
     });
 }
 
-intervalId.value = Number(setInterval(reqData, 12000));
+intervalId.value = Number(setInterval(reqData, 13000));
+
 </script>
 
 <template>

@@ -4,15 +4,23 @@ const https = require("https");
 const BtcChangeIndicator = require("../../models/BtcChange");
 const puppeteer = require("puppeteer");
 let isRequestDone = true;
+let page;
 let browser;
 let searchedValueOld = "";
 
 router.post("/long-short", async (req, res) => {
+  if (req.body.exit) {
+    if (browser) {
+      browser.close();
+    }
+    browser = null;
+    page = null;
+    searchedValueOld = "";
+    isRequestDone = true;
+    return;
+  }
   console.log(req.body);
   let { time, symbol } = req.body;
-  console.log(time);
-  console.log(`${time}`, "24 hours");
-
   let result = [];
 
   if (!isRequestDone && symbol !== searchedValueOld && browser) {
@@ -21,143 +29,146 @@ router.post("/long-short", async (req, res) => {
     browser = null;
     result = [];
   }
-  console.log(browser?.eventsMap);
+
   if (!isRequestDone && symbol === searchedValueOld) {
     console.log("Request in progress, returning...");
     return;
   }
   searchedValueOld = symbol;
+  console.log("....");
+  console.log(browser);
+  if (!browser) {
+    browser = await puppeteer.launch({ headless: false, defaultViewport: false });
+
+    isRequestDone = false;
+    console.log("Launching browser...");
+
+    page = await browser.newPage();
+
+    console.log("Go to coinglass...");
+    await page.goto("https://www.coinglass.com/LongShortRatio");
+  }
   (async () => {
     try {
-      if (!browser && isRequestDone) {
-        // { headless: false, defaultViewport: false } for Debugging
-        browser = await puppeteer.launch();
+      // { headless: false, defaultViewport: false } for Debugging
 
-        isRequestDone = false;
-        console.log("Launching browser...");
+      console.log("test symbol", symbol !== "BTC");
+      if (symbol !== "BTC") {
+        await page.waitForSelector("#rc_select_2");
+        await page.click("#rc_select_2"); // select coin
+        await page.type("#rc_select_2", `${symbol}`);
+        await new Promise((resolve) => setTimeout(resolve, 500));
 
-        const page = await browser.newPage();
+        await page.keyboard.press("Enter");
+      }
+      let desiredOption = null;
 
-        console.log("Creating new page...");
-        if (page) {
-          console.log("Go to coinglass...");
-          await page.goto("https://www.coinglass.com/LongShortRatio");
-        }
-
-        if (symbol !== "BTC") {
-          await page.click("#rc_select_2"); // select coin
-          await page.type("#rc_select_2", `${symbol}`);
-          await new Promise((resolve) => setTimeout(resolve, 500));
-
-          await page.keyboard.press("Enter");
-        }
-        let desiredOption = null;
-
-        if (time !== "5 minutes") {
-          /// check if it 5 min (default) else should select another value
-          await page.click("#rc_select_3");
-          await page.waitForSelector(".ant-select-item.ant-select-item-option");
-          const options = await page.$$(".ant-select-item.ant-select-item-option");
-          for (let i = 0; i < options.length; i++) {
-            const optionTitle = await options[i].getProperty("title");
-            const titleValue = await optionTitle.jsonValue();
-            await new Promise((resolve) => setTimeout(resolve, 50));
-            if (titleValue === time) {
-              desiredOption = options[i];
-              break;
-            }
+      if (time !== "5 minutes") {
+        /// check if it 5 min (default) else should select another value
+        await page.waitForSelector("#rc_select_3");
+        await page.click("#rc_select_3");
+        await page.waitForSelector(".ant-select-item.ant-select-item-option");
+        const options = await page.$$(".ant-select-item.ant-select-item-option");
+        for (let i = 0; i < options.length; i++) {
+          const optionTitle = await options[i].getProperty("title");
+          const titleValue = await optionTitle.jsonValue();
+          await new Promise((resolve) => setTimeout(resolve, 50));
+          if (titleValue === time) {
+            desiredOption = options[i];
+            break;
           }
         }
-
-        if (desiredOption) {
-          await desiredOption.click();
-        }
-        await new Promise((resolve) => setTimeout(resolve, 700));
-
-        await page.waitForSelector(".bybt-ls-rate");
-        const src = await page.$eval(".bybt-exname-logo img", (img) => img.src);
-
-        const firstNumber = await page.$eval(".bybt-ls-rate div:first-child", (div) =>
-          div.textContent.trim()
-        );
-        const secondNumber = await page.$eval(".bybt-ls-rate div:last-child", (div) =>
-          div.textContent.trim()
-        );
-        result.push({
-          symbol: symbol,
-          symbolLogo: src,
-          longRate: firstNumber,
-          shortRate: secondNumber,
-          list: [],
-        });
-        const elements = await page.$$(".bybt-ls-rate");
-
-        const titles = await page.evaluate(() => {
-          const elements = document.querySelectorAll(".bybt-font-normal"); // get all elements with class name 'bybt-font-normal'
-          const values = [];
-          for (let i = 0; i < elements.length; i++) {
-            values.push(elements[i].textContent.trim()); // extract the text content of each element and add to the array
-          }
-          return values;
-        });
-
-        const exchanges = await page.$$eval(".bybt-font-normal", (elements) =>
-          elements.map((el) => el.textContent.trim())
-        );
-        console.log(exchanges);
-
-        const exchangeLogos = await page.$$eval("div.shou div.bybt-exname-logo > img", (imgs) =>
-          imgs.map((img) => img.getAttribute("src"))
-        );
-        console.log(exchangeLogos);
-
-        const numbers = await Promise.all(
-          elements.map(async (element, index) => {
-            if (index === 0) return;
-
-            const firstNumberHandle = await element.evaluateHandle((el) =>
-              el.querySelector("div:first-child").textContent.trim()
-            );
-            const secondNumberHandle = await element.evaluateHandle((el) =>
-              el.querySelector("div:last-child").textContent.trim()
-            );
-            const firstNumber = await firstNumberHandle.jsonValue();
-            const secondNumber = await secondNumberHandle.jsonValue();
-
-            result[0].list.push({
-              longRate: parseFloat(firstNumber),
-              shortRate: parseFloat(secondNumber),
-              exchangeLogo: exchangeLogos[index - 1],
-              exchangeName: titles[index],
-            });
-          })
-        );
-
-        // console.log(numbers); // should output an array of arrays containing the parsed numbers
-        isRequestDone = true;
-        console.log(result);
-        res.status(200).json(result);
-        if (browser) {
-          await browser.close();
-          browser = null;
-        }
-        browserActive = false;
-        return;
       }
-      if (browser) {
-        await browser.close();
-        browser = null;
+
+      if (desiredOption) {
+        await desiredOption.click();
       }
+      await new Promise((resolve) => setTimeout(resolve, 700));
+
+      await page.waitForSelector(".bybt-ls-rate");
+      console.log("bybt exname");
+      const src = await page.$eval(".bybt-exname-logo img", (img) => img.src);
+      console.log("src", src);
+      const firstNumber = await page.$eval(".bybt-ls-rate div:first-child", (div) =>
+        div.textContent.trim()
+      );
+      const secondNumber = await page.$eval(".bybt-ls-rate div:last-child", (div) =>
+        div.textContent.trim()
+      );
+      result.push({
+        symbol: symbol,
+        symbolLogo: src,
+        longRate: firstNumber,
+        shortRate: secondNumber,
+        list: [],
+      });
+      const elements = await page.$$(".bybt-ls-rate");
+      console.log("elements", elements);
+
+      const titles = await page.evaluate(() => {
+        const elements = document.querySelectorAll(".bybt-font-normal"); // get all elements with class name 'bybt-font-normal'
+        const values = [];
+        for (let i = 0; i < elements.length; i++) {
+          values.push(elements[i].textContent.trim()); // extract the text content of each element and add to the array
+        }
+        return values;
+      });
+
+      const exchanges = await page.$$eval(".bybt-font-normal", (elements) =>
+        elements.map((el) => el.textContent.trim())
+      );
+      console.log(exchanges);
+
+      const exchangeLogos = await page.$$eval("div.shou div.bybt-exname-logo > img", (imgs) =>
+        imgs.map((img) => img.getAttribute("src"))
+      );
+      console.log(exchangeLogos);
+
+      await Promise.all(
+        elements.map(async (element, index) => {
+          if (index === 0) return;
+          console.log("in promise all");
+
+          const firstNumberHandle = await element.evaluateHandle((el) =>
+            el.querySelector("div:first-child").textContent.trim()
+          );
+          const secondNumberHandle = await element.evaluateHandle((el) =>
+            el.querySelector("div:last-child").textContent.trim()
+          );
+          const firstNumber = await firstNumberHandle.jsonValue();
+          const secondNumber = await secondNumberHandle.jsonValue();
+
+          result[0].list.push({
+            longRate: parseFloat(firstNumber),
+            shortRate: parseFloat(secondNumber),
+            exchangeLogo: exchangeLogos[index - 1],
+            exchangeName: titles[index],
+          });
+        })
+      );
+
+      // console.log(numbers); // should output an array of arrays containing the parsed numbers
       isRequestDone = true;
+      console.log("result =>>>", result);
+      res.status(200).json(result);
+      // if (browser) {
+      //   await browser.close();
+      //   browser = null;
+      // }
+      // browserActive = false;
+      // if (browser) {
+      //   await browser.close();
+      //   browser = null;
+      // }
       result = [];
     } catch (err) {
       isRequestDone = true;
       console.log(err);
       res.status(500).send("Something went wrong");
-      if (browser) {
-        await browser.close();
-        browser = null;
-      }
+      // if (browser) {
+      //   await browser.close();
+      //   browser = null;
+      // }
       result = [];
     }
   })();
