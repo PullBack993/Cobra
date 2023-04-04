@@ -8,6 +8,7 @@ let page;
 let browser;
 let searchedValueOld = "";
 
+//TODO remove console logs after all tests
 router.post("/long-short", async (req, res) => {
   if (req.body.exit) {
     if (browser) {
@@ -38,7 +39,9 @@ router.post("/long-short", async (req, res) => {
   console.log("....");
   console.log(browser);
   if (!browser) {
-    browser = await puppeteer.launch({ headless: false, defaultViewport: false });
+    // { headless: false, defaultViewport: false } for Debugging
+    // { headless: false, defaultViewport: false }
+    browser = await puppeteer.launch();
 
     isRequestDone = false;
     console.log("Launching browser...");
@@ -50,8 +53,6 @@ router.post("/long-short", async (req, res) => {
   }
   (async () => {
     try {
-      // { headless: false, defaultViewport: false } for Debugging
-
       console.log("test symbol", symbol !== "BTC");
       if (symbol !== "BTC") {
         await page.waitForSelector("#rc_select_2");
@@ -212,7 +213,7 @@ router.post("/daily-return", async (req, res) => {
     result = await BtcChangeIndicator.find(
       { [`Timestamp.years.2012.${month}`]: { $exists: true } },
       searchParams
-    );
+    ).sort();
   }
   if (data.type === "week") {
     result = await BtcChangeIndicator.find({ TimeFrameName: "Week" });
@@ -224,6 +225,7 @@ router.post("/daily-return", async (req, res) => {
     result = await BtcChangeIndicator.find({ TimeFrameName: "Quarter" });
   }
   res.json(result);
+  console.log(result);
 });
 
 function calculateQuarterly(data) {

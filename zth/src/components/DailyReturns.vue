@@ -6,33 +6,60 @@ import DropdownSmall from '@/components/DropDownLongShort.vue';
 const data = ref();
 const days = ref<string[]>();
 const baseData = ref();
+const currentMonth = ref<number>(1);
+const currentType = ref<string>('day');
+const months = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
 
 onMounted(() => {
-  const month = 1;
-  const type = 'week';
-  const year = new Date().getFullYear().toString();
-  reqData(month, type, year);
+  reqData(currentMonth.value, currentType.value);
 });
 // DAY => month: 3, type: day, year: 2023 => DAY
 // WEEK => month: 0, type: week, year 2023
-function reqData(month: number, type: string, year: string) {
+function reqData(month: number, type: string) {
   // const coinData = { time: currentTime.value, symbol: currentValue.value };
   axios
-    .post('http://localhost:3000/exchange/daily-return', { month, type, year })
+    .post('http://localhost:3000/exchange/daily-return', { month, type })
     .then((res) => {
       if (res.status === 200) {
         console.log(res.data);
         // res.data[0].Timestamp => Quarter
         baseData.value = res.data[0].Timestamp.years;
-        data.value = Object.values(baseData.value['2012']);
+        console.log('first', baseData.value);
+        data.value = Object.values(baseData.value['2012']).reverse();
 
-        days.value = Object.keys(baseData.value['2012']['1']);
+        days.value = Object.keys(
+          baseData.value['2012'][currentMonth.value?.toString()]
+        );
+        // Reverse object to take first year
+
+        baseData.value = { ...Object.entries(baseData.value).reverse() };
       }
-  
     })
     .catch((err) => {
       console.error(err);
     });
+}
+
+function monthChange(value: string) {
+  months.forEach((month, index) => {
+    if (month === value) {
+      currentMonth.value = index + 1;
+      reqData(currentMonth.value, currentType.value);
+    }
+  });
 }
 </script>
 
@@ -41,22 +68,10 @@ function reqData(month: number, type: string, year: string) {
     <div class="returns__chart-select-item">
       <div class="returns__chart-select-item">Month</div>
       <DropdownSmall
-        :data="[
-          'January',
-          'February',
-          'March',
-          'April',
-          'May',
-          'June',
-          'July',
-          'August',
-          'September',
-          'October',
-          'November',
-          'December',
-        ]"
+        :data="months"
         :readonly="true"
         :with-arrow-icon="true"
+        @new-value:input="monthChange"
       />
     </div>
     <div class="returns__chart-select-item">
@@ -83,13 +98,15 @@ function reqData(month: number, type: string, year: string) {
         </th>
       </tr>
       <tr class="returns__table" v-for="(time, index) in baseData" :key="index">
-        <td class="returns__table-year--item">{{ index }}</td>
+        <td class="returns__table-year--item">{{ time[0] }}</td>
         <td
           class="returns__table-year-percentage--ratio"
           v-for="(d, i) in days"
           :key="i"
         >
-          {{ Object.values(baseData[index])[0][d].difference.toFixed(2) }}
+          {{ time[1][`${currentMonth}`][i + 1]?.difference.toFixed(2) }}
+          <!-- {{ Object.values(baseData[index])[0][d]?.difference.toFixed(2) }} -->
+          <!-- ?[0][d].difference.toFixed(2)  -->
         </td>
       </tr>
     </table>
@@ -107,7 +124,7 @@ function reqData(month: number, type: string, year: string) {
     flex-flow: wrap;
     width: 100%;
     overflow: auto;
-    @include customHorizontalScrollbar()
+    @include customHorizontalScrollbar();
   }
 
   &__chart-select-item {
