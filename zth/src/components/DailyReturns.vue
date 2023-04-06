@@ -8,6 +8,7 @@ const days = ref<string[]>();
 const baseData = ref();
 const currentMonth = ref<number>(1);
 const currentType = ref<string>('day');
+const loading = ref<boolean>(false); // TODO add placeholder spinner
 const months = [
   'January',
   'February',
@@ -29,6 +30,7 @@ onMounted(() => {
 // DAY => month: 3, type: day, year: 2023 => DAY
 // WEEK => month: 0, type: week, year 2023
 function reqData(month: number, type: string) {
+  data.value = null;
   // const coinData = { time: currentTime.value, symbol: currentValue.value };
   axios
     .post('http://localhost:3000/exchange/daily-return', { month, type })
@@ -57,6 +59,7 @@ function monthChange(value: string) {
   months.forEach((month, index) => {
     if (month === value) {
       currentMonth.value = index + 1;
+      console.log(currentMonth.value);
       reqData(currentMonth.value, currentType.value);
     }
   });
@@ -104,9 +107,7 @@ function monthChange(value: string) {
           v-for="(d, i) in days"
           :key="i"
         >
-          {{ time[1][`${currentMonth}`][i + 1]?.difference.toFixed(2) }}
-          <!-- {{ Object.values(baseData[index])[0][d]?.difference.toFixed(2) }} -->
-          <!-- ?[0][d].difference.toFixed(2)  -->
+          {{ time[1][`${currentMonth}`][d].difference.toFixed(2) }}
         </td>
       </tr>
     </table>
