@@ -7,7 +7,7 @@ const data = ref();
 const time = ref<string[] | number>();
 const baseData = ref();
 const currentMonth = ref<number>(1);
-const currentType = ref<string>('week');
+const currentType = ref<string>('month');
 const loading = ref<boolean>(false); // TODO add placeholder spinner
 const timeStamp = ['Daily', 'Weekly', 'Monthly', 'Quarterly'];
 const currentTimeStamp = ref<string>('Daily');
@@ -40,7 +40,8 @@ function reqData(month: number, type: string) {
       if (res.status === 200) {
         // WEEK BASED
         data.value = res.data[0].Timestamp;
-        time.value =Number(data.value.Length);
+        time.value = Number(data.value.Length);
+        data.value = { ...Object.entries(data.value).reverse() };
 
         // DAY BASED
         // baseData.value = res.data[0].Timestamp.years;
@@ -109,14 +110,22 @@ function timeChange(value: string) {
     <table class="returns__table" v-if="data">
       <tr class="returns__table-date">
         <th class="returns__table-date--time">Time</th>
-        <th
-          class="returns__table-date--item"
-          v-for="(day, i) in time"
-          :key="i"
-        >
-          {{ day}}
+        <th class="returns__table-date--item" v-for="(day, i) in time" :key="i">
+          {{ day }}
         </th>
       </tr>
+
+      <tr class="returns__table" v-for="(year, index) in data" :key="index">
+        <td class="returns__table-year--item">{{ year[0] }}</td>
+        <td
+          class="returns__table-year-percentage--ratio"
+          v-for="(d, i) in Object.values(year[1]).length"
+          :key="i"
+        >
+          {{ year[1][d]?.difference?.toFixed(2) }}
+        </td>
+      </tr>
+
       <div v-if="currentTimeStamp === 'Daily'">
         <tr
           class="returns__table"
