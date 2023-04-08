@@ -4,11 +4,13 @@ import { onMounted, ref } from 'vue';
 import DropdownSmall from '@/components/DropDownLongShort.vue';
 
 const data = ref();
-const days = ref<string[]>();
+const time = ref<string[] | number>();
 const baseData = ref();
 const currentMonth = ref<number>(1);
-const currentType = ref<string>('day');
+const currentType = ref<string>('week');
 const loading = ref<boolean>(false); // TODO add placeholder spinner
+const timeStamp = ['Daily', 'Weekly', 'Monthly', 'Quarterly'];
+const currentTimeStamp = ref<string>('Daily');
 const months = [
   'January',
   'February',
@@ -36,18 +38,20 @@ function reqData(month: number, type: string) {
     .post('http://localhost:3000/exchange/daily-return', { month, type })
     .then((res) => {
       if (res.status === 200) {
-        console.log(res.data);
-        // res.data[0].Timestamp => Quarter
-        baseData.value = res.data[0].Timestamp.years;
-        console.log('first', baseData.value);
-        data.value = Object.values(baseData.value['2012']).reverse();
+        // WEEK BASED
+        data.value = res.data[0].Timestamp;
+        time.value =Number(data.value.Length);
 
-        days.value = Object.keys(
-          baseData.value['2012'][currentMonth.value?.toString()]
-        );
-        // Reverse object to take first year
+        // DAY BASED
+        // baseData.value = res.data[0].Timestamp.years;
+        // console.log('first', baseData.value);
+        // data.value = Object.values(baseData.value['2012']).reverse();
 
-        baseData.value = { ...Object.entries(baseData.value).reverse() };
+        // time.value = Object.keys(
+        //   baseData.value['2012'][currentMonth.value?.toString()]
+        // );
+        // // Reverse object to take first year
+        // baseData.value = { ...Object.entries(baseData.value).reverse() };
       }
     })
     .catch((err) => {
@@ -60,15 +64,23 @@ function monthChange(value: string) {
     if (month === value) {
       currentMonth.value = index + 1;
       console.log(currentMonth.value);
+      data.value = null;
+
       reqData(currentMonth.value, currentType.value);
     }
   });
+}
+
+function timeChange(value: string) {
+  currentTimeStamp.value = value;
+  reqData(currentMonth.value, currentType.value);
+  console.log(currentTimeStamp);
 }
 </script>
 
 <template>
   <div class="returns">
-    <div class="returns__chart-select-item">
+    <div class="returns__chart-select-item" v-if="currentTimeStamp === 'Daily'">
       <div class="returns__chart-select-item">Month</div>
       <DropdownSmall
         :data="months"
@@ -81,9 +93,10 @@ function monthChange(value: string) {
       <div class="returns__chart-select-item">Type</div>
 
       <DropdownSmall
-        :data="['Daily', 'Weekly', 'Monthly', 'Quarterly']"
+        :data="timeStamp"
         :readonly="true"
         :with-arrow-icon="true"
+        @new-value:input="timeChange"
       />
     </div>
     <div class="returns__chart-select-item">
@@ -96,20 +109,30 @@ function monthChange(value: string) {
     <table class="returns__table" v-if="data">
       <tr class="returns__table-date">
         <th class="returns__table-date--time">Time</th>
-        <th class="returns__table-date--item" v-for="(day, i) in days" :key="i">
-          {{ day }}
-        </th>
-      </tr>
-      <tr class="returns__table" v-for="(time, index) in baseData" :key="index">
-        <td class="returns__table-year--item">{{ time[0] }}</td>
-        <td
-          class="returns__table-year-percentage--ratio"
-          v-for="(d, i) in days"
+        <th
+          class="returns__table-date--item"
+          v-for="(day, i) in time"
           :key="i"
         >
-          {{ time[1][`${currentMonth}`][d].difference.toFixed(2) }}
-        </td>
+          {{ day}}
+        </th>
       </tr>
+      <div v-if="currentTimeStamp === 'Daily'">
+        <tr
+          class="returns__table"
+          v-for="(time, index) in baseData"
+          :key="index"
+        >
+          <td class="returns__table-year--item">{{ time[0] }}</td>
+          <td
+            class="returns__table-year-percentage--ratio"
+            v-for="(d, i) in time"
+            :key="i"
+          >
+            {{ time[1][`${currentMonth}`][d]?.difference.toFixed(2) }}
+          </td>
+        </tr>
+      </div>
     </table>
   </div>
 </template>

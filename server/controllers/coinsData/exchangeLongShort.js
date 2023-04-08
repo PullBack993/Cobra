@@ -58,7 +58,7 @@ router.post("/long-short", async (req, res) => {
         await page.waitForSelector("#rc_select_2");
         await page.click("#rc_select_2"); // select coin
         await page.type("#rc_select_2", `${symbol}`);
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 700));
 
         await page.keyboard.press("Enter");
       }
@@ -73,7 +73,7 @@ router.post("/long-short", async (req, res) => {
         for (let i = 0; i < options.length; i++) {
           const optionTitle = await options[i].getProperty("title");
           const titleValue = await optionTitle.jsonValue();
-          await new Promise((resolve) => setTimeout(resolve, 50));
+          await new Promise((resolve) => setTimeout(resolve, 700));
           if (titleValue === time) {
             desiredOption = options[i];
             break;
