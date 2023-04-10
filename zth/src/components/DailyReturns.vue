@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import axios from 'axios';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import DropdownSmall from '@/components/DropDownLongShort.vue';
+import { useGlobalStore } from '../store/global';
+
+const store = useGlobalStore();
 
 const data = ref();
 const time = ref<string[] | number>();
@@ -24,6 +27,20 @@ const months = [
   'November',
   'December',
 ];
+
+const themeClass = computed(() =>
+  store.themeDark ? 'light-theme' : 'dark-theme'
+);
+
+function colorPriceAction(difference: number) {
+  if (difference > 0) {
+    return 'returns__table-year-percentage--positive';
+  }
+  if (difference < 0) {
+    return 'returns__table-year-percentage--negative';
+  }
+  return '';
+}
 
 onMounted(() => {
   reqData(currentMonth.value, currentType.value);
@@ -92,7 +109,11 @@ function removeLy() {
 
 <template>
   <div class="returns">
-    <div class="returns__chart-select-item" v-if="currentType === 'day'">
+    <div
+      class="returns__chart-select-item"
+      :class="themeClass"
+      v-if="currentType === 'day'"
+    >
       <div class="returns__chart-select-item">Month</div>
       <DropdownSmall
         :data="months"
@@ -101,7 +122,7 @@ function removeLy() {
         @new-value:input="monthChange"
       />
     </div>
-    <div class="returns__chart-select-item">
+    <div class="returns__chart-select-item" :class="themeClass">
       <div class="returns__chart-select-item">Type</div>
 
       <DropdownSmall
@@ -111,17 +132,22 @@ function removeLy() {
         @new-value:input="timeChange"
       />
     </div>
-    <div class="returns__chart-select-item">
+    <div class="returns__chart-select-item" :class="themeClass">
       <div class="returns__chart-select-item">Symbol</div>
 
       <DropdownSmall :data="['BTC']" :readonly="true" :with-arrow-icon="true" />
     </div>
   </div>
   <div class="returns__container">
-    <table class="returns__table" v-if="data">
+    <table class="returns__table" :class="themeClass" v-if="data">
       <tr class="returns__table-date">
-        <th class="returns__table-date--time">Time</th>
-        <th class="returns__table-date--item" v-for="(day, i) in time" :key="i">
+        <th class="returns__table-date--time" :class="themeClass">Time</th>
+        <th
+          class="returns__table-date--item"
+          :class="themeClass"
+          v-for="(day, i) in time"
+          :key="i"
+        >
           {{ day !== '' ? day : i + 1 }}
         </th>
       </tr>
@@ -130,7 +156,7 @@ function removeLy() {
           <td class="returns__table-year--item">{{ year[0] }}</td>
           <td
             class="returns__table-year-percentage--ratio"
-            :class="`${year[1][`${currentMonth}`][d]?.difference > 0 ? 'g' : 'r'}`"
+            :class="colorPriceAction(year[1][d]?.difference)"
             v-for="(d, i) in Object.values(year[1]).length"
             :key="i"
           >
@@ -147,8 +173,15 @@ function removeLy() {
           <td class="returns__table-year--item">{{ year[0] }}</td>
           <td
             class="returns__table-year-percentage--ratio"
-            :class="`${year[1][`${currentMonth}`][d]?.difference > 0 ? 'g' : 'r'}`"
-
+            :class="`${
+              year[1][`${currentMonth}`][d]?.difference > 0
+                ? 'returns__table-year-percentage--positive'
+                : year[1][`${currentMonth}`][d]?.difference < 0
+                ? 'returns__table-year-percentage--negative'
+                : year[1][`${currentMonth}`][d]?.difference === 0
+                ? ''
+                : ''
+            }`"
             v-for="(d, i) in time"
             :key="i"
           >
@@ -161,13 +194,6 @@ function removeLy() {
 </template>
 
 <style lang="scss" scoped>
-.r {
-  background-color: red;
-}
-.g{
-  background-color: $chart-green;
-
-}
 .returns {
   display: flex;
   flex: 1 0 100%;
@@ -178,52 +204,67 @@ function removeLy() {
     flex-flow: wrap;
     width: 100%;
     overflow: auto;
-    @include customHorizontalScrollbar();
+    @include customHorizontalScrollbar($height: 1rem);
   }
 
   &__chart-select-item {
     margin-left: 1.1rem;
     margin-bottom: 0.5rem;
     font-size: 1.6rem;
-    font-weight: 500;
     width: 12rem;
-    color: white;
   }
 }
 
 .returns__table {
   font-family: arial, sans-serif;
-  // border-collapse: collapse;
-  // width: 100%;
-  color: white;
   margin-top: 4rem;
 
   &-year-percentage {
     &--ratio {
       text-align: center;
     }
+    &--positive {
+      background: $chart-light-green;
+      font-weight: 600;
+      color: $chart-dark-green;
+    }
+
+    &--negative {
+      color: $chart-dark-red;
+      font-weight: 600;
+
+      background-color: $chart-red;
+    }
   }
 
   &-year--item {
-    border: 1px solid #dddddd;
     text-align: left;
-    padding: 8px;
+    padding: 0.8rem;
+    font-weight: 600;
   }
 
   &-date {
-    color: white;
+    color: $white;
+
     &--item {
-      border: 1px solid #dddddd;
       text-align: center;
       position: relative;
       height: 3rem;
       width: 14rem;
       margin-bottom: 2rem;
-      padding-right: 2rem;
-      font-weight: 300;
-      color: white;
+      color: $white;
       min-width: 10rem;
+      font-weight: bold;
     }
   }
+}
+.light-theme {
+  color: $main-purple;
+  font-weight: 600;
+}
+
+.dark-theme {
+  --text-color: $white;
+  color: $white;
 }
 </style>

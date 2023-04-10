@@ -1,15 +1,32 @@
-@mixin customHorizontalScrollbar ($height: 0.8rem, $color: $main-purple, $border-radius: 1rem){
-    //Firefox
+@mixin customHorizontalScrollbar($height: 0.8rem, $color: $main-purple, $border-radius: 1rem) {
+    // Chrome and Firefox
     scrollbar-color: $color transparent;
-    -webkit-tap-highlight-color: transparent;
-
+    -webkit-scrollbar-color: $color transparent;
+    -moz-scrollbar-color: $color transparent;
+    
+    
     // Chrome
     &::-webkit-scrollbar {
-        height: $height
+      height: $height;
     }
-
     &::-webkit-scrollbar-thumb {
-        background: $color;
-        border-radius: $border-radius;
+      background: $color;
+      border-radius: $border-radius;
     }
-}
+  
+    // Firefox
+    & {
+      scrollbar-width: thin;
+    }
+    &::-moz-scrollbar {
+      height: $height;
+    }
+    &::-moz-scrollbar-thumb {
+        background: $color;
+        border-top-left-radius: $border-radius;
+        border-top-right-radius: $border-radius;
+        border-bottom-left-radius: $border-radius;
+        border-bottom-right-radius: $border-radius;
+    }
+  }
+  

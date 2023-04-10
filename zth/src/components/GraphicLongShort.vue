@@ -184,7 +184,7 @@ watch(
     position: relative;
   }
   &-progress {
-    background-color: $chart-red;
+    background-color: $chart-dark-red;
     position: relative;
     height: 3.5rem;
     display: flex;
@@ -195,7 +195,7 @@ watch(
     -webkit-transition: all 0.3s linear;
     -moz-transition: all 0.3s linear;
     transition: all 0.3s linear;
-    background-color: $chart-green;
+    background-color: $chart-dark-green;
     width: 50%;
     border-radius: 1rem 0rem 0 1rem;
     border-style: none outset none none;
