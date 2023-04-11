@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import axios from 'axios';
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref, computed, watch } from 'vue';
 import DropdownSmall from '@/components/DropDownLongShort.vue';
 import { useGlobalStore } from '../store/global';
 
@@ -32,15 +32,18 @@ const themeClass = computed(() =>
   store.themeDark ? 'light-theme' : 'dark-theme'
 );
 
-function colorPriceAction(difference: number) {
+const colorPriceAction = computed(() => (difference: number) => {
+  console.log(store.themeDark);
   if (difference > 0) {
-    return 'returns__table-year-percentage--positive';
+    return store.themeDark
+      ? 'returns__table-year-percentage--positive-light'
+      : 'returns__table-year-percentage--positive';
   }
   if (difference < 0) {
     return 'returns__table-year-percentage--negative';
   }
   return '';
-}
+});
 
 onMounted(() => {
   reqData(currentMonth.value, currentType.value);
@@ -156,7 +159,8 @@ function removeLy() {
           <td class="returns__table-year--item">{{ year[0] }}</td>
           <td
             class="returns__table-year-percentage--ratio"
-            :class="colorPriceAction(year[1][d]?.difference)"
+            :class="colorPriceAction(year[1][d]?.difference?.toFixed(2))"
+
             v-for="(d, i) in Object.values(year[1]).length"
             :key="i"
           >
@@ -173,15 +177,7 @@ function removeLy() {
           <td class="returns__table-year--item">{{ year[0] }}</td>
           <td
             class="returns__table-year-percentage--ratio"
-            :class="`${
-              year[1][`${currentMonth}`][d]?.difference > 0
-                ? 'returns__table-year-percentage--positive'
-                : year[1][`${currentMonth}`][d]?.difference < 0
-                ? 'returns__table-year-percentage--negative'
-                : year[1][`${currentMonth}`][d]?.difference === 0
-                ? ''
-                : ''
-            }`"
+            :class="colorPriceAction(year[1][`${currentMonth}`][d]?.difference)"
             v-for="(d, i) in time"
             :key="i"
           >
@@ -224,6 +220,11 @@ function removeLy() {
       text-align: center;
     }
     &--positive {
+      background: $chart-dark-green;
+      font-weight: 600;
+      color: $chart-light-green;
+    }
+    &--positive-light {
       background: $chart-light-green;
       font-weight: 600;
       color: $chart-dark-green;
@@ -232,7 +233,6 @@ function removeLy() {
     &--negative {
       color: $chart-dark-red;
       font-weight: 600;
-
       background-color: $chart-red;
     }
   }
