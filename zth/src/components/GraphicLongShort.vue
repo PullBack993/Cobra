@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import placeHolderLoader from './utils/PlaceHolderLoader.vue';
+import { useGlobalStore } from '../store/global';
+
+const store = useGlobalStore();
 
 interface Props {
   coins?: any;
@@ -10,7 +13,13 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {});
 const coinsData = ref();
 const loadingLength = ref(12);
-console.log(props.coins);
+
+const themeClass = computed(() =>
+  store.themeDark
+    ? 'graphic__ratio-exchange-name--light'
+    : 'graphic__ratio-exchange-name--dark'
+);
+
 watch(
   () => props.coins,
   (value) => {
@@ -30,7 +39,7 @@ watch(
               loading="lazy"
               :src="coinsData?.symbolLogo"
             />
-            <div class="graphic__ratio-exchange-name">
+            <div :class="themeClass">
               {{ coinsData?.symbol }} Statistics&nbsp;
             </div>
           </div>
@@ -71,7 +80,7 @@ watch(
               loading="lazy"
               :src="data.exchangeLogo"
             />
-            <div class="graphic__ratio-exchange-name">
+            <div :class="themeClass">
               {{ data.exchangeName }}
             </div>
           </div>
@@ -118,7 +127,7 @@ watch(
     </div>
   </div>
 </template>
-
+ 
 <style scoped lang="scss">
 .loader {
   display: flex;
@@ -157,10 +166,15 @@ watch(
     flex: 0 0 16.66666667%;
     max-width: 16.66666667%;
 
-    &-name {
+    &-name--dark {
       font-weight: bold;
       padding-left: 1.5rem;
       color: white;
+    }
+    &-name--light {
+      font-weight: bold;
+      padding-left: 1.5rem;
+      color: $main-purple;
     }
     &--logo {
       display: -webkit-flex;
@@ -214,4 +228,7 @@ watch(
     color: white;
   }
 }
+// const themeClass = computed(() =>
+//   store.themeDark ? 'light-theme' : 'dark-theme'
+// );
 </style>

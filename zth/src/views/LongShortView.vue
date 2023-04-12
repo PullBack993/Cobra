@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted, watch, onUnmounted } from 'vue';
+import { ref, onMounted, watch, onUnmounted, computed } from 'vue';
 import axios from 'axios';
 import DropdownSmall from '@/components/DropDownLongShort.vue';
 import GraphicLongShort from '@/components/GraphicLongShort.vue';
 import allCoins from '../components/data/coinglass.json';
+import { useGlobalStore } from '../store/global';
 
 const allowsCoins = allCoins;
 const currentValue = ref('BTC');
@@ -11,6 +12,16 @@ const currentTime = ref('5 minutes');
 const coins = ref();
 const intervalId = ref(0);
 const loading = ref(false);
+const store = useGlobalStore();
+
+interface Props {
+  coins?: any;
+  loading: boolean;
+}
+
+const themeClass = computed(() =>
+  store.themeDark ? 'long__short-theme--light' : 'long__short-theme--dark'
+);
 
 function valueChange(value: string) {
   currentValue.value = value; // ETH req
@@ -28,8 +39,7 @@ onMounted(() => {
 onUnmounted(() => {
   clearInterval(intervalId.value);
 
-  axios
-    .post('http://localhost:3000/exchange/long-short', {exit: true})
+  axios.post('http://localhost:3000/exchange/long-short', { exit: true });
 });
 
 watch(
@@ -60,38 +70,39 @@ function reqData() {
 }
 
 intervalId.value = Number(setInterval(reqData, 13000));
-
 </script>
 
 <template>
   <div class="main-long__short">
     <div class="long__short">
       <div class="long__short-col">
-        <div class="long__short-title">
+        <div :class="themeClass" class="long__short-title">
           <span>Exchange {{ currentValue }} Long/Short Ration</span>
         </div>
 
         <div class="long__short-chart-select">
-          <div class="long__short-chart-select-item">
+          <div class="long__short-chart-select-item" :class="themeClass">
             <div class="long__short-symbol">Symbol</div>
             <DropdownSmall :data="allowsCoins" @new-value:input="valueChange" />
           </div>
           <div class="long__short-chart-select-item">
-            <div class="long__short-period">Period</div>
-            <DropdownSmall
-              :with-arrow-icon="true"
-              :readonly="true"
-              :data="[
-                '5 minutes',
-                '15 minutes',
-                '30 minutes',
-                '1 hour',
-                '4 hours',
-                '12 hours',
-                '24 hours',
-              ]"
-              @new-value:input="timeChange"
-            />
+            <div class="long__short-period" :class="themeClass">Period</div>
+            <div :class="themeClass">
+              <DropdownSmall
+                :with-arrow-icon="true"
+                :readonly="true"
+                :data="[
+                  '5 minutes',
+                  '15 minutes',
+                  '30 minutes',
+                  '1 hour',
+                  '4 hours',
+                  '12 hours',
+                  '24 hours',
+                ]"
+                @new-value:input="timeChange"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -113,13 +124,19 @@ intervalId.value = Number(setInterval(reqData, 13000));
     -moz-box-direction: normal;
     flex-flow: row wrap;
   }
-
   &-title {
     font-size: 2rem;
     font-weight: 500;
-    color: white;
     padding-bottom: 1rem;
     margin: auto;
+  }
+  &-theme--dark {
+    color: $white;
+    --text-color: $white;
+  }
+
+  &-theme--light {
+    color: $main-purple;
   }
 
   &-chart-select {
@@ -133,7 +150,6 @@ intervalId.value = Number(setInterval(reqData, 13000));
       margin-bottom: 2rem;
       padding-right: 2rem;
       font-weight: 300;
-      color: white;
     }
   }
   &-symbol,
