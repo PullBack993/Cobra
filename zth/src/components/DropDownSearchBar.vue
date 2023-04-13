@@ -294,7 +294,7 @@ function onOpen(value) {
   color: $chart-red;
 }
 .search__container {
-  width: 90%;
+  width: 100%;
   display: flex;
   align-items: center;
 

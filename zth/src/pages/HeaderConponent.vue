@@ -18,9 +18,7 @@ onMounted(() => {
       <div class="search">
         <DropdownInputComponent />
       </div>
-      <div class="meta-mask">
         <AuthPopUpComponent />
-      </div>
     </div>
   </header>
 </template>
@@ -52,7 +50,7 @@ onMounted(() => {
   .search {
     margin: auto;
     border-radius: 0.6rem;
-    width: 90%;
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;

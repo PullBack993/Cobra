@@ -20,6 +20,18 @@ const themeClass = computed(() =>
     : 'graphic__ratio-exchange-name--dark'
 );
 
+const progressClass = computed(() =>
+  store.themeDark
+    ? 'graphic__ratio-progress--light'
+    : 'graphic__ratio-progress--dark'
+);
+
+const longProgress = computed(() =>
+  store.themeDark
+    ? 'graphic__ratio-long--light'
+    : 'graphic__ratio-long--dark'
+);
+
 watch(
   () => props.coins,
   (value) => {
@@ -47,9 +59,10 @@ watch(
 
         <div class="graphic__ratio-main">
           <div>
-            <div class="graphic__ratio-progress">
+            <div class="graphic__ratio-progress" :class="progressClass">
               <div
                 class="graphic__ratio-long"
+                :class="longProgress"
                 :style="{ width: Number(coinsData?.longRate) + '%' }"
               ></div>
               <div class="graphic__ratio-values-container">
@@ -88,9 +101,10 @@ watch(
 
         <div class="graphic__ratio-main">
           <div>
-            <div class="graphic__ratio-progress">
+            <div class="graphic__ratio-progress" :class="progressClass">
               <div
                 class="graphic__ratio-long"
+                :class="longProgress"
                 :style="{ width: Number(data.longRate) + '%' }"
               ></div>
               <div class="graphic__ratio-values-container">
@@ -127,7 +141,7 @@ watch(
     </div>
   </div>
 </template>
- 
+
 <style scoped lang="scss">
 .loader {
   display: flex;
@@ -198,23 +212,35 @@ watch(
     position: relative;
   }
   &-progress {
-    background-color: $chart-dark-red;
     position: relative;
     height: 3.5rem;
     display: flex;
     border-radius: 1rem;
+    &--light {
+      background-color: $chart-red;
+    }
+    &--dark {
+      background-color: $chart-dark-red;
+    }
   }
+
   &-long {
     text-align: right;
     -webkit-transition: all 0.3s linear;
     -moz-transition: all 0.3s linear;
     transition: all 0.3s linear;
-    background-color: $chart-dark-green;
     width: 50%;
     border-radius: 1rem 0rem 0 1rem;
     border-style: none outset none none;
     border-right-color: $black;
+    &--light {
+      background-color: $chart-green;
+    }
+    &--dark {
+      background-color: $chart-dark-green;
+    }
   }
+
   &-values-container {
     position: absolute;
     line-height: 3.5rem;

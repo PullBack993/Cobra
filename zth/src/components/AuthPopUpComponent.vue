@@ -164,9 +164,10 @@ const showRegistrationForm = () => {
 
 <style scoped lang="scss">
 .dialog__modal {
+  top: 3.5rem;
+  right: 4rem;
   &-openDialog {
-    margin-top: 3.5rem;
-    margin-right: 3rem;
+    position: absolute;
     height: 2.5rem;
     fill: white;
   }
@@ -317,9 +318,6 @@ const showRegistrationForm = () => {
 
 @media (max-width: $breakpoint_small) {
   .dialog__modal-openDialog {
-    position: absolute;
-    right: 0;
-    margin-right: 5rem;
   }
 }
 </style>
