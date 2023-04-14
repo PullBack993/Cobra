@@ -164,8 +164,9 @@ const showRegistrationForm = () => {
 
 <style scoped lang="scss">
 .dialog__modal {
-  top: 3.5rem;
-  right: 4rem;
+  top: 3.3rem;
+  right: 4.5rem;
+
   &-openDialog {
     position: absolute;
     height: 2.5rem;

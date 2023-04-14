@@ -56,6 +56,7 @@ onMounted(() => {
     align-items: center;
     align-content: center;
     height: 9rem;
+    margin: 0 1rem;
     @media (min-width: $breakpoint_small) {
       margin: 0;
       width: 45%;

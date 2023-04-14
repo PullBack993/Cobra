@@ -470,8 +470,8 @@ onMounted(() => {
 .search__lines {
   animation: leftToRight 0.15s;
   position: absolute;
-  top: 2.5rem;
-  left: 10%;
+  top: 3.4rem;
+  left: 3rem;
   cursor: pointer;
   width: 4.7rem;
   z-index: 99;
@@ -515,7 +515,6 @@ onMounted(() => {
 }
 
 @media (min-width: $breakpoint_small) {
-
   //TODO change class name/Adjust all classes
   .test {
     transform: translateX(0);
