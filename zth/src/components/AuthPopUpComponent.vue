@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import loginSvg from '../assets/BaseIcons/loginIcon.svg';
 import emailSvg from '../assets/BaseIcons/email.svg';
 import passwordSvg from '../assets/BaseIcons/password.svg';
@@ -21,12 +21,19 @@ const handleData = (data) => {
 const showRegistrationForm = () => {
   showRegForm.value = !showRegForm.value;
 };
+
+const themeClass = computed(() =>
+  store.themeDark
+    ? 'dialog__modal-openDialog--light'
+    : 'dialog__modal-openDialog--dark'
+);
 </script>
 
 <template>
   <div class="dialog__modal">
     <loginSvg
       class="dialog__modal-openDialog"
+      :class="themeClass"
       @click="showDialog = true"
     ></loginSvg>
     <div
@@ -170,7 +177,12 @@ const showRegistrationForm = () => {
   &-openDialog {
     position: absolute;
     height: 2.5rem;
-    fill: white;
+    &--light {
+      fill: $main-purple;
+    }
+    &--dark {
+      fill: $white;
+    }
   }
   &-overlay {
     position: fixed;
@@ -296,6 +308,12 @@ const showRegistrationForm = () => {
       border: none;
       border-bottom: 0.1rem solid $light_grey;
       transition: all 0.3s ease-in-out;
+      &--dark {
+        background-color: $light-grey;
+      }
+      &--light {
+        background-color: $input-bg-dark;
+      }
       &:focus {
         border-bottom: 0.1rem solid $main_purple;
       }
@@ -314,11 +332,6 @@ const showRegistrationForm = () => {
         background-color: $main_purple-dark-5;
       }
     }
-  }
-}
-
-@media (max-width: $breakpoint_small) {
-  .dialog__modal-openDialog {
   }
 }
 </style>

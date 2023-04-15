@@ -160,7 +160,6 @@ function removeLy() {
           <td
             class="returns__table-year-percentage--ratio"
             :class="colorPriceAction(year[1][d]?.difference?.toFixed(2))"
-
             v-for="(d, i) in Object.values(year[1]).length"
             :key="i"
           >
@@ -192,8 +191,9 @@ function removeLy() {
 <style lang="scss" scoped>
 .returns {
   display: flex;
-  flex: 1 0 100%;
+  flex-wrap: wrap;
   justify-content: flex-end;
+  margin-right: 2rem;
 
   &__container {
     display: flex;
@@ -202,18 +202,21 @@ function removeLy() {
     overflow: auto;
     @include customHorizontalScrollbar($height: 1rem);
   }
-
   &__chart-select-item {
     margin-left: 1.1rem;
     margin-bottom: 0.5rem;
     font-size: 1.6rem;
     width: 12rem;
   }
+  &__chart-select-item:last-child {
+    margin-top: 1.5rem;
+  }
 }
 
 .returns__table {
   font-family: arial, sans-serif;
   margin-top: 4rem;
+  margin-bottom: 1rem;
 
   &-year-percentage {
     &--ratio {
@@ -266,5 +269,15 @@ function removeLy() {
 .dark-theme {
   --text-color: $white;
   color: $white;
+}
+
+@media (min-width: $breakpoint_mobiletabs) {
+  .returns {
+  margin-right: 0;
+
+    &__chart-select-item:last-child {
+    margin-top: 0;
+  }
+  }
 }
 </style>

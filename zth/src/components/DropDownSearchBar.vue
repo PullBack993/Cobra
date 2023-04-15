@@ -475,7 +475,7 @@ function onOpen(value) {
     padding-left: 1rem;
   }
   .search__container-list {
-    max-height: 22rem;
+    max-height: 27rem;
   }
 
   .search__container-list-current--base,

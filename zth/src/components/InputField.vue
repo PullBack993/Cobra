@@ -208,7 +208,6 @@ function onInput() {
   searchParams.value = searchParams.value.replace(/[^a-zA-Z1234567890]/g, '');
   emit('onInput', searchParams.value);
 }
-
 </script>
 <template>
   <input
@@ -230,12 +229,12 @@ function onInput() {
 <style lang="scss" scoped>
 //TODO DARK LIGHT !!!
 
-// .bg-dark {
-//   background-color: black;
-// }
-// .bg-light {
-//   background-color: wheat;
-// }
+.bg-dark {
+  background-color: $light-grey;
+}
+.bg-light {
+  background-color: $input-bg-dark;
+}
 .input {
   width: 100%;
   height: 5rem;

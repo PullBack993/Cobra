@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, computed } from 'vue';
 import AuthPopUpComponent from '../components/AuthPopUpComponent.vue';
 import DropdownInputComponent from '../components/DropDownSearchBar.vue';
 import { useGlobalStore } from '../store/global';
@@ -10,6 +10,8 @@ onMounted(() => {
   store.isLogin();
   // store.a();
 });
+
+
 </script>
 
 <template>
@@ -33,14 +35,6 @@ onMounted(() => {
   border-radius: 0.5rem;
 }
 
-.dialog__modal-openDialog {
-  width: 3rem;
-  position: absolute;
-  right: 0;
-  margin-right: 1rem;
-  background-color: $input-bg-dark;
-  border-radius: 0.5rem;
-}
 
 .main {
   border-bottom: 0.1rem solid $main-purple;
