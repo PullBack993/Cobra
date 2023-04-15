@@ -145,7 +145,10 @@ watch(
 <style scoped lang="scss">
 .loader {
   display: flex;
+
   &-spliter {
+  box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
+
     margin: 1rem;
     border-radius: 1rem;
     &::before {
@@ -175,10 +178,10 @@ watch(
   }
   &-exchange {
     display: block;
-    -webkit-flex: 0 0 16.66666667%;
+    -webkit-flex: 0 0 50%;
     -moz-box-flex: 0;
-    flex: 0 0 16.66666667%;
-    max-width: 16.66666667%;
+    flex: 0 0 50%;
+    max-width: 50%;
 
     &-name--dark {
       font-weight: bold;
@@ -205,10 +208,10 @@ watch(
   }
   &-main {
     display: block;
-    -webkit-flex: 0 0 83.33333333%;
+    -webkit-flex: 0 0 100%;
     -moz-box-flex: 0;
-    flex: 0 0 83.33333333%;
-    max-width: 83.33333333%;
+    flex: 0 0 100%;
+    max-width: 100%;
     position: relative;
   }
   &-progress {
@@ -253,6 +256,26 @@ watch(
     text-align: center;
     color: white;
   }
+}
+
+@media (min-width: $breakpoint_verysmall){
+  .graphic__ratio {
+    &-exchange {
+    display: block;
+    -webkit-flex: 0 0 16%;
+    -moz-box-flex: 0;
+    flex: 0 0 16%;
+    max-width: 16%;
+    }
+  &-main {
+    display: block;
+    -webkit-flex: 0 0 83.33333333%;
+    -moz-box-flex: 0;
+    flex: 0 0 83.33333333%;
+    max-width: 83.33333333%;
+    position: relative;
+  }
+}
 }
 // const themeClass = computed(() =>
 //   store.themeDark ? 'light-theme' : 'dark-theme'

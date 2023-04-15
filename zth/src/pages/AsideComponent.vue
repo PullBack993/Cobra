@@ -48,7 +48,6 @@ const switchTheme = () => {
 };
 function documentClick() {
   document.onclick = (e) => {
-    (e.target as HTMLButtonElement).appendClass = 'active';
     if (
       (e.target as HTMLButtonElement).className === 'sidebar-btn' ||
       (e.target as HTMLButtonElement).className === 'sidebar is-expand' ||
@@ -80,10 +79,6 @@ function destroyClickEvent() {
   document.removeEventListener('click', documentClick);
 }
 
-function tabEvent(event) {
-  if (event.code === 'Tab') {
-  }
-}
 // change to store
 function onScreenResize() {
   window.addEventListener('resize', () => {
@@ -96,37 +91,55 @@ function updateScreenWidth() {
   if (screenSize.value < 768) {
     opacity.value = '0';
     width.value = '0rem';
+    isToggle.value = false;
   } else {
     width.value = '8rem';
     opacity.value = '100';
+    isToggle.value = false;
     document.dispatchEvent(new Event(''));
   }
 }
 
+function handelEscape(event: KeyboardEvent) {
+  if (isToggle.value && event.key === 'Escape') {
+    isToggle.value = false;
+  }
+}
 onMounted(() => {
   dark.value = store.themeDark;
+  document.addEventListener('keydown', handelEscape);
   updateScreenWidth();
   onScreenResize();
 });
 </script>
 
 <template>
-  <div class="search__lines" @click="toggle($event)">
-    <span class="search__lines-icon">&nbsp;</span>
+  <div class="search__lines" @click="toggle()">
+    <span
+      class="search__lines-icon"
+      :class="`${
+        store.themeDark
+          ? 'search__lines-icon--light'
+          : 'search__lines-icon--dark'
+      }`"
+      >&nbsp;</span
+    >
   </div>
   <aside
     :style="{ opacity: opacity, width: width }"
     class="sidebar"
     :class="[
       { darkUnActive: dark },
-      `${isToggle ? 'is-expand' : 'test'}`,
+      `${isToggle ? 'is-expand' : 'shrink'}`,
+
       { isOpenAside: isToggle },
     ]"
   >
-    <img :src="`${bgp}`" alt="" class="hero-image" />
-    <RouterLink to="/" class="image" :key="home"></RouterLink>
-    <image />
-
+    <RouterLink to="/" class="image">
+      <div>
+        <img :src="`${bgp}`" alt="logo" class="hero-image" />
+      </div>
+    </RouterLink>
     <label for="sidebar-toggle" @click="toggle()" class="sidebar-btn">
       <span
         :class="[
@@ -138,7 +151,7 @@ onMounted(() => {
       >
     </label>
     <div class="sidebar-container">
-      <RouterLink to="/" class="sidebar-home" :key="home">
+      <RouterLink to="/" class="sidebar-home">
         <span class="material-symbols-outlined sidebar-home-icon">home</span>
         <p :class="`${isToggle ? 'visible' : 'notVisible'}`">Home</p>
       </RouterLink>
@@ -173,7 +186,6 @@ onMounted(() => {
         `${dark ? 'light-icon' : 'dark-icon'}`,
         `${isToggle ? '' : 'toggle'}`,
       ]"
-      @keydown="tabEvent($event)"
     >
       <div class="theme-light">
         <button
@@ -198,23 +210,6 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
-.test {
-  transform: translateX(-25rem);
-}
-.hero-image {
-  -webkit-mask-image: url('../assets/BaseIcons/zth.svg');
-  -webkit-mask-size: cover;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  -webkit-mask-size: 30%;
-  mask-image: url('../assets/BaseIcons/zth.svg');
-  mask-repeat: no-repeat;
-  mask-position: center;
-  mask-size: 30%;
-  max-height: 6rem;
-  margin-top: 2rem;
-  cursor: pointer;
-}
 .router-link-active {
   &::after {
     content: '';
@@ -231,10 +226,66 @@ onMounted(() => {
 }
 
 .darkUnActive {
-  background-color: $white !important;
+  background-color: $grey-5 !important;
 
   &.sidebar {
-    border-right: 0.1rem solid $grey_black_5 !important;
+    border-right: 0.1rem solid $grey-black-5 !important;
+  }
+}
+.search__lines {
+  position: absolute;
+  top: 3.4rem;
+  left: 2.6rem;
+  cursor: pointer;
+  width: 3.7rem;
+  z-index: 99;
+  height: 4rem;
+
+  &-icon {
+    display: block;
+    cursor: pointer;
+
+    &,
+    &::before,
+    &::after {
+      width: 3rem;
+      height: 0.2rem;
+      background-color: black;
+      display: inline-block;
+      position: absolute;
+      top: 45%;
+      left: 11%;
+      cursor: pointer;
+    }
+    &--light,
+    &--light::before,
+    &--light::after {
+      background-color: $main-purple;
+    }
+    &--dark,
+    &--dark::before,
+    &--dark::after {
+      background-color: $white;
+    }
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+
+    &::before {
+      top: -0.8rem;
+      cursor: pointer;
+    }
+
+    &::after {
+      top: 0.8rem;
+      cursor: pointer;
+    }
   }
 }
 
@@ -242,6 +293,9 @@ onMounted(() => {
   width: 25rem !important;
   overflow: hidden;
   backdrop-filter: blur(1rem);
+}
+.shrink {
+  transform: translateX(-25rem);
 }
 
 .sidebar {
@@ -258,55 +312,25 @@ onMounted(() => {
   border-right: 0.1rem solid $grey_5;
   transition: all 0.1s linear;
   margin-top: auto;
-  box-shadow: rgba(150, 150, 150, 0.1) 0 2rem 2rem;
 
-  &-container {
+  .image {
     display: flex;
-    flex-direction: column;
-    position: fixed;
-    top: 12rem;
+    justify-content: center;
   }
-
-  &-home {
-    display: flex;
-    text-decoration: none;
-    padding: 2rem 2rem 2rem 2.5rem;
-    align-items: center;
-    margin: auto 0;
-
-    &:hover {
-      transition: 0.1s all ease-in-out;
-
-      .material-symbols-outlined {
-        font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
-      }
-
-      &::after {
-        content: '';
-        position: absolute;
-        box-shadow: rgba(150, 150, 150, 0.1) 0 2rem 2rem;
-      }
-    }
-
-    &-icon {
-      color: $main_purple;
-
-      &:hover {
-        color: $main-purple-dark;
-      }
-    }
-  }
-
-  .notVisible {
-    display: none;
-  }
-
-  .visible {
-    padding-left: 1rem;
-    font-size: 2rem;
-    font-weight: 300;
-    color: $main_purple;
-    animation: text-out-after 0.15s linear;
+  .hero-image {
+    -webkit-mask-image: url('../assets/BaseIcons/zth.svg');
+    -webkit-mask-size: cover;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: 30%;
+    mask-image: url('../assets/BaseIcons/zth.svg');
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: 30%;
+    max-height: 6rem;
+    margin-top: 2rem;
+    cursor: pointer;
+    transform: scale(1.8);
   }
 
   &-btn {
@@ -314,21 +338,6 @@ onMounted(() => {
     padding: 3rem 2rem 3rem 2rem;
     cursor: pointer;
     max-height: 6.2rem;
-  }
-
-  .active {
-    float: right;
-    background-color: transparent;
-  }
-
-  .active::before {
-    top: 0;
-    transform: rotate(135deg);
-  }
-
-  .active::after {
-    top: 0;
-    transform: rotate(-135deg);
   }
 
   &-icon {
@@ -369,6 +378,75 @@ onMounted(() => {
         display: inline-block;
       }
     }
+  }
+
+  &-container {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 12rem;
+    width: 100%;
+    margin-top: 2rem;
+  }
+
+  &-home {
+    display: flex;
+    text-decoration: none;
+    padding: 2rem 2rem 2rem 2.5rem;
+    align-items: center;
+    margin: auto 0;
+
+    &:hover {
+      transition: 0.1s all ease-in-out;
+
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+      }
+
+      .visible {
+        font-weight: 500;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        box-shadow: rgba(150, 150, 150, 0.1) 0 2rem 2rem;
+      }
+    }
+
+    &-icon {
+      color: $main_purple;
+
+      &:hover {
+        color: $main-purple-dark;
+      }
+    }
+  }
+
+  .notVisible {
+    display: none;
+  }
+
+  .visible {
+    padding-left: 1rem;
+    font-size: 2rem;
+    font-weight: 300;
+    color: $main_purple;
+  }
+
+  .active {
+    float: right;
+    background-color: transparent;
+  }
+
+  .active::before {
+    top: 0;
+    transform: rotate(135deg);
+  }
+
+  .active::after {
+    top: 0;
+    transform: rotate(-135deg);
   }
 
   .theme {
@@ -467,56 +545,9 @@ onMounted(() => {
     }
   }
 }
-.search__lines {
-  animation: leftToRight 0.15s;
-  position: absolute;
-  top: 3.4rem;
-  left: 3rem;
-  cursor: pointer;
-  width: 4.7rem;
-  z-index: 99;
-  height: 4.9rem;
-  &-icon {
-    display: block;
-    cursor: pointer;
-
-    &,
-    &::before,
-    &::after {
-      width: 3rem;
-      height: 0.2rem;
-      background-color: $white;
-      display: inline-block;
-      position: absolute;
-      top: 45%;
-      left: 11%;
-      cursor: pointer;
-    }
-
-    &::before,
-    &::after {
-      content: '';
-      position: absolute;
-      left: 0;
-      transition: all 0.15s ease;
-      cursor: pointer;
-    }
-
-    &::before {
-      top: -0.8rem;
-      cursor: pointer;
-    }
-
-    &::after {
-      top: 0.8rem;
-      cursor: pointer;
-    }
-  }
-}
 
 @media (min-width: $breakpoint_small) {
-  //TODO change class name/Adjust all classes
-  .test {
+  .shrink {
     transform: translateX(0);
   }
   .sidebar {
@@ -527,12 +558,6 @@ onMounted(() => {
   }
   .search__lines-icon {
     display: none;
-  }
-}
-
-@keyframes leftToRight {
-  0% {
-    left: 0;
   }
 }
 </style>

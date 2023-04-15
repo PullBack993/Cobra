@@ -3,6 +3,7 @@ import { ref, nextTick } from 'vue';
 import ArrowIcon from '../assets/BaseIcons/arrow.svg';
 import SearchIcon from '../assets/BaseIcons/search.svg';
 import InputField from './InputField.vue';
+import { useGlobalStore } from '../store/global';
 
 interface Props {
   data: string[]; // symbol or period of time
@@ -17,6 +18,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(['newValue:input']);
 
 let activeScrollItem = 0;
+const store = useGlobalStore();
 const currentIndexItem = ref(0);
 const savedValue = ref();
 const itemList = ref(null);
@@ -133,7 +135,7 @@ function findCoin(value: string) {
 }
 
 function selectInput() {
-  open.value = true;
+  open.value = !open.value;
 }
 </script>
 
@@ -179,7 +181,13 @@ function selectInput() {
           : 'long__short-dropdown-symbol--is-open'
       "
     >
-      <div ref="list" class="long__short-list">
+      <div
+        ref="list"
+        class="long__short-list"
+        :class="`${
+          store.themeDark ? 'long__short-list--light' : 'long__short-list--dark'
+        }`"
+      >
         <ul ref="topElement" class="long__short-items">
           <li
             class="long__short-item"
@@ -188,7 +196,14 @@ function selectInput() {
             :currentItem="index"
             :key="index"
             @click="selectedItem"
-            :class="index === currentIndexItem ? 'long__short-active' : ''"
+            :class="[
+              index === currentIndexItem ? 'long__short-active' : '',
+              `${
+                store.themeDark
+                  ? 'long__short-item--light'
+                  : 'long__short-item--dark'
+              }`,
+            ]"
           >
             {{ name }}
           </li>
@@ -268,7 +283,14 @@ function selectInput() {
     position: absolute;
     z-index: 3;
     width: 12rem;
-    background-color: $bg-dark-purple;
+
+    &--light {
+      background-color: $white;
+      font-weight: bold;
+    }
+    &--dark {
+      background-color: $bg-dark-purple;
+    }
 
     &::-webkit-scrollbar {
       width: 1.2rem;
@@ -281,7 +303,6 @@ function selectInput() {
       border-radius: 5rem;
     }
   }
- 
 
   &-items {
     list-style: none;
@@ -293,10 +314,17 @@ function selectInput() {
     font-size: 1.6rem;
     font-weight: 500;
     padding: 0.5rem 1.1rem;
-
-    &:hover {
-      background-color: $main-purple-dark;
-      border-radius: 0.4rem;
+    &--dark {
+      &:hover {
+        background-color: $main-purple-dark;
+        border-radius: 0.4rem;
+      }
+    }
+    &--light {
+      &:hover {
+        background-color: $main-plum-purple;
+        border-radius: 0.4rem;
+      }
     }
   }
 }

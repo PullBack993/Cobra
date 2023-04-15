@@ -123,13 +123,15 @@ function addClickEvent() {
   document.addEventListener('click', documentClick);
 }
 
-function documentKey(event: Event) {
+function documentKey(event: KeyboardEvent) {
   const { key } = event as KeyboardEvent;
   if (
+    event.ctrlKey &&
     (key === 'f' || key === 'F') &&
     dropDownOpen.value === false &&
     !props.prevent
   ) {
+    console.log('fffff')
     emit('open', true);
     event.preventDefault();
     input?.value?.focus();
@@ -230,7 +232,7 @@ function onInput() {
 //TODO DARK LIGHT !!!
 
 .bg-dark {
-  background-color: $light-grey;
+  background-color: $main-light-purple;
 }
 .bg-light {
   background-color: $input-bg-dark;
