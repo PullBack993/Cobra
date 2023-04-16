@@ -27,9 +27,7 @@ const progressClass = computed(() =>
 );
 
 const longProgress = computed(() =>
-  store.themeDark
-    ? 'graphic__ratio-long--light'
-    : 'graphic__ratio-long--dark'
+  store.themeDark ? 'graphic__ratio-long--light' : 'graphic__ratio-long--dark'
 );
 
 watch(
@@ -147,8 +145,7 @@ watch(
   display: flex;
 
   &-spliter {
-  box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
-
+    box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2); 
     margin: 1rem;
     border-radius: 1rem;
     &::before {
@@ -258,24 +255,24 @@ watch(
   }
 }
 
-@media (min-width: $breakpoint_verysmall){
+@media (min-width: $breakpoint_verysmall) {
   .graphic__ratio {
     &-exchange {
-    display: block;
-    -webkit-flex: 0 0 16%;
-    -moz-box-flex: 0;
-    flex: 0 0 16%;
-    max-width: 16%;
+      display: block;
+      -webkit-flex: 0 0 16%;
+      -moz-box-flex: 0;
+      flex: 0 0 16%;
+      max-width: 16%;
     }
-  &-main {
-    display: block;
-    -webkit-flex: 0 0 83.33333333%;
-    -moz-box-flex: 0;
-    flex: 0 0 83.33333333%;
-    max-width: 83.33333333%;
-    position: relative;
+    &-main {
+      display: block;
+      -webkit-flex: 0 0 83.33333333%;
+      -moz-box-flex: 0;
+      flex: 0 0 83.33333333%;
+      max-width: 83.33333333%;
+      position: relative;
+    }
   }
-}
 }
 // const themeClass = computed(() =>
 //   store.themeDark ? 'light-theme' : 'dark-theme'

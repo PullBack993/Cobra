@@ -3,6 +3,7 @@ import { onMounted, ref, nextTick } from 'vue';
 import axios from 'axios';
 import HorizontalEllipsisSpinner from './utils/HorizontalEllipsisSpinner.vue';
 import InputField from './InputField.vue';
+import ctrlKey from '../assets/BaseIcons/ctrl+f.svg';
 
 const currentItem = ref(0);
 let activeScrollItem = 0;
@@ -175,11 +176,7 @@ function onOpen(value) {
       @clear-values="handelClearValue"
       @scroll-direction="scrollPosition"
     />
-    <img
-      src="../assets/BaseIcons/key.svg"
-      alt="key-f"
-      class="search__container-key"
-    />
+    <ctrlKey alt="key-f" class="search__container-key"></ctrlKey>
     <!-- @click="selectInput($event)" -->
     <div
       :class="
@@ -299,12 +296,15 @@ function onOpen(value) {
   align-items: center;
 
   &-key {
-    width: 3rem;
+    width: 5rem;
     position: absolute;
     right: 0;
     margin-right: 1rem;
-    background-color: $input-bg-dark;
+    background-color: transparent;
     border-radius: 0.5rem;
+    transform: scale(2.2);
+    right: 1.6rem;
+    fill: $main-purple;
   }
   &-dropdown {
     animation: topToBottom 0.35s ease-in;

@@ -58,11 +58,11 @@ function reqData() {
   const coinData = { time: currentTime.value, symbol: currentValue.value };
   axios
     .post('http://localhost:3000/exchange/long-short', coinData)
-    // .then((res) => {
-    //   coins.value = res.data;
-    //   console.log(coins.value);
-    //   loading.value = false;
-    // })
+    .then((res) => {
+      coins.value = res.data;
+      console.log(coins.value);
+      loading.value = false;
+    })
     .catch((err) => {
       loading.value = false;
       console.error(err);
