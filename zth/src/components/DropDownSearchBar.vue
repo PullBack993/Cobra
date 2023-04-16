@@ -4,7 +4,9 @@ import axios from 'axios';
 import HorizontalEllipsisSpinner from './utils/HorizontalEllipsisSpinner.vue';
 import InputField from './InputField.vue';
 import ctrlKey from '../assets/BaseIcons/ctrl+f.svg';
+import { useGlobalStore } from '../store/global';
 
+const store = useGlobalStore();
 const currentItem = ref(0);
 let activeScrollItem = 0;
 const root = ref('');
@@ -179,11 +181,16 @@ function onOpen(value) {
     <ctrlKey alt="key-f" class="search__container-key"></ctrlKey>
     <!-- @click="selectInput($event)" -->
     <div
-      :class="
+      :class="[
         open
           ? 'search__container-dropdown'
-          : 'search__container-dropdown--is-open'
-      "
+          : 'search__container-dropdown--is-open',
+        `${
+          store.themeDark
+            ? 'search__container-dropdown--light'
+            : 'search__container-dropdown--dark'
+        }`,
+      ]"
     >
       <div ref="list" class="search__container-list" v-if="coins && !loading">
         <ul class="search__container-list-items">
@@ -219,7 +226,14 @@ function onOpen(value) {
                   : ''
               "
             >
-              <div class="search__container-list-current--base">
+              <div
+                class="search__container-list-current--base"
+                :class="
+                  store.themeDark
+                    ? 'search__container-list-current--light'
+                    : 'search__container-list-current--dark'
+                "
+              >
                 <img
                   :src="coins.image.small"
                   :alt="coins.name"
@@ -314,12 +328,17 @@ function onOpen(value) {
     width: auto;
     right: 0;
     left: 0;
-    background: $bg-dark-purple;
     z-index: 20;
     border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
     &--is-open {
       display: none;
+    }
+    &--dark {
+      background: $bg-dark-purple;
+    }
+    &--light {
+      background: $white;
     }
   }
   &-list {
@@ -408,23 +427,36 @@ function onOpen(value) {
       &:hover {
         background-color: $input-bg-dark-2;
       }
+
       &:hover &--base,
       &:hover &--price,
       &:hover &--percentage {
         font-weight: 500;
         font-size: 1.55rem;
       }
+
       &--container {
         display: flex;
         justify-content: flex-end;
         width: 100%;
       }
+
       &--base {
         display: flex;
       }
+
+      &--light {
+        color: $black;
+      }
+
+      &--dark {
+        color: $white;
+      }
+
       &-active {
         background-color: $white-2;
       }
+
       &--target {
         height: 2.5rem;
         position: relative;
@@ -432,6 +464,7 @@ function onOpen(value) {
         border-radius: 50%;
         background-color: $white;
       }
+
       &--baseImg {
         height: 2.5rem;
         position: absolute;

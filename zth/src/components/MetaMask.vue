@@ -14,6 +14,13 @@ onMounted(() => {
   isMetamaskSupported.value = typeof (window as any).ethereum !== 'undefined';
 });
 
+//TODO implement it
+// (window as any).ethereum?.on('accountsChanged', () => {
+//   Cookies.remove('auth_token');
+//   store.login = false;
+// });
+
+
 async function connectWallet() {
   if (!isMetamaskSupported.value) {
     const ua = navigator.userAgent;
@@ -65,9 +72,9 @@ async function connectWallet() {
       <button class="meta__mask-login">
         <span class="meta__mask-login-container">
           <img
-            loading="lazy"
             class="meta__mask-login-container-icon"
-            src="../assets/BaseIcons/metamask-icon.png"
+            src="../assets/BaseIcons/metamask.png"
+            loading="lazy"
             alt="icon"
           />
         </span>
