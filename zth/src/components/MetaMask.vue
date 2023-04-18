@@ -74,7 +74,6 @@ async function connectWallet() {
           <img
             class="meta__mask-login-container-icon"
             src="../assets/BaseIcons/metamask.png"
-            loading="lazy"
             alt="icon"
           />
         </span>
