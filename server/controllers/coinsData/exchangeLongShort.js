@@ -238,6 +238,23 @@ router.post("/daily-return", async (req, res) => {
 
 
 function calculatePercentDifferenceDaily(data, type) {
+  // Update db with new data 
+  const beginLength = data.length;
+  let needLength = 0;
+  const currentDate = data[beginDate].createTime
+  const currentMonth = currentDate.getMonth(); // 04
+  const currentDay = currentDate.getDate() // 19
+
+  if(currentDay === 1){
+    needLength = data.length - 1; // If new month then take old one and calculate it
+    console.log('Last day of month', data[needLength]?.createTime?.getDate)
+    
+  }
+
+
+
+
+  // Main function
   const years = {};
 
   for (let i = 503; i < data.length; i++) {
@@ -266,30 +283,6 @@ function calculatePercentDifferenceDaily(data, type) {
     }
     years[year][month][day] = { difference: calculatePercentageChange };
   }
-  // if (monthIndex === parseInt(month) && type === "daily") {
-  //   if (currentYear === null) {
-  //     currentYear = year;
-  //     currentMonth = monthIndex;
-  //   }
-
-  //   if (year !== currentYear || monthIndex !== currentMonth) {
-  //     // reached the end of the month
-  //     days[currentDay] = (lastPrice - data[currentDay - 2].price) / data[currentDay - 2].price;
-
-  //     // reset for next month
-  //     currentYear = year;
-  //     currentMonth = monthIndex;
-  //     currentDay = 1;
-  //     lastPrice = null;
-  //   }
-
-  //   if (lastPrice !== null) {
-  //     days[currentDay] = (item.price - lastPrice) / lastPrice;
-  //   }
-
-  //   lastPrice = item.price;
-  //   currentDay++;
-  // }
   return {
     years,
   };
