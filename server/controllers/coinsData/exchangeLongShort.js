@@ -250,10 +250,6 @@ function calculatePercentDifferenceDaily(data, type) {
     console.log('Last day of month', data[needLength]?.createTime?.getDate)
     
   }
-
-
-
-
   // Main function
   const years = {};
 
