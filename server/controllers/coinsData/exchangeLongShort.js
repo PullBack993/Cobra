@@ -10,495 +10,532 @@ let searchedValueOld = "";
 
 //TODO remove console logs after all tests
 router.post("/long-short", async (req, res) => {
-	try {
-		if (req.body.exit) {
-			if (browser) {
-				browser.close();
-			}
-			browser = null;
-			page = null;
-			searchedValueOld = "";
-			isRequestDone = true;
-			return;
-		}
-		console.log(req.body);
-		let { time, symbol } = req.body;
-		let result = [];
+  try {
+    if (req.body.exit) {
+      if (browser) {
+        browser.close();
+      }
+      browser = null;
+      page = null;
+      searchedValueOld = "";
+      isRequestDone = true;
+      return;
+    }
+    console.log(req.body);
+    let { time, symbol } = req.body;
+    let result = [];
 
-		if (!isRequestDone && symbol !== searchedValueOld && browser) {
-			console.log("Cancelling previous request...");
-			await browser.close();
-			browser = null;
-			result = [];
-		}
+    if (!isRequestDone && symbol !== searchedValueOld && browser) {
+      console.log("Cancelling previous request...");
+      await browser.close();
+      browser = null;
+      result = [];
+    }
 
-		if (!isRequestDone && symbol === searchedValueOld) {
-			console.log("Request in progress, returning...");
-			return;
-		}
-		searchedValueOld = symbol;
-		console.log("....");
-		console.log(browser);
-		if (!browser) {
-			// { headless: false, defaultViewport: false } for Debugging
-			// { headless: false, defaultViewport: false }
-			browser = await puppeteer.launch();
+    if (!isRequestDone && symbol === searchedValueOld) {
+      console.log("Request in progress, returning...");
+      return;
+    }
+    searchedValueOld = symbol;
+    console.log("....");
+    console.log(browser);
+    if (!browser) {
+      // { headless: false, defaultViewport: false } for Debugging
+      // { headless: false, defaultViewport: false }
+      browser = await puppeteer.launch();
 
-			isRequestDone = false;
-			console.log("Launching browser...");
+      isRequestDone = false;
+      console.log("Launching browser...");
 
-			page = await browser.newPage();
+      page = await browser.newPage();
 
-			console.log("Go to coinglass...");
-			await page.goto("https://www.coinglass.com/LongShortRatio");
-		}
-		(async () => {
-			try {
-				console.log("test symbol", symbol !== "BTC");
-				await page.waitForSelector("#rc_select_2");
-				await page.click("#rc_select_2"); // select coin
-				await page.type("#rc_select_2", `${symbol}`);
-				await new Promise((resolve) => setTimeout(resolve, 500));
+      console.log("Go to coinglass...");
+      await page.goto("https://www.coinglass.com/LongShortRatio");
+    }
+    (async () => {
+      try {
+        console.log("test symbol", symbol !== "BTC");
+        await page.waitForSelector("#rc_select_2");
+        await page.click("#rc_select_2"); // select coin
+        await page.type("#rc_select_2", `${symbol}`);
+        await new Promise((resolve) => setTimeout(resolve, 500));
 
-				await page.keyboard.press("Enter");
-				let desiredOption = null;
+        await page.keyboard.press("Enter");
+        let desiredOption = null;
 
-				if (time !== "5 minutes") {
-					/// check if it 5 min (default) else should select another value
-					await page.waitForSelector("#rc_select_3");
-					await page.click("#rc_select_3");
-					await page.waitForSelector(".ant-select-item.ant-select-item-option");
-					const options = await page.$$(".ant-select-item.ant-select-item-option");
-					for (let i = 0; i < options.length; i++) {
-						const optionTitle = await options[i].getProperty("title");
-						const titleValue = await optionTitle.jsonValue();
-						await new Promise((resolve) => setTimeout(resolve, 500));
-						if (titleValue === time) {
-							desiredOption = options[i];
-							break;
-						}
-					}
-				}
+        if (time !== "5 minutes") {
+          /// check if it 5 min (default) else should select another value
+          await page.waitForSelector("#rc_select_3");
+          await page.click("#rc_select_3");
+          await page.waitForSelector(".ant-select-item.ant-select-item-option");
+          const options = await page.$$(".ant-select-item.ant-select-item-option");
+          for (let i = 0; i < options.length; i++) {
+            const optionTitle = await options[i].getProperty("title");
+            const titleValue = await optionTitle.jsonValue();
+            await new Promise((resolve) => setTimeout(resolve, 500));
+            if (titleValue === time) {
+              desiredOption = options[i];
+              break;
+            }
+          }
+        }
 
-				if (desiredOption) {
-					await desiredOption.click();
-				}
-				await new Promise((resolve) => setTimeout(resolve, 1000));
+        if (desiredOption) {
+          await desiredOption.click();
+        }
+        await new Promise((resolve) => setTimeout(resolve, 1000));
 
-				await page.waitForSelector(".bybt-ls-rate");
-				console.log("bybt exname");
-				const src = await page.$eval(".bybt-exname-logo img", (img) => img.src);
-				console.log("src", src);
-				const firstNumber = await page.$eval(".bybt-ls-rate div:first-child", (div) =>
-					div.textContent.trim()
-				);
-				const secondNumber = await page.$eval(".bybt-ls-rate div:last-child", (div) =>
-					div.textContent.trim()
-				);
-				result.push({
-					symbol: symbol,
-					symbolLogo: src,
-					longRate: firstNumber,
-					shortRate: secondNumber,
-					list: [],
-				});
-				const elements = await page.$$(".bybt-ls-rate");
-				console.log("elements", elements);
+        await page.waitForSelector(".bybt-ls-rate");
+        console.log("bybt exname");
+        const src = await page.$eval(".bybt-exname-logo img", (img) => img.src);
+        console.log("src", src);
+        const firstNumber = await page.$eval(".bybt-ls-rate div:first-child", (div) =>
+          div.textContent.trim()
+        );
+        const secondNumber = await page.$eval(".bybt-ls-rate div:last-child", (div) =>
+          div.textContent.trim()
+        );
+        result.push({
+          symbol: symbol,
+          symbolLogo: src,
+          longRate: firstNumber,
+          shortRate: secondNumber,
+          list: [],
+        });
+        const elements = await page.$$(".bybt-ls-rate");
+        console.log("elements", elements);
 
-				const titles = await page.evaluate(() => {
-					const elements = document.querySelectorAll(".bybt-font-normal"); // get all elements with class name 'bybt-font-normal'
-					const values = [];
-					for (let i = 0; i < elements.length; i++) {
-						values.push(elements[i].textContent.trim()); // extract the text content of each element and add to the array
-					}
-					return values;
-				});
+        const titles = await page.evaluate(() => {
+          const elements = document.querySelectorAll(".bybt-font-normal"); // get all elements with class name 'bybt-font-normal'
+          const values = [];
+          for (let i = 0; i < elements.length; i++) {
+            values.push(elements[i].textContent.trim()); // extract the text content of each element and add to the array
+          }
+          return values;
+        });
 
-				const exchanges = await page.$$eval(".bybt-font-normal", (elements) =>
-					elements.map((el) => el.textContent.trim())
-				);
-				console.log(exchanges);
+        const exchanges = await page.$$eval(".bybt-font-normal", (elements) =>
+          elements.map((el) => el.textContent.trim())
+        );
+        console.log(exchanges);
 
-				const exchangeLogos = await page.$$eval("div.shou div.bybt-exname-logo > img", (imgs) =>
-					imgs.map((img) => img.getAttribute("src"))
-				);
-				console.log(exchangeLogos);
+        const exchangeLogos = await page.$$eval("div.shou div.bybt-exname-logo > img", (imgs) =>
+          imgs.map((img) => img.getAttribute("src"))
+        );
+        console.log(exchangeLogos);
 
-				await Promise.all(
-					elements.map(async (element, index) => {
-						if (index === 0) return;
-						console.log("in promise all");
+        await Promise.all(
+          elements.map(async (element, index) => {
+            if (index === 0) return;
+            console.log("in promise all");
 
-						const firstNumberHandle = await element.evaluateHandle((el) =>
-							el.querySelector("div:first-child").textContent.trim()
-						);
-						const secondNumberHandle = await element.evaluateHandle((el) =>
-							el.querySelector("div:last-child").textContent.trim()
-						);
-						const firstNumber = await firstNumberHandle.jsonValue();
-						const secondNumber = await secondNumberHandle.jsonValue();
+            const firstNumberHandle = await element.evaluateHandle((el) =>
+              el.querySelector("div:first-child").textContent.trim()
+            );
+            const secondNumberHandle = await element.evaluateHandle((el) =>
+              el.querySelector("div:last-child").textContent.trim()
+            );
+            const firstNumber = await firstNumberHandle.jsonValue();
+            const secondNumber = await secondNumberHandle.jsonValue();
 
-						result[0].list.push({
-							longRate: parseFloat(firstNumber),
-							shortRate: parseFloat(secondNumber),
-							exchangeLogo: exchangeLogos[index - 1],
-							exchangeName: titles[index],
-						});
-					})
-				);
+            result[0].list.push({
+              longRate: parseFloat(firstNumber),
+              shortRate: parseFloat(secondNumber),
+              exchangeLogo: exchangeLogos[index - 1],
+              exchangeName: titles[index],
+            });
+          })
+        );
 
-				// console.log(numbers); // should output an array of arrays containing the parsed numbers
-				isRequestDone = true;
-				console.log("result =>>>", result);
-				res.status(200).json(result);
-				// if (browser) {
-				//   await browser.close();
-				//   browser = null;
-				// }
-				// browserActive = false;
-				// if (browser) {
-				//   await browser.close();
-				//   browser = null;
-				// }
-				result = [];
-			} catch (err) {
-				isRequestDone = true;
-				console.log(err);
-				res.status(500).send("Something went wrong");
-				// if (browser) {
-				//   await browser.close();
-				//   browser = null;
-				// }
-				result = [];
-			}
-		})();
-	} catch (err) {
-		isRequestDone = true;
-		console.log("exchange long short main ==>", err);
-		if (browser) {
-			await browser.close();
-			browser = null;
-		}
-	}
+        // console.log(numbers); // should output an array of arrays containing the parsed numbers
+        isRequestDone = true;
+        console.log("result =>>>", result);
+        res.status(200).json(result);
+        // if (browser) {
+        //   await browser.close();
+        //   browser = null;
+        // }
+        // browserActive = false;
+        // if (browser) {
+        //   await browser.close();
+        //   browser = null;
+        // }
+        result = [];
+      } catch (err) {
+        isRequestDone = true;
+        console.log(err);
+        res.status(500).send("Something went wrong");
+        // if (browser) {
+        //   await browser.close();
+        //   browser = null;
+        // }
+        result = [];
+      }
+    })();
+  } catch (err) {
+    isRequestDone = true;
+    console.log("exchange long short main ==>", err);
+    if (browser) {
+      await browser.close();
+      browser = null;
+    }
+  }
 
-	// console.log(req.body);
-	// const time = req.body.time;
-	// const symbol = req.body.symbol.toUpperCase();
-	// const options = {
-	//   method: "GET",
-	//   hostname: process.env.BASE_URL,
-	//   port: null,
-	//   path: `/public/v2/long_short?time_type=${time}&symbol=${symbol}`,
-	//   headers: { accept: "application/json", coinglassSecret: process.env.COING_KEY },
-	// };
-	// https.get(options, (response) => {
-	//   let data = "";
+  // console.log(req.body);
+  // const time = req.body.time;
+  // const symbol = req.body.symbol.toUpperCase();
+  // const options = {
+  //   method: "GET",
+  //   hostname: process.env.BASE_URL,
+  //   port: null,
+  //   path: `/public/v2/long_short?time_type=${time}&symbol=${symbol}`,
+  //   headers: { accept: "application/json", coinglassSecret: process.env.COING_KEY },
+  // };
+  // https.get(options, (response) => {
+  //   let data = "";
 
-	//   response.on("data", (chung) => {
-	//     data += chung;
-	//   });
-	//   response.on("end", () => {
-	//     console.log(JSON.parse(data));
-	//     res.json(JSON.parse(data));
-	//   });
-	// });
+  //   response.on("data", (chung) => {
+  //     data += chung;
+  //   });
+  //   response.on("end", () => {
+  //     console.log(JSON.parse(data));
+  //     res.json(JSON.parse(data));
+  //   });
+  // });
 });
 
 router.post("/daily-return", async (req, res) => {
-	fetchNewData();
-	const data = req.body;
-	const today = new Date();
-	const yearDiff = new Array(today.getFullYear() - 2012 + 1).fill(0);
-	let result = {};
+  fetchNewData();
+  const data = req.body;
+  const today = new Date();
+  const yearDiff = new Array(today.getFullYear() - 2012 + 1).fill(0);
+  let result = {};
 
-	if (data.type === "day") {
-		const month = data.month;
-		const searchParams = {};
-		yearDiff.forEach((_, index) => {
-			searchParams[`Timestamp.years.${2012 + index}.${month}`] = 1;
-		});
+  if (data.type === "day") {
+    const month = data.month;
+    const searchParams = {};
+    yearDiff.forEach((_, index) => {
+      searchParams[`Timestamp.years.${2012 + index}.${month}`] = 1;
+    });
 
-		result = await BtcChangeIndicator.find(
-			{ [`Timestamp.years.2012.${month}`]: { $exists: true } },
-			searchParams
-		).sort();
-	}
-	if (data.type === "week") {
-		result = await BtcChangeIndicator.find({ TimeFrameName: "Week" });
-	}
-	if (data.type === "month") {
-		result = await BtcChangeIndicator.find({ TimeFrameName: "Month" });
-	}
-	if (data.type === "quarter") {
-		result = await BtcChangeIndicator.find({ TimeFrameName: "Quarter" });
-	}
-	res.json(result);
+    result = await BtcChangeIndicator.find(
+      { [`Timestamp.years.2012.${month}`]: { $exists: true } },
+      searchParams
+    ).sort();
+  }
+  if (data.type === "week") {
+    result = await BtcChangeIndicator.find({ TimeFrameName: "Week" });
+  }
+  if (data.type === "month") {
+    result = await BtcChangeIndicator.find({ TimeFrameName: "Month" });
+  }
+  if (data.type === "quarter") {
+    result = await BtcChangeIndicator.find({ TimeFrameName: "Quarter" });
+  }
+  res.json(result);
 });
 
 async function fetchNewData() {
-	// 1. Fetch new Data from coinglass
-		const options = {
-		method: "GET",
-		hostname: process.env.BASE_URL,
-		port: null,
-		path: "/public/v2/index/bitcoin_profitable_days",
-		headers: { accept: "application/json", coinglassSecret: process.env.COING_KEY },
-	};
-	https.get(options, (response) => {
-		let data = "";
-		response.on("data", (chung) => {
-			data += chung;
-		});
-		response.on("end", () => {
-			// console.log(JSON.parse(data))
-			const parseData = JSON.parse(data);
-		// 2. Calculate value for day,week,month,Quarter
-		// calculatePercentDifferenceDaily(date)
+  // 1. Fetch new Data from coinglass ===============================================================
+  const options = {
+    method: "GET",
+    hostname: process.env.BASE_URL,
+    port: null,
+    path: "/public/v2/index/bitcoin_profitable_days",
+    headers: { accept: "application/json", coinglassSecret: process.env.COING_KEY },
+  };
 
-			console.log(parseData.data.length); // 4646 last 5.6.23
-		});
-	});
-	// 3. Save new value
-	const currentDate = new Date();
-	const currentYear = currentDate.getUTCFullYear();
-	const currentMonth = currentDate.getUTCMonth() + 1;
-	const currentDay = currentDate.getUTCDate();
-	console.log(currentDay)
+  let calculatedData = "";
+  const getData = () => {
+    return new Promise((resolve, reject) => {
+      https
+        .get(options, (response) => {
+          let data = "";
+          response.on("data", (chunk) => {
+            data += chunk;
+          });
+          response.on("end", () => {
+            const parsedData = JSON.parse(data);
+            calculatedData = calculatePercentDifferenceDaily(
+              parsedData.data,
+              parsedData.data.length
+            );
+            console.log(calculatedData);
+            resolve();
+          });
+        })
+        .on("error", (error) => {
+          reject(error);
+        });
+    });
+  };
 
-	// Check if TimeFrame is Day 
-	BtcChangeIndicator.findOne(
-		{ name: "BTC", TimeFrameName: "Day", [`Timestamp.years.2023.3`]: { $exists: true } },
-		function(err, btcChangeDoc) {
-			if (err) throw err;
-			if (btcChangeDoc) {
-				// The document exists, update its "Timestamp" field
-				const currentTimestamp = btcChangeDoc.Timestamp;
-				currentTimestamp.years[currentYear][currentMonth][currentDate.getUTCDate()] = 'new value';
-				btcChangeDoc.Timestamp = currentTimestamp;
-				btcChangeDoc.save(function(err) {
-					if (err) throw err;
-					console.log(`Updated the "Timestamp" field of the document with name "BTC" and TimeFrameName "Day" for the current month (${currentMonth}/${currentYear}).`);
-					mongoose.connection.close();
-				});
-			}
-		}
-	);
+  getData()
+    .then(() => {
+      const currentDate = new Date();
+      const currentYear = currentDate.getUTCFullYear();
+      const currentMonth = currentDate.getUTCMonth() + 1;
+      const currentDay = currentDate.getUTCDate();
+      console.log("last instance", calculatedData);
+
+      // Check if TimeFrame is Day
+      BtcChangeIndicator.findOne(
+        {
+          name: "BTC",
+          TimeFrameName: "Day",
+        },
+        function (err, btcChangeDoc) {
+          if (err) throw err;
+          if (btcChangeDoc) {
+            // The document exists, update its "Timestamp" field
+            const currentTimestamp = btcChangeDoc.Timestamp;
+            if (!currentTimestamp.years) {
+              // If the "years" array does not exist, create it
+              currentTimestamp.years = {};
+            }
+            if (!currentTimestamp.years[currentYear]) {
+              // If the current year object does not exist, create it
+              currentTimestamp.years[currentYear] = {};
+            }
+            if (!currentTimestamp.years[currentYear][currentMonth]) {
+              // If the current month object does not exist, create it
+              currentTimestamp.years[currentYear][currentMonth] = {};
+            }
+            currentTimestamp.years[currentYear][currentMonth][currentDate.getUTCDate()] =
+              calculatedData;
+            console.log(currentTimestamp);
+            btcChangeDoc.Timestamp = currentTimestamp;
+            btcChangeDoc.save((error, updatedDoc) => {
+              if (error) {
+                console.error(error);
+                return;
+              }
+              console.log("Updated document: ", updatedDoc.Timestamp.years["2023"]['5']);
+            });
+          }
+        }
+      );
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 }
 
-function calculatePercentDifferenceDaily(data, type) {
-	// Update db with new data
-	const beginLength = data.length;
-	let needLength = 0;
-	const currentDate = data[beginDate].createTime;
-	const currentMonth = currentDate.getMonth(); // 04
-	const currentDay = currentDate.getDate(); // 19
+function calculatePercentDifferenceDaily(data, dataLength) {
+  // Update db with new data
+  // const beginLength = dataLength
+  // let needLength = 0;
+  // const currentDate = data[beginDate].createTime;
+  // const currentMonth = currentDate.getMonth(); // 04
+  // const currentDay = currentDate.getDate(); // 19
 
-	if (currentDay === 1) {
-		needLength = data.length - 1; // If new month then take old one and calculate it
-		console.log("Last day of month", data[needLength]?.createTime?.getDate);
-	}
-	// Main function
-	const years = {};
+  // if (currentDay === 1) {
+  //   needLength = data.length - 1; // If new month then take old one and calculate it
+  //   console.log("Last day of month", data[needLength]?.createTime?.getDate);
+  // }
+  // Main function
+  const years = {};
+  const daily = {};
 
-	for (let i = 503; i < data.length; i++) { // i should be for daily data.length -1 ???
-		const date = new Date(data[i].createTime);
-		const year = date.getFullYear(); //Mon Aug 16 2010 02:00:00 GMT+0200 (Central European Summer Time)
-		const month = date.getMonth() + 1; // 08
-		const day = date.getDate(); // 01
+  for (let i = dataLength - 1; i < dataLength; i++) {
+    // i should be for daily data.length -1 ???
+    const date = new Date(data[i].createTime);
+    const year = date.getFullYear(); //Mon Aug 16 2010 02:00:00 GMT+0200 (Central European Summer Time)
+    const month = date.getMonth() + 1; // 08
+    const day = date.getDate(); // 01
 
-		if (!years[year]) {
-			years[year] = {};
-		}
+    if (!years[year]) {
+      years[year] = {};
+    }
 
-		if (!data[i - 1]) {
-			years[year][day] = {};
-			continue;
-		}
-		if (!years[year][month]) {
-			years[year][month] = {};
-		}
-		const prevPrice = data[i - 1].price;
-		const currentPrice = data[i].price;
+    if (!data[i - 1]) {
+      years[year][day] = {};
+      continue;
+    }
+    if (!years[year][month]) {
+      years[year][month] = {};
+    }
+    const prevPrice = data[i - 1].price;
+    const currentPrice = data[i].price;
 
-		const calculatePercentageChange = ((currentPrice - prevPrice) / prevPrice) * 100;
-		if (!years[year][month]) {
-			years[year][month] = {};
-		}
-		years[year][month][day] = { difference: calculatePercentageChange };
-	}
-	return {
-		years,
-	};
+    const calculatePercentageChange = ((currentPrice - prevPrice) / prevPrice) * 100;
+    if (!years[year][month]) {
+      years[year][month] = {};
+    }
+    years[year][month][day] = { difference: calculatePercentageChange };
+    daily["difference"] = calculatePercentageChange;
+  }
+  return daily;
 }
 
 function calculateWeeklyChanges(data) {
-	const weeklyChanges = {};
-	let weekCounter = 1;
+  const weeklyChanges = {};
+  let weekCounter = 1;
 
-	for (let i = 503; i < data.length; ) {
-		// 869 begin 2013 => 4521 1.1.2023
+  for (let i = 503; i < data.length; ) {
+    // 869 begin 2013 => 4521 1.1.2023
 
-		const date = new Date(data[i].createTime);
-		if (!date) {
-			return;
-		}
-		const year = date.getFullYear();
+    const date = new Date(data[i].createTime);
+    if (!date) {
+      return;
+    }
+    const year = date.getFullYear();
 
-		const weekend = getWeek(date);
-		const startOfWeek = weekend.startOfWeek;
-		const endOfWeek = weekend.endOfWeek;
+    const weekend = getWeek(date);
+    const startOfWeek = weekend.startOfWeek;
+    const endOfWeek = weekend.endOfWeek;
 
-		if (!weeklyChanges[year]) {
-			weeklyChanges[year] = {};
-			weekCounter = 1;
-			weeklyChanges[year][weekCounter] = { difference: 0 };
-		}
-		if (!weeklyChanges[year][weekCounter]) {
-			weeklyChanges[year][weekCounter] = {
-				difference: 0,
-			};
-		}
-		let differenceOnDaysBack = 0;
-		if (startOfWeek.getDate() <= date.getDate()) {
-			differenceOnDaysBack = date.getDate() - startOfWeek.getDate();
-		}
+    if (!weeklyChanges[year]) {
+      weeklyChanges[year] = {};
+      weekCounter = 1;
+      weeklyChanges[year][weekCounter] = { difference: 0 };
+    }
+    if (!weeklyChanges[year][weekCounter]) {
+      weeklyChanges[year][weekCounter] = {
+        difference: 0,
+      };
+    }
+    let differenceOnDaysBack = 0;
+    if (startOfWeek.getDate() <= date.getDate()) {
+      differenceOnDaysBack = date.getDate() - startOfWeek.getDate();
+    }
 
-		let differenceOnDaysForward = 0;
-		if (endOfWeek.getDate() >= date.getDate()) {
-			differenceOnDaysForward = endOfWeek.getDate() - date.getDate();
-			if (differenceOnDaysForward === 0) {
-				differenceOnDaysForward += 7;
-			}
-		} else {
-			const month = date.getMonth();
-			const daysInMonth = new Date(year, month + 1, 0).getDate();
-			differenceOnDaysForward = daysInMonth - date.getDate() + endOfWeek.getDate();
-		}
+    let differenceOnDaysForward = 0;
+    if (endOfWeek.getDate() >= date.getDate()) {
+      differenceOnDaysForward = endOfWeek.getDate() - date.getDate();
+      if (differenceOnDaysForward === 0) {
+        differenceOnDaysForward += 7;
+      }
+    } else {
+      const month = date.getMonth();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      differenceOnDaysForward = daysInMonth - date.getDate() + endOfWeek.getDate();
+    }
 
-		//Last week of year(not full) calculate difference
-		if (!data[i + differenceOnDaysForward]) {
-			differenceOnDaysForward = data.length - i - 1;
-		}
+    //Last week of year(not full) calculate difference
+    if (!data[i + differenceOnDaysForward]) {
+      differenceOnDaysForward = data.length - i - 1;
+    }
 
-		const difference =
-			((data[i + differenceOnDaysForward].price - data[i - differenceOnDaysBack].price) /
-				data[i - differenceOnDaysBack].price) *
-			100;
-		weeklyChanges[year][weekCounter].difference += difference;
+    const difference =
+      ((data[i + differenceOnDaysForward].price - data[i - differenceOnDaysBack].price) /
+        data[i - differenceOnDaysBack].price) *
+      100;
+    weeklyChanges[year][weekCounter].difference += difference;
 
-		i += differenceOnDaysForward | 7;
+    i += differenceOnDaysForward | 7;
 
-		weekCounter += 1;
-	}
+    weekCounter += 1;
+  }
 
-	return weeklyChanges;
+  return weeklyChanges;
 }
 
 function calculateQuarterly(data) {
-	const quarterly = {};
+  const quarterly = {};
 
-	for (let i = 503; i < data.length; ) {
-		let date = new Date(data[i].createTime);
-		const year = date.getFullYear();
-		const firstDayOfMonth = new Date(year, date.getMonth(), 1);
-		let differenceBackDay = 0;
-		if (firstDayOfMonth.getDate() !== date.getDate()) {
-			differenceBackDay = date.getDate() - firstDayOfMonth.getDate();
-			i -= differenceBackDay;
-		}
-		const quarter = Math.floor(date.getMonth() / 3) + 1;
+  for (let i = 503; i < data.length; ) {
+    let date = new Date(data[i].createTime);
+    const year = date.getFullYear();
+    const firstDayOfMonth = new Date(year, date.getMonth(), 1);
+    let differenceBackDay = 0;
+    if (firstDayOfMonth.getDate() !== date.getDate()) {
+      differenceBackDay = date.getDate() - firstDayOfMonth.getDate();
+      i -= differenceBackDay;
+    }
+    const quarter = Math.floor(date.getMonth() / 3) + 1;
 
-		const startDate = new Date(year, (quarter - 1) * 3, 1);
-		const endDate = new Date(year, quarter * 3, 0);
+    const startDate = new Date(year, (quarter - 1) * 3, 1);
+    const endDate = new Date(year, quarter * 3, 0);
 
-		let differenceInDays = Math.ceil(
-			(endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
-		);
-		if (!data[i + differenceInDays]) {
-			differenceInDays = data.length - 1 - i;
-			isFullQuarter = true;
-			console.log(differenceInDays);
-		}
+    let differenceInDays = Math.ceil(
+      (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    if (!data[i + differenceInDays]) {
+      differenceInDays = data.length - 1 - i;
+      isFullQuarter = true;
+      console.log(differenceInDays);
+    }
 
-		if (!quarterly[year]) {
-			quarterly[year] = {};
-			quarterly[year][quarter] = { difference: 0 };
-		}
-		console.log(differenceInDays);
-		console.log("startDate", new Date(data[i].createTime));
-		console.log("endDate", new Date(data[i + differenceInDays].createTime));
-		const startPrice = data[i].price;
-		const endPrice = data[i + differenceInDays].price;
+    if (!quarterly[year]) {
+      quarterly[year] = {};
+      quarterly[year][quarter] = { difference: 0 };
+    }
+    console.log(differenceInDays);
+    console.log("startDate", new Date(data[i].createTime));
+    console.log("endDate", new Date(data[i + differenceInDays].createTime));
+    const startPrice = data[i].price;
+    const endPrice = data[i + differenceInDays].price;
 
-		const percentageDifference = calculateDifference(startPrice, endPrice);
-		quarterly[year][quarter] = { difference: percentageDifference };
-		i += differenceInDays + 1;
-	}
-	console.log(quarterly);
-	return quarterly;
+    const percentageDifference = calculateDifference(startPrice, endPrice);
+    quarterly[year][quarter] = { difference: percentageDifference };
+    i += differenceInDays + 1;
+  }
+  console.log(quarterly);
+  return quarterly;
 }
 
 function calculateMonthlyChanges(data) {
-	const monthlyChanges = {};
+  const monthlyChanges = {};
 
-	for (let i = 503; i < data.length; ) {
-		const date = new Date(data[i].createTime);
-		if (!data) return;
+  for (let i = 503; i < data.length; ) {
+    const date = new Date(data[i].createTime);
+    if (!data) return;
 
-		const day = date.getDate();
-		const year = date.getFullYear();
-		const month = date.getMonth() + 1;
-		const daysInMonth = new Date(year, month, 0).getDate();
+    const day = date.getDate();
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const daysInMonth = new Date(year, month, 0).getDate();
 
-		if (!monthlyChanges[year]) {
-			monthlyChanges[year] = {};
-			monthlyChanges[year][month] = { difference: 0 };
-		}
+    if (!monthlyChanges[year]) {
+      monthlyChanges[year] = {};
+      monthlyChanges[year][month] = { difference: 0 };
+    }
 
-		if (!monthlyChanges[year][month]) {
-			monthlyChanges[month] = {};
-		}
+    if (!monthlyChanges[year][month]) {
+      monthlyChanges[month] = {};
+    }
 
-		let differenceToNextMonth = daysInMonth; // 27
-		let differenceToBegin = 0;
-		if (day > 1) {
-			differenceToNextMonth = daysInMonth - day;
-			differenceToBegin = day - 1;
-		}
-		const lastData = new Date(data[data.length - 1].createTime).getDate();
+    let differenceToNextMonth = daysInMonth; // 27
+    let differenceToBegin = 0;
+    if (day > 1) {
+      differenceToNextMonth = daysInMonth - day;
+      differenceToBegin = day - 1;
+    }
+    const lastData = new Date(data[data.length - 1].createTime).getDate();
 
-		if (daysInMonth > lastData && !data[i + daysInMonth]) {
-			differenceToNextMonth = lastData - 1;
-		}
-		console.log("next", data[i + differenceToNextMonth].price);
-		console.log("before", data[i - differenceToBegin - 1].price);
-		// if month not full is then should calculate until day today
-		const difference =
-			((data[i + differenceToNextMonth].price - data[i - differenceToBegin - 1].price) /
-				data[i - differenceToBegin - 1].price) *
-			100;
-		monthlyChanges[year][month] = { difference: difference };
+    if (daysInMonth > lastData && !data[i + daysInMonth]) {
+      differenceToNextMonth = lastData - 1;
+    }
+    console.log("next", data[i + differenceToNextMonth].price);
+    console.log("before", data[i - differenceToBegin - 1].price);
+    // if month not full is then should calculate until day today
+    const difference =
+      ((data[i + differenceToNextMonth].price - data[i - differenceToBegin - 1].price) /
+        data[i - differenceToBegin - 1].price) *
+      100;
+    monthlyChanges[year][month] = { difference: difference };
 
-		i += differenceToNextMonth + 1;
-	}
-	return monthlyChanges;
+    i += differenceToNextMonth + 1;
+  }
+  return monthlyChanges;
 }
 
 function calculateDifference(startPrice, endPrice) {
-	return ((endPrice - startPrice) / startPrice) * 100;
+  return ((endPrice - startPrice) / startPrice) * 100;
 }
 
 function getWeek(timestamp) {
-	const date = new Date(timestamp);
-	const dayOfWeek = date.getDay();
-	const startOfWeekTimestamp = timestamp - dayOfWeek * 86400000;
-	const endOfWeekTimestamp = startOfWeekTimestamp + 7 * 86400000;
-	const startOfWeek = new Date(startOfWeekTimestamp);
-	const endOfWeek = new Date(endOfWeekTimestamp);
-	return {
-		startOfWeek,
-		endOfWeek,
-	};
+  const date = new Date(timestamp);
+  const dayOfWeek = date.getDay();
+  const startOfWeekTimestamp = timestamp - dayOfWeek * 86400000;
+  const endOfWeekTimestamp = startOfWeekTimestamp + 7 * 86400000;
+  const startOfWeek = new Date(startOfWeekTimestamp);
+  const endOfWeek = new Date(endOfWeekTimestamp);
+  return {
+    startOfWeek,
+    endOfWeek,
+  };
 }
 
 // async function calculatePercentDifference(data, month, type) {
@@ -575,118 +612,118 @@ function getWeek(timestamp) {
 // }
 
 function calculatePercentageChange(data) {
-	const years = {};
+  const years = {};
 
-	for (let i = 0; i < data.length; i++) {
-		const item = data[i];
-		const date = new Date(item.createTime);
-		const year = date.getFullYear();
-		const month = date.getMonth() + 1;
-		const day = date.getDate();
+  for (let i = 0; i < data.length; i++) {
+    const item = data[i];
+    const date = new Date(item.createTime);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
 
-		if (!years[year]) {
-			years[year] = { year, month: 1, days: {} };
-		}
+    if (!years[year]) {
+      years[year] = { year, month: 1, days: {} };
+    }
 
-		const yearData = years[year];
-		if (!years[year][month]) {
-			years[year] = { year, month: month, days: {} };
-		}
+    const yearData = years[year];
+    if (!years[year][month]) {
+      years[year] = { year, month: month, days: {} };
+    }
 
-		const days = yearData.days;
+    const days = yearData.days;
 
-		if (i > 0) {
-			const dayValue = ((data[i - 1].price - item.price) / data[i - 1].price) * 100;
-			years[year][day] = dayValue;
-		}
-	}
+    if (i > 0) {
+      const dayValue = ((data[i - 1].price - item.price) / data[i - 1].price) * 100;
+      years[year][day] = dayValue;
+    }
+  }
 
-	return years;
+  return years;
 }
 
 function calculatePriceDifferences(prices) {
-	const result = { days: {}, months: {}, years: {} };
+  const result = { days: {}, months: {}, years: {} };
 
-	// Create an object with keys for each month and initialize with empty objects
-	let monthsObj = {};
-	for (let i = 1; i <= 12; i++) {
-		monthsObj[i] = {};
-	}
+  // Create an object with keys for each month and initialize with empty objects
+  let monthsObj = {};
+  for (let i = 1; i <= 12; i++) {
+    monthsObj[i] = {};
+  }
 
-	// Initialize variables to keep track of previous price and timestamp
-	let prevPrice = null;
-	let prevTimestamp = null;
+  // Initialize variables to keep track of previous price and timestamp
+  let prevPrice = null;
+  let prevTimestamp = null;
 
-	// Loop through each price object
-	prices.forEach((priceObj) => {
-		// Get the date object from the timestamp
-		const date = new Date(priceObj.createTime);
+  // Loop through each price object
+  prices.forEach((priceObj) => {
+    // Get the date object from the timestamp
+    const date = new Date(priceObj.createTime);
 
-		// Update day percentage difference
-		if (prevPrice !== null && prevTimestamp !== null) {
-			const day = date.getDate();
-			const prevDate = new Date(prevTimestamp);
-			const prevDay = prevDate.getDate();
-			const percentDiff = ((priceObj.price - prevPrice) / prevPrice) * 100;
-			result.days[date.getMonth() + 1] = {
-				...result.days[date.getMonth() + 1],
-				[day]: percentDiff,
-			};
-			// If the previous day was in a different month, also update the previous month's object
-			if (prevDate.getMonth() !== date.getMonth()) {
-				result.days[prevDate.getMonth() + 1] = {
-					...result.days[prevDate.getMonth() + 1],
-					[prevDay]: ((priceObj.price - prevPrice) / prevPrice) * 100,
-				};
-			}
-		}
+    // Update day percentage difference
+    if (prevPrice !== null && prevTimestamp !== null) {
+      const day = date.getDate();
+      const prevDate = new Date(prevTimestamp);
+      const prevDay = prevDate.getDate();
+      const percentDiff = ((priceObj.price - prevPrice) / prevPrice) * 100;
+      result.days[date.getMonth() + 1] = {
+        ...result.days[date.getMonth() + 1],
+        [day]: percentDiff,
+      };
+      // If the previous day was in a different month, also update the previous month's object
+      if (prevDate.getMonth() !== date.getMonth()) {
+        result.days[prevDate.getMonth() + 1] = {
+          ...result.days[prevDate.getMonth() + 1],
+          [prevDay]: ((priceObj.price - prevPrice) / prevPrice) * 100,
+        };
+      }
+    }
 
-		// Update month and year percentage differences
-		// if (prevPrice !== null && prevTimestamp !== null) {
-		//   const prevDate = new Date(prevTimestamp);
-		//   const prevMonth = prevDate.getMonth() + 1;
-		//   const prevYear = prevDate.getFullYear();
-		//   const monthObj = monthsObj[prevMonth];
-		//   const percentDiff = ((priceObj.price - prevPrice) / prevPrice) * 100;
-		//   monthObj[prevDate.getDate()] = percentDiff;
+    // Update month and year percentage differences
+    // if (prevPrice !== null && prevTimestamp !== null) {
+    //   const prevDate = new Date(prevTimestamp);
+    //   const prevMonth = prevDate.getMonth() + 1;
+    //   const prevYear = prevDate.getFullYear();
+    //   const monthObj = monthsObj[prevMonth];
+    //   const percentDiff = ((priceObj.price - prevPrice) / prevPrice) * 100;
+    //   monthObj[prevDate.getDate()] = percentDiff;
 
-		//   if (date.getMonth() !== prevMonth - 1) {
-		//     // Previous month was December and current month is January
-		//     if (prevMonth === 12 && date.getMonth() === 0) {
-		//       result.months[prevMonth] = monthObj;
-		//       result.months[date.getMonth() + 1] = {};
-		//     } else {
-		//       result.months[prevMonth] = monthObj;
-		//     }
-		//   }
-		//   if (prevYear !== date.getFullYear()) {
-		//     result.years[prevYear] = monthsObj;
-		//     monthsObj = { ...monthsObj };
-		//   }
-		// }
+    //   if (date.getMonth() !== prevMonth - 1) {
+    //     // Previous month was December and current month is January
+    //     if (prevMonth === 12 && date.getMonth() === 0) {
+    //       result.months[prevMonth] = monthObj;
+    //       result.months[date.getMonth() + 1] = {};
+    //     } else {
+    //       result.months[prevMonth] = monthObj;
+    //     }
+    //   }
+    //   if (prevYear !== date.getFullYear()) {
+    //     result.years[prevYear] = monthsObj;
+    //     monthsObj = { ...monthsObj };
+    //   }
+    // }
 
-		// Update previous price and timestamp
-		prevPrice = priceObj.price;
-		prevTimestamp = priceObj.createTime;
-	});
+    // Update previous price and timestamp
+    prevPrice = priceObj.price;
+    prevTimestamp = priceObj.createTime;
+  });
 
-	// Update last day percentage difference
-	const lastPriceObj = prices[prices.length - 1];
-	const lastDate = new Date(lastPriceObj.createTime);
-	const lastDay = lastDate.getDate();
-	result.days[lastDate.getMonth() + 1] = {
-		...result.days[lastDate.getMonth() + 1],
-		[lastDay]: 0,
-	};
+  // Update last day percentage difference
+  const lastPriceObj = prices[prices.length - 1];
+  const lastDate = new Date(lastPriceObj.createTime);
+  const lastDay = lastDate.getDate();
+  result.days[lastDate.getMonth() + 1] = {
+    ...result.days[lastDate.getMonth() + 1],
+    [lastDay]: 0,
+  };
 
-	// // Add remaining months to months object
-	// monthsObj[lastDate.getMonth() + 1] = {};
-	// for (let i = lastDate.getMonth() + 2; i <= 12; i++) {
-	//   monthsObj[i] = {};
-	// }
-	// result.years[lastDate.getFullYear()] = monthsObj;
+  // // Add remaining months to months object
+  // monthsObj[lastDate.getMonth() + 1] = {};
+  // for (let i = lastDate.getMonth() + 2; i <= 12; i++) {
+  //   monthsObj[i] = {};
+  // }
+  // result.years[lastDate.getFullYear()] = monthsObj;
 
-	return result;
+  return result;
 }
 
 module.exports = router;
