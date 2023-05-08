@@ -260,7 +260,6 @@ async function fetchNewData() {
               parsedData.data,
               parsedData.data.length
             );
-            console.log(calculatedData);
             resolve();
           });
         })
@@ -271,7 +270,7 @@ async function fetchNewData() {
   };
 
   getData()
-    .then(() => {
+    .then( () => {
       const currentDate = new Date();
       const currentYear = currentDate.getUTCFullYear();
       const currentMonth = currentDate.getUTCMonth() + 1;
@@ -301,10 +300,10 @@ async function fetchNewData() {
               // If the current month object does not exist, create it
               currentTimestamp.years[currentYear][currentMonth] = {};
             }
-            currentTimestamp.years[currentYear][currentMonth][currentDate.getUTCDate()] =
+            currentTimestamp.years[currentYear][currentMonth][currentDay] =
               calculatedData;
-            console.log(currentTimestamp);
             btcChangeDoc.Timestamp = currentTimestamp;
+            btcChangeDoc.markModified('Timestamp') // Mixed type => mark a field on a doc. as modified (Mongoose doesn't recognize as modification)
             btcChangeDoc.save((error, updatedDoc) => {
               if (error) {
                 console.error(error);
