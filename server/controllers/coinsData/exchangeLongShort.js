@@ -3,6 +3,7 @@ const router = require("express").Router();
 const https = require("https");
 const BtcChangeIndicator = require("../../models/BtcChange");
 const puppeteer = require("puppeteer");
+const cron = require("node-cron");
 let isRequestDone = true;
 let page;
 let browser;
@@ -205,7 +206,6 @@ router.post("/long-short", async (req, res) => {
 });
 
 router.post("/daily-return", async (req, res) => {
-  fetchNewData();
   const data = req.body;
   const today = new Date();
   const yearDiff = new Array(today.getFullYear() - 2012 + 1).fill(0);
@@ -235,8 +235,12 @@ router.post("/daily-return", async (req, res) => {
   res.json(result);
 });
 
+cron.schedule("0 0 * * *", () => {
+  fetchNewData();
+});
+
 async function fetchNewData() {
-  // 1. Fetch new Data from coinglass ===============================================================
+  // 1. Fetch new Data from coinglass =
   const options = {
     method: "GET",
     hostname: process.env.BASE_URL,
@@ -269,75 +273,60 @@ async function fetchNewData() {
     });
   };
 
-  getData()
-    .then( () => {
-      const currentDate = new Date();
-      const currentYear = currentDate.getUTCFullYear();
-      const currentMonth = currentDate.getUTCMonth() + 1;
-      const currentDay = currentDate.getUTCDate();
-      console.log("last instance", calculatedData);
+  await getData();
+  updateNewData(calculatedData);
+}
 
-      // Check if TimeFrame is Day
-      BtcChangeIndicator.findOne(
-        {
-          name: "BTC",
-          TimeFrameName: "Day",
-        },
-        function (err, btcChangeDoc) {
-          if (err) throw err;
-          if (btcChangeDoc) {
-            // The document exists, update its "Timestamp" field
-            const currentTimestamp = btcChangeDoc.Timestamp;
-            if (!currentTimestamp.years) {
-              // If the "years" array does not exist, create it
-              currentTimestamp.years = {};
-            }
-            if (!currentTimestamp.years[currentYear]) {
-              // If the current year object does not exist, create it
-              currentTimestamp.years[currentYear] = {};
-            }
-            if (!currentTimestamp.years[currentYear][currentMonth]) {
-              // If the current month object does not exist, create it
-              currentTimestamp.years[currentYear][currentMonth] = {};
-            }
-            currentTimestamp.years[currentYear][currentMonth][currentDay] =
-              calculatedData;
-            btcChangeDoc.Timestamp = currentTimestamp;
-            btcChangeDoc.markModified('Timestamp') // Mixed type => mark a field on a doc. as modified (Mongoose doesn't recognize as modification)
-            btcChangeDoc.save((error, updatedDoc) => {
-              if (error) {
-                console.error(error);
-                return;
-              }
-              console.log("Updated document: ", updatedDoc.Timestamp.years["2023"]['5']);
-            });
-          }
+function updateNewData(calculatedData) {
+  const currentDate = new Date();
+  const currentYear = currentDate.getUTCFullYear();
+  const currentMonth = currentDate.getUTCMonth() + 1;
+  const currentDay = currentDate.getUTCDate();
+  console.log("last instance", calculatedData);
+
+  // Check if TimeFrame is Day
+  BtcChangeIndicator.findOne(
+    {
+      name: "BTC",
+      TimeFrameName: "Day",
+    },
+    function (err, btcChangeDoc) {
+      if (err) throw err;
+      if (btcChangeDoc) {
+        // The document exists, update its "Timestamp" field
+        const currentTimestamp = btcChangeDoc.Timestamp;
+        if (!currentTimestamp.years) {
+          // If the "years" array does not exist, create it
+          currentTimestamp.years = {};
         }
-      );
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+        if (!currentTimestamp.years[currentYear]) {
+          // If the current year object does not exist, create it
+          currentTimestamp.years[currentYear] = {};
+        }
+        if (!currentTimestamp.years[currentYear][currentMonth]) {
+          // If the current month object does not exist, create it
+          currentTimestamp.years[currentYear][currentMonth] = {};
+        }
+        currentTimestamp.years[currentYear][currentMonth][currentDay] = calculatedData;
+        btcChangeDoc.Timestamp = currentTimestamp;
+        btcChangeDoc.markModified("Timestamp"); // Mixed type => mark a field on a doc. as modified (Mongoose doesn't recognize as modification)
+        btcChangeDoc.save((error, updatedDoc) => {
+          if (error) {
+            console.error(error);
+            return;
+          }
+          console.log("Updated document: ", updatedDoc.Timestamp.years["2023"]["5"]); // TODO delete console.logs
+        });
+      }
+    }
+  );
 }
 
 function calculatePercentDifferenceDaily(data, dataLength) {
-  // Update db with new data
-  // const beginLength = dataLength
-  // let needLength = 0;
-  // const currentDate = data[beginDate].createTime;
-  // const currentMonth = currentDate.getMonth(); // 04
-  // const currentDay = currentDate.getDate(); // 19
-
-  // if (currentDay === 1) {
-  //   needLength = data.length - 1; // If new month then take old one and calculate it
-  //   console.log("Last day of month", data[needLength]?.createTime?.getDate);
-  // }
-  // Main function
   const years = {};
   const daily = {};
 
   for (let i = dataLength - 1; i < dataLength; i++) {
-    // i should be for daily data.length -1 ???
     const date = new Date(data[i].createTime);
     const year = date.getFullYear(); //Mon Aug 16 2010 02:00:00 GMT+0200 (Central European Summer Time)
     const month = date.getMonth() + 1; // 08
