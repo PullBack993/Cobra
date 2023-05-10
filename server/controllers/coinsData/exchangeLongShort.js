@@ -3,11 +3,18 @@ const router = require("express").Router();
 const https = require("https");
 const BtcChangeIndicator = require("../../models/BtcChange");
 const puppeteer = require("puppeteer");
-const cron = require("node-cron");
+const CronJob  = require("cron").CronJob;
 let isRequestDone = true;
 let page;
 let browser;
 let searchedValueOld = "";
+
+const job = new CronJob ("0 0 * * *", () => {
+  console.log('test is ok')
+  fetchNewData()
+})
+
+job.start()
 
 //TODO remove console logs after all tests
 router.post("/long-short", async (req, res) => {
@@ -233,10 +240,6 @@ router.post("/daily-return", async (req, res) => {
     result = await BtcChangeIndicator.find({ TimeFrameName: "Quarter" });
   }
   res.json(result);
-});
-
-cron.schedule("0 0 * * *", () => {
-  fetchNewData();
 });
 
 async function fetchNewData() {
