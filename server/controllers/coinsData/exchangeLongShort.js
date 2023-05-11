@@ -9,8 +9,9 @@ let page;
 let browser;
 let searchedValueOld = "";
 
-const job = new CronJob ("*/1 * * * *", () => {
-  console.log('test is ok')
+const job = new CronJob (" 00 00 * * * ", () => {
+  fetchNewData()
+  console.log('Running cron job at midnight!');
 })
 
 job.start()
