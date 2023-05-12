@@ -3,18 +3,23 @@ const router = require("express").Router();
 const https = require("https");
 const BtcChangeIndicator = require("../../models/BtcChange");
 const puppeteer = require("puppeteer");
-const CronJob  = require("cron").CronJob;
+const CronJob = require("cron").CronJob;
 let isRequestDone = true;
 let page;
 let browser;
 let searchedValueOld = "";
 
-const job = new CronJob (" 00 00 * * * ", () => {
-  fetchNewData()
-  console.log('Running cron job at midnight!');
-})
+const job = new CronJob(" 00 00 * * * ", () => {
+  fetchNewData();
+  console.log("Running cron job at midnight!");
+});
 
-job.start()
+const test = new CronJob(" * 13 * * * ", () => {
+  console.log("Running cron job at midnight!");
+});
+
+test.start();
+job.start();
 
 //TODO remove console logs after all tests
 router.post("/long-short", async (req, res) => {
@@ -231,6 +236,7 @@ router.post("/daily-return", async (req, res) => {
     ).sort();
   }
   if (data.type === "week") {
+    fetchNewData()
     result = await BtcChangeIndicator.find({ TimeFrameName: "Week" });
   }
   if (data.type === "month") {
@@ -263,10 +269,12 @@ async function fetchNewData() {
           });
           response.on("end", () => {
             const parsedData = JSON.parse(data);
-            calculatedData = calculatePercentDifferenceDaily(
-              parsedData.data,
-              parsedData.data.length
-            );
+            // calculatedData = calculatePercentDifferenceDaily(
+            //   parsedData.data,
+            //   parsedData.data.length
+            // );
+            calculatedData = calculateWeeklyChanges( parsedData.data,
+              parsedData.data.length);
             resolve();
           });
         })
@@ -277,7 +285,7 @@ async function fetchNewData() {
   };
 
   await getData();
-  updateNewData(calculatedData);
+  // updateNewData(calculatedData);
 }
 
 function updateNewData(calculatedData) {
@@ -359,7 +367,8 @@ function calculatePercentDifferenceDaily(data, dataLength) {
   return daily;
 }
 
-function calculateWeeklyChanges(data) {
+function calculateWeeklyChanges(data, dataLength) {
+  console.log(new Date(data[dataLength -1].createTime));
   const weeklyChanges = {};
   let weekCounter = 1;
 
