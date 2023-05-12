@@ -14,7 +14,7 @@ const job = new CronJob(" 00 00 * * * ", () => {
   console.log("Running cron job at midnight!");
 });
 
-const test = new CronJob(" * 13 * * * ", () => {
+const test = new CronJob("*/13 * * * * ", () => {
   console.log("Running cron job at midnight!");
 });
 
@@ -368,12 +368,12 @@ function calculatePercentDifferenceDaily(data, dataLength) {
 }
 
 function calculateWeeklyChanges(data, dataLength) {
-  console.log(new Date(data[dataLength -1].createTime));
+
+  // cron job to run every sunday.Just then will easy to calculate last week
   const weeklyChanges = {};
   let weekCounter = 1;
 
-  for (let i = 503; i < data.length; ) {
-    // 869 begin 2013 => 4521 1.1.2023
+  for (let i = 503; i < data.length; ) { // i = dataLength -7; i < dataLength; => after fill up the DB just increase the value(i) with 7
 
     const date = new Date(data[i].createTime);
     if (!date) {
