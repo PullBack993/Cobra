@@ -281,6 +281,7 @@ async function fetchNewData() {
             // calculatedData = calculatePercentDifferenceDaily(parsedData.data, parsedData.data.length);
             // calculatedData = calculateWeeklyChanges(parsedData.data, parsedData.data.length);
             calculatedData = calculateMonthlyChanges(parsedData.data, parsedData.data.length);
+
             // calculatedData = calculateQuarterly(parsedData.data, parsedData.data.length);
             resolve();
           });
@@ -294,6 +295,7 @@ async function fetchNewData() {
   await getData();
   // updateNewData(calculatedData);
   // updateNewDataWeek(calculatedData, fetchedData);
+  updateNewDataMonth(calculatedData);
   // updateNewDataQuarter(calculatedData, fetchedData);
 }
 
@@ -373,6 +375,46 @@ function updateNewDataWeek(calculatedData, data) {
             return;
           }
           console.log("Updated document: ", updatedDoc.Timestamp["2023"]); // TODO delete console.logs
+        });
+      }
+    }
+  );
+}
+function updateNewDataMonth(calculatedData) {
+  const currentDate = new Date();
+  const currentYear = currentDate.getUTCFullYear();
+  const currentMonth = currentDate.getUTCMonth() + 1;
+  console.log("last instance", calculatedData);
+
+  // Check if TimeFrame is Day
+  BtcChangeIndicator.findOne(
+    {
+      name: "BTC",
+      TimeFrameName: "Month",
+    },
+    function (err, btcChangeDoc) {
+      if (err) throw err;
+      if (btcChangeDoc) {
+        // The document exists, update its "Timestamp" field
+        const currentTimestamp = btcChangeDoc.Timestamp;
+      
+        if (!currentTimestamp[currentYear]) {
+          // If the current year object does not exist, create it
+          currentTimestamp[currentYear] = {};
+        }
+        if (!currentTimestamp[currentYear][currentMonth]) {
+          // If the current month object does not exist, create it
+          currentTimestamp[currentYear][currentMonth] = {};
+        }
+        currentTimestamp[currentYear][currentMonth] = calculatedData;
+        btcChangeDoc.Timestamp = currentTimestamp;
+        btcChangeDoc.markModified("Timestamp"); // Mixed type => mark a field on a doc. as modified (Mongoose doesn't recognize as modification)
+        btcChangeDoc.save((error, updatedDoc) => {
+          if (error) {
+            console.error(error);
+            return;
+          }
+          console.log("Updated document: ", updatedDoc); // TODO delete console.logs
         });
       }
     }
@@ -615,57 +657,60 @@ function calculateQuarterly(data, dataLength) {
   // return quarterly;
 }
 function calculateDifferenceFromBeginMonth(data) {
-  const currentDate = new Date(data[data.length -1].createTime);
+  const currentDate = new Date(data[data.length - 1].createTime);
   const dayOfMonth = currentDate.getDate();
-  const daysFromStartOfMonth = dayOfMonth - 1;
-  return daysFromStartOfMonth
-
+  const daysFromStartOfMonth = dayOfMonth - 2;
+  return daysFromStartOfMonth;
 }
+
 function calculateMonthlyChanges(data, dataLength) {
   const monthlyChanges = {};
+  let difference = {};
 
   const differenceBeginMonth = calculateDifferenceFromBeginMonth(data);
   for (let i = dataLength - differenceBeginMonth; i < dataLength; ) {
-    const date = new Date(data[i].createTime);
-    if (!data) return;
+    // const date = new Date(data[i].createTime);
+    // if (!data) return;
 
-    const day = date.getDate();
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const daysInMonth = new Date(year, month, 0).getDate();
+    // const day = date.getDate();
+    // const year = date.getFullYear();
+    // const month = date.getMonth() + 1;
+    // const daysInMonth = new Date(year, month, 0).getDate();
 
-    if (!monthlyChanges[year]) {
-      monthlyChanges[year] = {};
-      monthlyChanges[year][month] = { difference: 0 };
-    }
+    // if (!monthlyChanges[year]) {
+    //   monthlyChanges[year] = {};
+    //   monthlyChanges[year][month] = { difference: 0 };
+    // }
 
-    if (!monthlyChanges[year][month]) {
-      monthlyChanges[month] = {};
-    }
+    // if (!monthlyChanges[year][month]) {
+    //   monthlyChanges[month] = {};
+    // }
 
-    let differenceToNextMonth = daysInMonth; // 27
-    let differenceToBegin = 0;
-    if (day > 1) {
-      differenceToNextMonth = daysInMonth - day;
-      differenceToBegin = day - 1;
-    }
-    const lastData = new Date(data[data.length - 1].createTime).getDate();
+    // let differenceToNextMonth = daysInMonth; // 27
+    // let differenceToBegin = 0;
+    // if (day > 1) {
+    //   differenceToNextMonth = daysInMonth - day;
+    //   differenceToBegin = day - 1;
+    // }
+    // const lastData = new Date(data[data.length - 1].createTime).getDate();
 
-    if (daysInMonth > lastData && !data[i + daysInMonth]) {
-      differenceToNextMonth = lastData - 1;
-    }
-    console.log("next", data[i + differenceToNextMonth].price);
-    console.log("before", data[i - differenceToBegin - 1].price);
-    // if month not full is then should calculate until day today
-    const difference =
-      ((data[i + differenceToNextMonth].price - data[i - differenceToBegin - 1].price) /
-        data[i - differenceToBegin - 1].price) *
-      100;
-    monthlyChanges[year][month] = { difference: difference };
+    // if (daysInMonth > lastData && !data[i + daysInMonth]) {
+    //   differenceToNextMonth = lastData - 1;
+    // }
+    // // if month not full is then should calculate until day today
+    // difference =
+    //   ((data[i + differenceToNextMonth].price - data[i - differenceToBegin - 1].price) /
+    //     data[i - differenceToBegin - 1].price) *
+    //   100;
+    // monthlyChanges[year][month] = { difference: difference };
 
-    i += differenceToNextMonth + 1;
+    // i += differenceToNextMonth + 1;
+
+    difference = ((data[i + differenceBeginMonth - 1].price - data[i].price) / data[i].price) * 100;
+    i += differenceBeginMonth + 1;
   }
-  return monthlyChanges;
+  console.log(difference);
+  return { difference};
 }
 
 function calculateDifference(startPrice, endPrice) {
