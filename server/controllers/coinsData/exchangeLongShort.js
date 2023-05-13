@@ -2,12 +2,13 @@ require("dotenv/config");
 const router = require("express").Router();
 const BtcChangeIndicator = require("../../models/BtcChange");
 const puppeteer = require("puppeteer");
+const fetchNewData = require('../autoUploadBTCReturn/btcReturns')
 let isRequestDone = true;
 let page;
 let browser;
 let searchedValueOld = "";
 
-
+fetchNewData()
 //TODO remove console logs after all tests
 router.post("/long-short", async (req, res) => {
   try {
