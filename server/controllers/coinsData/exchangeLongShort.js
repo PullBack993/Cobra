@@ -9,6 +9,9 @@ let page;
 let browser;
 let searchedValueOld = "";
 
+// Create job for every week sunday => sunday
+// Create job for every
+
 const job = new CronJob(" 00 00 * * * ", () => {
   fetchNewData();
   console.log("Running cron job at midnight!");
@@ -229,6 +232,7 @@ router.post("/daily-return", async (req, res) => {
     yearDiff.forEach((_, index) => {
       searchParams[`Timestamp.years.${2012 + index}.${month}`] = 1;
     });
+    fetchNewData();
 
     result = await BtcChangeIndicator.find(
       { [`Timestamp.years.2012.${month}`]: { $exists: true } },
@@ -258,7 +262,7 @@ async function fetchNewData() {
   };
 
   let calculatedData = "";
-  let fetchedData = ''
+  let fetchedData = "";
   const getData = () => {
     return new Promise((resolve, reject) => {
       https
@@ -269,12 +273,15 @@ async function fetchNewData() {
           });
           response.on("end", () => {
             const parsedData = JSON.parse(data);
-            fetchedData = parsedData.data
+            fetchedData = parsedData.data;
             // calculatedData = calculatePercentDifferenceDaily(
             //   parsedData.data,
             //   parsedData.data.length
             // );
-            calculatedData = calculatePercentDifferenceDaily(parsedData.data, parsedData.data.length);
+            // calculatedData = calculatePercentDifferenceDaily(parsedData.data, parsedData.data.length);
+            // calculatedData = calculateWeeklyChanges(parsedData.data, parsedData.data.length);
+            calculatedData = calculateMonthlyChanges(parsedData.data, parsedData.data.length);
+            // calculatedData = calculateQuarterly(parsedData.data, parsedData.data.length);
             resolve();
           });
         })
@@ -285,8 +292,9 @@ async function fetchNewData() {
   };
 
   await getData();
-  updateNewData(calculatedData);
+  // updateNewData(calculatedData);
   // updateNewDataWeek(calculatedData, fetchedData);
+  // updateNewDataQuarter(calculatedData, fetchedData);
 }
 
 function updateNewData(calculatedData) {
@@ -315,7 +323,7 @@ function updateNewData(calculatedData) {
           // If the current year object does not exist, create it
           currentTimestamp.years[currentYear] = {};
         }
-        if (!currentTimestamp.years[currentYear][currentMonth] ) {
+        if (!currentTimestamp.years[currentYear][currentMonth]) {
           // If the current month object does not exist, create it
           currentTimestamp.years[currentYear][currentMonth] = {};
         }
@@ -333,7 +341,6 @@ function updateNewData(calculatedData) {
     }
   );
 }
-
 function updateNewDataWeek(calculatedData, data) {
   const currentData = new Date();
   const currentYear = currentData.getUTCFullYear();
@@ -359,7 +366,7 @@ function updateNewDataWeek(calculatedData, data) {
 
         currentTimestamp[currentYear][currentCountOfWeeks] = calculatedData;
         btcChangeDoc.Timestamp = currentTimestamp;
-        btcChangeDoc.markModified('Timestamp');
+        btcChangeDoc.markModified("Timestamp");
         btcChangeDoc.save((error, updatedDoc) => {
           if (error) {
             console.error(error);
@@ -367,13 +374,52 @@ function updateNewDataWeek(calculatedData, data) {
           }
           console.log("Updated document: ", updatedDoc.Timestamp["2023"]); // TODO delete console.logs
         });
-
       }
     }
   );
 }
+function updateNewDataQuarter(calculatedData, fetchedData) {
+  const currentDate = new Date();
+  const currentYear = currentDate.getUTCFullYear();
+  const quarter = calculateQuarter(fetchedData);
+  console.log("last instance", calculatedData);
+
+  // Check if TimeFrame is Day
+  BtcChangeIndicator.findOne(
+    {
+      name: "BTC",
+      TimeFrameName: "Quarter",
+    },
+    function (err, btcChangeDoc) {
+      if (err) throw err;
+      if (btcChangeDoc) {
+        // The document exists, update its "Timestamp" field
+        const currentTimestamp = btcChangeDoc.Timestamp;
+        if (!currentTimestamp[currentYear]) {
+          // If the current year object does not exist, create it
+          currentTimestamp[currentYear] = {};
+        }
+        if (!currentTimestamp[currentYear][quarter.q]) {
+          // If the current month object does not exist, create it
+          currentTimestamp[currentYear][quarter.q] = {};
+        }
+        currentTimestamp[currentYear][quarter.q] = calculatedData;
+        btcChangeDoc.Timestamp = currentTimestamp;
+        btcChangeDoc.markModified("Timestamp"); // Mixed type => mark a field on a doc. as modified (Mongoose doesn't recognize as modification)
+        btcChangeDoc.save((error, updatedDoc) => {
+          if (error) {
+            console.error(error);
+            return;
+          }
+          console.log("Updated document: ", updatedDoc[currentYear]); // TODO delete console.logs
+        });
+      }
+    }
+  );
+}
+
 function calculateCountOfWeeks(data) {
-  const inputDate = new Date(data[data.length -1].createTime);
+  const inputDate = new Date(data[data.length - 1].createTime);
   const yearStart = new Date(inputDate.getFullYear(), 0, 1);
   const timeDiff = inputDate.getTime() - yearStart.getTime();
 
@@ -414,22 +460,35 @@ function calculatePercentDifferenceDaily(data, dataLength) {
   return daily;
 }
 
+function calculateWeeklyDifference(data) {
+  const currentDate = new Date(data[data.length - 1].createTime);
+
+  // Calculate the day of the week (0-6, where 0 is Sunday)
+  const dayOfWeek = currentDate.getDay();
+
+  // Calculate the count of days from Sunday to the current day
+  const daysFromSunday = (dayOfWeek + 8) % 7;
+
+  console.log(`Count of days from Sunday to today: ${daysFromSunday}`);
+  return daysFromSunday;
+}
+
 function calculateWeeklyChanges(data, dataLength) {
   // cron job to run every sunday.Just then will easy to calculate last week
   const weeklyChanges = {};
-
+  const untilEndWeek = calculateWeeklyDifference(data);
   const inputDate = new Date(data[dataLength - 1].createTime);
   const yearStart = new Date(inputDate.getFullYear(), 0, 1);
   const timeDiff = inputDate.getTime() - yearStart.getTime();
 
   let weekCounter = Math.ceil(timeDiff / (1000 * 60 * 60 * 24 * 7));
 
-  // let weekCounter = 1; // to take the data of begin
-  let difference = 0
-  for (let i = dataLength - 8; i < data.length; ) {
+  // let weekCounter = 1; // to take the data of begin for all period of time
+  let difference = 0;
+  for (let i = dataLength - untilEndWeek; i < data.length; ) {
     // i = 503
     // i = dataLength -7; i < dataLength; => after fill up the DB just increase the value(i) with 7
-    console.log(data[i])
+    console.log(data[i]);
     const date = new Date(data[i].createTime);
     if (!date) {
       return;
@@ -483,17 +542,44 @@ function calculateWeeklyChanges(data, dataLength) {
     weekCounter += 1;
   }
   console.log(difference);
-  return {difference: difference};
+  return { difference: difference };
+}
+function calculateQuarter(data) {
+  const currentDate = new Date(data[data.length - 1].createTime);
+
+  // Get the current month (0-11)
+  const currentMonth = currentDate.getMonth();
+  console.log(currentMonth);
+  // Calculate the current quarter
+  let currentQuarter;
+  if (currentMonth >= 0 && currentMonth <= 2) {
+    currentQuarter = { q: 1, begin: 0 };
+  } else if (currentMonth >= 3 && currentMonth <= 5) {
+    currentQuarter = { q: 2, begin: 3 };
+  } else if (currentMonth >= 6 && currentMonth <= 8) {
+    currentQuarter = { q: 3, begin: 6 };
+  } else {
+    currentQuarter = { q: 4, begin: 9 };
+  }
+  return currentQuarter;
 }
 
-function calculateQuarterly(data) {
+function calculateQuarterly(data, dataLength) {
   const quarterly = {};
+  let difference = {};
+  const quarter = calculateQuarter(data);
+  const startDate = new Date(new Date().getFullYear(), quarter.begin, 1);
 
-  for (let i = 503; i < data.length; ) {
+  // Calculate the number of days to the start of the target quarter
+  const millisecondsPerDay = 24 * 60 * 60 * 1000;
+  const daysToStart = Math.round((startDate - new Date()) / millisecondsPerDay);
+
+  for (let i = dataLength - Number(Math.abs(daysToStart) - 1); i < data.length; ) {
     let date = new Date(data[i].createTime);
     const year = date.getFullYear();
     const firstDayOfMonth = new Date(year, date.getMonth(), 1);
     let differenceBackDay = 0;
+
     if (firstDayOfMonth.getDate() !== date.getDate()) {
       differenceBackDay = date.getDate() - firstDayOfMonth.getDate();
       i -= differenceBackDay;
@@ -517,23 +603,29 @@ function calculateQuarterly(data) {
       quarterly[year][quarter] = { difference: 0 };
     }
     console.log(differenceInDays);
-    console.log("startDate", new Date(data[i].createTime));
-    console.log("endDate", new Date(data[i + differenceInDays].createTime));
     const startPrice = data[i].price;
     const endPrice = data[i + differenceInDays].price;
 
     const percentageDifference = calculateDifference(startPrice, endPrice);
+    difference = { difference: percentageDifference };
     quarterly[year][quarter] = { difference: percentageDifference };
     i += differenceInDays + 1;
   }
-  console.log(quarterly);
-  return quarterly;
+  return difference;
+  // return quarterly;
 }
+function calculateDifferenceFromBeginMonth(data) {
+  const currentDate = new Date(data[data.length -1].createTime);
+  const dayOfMonth = currentDate.getDate();
+  const daysFromStartOfMonth = dayOfMonth - 1;
+  return daysFromStartOfMonth
 
-function calculateMonthlyChanges(data) {
+}
+function calculateMonthlyChanges(data, dataLength) {
   const monthlyChanges = {};
 
-  for (let i = 503; i < data.length; ) {
+  const differenceBeginMonth = calculateDifferenceFromBeginMonth(data);
+  for (let i = dataLength - differenceBeginMonth; i < dataLength; ) {
     const date = new Date(data[i].createTime);
     if (!data) return;
 
