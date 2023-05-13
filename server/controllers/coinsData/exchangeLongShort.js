@@ -3,12 +3,20 @@ const router = require("express").Router();
 const BtcChangeIndicator = require("../../models/BtcChange");
 const puppeteer = require("puppeteer");
 const fetchNewData = require('../autoUploadBTCReturn/btcReturns')
+const CronJob = require("cron").CronJob;
+
 let isRequestDone = true;
 let page;
 let browser;
 let searchedValueOld = "";
 
-fetchNewData()
+const job = new CronJob(" 00 00 * * * ", () => {
+  fetchNewData();
+  console.log("Running cron job at midnight!");
+});
+
+job.start();
+
 //TODO remove console logs after all tests
 router.post("/long-short", async (req, res) => {
   try {

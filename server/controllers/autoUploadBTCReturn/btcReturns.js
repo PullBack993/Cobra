@@ -2,20 +2,6 @@ const CronJob = require("cron").CronJob;
 const https = require("https");
 const BtcChangeIndicator = require("../../models/BtcChange");
 
-// Create job for every week sunday => sunday
-// Create job for every
-
-const job = new CronJob(" 00 00 * * * ", () => {
-  fetchNewData();
-  console.log("Running cron job at midnight!");
-});
-
-const test = new CronJob("*/10 * * * * ", () => {
-  console.log("Test server =>>> !");
-});
-
-test.start();
-job.start();
 
 async function fetchNewData() {
   // 1. Fetch new Data from coinglass =
@@ -55,10 +41,10 @@ async function fetchNewData() {
   };
 
   await getData();
-  //   updateNewData(calculatedData);
-  //   updateNewDataWeek(calculatedData, fetchedData);
-  //   updateNewDataMonth(calculatedData);
-  //   updateNewDataQuarter(calculatedData, fetchedData);
+    updateNewData(calculatedData);
+    updateNewDataWeek(calculatedData, fetchedData);
+    updateNewDataMonth(calculatedData);
+    updateNewDataQuarter(calculatedData, fetchedData);
 }
 
 function updateNewData(calculatedData) {
