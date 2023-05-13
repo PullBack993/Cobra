@@ -160,7 +160,7 @@ function removeLy() {
           <td
             class="returns__table-year-percentage--ratio"
             :class="colorPriceAction(year[1][d]?.difference?.toFixed(2))"
-            v-for="(d, i) in Object.values(year[1]).length"
+            v-for="(d, i) in Object.values(year[1])?.length"
             :key="i"
           >
             {{ year[1][d]?.difference?.toFixed(2) }}
@@ -273,11 +273,11 @@ function removeLy() {
 
 @media (min-width: $breakpoint_mobiletabs) {
   .returns {
-  margin-right: 0;
+    margin-right: 0;
 
     &__chart-select-item:last-child {
-    margin-top: 0;
-  }
+      margin-top: 0;
+    }
   }
 }
 </style>
