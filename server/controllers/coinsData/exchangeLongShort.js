@@ -10,10 +10,11 @@ let isRequestDone = true;
 let page;
 let browser;
 let searchedValueOld = "";
+
 fetchNewData()
-const job = new CronJob(" 00 00 * * * ", () => {
+const job = new CronJob(" 0 */2 * * * ", () => {
   fetchNewData();
-  console.log("Running cron job at midnight!");
+  console.log("Running cron job every 2 hours!");
 });
 
 job.start();
