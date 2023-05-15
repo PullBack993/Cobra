@@ -26,8 +26,9 @@ async function fetchNewData() {
           });
           response.on("end", () => {
             const parsedData = JSON.parse(data);
+            console.log(parsedData)
             fetchedData = parsedData.data;
-            dataLength = fetchedData.length;
+            dataLength = fetchedData?.length;
             //2. Calculate difference between two date
             calculatedDataDay = calculateDailyChanges(fetchedData, dataLength - 1);
             calculatedDataWeek = calculateWeeklyChanges(fetchedData, dataLength - 1);
@@ -41,12 +42,15 @@ async function fetchNewData() {
         });
     });
   };
-
-  await getData();
+  try {
+    await getData();
+  } catch (error) {
+    console.error(error);
+  }
   //3. Update data base with new data
   updateNewData(calculatedDataDay);
   updateNewDataWeek(calculatedDataWeek, fetchedData);
-  updateNewDataMonth(calculatedDataMonth, );
+  updateNewDataMonth(calculatedDataMonth);
   updateNewDataQuarter(calculatedDataQuarter, fetchedData);
 }
 
@@ -219,9 +223,9 @@ function calculateWeeklyChanges(data, dataLength) {
 
 function calculateMonthlyChanges(data, dataLength) {
   const differenceBeginMonth = calculateDifferenceFromBeginMonth(data);
-
+  console.log(differenceBeginMonth);
   const currentPrice = data[dataLength].price;
-  const prevPrice = data[dataLength - differenceBeginMonth].price
+  const prevPrice = data[dataLength - differenceBeginMonth].price;
 
   const calculatePercentageChange = calculateDifference(currentPrice, prevPrice);
   return { difference: calculatePercentageChange };
@@ -265,7 +269,7 @@ function calculateWeeklyDifference(data) {
 function calculateDifferenceFromBeginMonth(data) {
   const currentDate = new Date(data[data.length - 1].createTime);
   const dayOfMonth = currentDate.getDate();
-  const daysFromStartOfMonth = dayOfMonth - 2;
+  const daysFromStartOfMonth = dayOfMonth;
   return daysFromStartOfMonth;
 }
 
@@ -427,7 +431,7 @@ function quarterlyPercentDifferencePeriod(data, period) {
   return quarterly;
 }
 
-function monthlyPercentDifferencePeriod (data, period) {
+function monthlyPercentDifferencePeriod(data, period) {
   const monthlyChanges = {};
 
   for (let i = period; i < data.length; ) {
@@ -441,7 +445,6 @@ function monthlyPercentDifferencePeriod (data, period) {
 
     if (!monthlyChanges[year]) {
       monthlyChanges[year] = {};
-      monthlyChanges[year][month] = { difference: 0 };
     }
 
     if (!monthlyChanges[year][month]) {
@@ -467,7 +470,6 @@ function monthlyPercentDifferencePeriod (data, period) {
     monthlyChanges[year][month] = { difference: difference };
 
     i += differenceToNextMonth + 1;
-  
   }
   return monthlyChanges;
 }

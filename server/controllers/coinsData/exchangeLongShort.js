@@ -2,16 +2,17 @@ require("dotenv/config");
 const router = require("express").Router();
 const BtcChangeIndicator = require("../../models/BtcChange");
 const puppeteer = require("puppeteer");
-const fetchNewData = require('../autoUploadBTCReturn/btcReturns')
+const fetchNewData = require("../autoUploadBTCReturn/btcReturns");
+const fetchNewDataPeriod = require("../autoUploadBTCReturn/btcReturnsPeriod");
 const CronJob = require("cron").CronJob;
-fetchNewData();
-
+// fetchNewData();
+// fetchNewDataPeriod();
 let isRequestDone = true;
 let page;
 let browser;
 let searchedValueOld = "";
 
-fetchNewData()
+// fetchNewData();
 const job = new CronJob(" 0 */2 * * * ", () => {
   fetchNewData();
   console.log("Running cron job every 2 hours!");
@@ -52,69 +53,68 @@ router.post("/long-short", async (req, res) => {
     console.log(browser);
     if (!browser) {
       // { headless: false, defaultViewport: false } for Debugging
-      // { headless: false, defaultViewport: false }
-      browser = await puppeteer.launch();
+      browser = await puppeteer.launch({ headless: false, defaultViewport: false });
 
       isRequestDone = false;
       console.log("Launching browser...");
 
       page = await browser.newPage();
+      const navigationPromise = page.waitForNavigation();
 
       console.log("Go to coinglass...");
       await page.goto("https://www.coinglass.com/LongShortRatio");
+      await navigationPromise;
     }
     (async () => {
       try {
-        console.log("test symbol", symbol !== "BTC");
-        await page.waitForSelector("#rc_select_2");
-        await page.click("#rc_select_2"); // select coin
-        await page.type("#rc_select_2", `${symbol}`);
-        await new Promise((resolve) => setTimeout(resolve, 500));
-
+        await page.waitForSelector(".cg-style-by6qva");
+        const dropDownElements = await page.$$(".cg-style-by6qva");
+        if (dropDownElements.length >= 2) {
+          await dropDownElements[1].click(".cg-style-by6qva"); // select coin
+          await dropDownElements[1].type(`${symbol}`);
+          await dropDownElements[1].click(".cg-style-by6qva"); // select coin
+        }
+        await new Promise((resolve) => setTimeout(resolve, 700));
+        await page.keyboard.press("ArrowDown");
         await page.keyboard.press("Enter");
+
         let desiredOption = null;
 
-        if (time !== "5 minutes") {
-          /// check if it 5 min (default) else should select another value
-          await page.waitForSelector("#rc_select_3");
-          await page.click("#rc_select_3");
-          await page.waitForSelector(".ant-select-item.ant-select-item-option");
-          const options = await page.$$(".ant-select-item.ant-select-item-option");
+        if (time !== "4 hour") {
+          await page.waitForSelector(".cg-style-co7wrl");
+          const dropDownTime = await page.$$(".cg-style-co7wrl");
+          if (dropDownTime.length >= 2) {
+            await dropDownTime[2].click(".cg-style-co7wrl");
+          }
+          await page.waitForSelector(".cg-style-1872y3 li");
+          const options = await page.$$(".cg-style-1872y3 li");
           for (let i = 0; i < options.length; i++) {
-            const optionTitle = await options[i].getProperty("title");
-            const titleValue = await optionTitle.jsonValue();
-            await new Promise((resolve) => setTimeout(resolve, 500));
-            if (titleValue === time) {
-              desiredOption = options[i];
-              break;
+            const optionTitle = await options[i].evaluate(el => el.textContent);
+            if(optionTitle === time){
+              options[i].click()
+              console.log(optionTitle)
+              await new Promise((resolve) => setTimeout(resolve, 1000));
             }
           }
         }
 
-        if (desiredOption) {
-          await desiredOption.click();
-        }
-        await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        await page.waitForSelector(".bybt-ls-rate");
-        console.log("bybt exname");
-        const src = await page.$eval(".bybt-exname-logo img", (img) => img.src);
-        console.log("src", src);
-        const firstNumber = await page.$eval(".bybt-ls-rate div:first-child", (div) =>
-          div.textContent.trim()
-        );
-        const secondNumber = await page.$eval(".bybt-ls-rate div:last-child", (div) =>
-          div.textContent.trim()
-        );
-        result.push({
-          symbol: symbol,
-          symbolLogo: src,
-          longRate: firstNumber,
-          shortRate: secondNumber,
-          list: [],
-        });
-        const elements = await page.$$(".bybt-ls-rate");
-        console.log("elements", elements);
+        // console.log("bybt exname");
+        // const src = await page.$eval(".symbol-logo img", (img) => img.src);
+        // console.log("src", src);
+        // const firstNumber = await page.$eval(".bybt-ls-rate div:first-child", (div) =>
+        //   div.textContent.trim()
+        // );
+        // const secondNumber = await page.$eval(".bybt-ls-rate div:last-child", (div) =>
+        //   div.textContent.trim()
+        // );
+        // result.push({
+        //   symbol: symbol,
+        //   symbolLogo: src,
+        //   longRate: firstNumber,
+        //   shortRate: secondNumber,
+        //   list: [],
+        // });
 
         const titles = await page.evaluate(() => {
           const elements = document.querySelectorAll(".bybt-font-normal"); // get all elements with class name 'bybt-font-normal'
@@ -170,7 +170,9 @@ router.post("/long-short", async (req, res) => {
         // if (browser) {
         //   await browser.close();
         //   browser = null;
-        // }
+        // isRequestDone = true;
+
+        // // }
         result = [];
       } catch (err) {
         isRequestDone = true;
@@ -245,6 +247,5 @@ router.post("/daily-return", async (req, res) => {
   }
   res.json(result);
 });
-
 
 module.exports = router;

@@ -8,7 +8,7 @@ import { useGlobalStore } from '../store/global';
 
 const allowsCoins = allCoins;
 const currentValue = ref('BTC');
-const currentTime = ref('5 minutes');
+const currentTime = ref('5 minute');
 const coins = ref();
 const intervalId = ref(0);
 const loading = ref(false);
@@ -92,13 +92,13 @@ intervalId.value = Number(setInterval(reqData, 13000));
                 :with-arrow-icon="true"
                 :readonly="true"
                 :data="[
-                  '5 minutes',
-                  '15 minutes',
-                  '30 minutes',
+                  '5 minute',
+                  '15 minute',
+                  '30 minute',
                   '1 hour',
-                  '4 hours',
-                  '12 hours',
-                  '24 hours',
+                  '4 hour',
+                  '12 hour',
+                  '24 hour',
                 ]"
                 @new-value:input="timeChange"
               />
