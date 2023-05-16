@@ -36,14 +36,16 @@ router.post("/long-short", async (req, res) => {
 
     console.log(req.body);
     let { time, symbol } = req.body;
-    
-    let result = [{
+
+    let result = [
+      {
         symbol: [],
         symbolLogo: [],
         longRate: [],
         shortRate: [],
         list: [],
-      }];
+      },
+    ];
     if (!isRequestDone && symbol !== prevSymbol && browser) {
       console.log("Cancelling previous request...");
       await browser.close();
@@ -70,6 +72,7 @@ router.post("/long-short", async (req, res) => {
     }
     (async () => {
       try {
+        // Select symbol (BTC)
         if (prevSymbol !== symbol) {
           prevSymbol = symbol;
           await page.waitForSelector(".cg-style-by6qva");
@@ -79,17 +82,12 @@ router.post("/long-short", async (req, res) => {
             await dropDownElements[1].type(`${symbol}`);
             await dropDownElements[1].click(".cg-style-by6qva"); // select coin
           }
-          await new Promise((resolve) => setTimeout(resolve, 700));
-          await page.keyboard.press("ArrowDown");
-          await page.keyboard.press("ArrowUp");
-          await page.keyboard.press("ArrowUp");
           await new Promise((resolve) => setTimeout(resolve, 500));
-
           await page.keyboard.press("Enter");
 
           let desiredOption = null;
         }
-
+        // Select time (5minute)
         if (time !== "4 hour") {
           await page.waitForSelector(".cg-style-co7wrl");
           const dropDownTime = await page.$$(".cg-style-co7wrl");
@@ -106,26 +104,40 @@ router.post("/long-short", async (req, res) => {
             }
           }
         }
-
-        const symbolName = await page.evaluate(() => {
-          const elements = document.querySelectorAll(".symbol-name"); // get all elements with class name 'bybt-font-normal'
-          const values = [];
-          for (let i = 0; i < elements.length; i++) {
-            values.push(elements[i].textContent.trim()); // extract the text content of each element and add to the array
+        //Fetch data
+        const nameWithLogo = await page.evaluate(async (symbol) => {
+          const symbolName = document.querySelectorAll(".symbol-name");
+          const exchangeLogo = document.querySelectorAll("div.symbol-and-logo img.symbol-logo");
+          // const longHandler = await page.$$('.cg-style-1si2ck2');
+          const sName = [];
+          const xName = [];
+          let beginPush = false;
+          for (let i = 0; i < symbolName.length; i++) {
+            if (symbolName[i].textContent.trim() === symbol && !beginPush) { // It is to many symbol
+                beginPush = true;
+            }
+            if(beginPush){
+              sName.push(symbolName[i].textContent.trim()); // extract the text content of each element and add to the array
+              xName.push(exchangeLogo[i].getAttribute("src"));
+              
+            }
           }
-          return values;
-        });
-
-        const exchangeLogos = await page.$$eval("div.symbol-and-logo img.symbol-logo", (imgs) =>
-          imgs.map((img) => img.getAttribute("src"))
-        );
-        console.log(exchangeLogos);
+          return [sName,xName];
+        },symbol);
+        console.log(nameWithLogo);
+        // const exchangeLogos = await page.$$eval("div.symbol-and-logo img.symbol-logo", (imgs) =>
+        //   imgs
+        //     .map((img, index) => {
+        //       if (index >= 4) {
+        //         return img.getAttribute("src");
+        //       }
+        //     })
+        //     .filter((value) => value !== null)
+        // );
 
         const elements = await page.$$(".cg-style-1si2ck2");
         await Promise.all(
           elements.map(async (element, index) => {
-            if (index === 0) return;
-            console.log("in promise all");
 
             const firstNumberHandle = await element.evaluateHandle((el) =>
               el.querySelector("div:first-child").textContent.trim()
@@ -139,8 +151,8 @@ router.post("/long-short", async (req, res) => {
             result[0].list.push({
               longRate: parseFloat(firstNumber),
               shortRate: parseFloat(secondNumber),
-              exchangeLogo: exchangeLogos[index - 1],
-              exchangeName: symbolName[index],
+              exchangeLogo: nameWithLogo[1][index],
+              exchangeName: nameWithLogo[0][index],
             });
           })
         );
