@@ -124,16 +124,7 @@ router.post("/long-short", async (req, res) => {
           }
           return [sName,xName];
         },symbol);
-        console.log(nameWithLogo);
-        // const exchangeLogos = await page.$$eval("div.symbol-and-logo img.symbol-logo", (imgs) =>
-        //   imgs
-        //     .map((img, index) => {
-        //       if (index >= 4) {
-        //         return img.getAttribute("src");
-        //       }
-        //     })
-        //     .filter((value) => value !== null)
-        // );
+
 
         const elements = await page.$$(".cg-style-1si2ck2");
         await Promise.all(
@@ -157,30 +148,16 @@ router.post("/long-short", async (req, res) => {
           })
         );
 
-        // console.log(numbers); // should output an array of arrays containing the parsed numbers
         isRequestDone = true;
         console.log("result =>>>", result[0].list);
         res.status(200).json(result);
-        // if (browser) {
-        //   await browser.close();
-        //   browser = null;
-        // }
-        // browserActive = false;
-        // if (browser) {
-        //   await browser.close();
-        //   browser = null;
-        // isRequestDone = true;
-
-        // // }
         result = [];
       } catch (err) {
         isRequestDone = true;
         console.log(err);
         res.status(500).send("Something went wrong");
-        // if (browser) {
-        //   await browser.close();
-        //   browser = null;
-        // }
+        await browser?.close();
+        browser = null;
         result = [];
       }
     })();
