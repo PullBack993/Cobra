@@ -8,9 +8,10 @@ const CronJob = require("cron").CronJob;
 // fetchNewData();
 // fetchNewDataPeriod();
 let isRequestDone = true;
+let previousSymbol = null;
+let previousTime = null;
 let page;
 let browser;
-let prevSymbol = "";
 
 // fetchNewData();
 const job = new CronJob(" 0 */2 * * * ", () => {
@@ -26,17 +27,16 @@ router.post("/long-short", async (req, res) => {
     if (req.body.exit) {
       if (browser) {
         browser.close();
+        browser = null;
       }
-      browser = null;
+
       page = null;
       searchedValueOld = "";
       isRequestDone = true;
       return;
     }
 
-    console.log(req.body);
     let { time, symbol } = req.body;
-
     let result = [
       {
         symbol: [],
@@ -46,15 +46,9 @@ router.post("/long-short", async (req, res) => {
         list: [],
       },
     ];
-    if (!isRequestDone && symbol !== prevSymbol && browser) {
-      console.log("Cancelling previous request...");
-      await browser.close();
-      browser = null;
-      result = [];
-    }
     if (!isRequestDone) {
-      console.log("Request in progress, returning...");
-      return;
+      console.log("Cancelling previous request...");
+      return res.status(400).json({ message: "Previous request is not completed" });
     }
     if (!browser) {
       // { headless: false, defaultViewport: false } for Debugging
@@ -70,25 +64,34 @@ router.post("/long-short", async (req, res) => {
       await page.goto("https://www.coinglass.com/LongShortRatio");
       await navigationPromise;
     }
+
+    // Check if the current symbol is the same as the previous one
+    const shouldChangeSymbol = previousSymbol !== symbol || previousSymbol === null;
+
+    // Check if the current time is the same as the previous one
+    const shouldChangeTime = previousTime !== time || previousTime === null;
+
     (async () => {
       try {
-        // Select symbol (BTC)
-        if (prevSymbol !== symbol) {
-          prevSymbol = symbol;
-          await page.waitForSelector(".cg-style-by6qva");
-          const dropDownElements = await page.$$(".cg-style-by6qva");
-          if (dropDownElements.length >= 2) {
-            await dropDownElements[1].click(".cg-style-by6qva"); // select coin
-            await dropDownElements[1].type(`${symbol}`);
-            await dropDownElements[1].click(".cg-style-by6qva"); // select coin
-          }
-          await new Promise((resolve) => setTimeout(resolve, 500));
-          await page.keyboard.press("Enter");
+        const inputSelector = ".cg-style-by6qva";
 
-          let desiredOption = null;
+        if (shouldChangeSymbol) {
+          previousSymbol = symbol;
+
+          await page.waitForSelector(inputSelector);
+          const dropDown = await page.$$(inputSelector);
+          await dropDown[1].click(inputSelector); // select coin
+          await dropDown[1].type(`${symbol}`);
+
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          const firstLiElement = await page.$("ul#\\:R1l9mdqlq6\\:-listbox li:first-child")
+          await firstLiElement.click();
+          const outSite = await page.$(".cg-style-0");
+          await outSite.click();
         }
-        // Select time (5minute)
-        if (time !== "4 hour") {
+
+        if (shouldChangeTime) {
+          previousTime = time;
           await page.waitForSelector(".cg-style-co7wrl");
           const dropDownTime = await page.$$(".cg-style-co7wrl");
           if (dropDownTime.length >= 2) {
@@ -104,32 +107,29 @@ router.post("/long-short", async (req, res) => {
             }
           }
         }
-        //Fetch data
+
         const nameWithLogo = await page.evaluate(async (symbol) => {
           const symbolName = document.querySelectorAll(".symbol-name");
-          const exchangeLogo = document.querySelectorAll("div.symbol-and-logo img.symbol-logo");
-          // const longHandler = await page.$$('.cg-style-1si2ck2');
+          const exchangeLogo = document.querySelectorAll("div.symbol-and-logo img.symbol-logo"); 
           const sName = [];
           const xName = [];
           let beginPush = false;
           for (let i = 0; i < symbolName.length; i++) {
-            if (symbolName[i].textContent.trim() === symbol && !beginPush) { // It is to many symbol
-                beginPush = true;
+            console.log(symbolName[i]);
+            if (symbolName[i].textContent.trim() === symbol && !beginPush) {
+              beginPush = true;
             }
-            if(beginPush){
+            if (beginPush) {
               sName.push(symbolName[i].textContent.trim()); // extract the text content of each element and add to the array
               xName.push(exchangeLogo[i].getAttribute("src"));
-              
             }
           }
-          return [sName,xName];
-        },symbol);
-
+          return [sName, xName];
+        }, symbol);
 
         const elements = await page.$$(".cg-style-1si2ck2");
         await Promise.all(
           elements.map(async (element, index) => {
-
             const firstNumberHandle = await element.evaluateHandle((el) =>
               el.querySelector("div:first-child").textContent.trim()
             );
@@ -156,41 +156,17 @@ router.post("/long-short", async (req, res) => {
         isRequestDone = true;
         console.log(err);
         res.status(500).send("Something went wrong");
-        await browser?.close();
-        browser = null;
         result = [];
       }
     })();
   } catch (err) {
     isRequestDone = true;
-    console.log("exchange long short main ==>", err);
+    console.error("exchange long short main ==>", err);
     if (browser) {
       await browser.close();
       browser = null;
     }
   }
-
-  // console.log(req.body);
-  // const time = req.body.time;
-  // const symbol = req.body.symbol.toUpperCase();
-  // const options = {
-  //   method: "GET",
-  //   hostname: process.env.BASE_URL,
-  //   port: null,
-  //   path: `/public/v2/long_short?time_type=${time}&symbol=${symbol}`,
-  //   headers: { accept: "application/json", coinglassSecret: process.env.COING_KEY },
-  // };
-  // https.get(options, (response) => {
-  //   let data = "";
-
-  //   response.on("data", (chung) => {
-  //     data += chung;
-  //   });
-  //   response.on("end", () => {
-  //     console.log(JSON.parse(data));
-  //     res.json(JSON.parse(data));
-  //   });
-  // });
 });
 
 router.post("/daily-return", async (req, res) => {

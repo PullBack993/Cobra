@@ -36,10 +36,10 @@ function calculateQuarterly(data) {
     const firstDayOfMonth = new Date(year, date.getMonth(), 1);
     let differenceBackDay = 0;
     if (firstDayOfMonth.getDate() !== date.getDate()) {
-      console.log(firstDayOfMonth)
-      console.log(date)
-      console.log(firstDayOfMonth.getDate())
-      console.log(date.getDate())
+      console.log(firstDayOfMonth);
+      console.log(date);
+      console.log(firstDayOfMonth.getDate());
+      console.log(date.getDate());
       differenceBackDay = date.getDate() - firstDayOfMonth.getDate();
       i -= differenceBackDay;
     }
@@ -52,7 +52,7 @@ function calculateQuarterly(data) {
     // Step 4: Retrieve the prices for the starting and ending dates of the quarter
     // You will need to replace the below sample prices with your actual data
     let differenceInDays = Math.ceil(
-      (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24) 
+      (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
     );
     if (!data[i + differenceInDays]) {
       differenceInDays = data.length - 1 - i;
@@ -65,8 +65,8 @@ function calculateQuarterly(data) {
       quarterly[year][quarter] = { difference: 0 };
     }
     console.log(differenceInDays);
-    console.log('startDate',new Date(data[i ].createTime))
-    console.log('endDate',new Date(data[i  + differenceInDays].createTime))
+    console.log("startDate", new Date(data[i].createTime));
+    console.log("endDate", new Date(data[i + differenceInDays].createTime));
     const startPrice = data[i].price;
     const endPrice = data[i + differenceInDays].price;
 
@@ -317,4 +317,25 @@ function calculatePercentDifferenceDaily(data, month, type) {
 // const fetchCoins = require("../../coins.json");
 // console.log(fetchCoins.length);
 
+{
+  /* <ul
+  role="listbox"
+  id=":R1l9mdqlq6:-listbox"
+  aria-labelledby=":R1l9mdqlq6:-label"
+  class="MuiAutocomplete-listbox MuiPopper-root cg-style-pw5ii0"
+  data-first-child=""
+  style="position: absolute; inset: 0px auto auto 0px; width: 98px; margin: 0px; transform: translate(700px, 999px);"
+  data-popper-placement="bottom"
+>
+  <li
+    role="presentation"
+    class="MuiListItem-root MuiListItem-nesting MuiListItem-colorNeutral MuiListItem-variantPlain MuiAutocomplete-noOptions cg-style-d6c682"
+  >
+    No options
+  </li>
+</ul>; */
+}
+{
+  /* <li class="MuiAutocomplete-option cg-style-zixclz" tabindex="-1" role="option" id=":R1l9mdqlq6:-option-0" data-option-index="0" aria-disabled="false" aria-selected="false">ETH</li> */
+}
 
