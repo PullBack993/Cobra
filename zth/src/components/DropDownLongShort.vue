@@ -78,8 +78,6 @@ function onInput(value: string) {
   }
   if (value) {
     console.log('input', currentIndexItem.value);
-    // savedValue.value = currentIndexItem.value;
-    // console.log('second', currentIndexItem.value)
     const searchedCoin = findCoin(value);
     if (searchedCoin.length > 0) {
       data.value = searchedCoin;
@@ -197,7 +195,17 @@ function selectInput() {
             :key="index"
             @click="selectedItem"
             :class="[
-              index === currentIndexItem ? 'long__short-active' : '',
+              `${
+                store.themeDark && index === currentIndexItem
+                  ? 'long__short-active--light'
+                  : ''
+              }`,
+              `${
+                !store.themeDark && index === currentIndexItem
+                  ? 'long__short-active--dark'
+                  : ''
+              }`,
+
               `${
                 store.themeDark
                   ? 'long__short-item--light'
@@ -224,7 +232,11 @@ function selectInput() {
     height: 3rem;
     position: absolute;
   }
-  &-active {
+  &-active--light {
+    background-color: $main-plum-purple;
+    transition: all 0.3s ease;
+  }
+  &-active--dark {
     background-color: $white-2;
     transition: all 0.3s ease;
   }

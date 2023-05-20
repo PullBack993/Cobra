@@ -78,8 +78,24 @@ router.post("/long-short", async (req, res) => {
           await dropDownSymbol[1].type(`${symbol}`);
 
           await new Promise((resolve) => setTimeout(resolve, 500));
-          const firstLiElement = await page.$("ul#\\:R1l9mdqlq6\\:-listbox li:first-child");
-          await firstLiElement.evaluate((b) => b.click());
+
+          const liElements = await page.$$("ul#\\:R1l9mdqlq6\\:-listbox li");
+          let matchingLiElement = null;
+
+          for (const liElement of liElements) {
+            const text = await page.evaluate((el) => el.textContent.trim(), liElement);
+            if (text === symbol) {
+              matchingLiElement = liElement;
+              break;
+            }
+          }
+
+          if (matchingLiElement) {
+            await matchingLiElement.evaluate((b) => b.click());
+          } else {
+            const firstLiElement = await page.$("ul#\\:R1l9mdqlq6\\:-listbox li:first-child");
+            await firstLiElement.evaluate((b) => b.click());
+          }
         }
 
         const timeSelector = ".cg-style-co7wrl";
