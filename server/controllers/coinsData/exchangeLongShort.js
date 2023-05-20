@@ -1,10 +1,12 @@
 require("dotenv/config");
 const router = require("express").Router();
 const BtcChangeIndicator = require("../../models/BtcChange");
-const puppeteer = require("puppeteer");
+const puppeteer = require("puppeteer-extra");
 const fetchNewData = require("../autoUploadBTCReturn/btcReturns");
 const fetchNewDataPeriod = require("../autoUploadBTCReturn/btcReturnsPeriod");
 const CronJob = require("cron").CronJob;
+const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+puppeteer.use(StealthPlugin());
 // fetchNewData();
 // fetchNewDataPeriod();
 let isRequestDone = true;
@@ -37,22 +39,15 @@ router.post("/long-short", async (req, res) => {
     }
 
     let { time, symbol } = req.body;
-    let result = [
-      {
-        symbol: [],
-        symbolLogo: [],
-        longRate: [],
-        shortRate: [],
-        list: [],
-      },
-    ];
+    let result = [];
+
     if (!isRequestDone) {
       console.log("Cancelling previous request...");
       return res.status(400).json({ message: "Previous request is not completed" });
     }
     if (!browser) {
       // { headless: false, defaultViewport: false } for Debugging
-      browser = await puppeteer.launch({ headless: false, defaultViewport: false });
+      browser = await puppeteer.launch({ headless: true });
 
       isRequestDone = false;
       console.log("Launching browser...");
@@ -77,55 +72,48 @@ router.post("/long-short", async (req, res) => {
 
         if (shouldChangeSymbol) {
           previousSymbol = symbol;
-
           await page.waitForSelector(inputSelector);
-          const dropDown = await page.$$(inputSelector);
-          await dropDown[1].click(inputSelector); // select coin
-          await dropDown[1].type(`${symbol}`);
+          const dropDownSymbol = await page.$$(inputSelector);
+          await dropDownSymbol[1].evaluate((b) => b.click());
+          await dropDownSymbol[1].type(`${symbol}`);
 
           await new Promise((resolve) => setTimeout(resolve, 500));
-          const firstLiElement = await page.$("ul#\\:R1l9mdqlq6\\:-listbox li:first-child")
-          await firstLiElement.click();
-          const outSite = await page.$(".cg-style-0");
-          await outSite.click();
+          const firstLiElement = await page.$("ul#\\:R1l9mdqlq6\\:-listbox li:first-child");
+          await firstLiElement.evaluate((b) => b.click());
         }
+
+        const timeSelector = ".cg-style-co7wrl";
 
         if (shouldChangeTime) {
           previousTime = time;
-          await page.waitForSelector(".cg-style-co7wrl");
-          const dropDownTime = await page.$$(".cg-style-co7wrl");
+          await page.waitForSelector(timeSelector);
+          const dropDownTime = await page.$$(timeSelector);
           if (dropDownTime.length >= 2) {
-            await dropDownTime[2].click(".cg-style-co7wrl");
+            await dropDownTime[2].evaluate((b) => b.click());
           }
           await page.waitForSelector(".cg-style-1872y3 li");
           const options = await page.$$(".cg-style-1872y3 li");
           for (let i = 0; i < options.length; i++) {
             const optionTitle = await options[i].evaluate((el) => el.textContent);
             if (optionTitle === time) {
-              options[i].click();
+              await options[i].evaluate((b) => b.click());
               await new Promise((resolve) => setTimeout(resolve, 1000));
             }
           }
+        } else {
+          await page.waitForSelector(timeSelector);
+          const dropDownTime = await page.$$(timeSelector);
+          if (dropDownTime.length >= 2) {
+            await dropDownTime[2].evaluate((b) => b.click());
+            await dropDownTime[2].evaluate((b) => b.click());
+          }
         }
 
-        const nameWithLogo = await page.evaluate(async (symbol) => {
-          const symbolName = document.querySelectorAll(".symbol-name");
-          const exchangeLogo = document.querySelectorAll("div.symbol-and-logo img.symbol-logo"); 
-          const sName = [];
-          const xName = [];
-          let beginPush = false;
-          for (let i = 0; i < symbolName.length; i++) {
-            console.log(symbolName[i]);
-            if (symbolName[i].textContent.trim() === symbol && !beginPush) {
-              beginPush = true;
-            }
-            if (beginPush) {
-              sName.push(symbolName[i].textContent.trim()); // extract the text content of each element and add to the array
-              xName.push(exchangeLogo[i].getAttribute("src"));
-            }
-          }
-          return [sName, xName];
-        }, symbol);
+        let nameWithLogo = await getNameWithLogo(page, symbol);
+
+        if (nameWithLogo[0].length <= 0) {
+          nameWithLogo = await getNameWithLogo(page, symbol);
+        }
 
         const elements = await page.$$(".cg-style-1si2ck2");
         await Promise.all(
@@ -139,7 +127,7 @@ router.post("/long-short", async (req, res) => {
             const firstNumber = await firstNumberHandle.jsonValue();
             const secondNumber = await secondNumberHandle.jsonValue();
 
-            result[0].list.push({
+            result.push({
               longRate: parseFloat(firstNumber),
               shortRate: parseFloat(secondNumber),
               exchangeLogo: nameWithLogo[1][index],
@@ -149,7 +137,7 @@ router.post("/long-short", async (req, res) => {
         );
 
         isRequestDone = true;
-        console.log("result =>>>", result[0].list);
+        console.log("result =>>>", result);
         res.status(200).json(result);
         result = [];
       } catch (err) {
@@ -168,6 +156,29 @@ router.post("/long-short", async (req, res) => {
     }
   }
 });
+
+async function getNameWithLogo(page, symbol) {
+  let nameWithLogo = await page.evaluate(async (symbol) => {
+    const symbolName = document.querySelectorAll(".symbol-name");
+    const exchangeLogo = document.querySelectorAll("div.symbol-and-logo img.symbol-logo");
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const sName = [];
+    const xName = [];
+    let beginPush = false;
+    for (let i = 0; i < symbolName.length; i++) {
+      console.log(symbolName[i]);
+      if (symbolName[i].textContent.trim() === symbol && !beginPush) {
+        beginPush = true;
+      }
+      if (beginPush) {
+        sName.push(symbolName[i].textContent.trim()); // extract the text content of each element and add to the array
+        xName.push(exchangeLogo[i].getAttribute("src"));
+      }
+    }
+    return [sName, xName];
+  }, symbol);
+  return nameWithLogo;
+}
 
 router.post("/daily-return", async (req, res) => {
   const data = req.body;

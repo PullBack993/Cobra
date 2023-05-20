@@ -60,7 +60,6 @@ function reqData() {
     .post('http://localhost:3000/exchange/long-short', coinData)
     .then((res) => {
       coins.value = res.data;
-      console.log(coins.value);
       loading.value = false;
     })
     .catch((err) => {

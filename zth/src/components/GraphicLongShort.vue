@@ -33,53 +33,16 @@ const longProgress = computed(() =>
 watch(
   () => props.coins,
   (value) => {
-    [coinsData.value] = value;
+    coinsData.value = value;
+    console.log(coinsData.value);
   }
 );
 </script>
 <template>
   <div v-if="coinsData">
-    <div class="graphic__ratio">
-      <div class="graphic__ratio-container">
-        <div class="graphic__ratio-exchange">
-          <div class="graphic__ratio-exchange--logo">
-            <img
-              class="graphic__ratio-exchange--image"
-              alt="btc"
-              loading="lazy"
-              :src="coinsData?.symbolLogo"
-            />
-            <div :class="themeClass">
-              {{ coinsData?.symbol }} Statistics&nbsp;
-            </div>
-          </div>
-        </div>
-
-        <div class="graphic__ratio-main">
-          <div>
-            <div class="graphic__ratio-progress" :class="progressClass">
-              <div
-                class="graphic__ratio-long"
-                :class="longProgress"
-                :style="{ width: Number(coinsData?.longRate) + '%' }"
-              ></div>
-              <div class="graphic__ratio-values-container">
-                <div class="graphic__ratio-long-value">
-                  {{ coinsData?.longRate }}
-                </div>
-                <div class="graphic__ratio-short-value">
-                  {{ coinsData?.shortRate }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div
       class="graphic__ratio"
-      v-for="(data, index) in coinsData.list"
+      v-for="(data, index) in coinsData"
       :key="index"
     >
       <div class="graphic__ratio-container">
@@ -119,6 +82,7 @@ watch(
       </div>
     </div>
   </div>
+  
   <div v-if="!coinsData || loading">
     <div v-for="(_, index) in loadingLength" :key="index">
       <div class="loader">
@@ -274,7 +238,4 @@ watch(
     }
   }
 }
-// const themeClass = computed(() =>
-//   store.themeDark ? 'light-theme' : 'dark-theme'
-// );
 </style>
