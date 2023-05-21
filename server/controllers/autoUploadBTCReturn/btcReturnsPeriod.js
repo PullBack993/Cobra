@@ -1,5 +1,21 @@
 const https = require("https");
 const BtcChangeIndicator = require("../../models/BtcChange");
+const weeklyCount = Array(52).fill(" ");
+const monthlyCount = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+const quarterlyCount = ["Q1", "Q2", "Q3", "Q4"];
 
 const options = {
   method: "GET",
@@ -19,7 +35,7 @@ function fetchNewDataPeriod() {
         });
         response.on("end", () => {
           const parsedData = JSON.parse(data);
-          resolve(parsedData);
+          resolve(parsedData.data);
         });
       })
       .on("error", (error) => {
@@ -29,22 +45,37 @@ function fetchNewDataPeriod() {
 }
 
 // Usage example:
-(async () => {
+async function bitcoinReturns() {
   try {
     const data = await fetchNewDataPeriod();
     const period = 503; // begin of 2010
-    dailyPercentDifferencePeriod(data, period);
+    // const dailyData = dailyPercentDifferencePeriod(data, period);
+    // const weeklyData = weeklyPercentDifferencePeriod(data, period);
+    // const monthData = monthlyPercentDifferencePeriod(data, period);
+    // const quarterData = quarterlyPercentDifferencePeriod(data, period);
+    // saveData(dailyData, "Day1");
+    // saveData(weeklyData, "Week1", weeklyCount);
+    // saveData(monthData, "Month1", monthlyCount);
+    // saveData(quarterData, "Quarter1", quarterlyCount);
   } catch (error) {
     console.error(error);
   }
-})();
+}
 
-function calculateDifference(currentPrice, prevPrice) {
-  return ((currentPrice - prevPrice) / prevPrice) * 100;
+async function saveData(data, type, length) {
+  if (data) {
+    const generatedData = new BtcChangeIndicator({
+      name: "BTC",
+      TimeFrameName: type,
+      Timestamp: data,
+      Length: length,
+    });
+    generatedData.save();
+  }
 }
 
 function dailyPercentDifferencePeriod(data, period) {
-  const years = {};
+  const dailyChanges = {};
 
   for (let i = period; i < data.length; i++) {
     const date = new Date(data[i].createTime);
@@ -52,38 +83,30 @@ function dailyPercentDifferencePeriod(data, period) {
     const month = date.getMonth() + 1; // 08
     const day = date.getDate(); // 01
 
-    if (!years[year]) {
-      years[year] = {};
+    if (!dailyChanges[year]) {
+      dailyChanges[year] = {};
     }
 
     if (!data[i - 1]) {
-      years[year][day] = {};
+      dailyChanges[year][day] = {};
       continue;
     }
-    if (!years[year][month]) {
-      years[year][month] = {};
+    if (!dailyChanges[year][month]) {
+      dailyChanges[year][month] = {};
     }
-    const prevPrice = data[i - 1].price;
-    const currentPrice = data[i].price;
+    const endPrice = data[i - 1].price;
+    const startPrice = data[i].price;
 
-    const calculatePercentageChange = ((currentPrice - prevPrice) / prevPrice) * 100;
-    if (!years[year][month]) {
-      years[year][month] = {};
+    const percentageDifference = calculateDifference(startPrice, endPrice);
+
+    if (!dailyChanges[year][month]) {
+      dailyChanges[year][month] = {};
     }
-    years[year][month][day] = { difference: calculatePercentageChange };
+    dailyChanges[year][month][day] = { difference: percentageDifference };
   }
-  years;
+  return dailyChanges;
 }
-async function saveData(data, type) {
-  if (data) {
-    const generatedData = new BtcChangeIndicator({
-      name: "BTC",
-      TimeFrameName: type,
-      Timestamp: data,
-    });
-    generatedData.save();
-  }
-}
+
 function weeklyPercentDifferencePeriod(data, period) {
   // 869 begin 2013 => 4521 1.1.2023
   const weeklyChanges = {};
@@ -130,12 +153,11 @@ function weeklyPercentDifferencePeriod(data, period) {
     if (!data[i + differenceOnDaysForward]) {
       differenceOnDaysForward = data.length - i - 1;
     }
+    const startPrice = data[i + differenceOnDaysForward].price;
+    const endPrice = data[i - differenceOnDaysBack].price;
+    const percentageDifference = calculateDifference(startPrice, endPrice);
 
-    const difference =
-      ((data[i + differenceOnDaysForward].price - data[i - differenceOnDaysBack].price) /
-        data[i - differenceOnDaysBack].price) *
-      100;
-    weeklyChanges[year][weekCounter].difference += difference;
+    weeklyChanges[year][weekCounter] = { difference: percentageDifference };
 
     i += differenceOnDaysForward | 7;
 
@@ -143,46 +165,6 @@ function weeklyPercentDifferencePeriod(data, period) {
   }
 
   return weeklyChanges;
-}
-
-function quarterlyPercentDifferencePeriod(data, period) {
-  const quarterly = {};
-
-  for (let i = period; i < data.length; ) {
-    let date = new Date(data[i].createTime);
-    const year = date.getFullYear();
-    const firstDayOfMonth = new Date(year, date.getMonth(), 1);
-    let differenceBackDay = 0;
-    if (firstDayOfMonth.getDate() !== date.getDate()) {
-      differenceBackDay = date.getDate() - firstDayOfMonth.getDate();
-      i -= differenceBackDay;
-    }
-    const quarter = Math.floor(date.getMonth() / 3) + 1;
-
-    const startDate = new Date(year, (quarter - 1) * 3, 1);
-    const endDate = new Date(year, quarter * 3, 0);
-
-    let differenceInDays = Math.ceil(
-      (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
-    );
-    if (!data[i + differenceInDays]) {
-      differenceInDays = data.length - 1 - i;
-      isFullQuarter = true;
-    }
-
-    if (!quarterly[year]) {
-      quarterly[year] = {};
-      quarterly[year][quarter] = { difference: 0 };
-    }
-
-    const startPrice = data[i].price;
-    const endPrice = data[i + differenceInDays].price;
-
-    const percentageDifference = calculateDifference(startPrice, endPrice);
-    quarterly[year][quarter] = { difference: percentageDifference };
-    i += differenceInDays + 1;
-  }
-  return quarterly;
 }
 
 function monthlyPercentDifferencePeriod(data, period) {
@@ -216,21 +198,65 @@ function monthlyPercentDifferencePeriod(data, period) {
     if (daysInMonth > lastData && !data[i + daysInMonth]) {
       differenceToNextMonth = lastData - 1;
     }
-    // if month not full is then should calculate until day today
-    difference =
-      ((data[i + differenceToNextMonth].price - data[i - differenceToBegin - 1].price) /
-        data[i - differenceToBegin - 1].price) *
-      100;
-    monthlyChanges[year][month] = { difference: difference };
+
+    const startPrice = data[i + differenceToNextMonth].price;
+    const endPrice = data[i - differenceToBegin - 1].price;
+    const percentageDifference = calculateDifference(startPrice, endPrice);
+
+    monthlyChanges[year][month] = { difference: percentageDifference };
 
     i += differenceToNextMonth + 1;
   }
+
   return monthlyChanges;
+}
+
+function quarterlyPercentDifferencePeriod(data, period) {
+  const quarterly = {};
+
+  for (let i = period; i < data.length; ) {
+    let date = new Date(data[i].createTime);
+    const year = date.getFullYear();
+    const firstDayOfMonth = new Date(year, date.getMonth(), 1);
+    let differenceBackDay = 0;
+    if (firstDayOfMonth.getDate() !== date.getDate()) {
+      differenceBackDay = date.getDate() - firstDayOfMonth.getDate();
+      i -= differenceBackDay;
+    }
+    const quarter = Math.floor(date.getMonth() / 3) + 1;
+
+    const startDate = new Date(year, (quarter - 1) * 3, 1);
+    const endDate = new Date(year, quarter * 3, 0);
+
+    let differenceInDays = Math.ceil(
+      (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    if (!data[i + differenceInDays]) {
+      differenceInDays = data.length - 1 - i;
+      isFullQuarter = true;
+    }
+
+    if (!quarterly[year]) {
+      quarterly[year] = {};
+      quarterly[year][quarter] = { difference: 0 };
+    }
+
+    const endPrice = data[i].price;
+    const startPrice = data[i + differenceInDays].price;
+
+    const percentageDifference = calculateDifference(startPrice, endPrice);
+    quarterly[year][quarter] = { difference: percentageDifference };
+
+    i += differenceInDays + 1;
+  }
+
+  return quarterly;
 }
 
 function calculateDifference(currentPrice, prevPrice) {
   return ((currentPrice - prevPrice) / prevPrice) * 100;
 }
+
 function getWeek(timestamp) {
   const date = new Date(timestamp);
   const dayOfWeek = date.getDay();
@@ -245,69 +271,3 @@ function getWeek(timestamp) {
 }
 
 module.exports = fetchNewDataPeriod;
-// {/* <ul
-//   role="listbox"
-//   aria-activedescendant=":rk5:-option-4"
-//   id=":rk5:"
-//   tabindex="0"
-//   class="MuiSelect-listbox Joy-expanded MuiPopper-root cg-style-1872y3"
-//   style=""
-// >
-//   <li
-//     aria-selected="false"
-//     id=":rk5:-option-0"
-//     role="option"
-//     data-first-child=""
-//     class="MuiOption-root cg-style-1gtdedo"
-//   >
-//     5 minute
-//   </li>
-//   <li
-//     aria-selected="false"
-//     id=":rk5:-option-1"
-//     role="option"
-//     class="MuiOption-root cg-style-k8pch7"
-//   >
-//     15 minute
-//   </li>
-//   <li
-//     aria-selected="false"
-//     id=":rk5:-option-2"
-//     role="option"
-//     class="MuiOption-root cg-style-k8pch7"
-//   >
-//     30 minute
-//   </li>
-//   <li
-//     aria-selected="false"
-//     id=":rk5:-option-3"
-//     role="option"
-//     class="MuiOption-root cg-style-k8pch7"
-//   >
-//     1 hour
-//   </li>
-//   <li
-//     aria-selected="true"
-//     id=":rk5:-option-4"
-//     role="option"
-//     class="MuiOption-root MuiOption-highlighted Joy-selected cg-style-17a6iif"
-//   >
-//     4 hour
-//   </li>
-//   <li
-//     aria-selected="false"
-//     id=":rk5:-option-5"
-//     role="option"
-//     class="MuiOption-root cg-style-k8pch7"
-//   >
-//     12 hour
-//   </li>
-//   <li
-//     aria-selected="false"
-//     id=":rk5:-option-6"
-//     role="option"
-//     class="MuiOption-root cg-style-k8pch7"
-//   >
-//     24 hour
-//   </li>
-// </ul>; */}
