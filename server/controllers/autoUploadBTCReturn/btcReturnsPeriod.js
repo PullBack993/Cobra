@@ -79,9 +79,9 @@ function dailyPercentDifferencePeriod(data, period) {
 
   for (let i = period; i < data.length; i++) {
     const date = new Date(data[i].createTime);
-    const year = date.getFullYear(); //Mon Aug 16 2010 02:00:00 GMT+0200 (Central European Summer Time)
-    const month = date.getMonth() + 1; // 08
-    const day = date.getDate(); // 01
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1; 
+    const day = date.getDate(); 
 
     if (!dailyChanges[year]) {
       dailyChanges[year] = {};
@@ -108,7 +108,6 @@ function dailyPercentDifferencePeriod(data, period) {
 }
 
 function weeklyPercentDifferencePeriod(data, period) {
-  // 869 begin 2013 => 4521 1.1.2023
   const weeklyChanges = {};
   let weekCounter = 1;
 
