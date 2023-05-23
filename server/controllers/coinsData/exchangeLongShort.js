@@ -6,7 +6,10 @@ const fetchNewData = require("../autoUploadBTCReturn/btcReturns");
 const fetchNewDataPeriod = require("../autoUploadBTCReturn/btcReturnsPeriod");
 const CronJob = require("cron").CronJob;
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+const { AbortController } = require("abort-controller");
 puppeteer.use(StealthPlugin());
+const controller = new AbortController();
+const signal = controller.signal;
 // fetchNewData();
 // fetchNewDataPeriod();
 let isRequestDone = true;
@@ -23,19 +26,64 @@ const job = new CronJob(" 0 */2 * * * ", () => {
 
 job.start();
 
+router.post("/daily-return", async (req, res) => {
+  try {
+    const data = req.body;
+    const today = new Date();
+    const yearDiff = new Array(today.getFullYear() - 2012 + 1).fill(0);
+    let result = {};
+
+    if (data.type === "day") {
+      const month = data.month;
+      const searchParams = {};
+      yearDiff.forEach((_, index) => {
+        searchParams[`Timestamp.years.${2012 + index}.${month}`] = 1;
+      });
+      // fetchNewData();
+
+      result = await BtcChangeIndicator.find(
+        { [`Timestamp.years.2012.${month}`]: { $exists: true } },
+        searchParams
+      ).sort();
+    }
+    if (data.type === "week") {
+      result = await BtcChangeIndicator.find({ TimeFrameName: "Week" });
+    }
+    if (data.type === "month") {
+      result = await BtcChangeIndicator.find({ TimeFrameName: "Month" });
+    }
+    if (data.type === "quarter") {
+      result = await BtcChangeIndicator.find({ TimeFrameName: "Quarter" });
+    }
+    res.json(result);
+  } catch (err) {
+    res.json(err, 500);
+    console.log('daily return', err);
+  }
+});
+
+async function startBrowser() {
+  browser = await puppeteer.launch({ headless: true });
+  console.log("Launching browser...");
+
+  if (!page) {
+    page = await browser.newPage();
+    const navigationPromise = page.waitForNavigation({ signal });
+
+    console.log("Go to coinglass...");
+    await page.goto("https://www.coinglass.com/LongShortRatio", { signal });
+    await navigationPromise;
+  }
+}
+
+setTimeout(() => {
+  startBrowser();
+}, 1000);
 //TODO remove console logs after all tests
 router.post("/long-short", async (req, res) => {
   try {
     if (req.body.exit) {
-      if (browser) {
-        browser.close();
-        browser = null;
-      }
-
-      page = null;
-      searchedValueOld = "";
-      isRequestDone = true;
-      return;
+      controller.abort();
     }
 
     let { time, symbol } = req.body;
@@ -45,19 +93,8 @@ router.post("/long-short", async (req, res) => {
       console.log("Cancelling previous request...");
       return res.status(400).json({ message: "Previous request is not completed" });
     }
-    if (!browser) {
-      // { headless: false, defaultViewport: false } for Debugging
-      browser = await puppeteer.launch({ headless: true });
-
+    if (!browser || !isRequestDone) {
       isRequestDone = false;
-      console.log("Launching browser...");
-
-      page = await browser.newPage();
-      const navigationPromise = page.waitForNavigation();
-
-      console.log("Go to coinglass...");
-      await page.goto("https://www.coinglass.com/LongShortRatio");
-      await navigationPromise;
     }
 
     // Check if the current symbol is the same as the previous one
@@ -164,12 +201,12 @@ router.post("/long-short", async (req, res) => {
       }
     })();
   } catch (err) {
+    if (err.name === "AbortError") {
+      console.log("Operation aborted by user");
+    }
     isRequestDone = true;
     console.error("exchange long short main ==>", err);
-    if (browser) {
-      await browser.close();
-      browser = null;
-    }
+    return;
   }
 });
 
@@ -195,36 +232,5 @@ async function getNameWithLogo(page, symbol) {
   }, symbol);
   return nameWithLogo;
 }
-
-router.post("/daily-return", async (req, res) => {
-  const data = req.body;
-  const today = new Date();
-  const yearDiff = new Array(today.getFullYear() - 2012 + 1).fill(0);
-  let result = {};
-
-  if (data.type === "day") {
-    const month = data.month;
-    const searchParams = {};
-    yearDiff.forEach((_, index) => {
-      searchParams[`Timestamp.years.${2012 + index}.${month}`] = 1;
-    });
-    // fetchNewData();
-
-    result = await BtcChangeIndicator.find(
-      { [`Timestamp.years.2012.${month}`]: { $exists: true } },
-      searchParams
-    ).sort();
-  }
-  if (data.type === "week") {
-    result = await BtcChangeIndicator.find({ TimeFrameName: "Week" });
-  }
-  if (data.type === "month") {
-    result = await BtcChangeIndicator.find({ TimeFrameName: "Month" });
-  }
-  if (data.type === "quarter") {
-    result = await BtcChangeIndicator.find({ TimeFrameName: "Quarter" });
-  }
-  res.json(result);
-});
 
 module.exports = router;
