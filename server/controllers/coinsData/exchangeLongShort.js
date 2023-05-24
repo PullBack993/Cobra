@@ -68,7 +68,7 @@ async function startBrowser() {
 
   if (!page) {
     page = await browser.newPage();
-    const navigationPromise = page.waitForNavigation({ signal });
+    const navigationPromise = page?.waitForNavigation({ signal });
 
     console.log("Go to coinglass...");
     await page.goto("https://www.coinglass.com/LongShortRatio", { signal });
@@ -109,7 +109,7 @@ router.post("/long-short", async (req, res) => {
 
         if (shouldChangeSymbol) {
           previousSymbol = symbol;
-          await page.waitForSelector(inputSelector);
+          await page?.waitForSelector(inputSelector);
           const dropDownSymbol = await page.$$(inputSelector);
           await dropDownSymbol[1].evaluate((b) => b.click());
           await dropDownSymbol[1].type(`${symbol}`);
@@ -130,8 +130,8 @@ router.post("/long-short", async (req, res) => {
           if (matchingLiElement) {
             await matchingLiElement.evaluate((b) => b.click());
           } else {
-            const firstLiElement = await page.$("ul#\\:R1l9mdqlq6\\:-listbox li:first-child");
-            await firstLiElement.evaluate((b) => b.click());
+            const firstLiElement = await page?.$("ul#\\:R1l9mdqlq6\\:-listbox li:first-child");
+            await firstLiElement?.evaluate((b) => b?.click());
           }
         }
 
@@ -139,12 +139,12 @@ router.post("/long-short", async (req, res) => {
 
         if (shouldChangeTime) {
           previousTime = time;
-          await page.waitForSelector(timeSelector);
+          await page?.waitForSelector(timeSelector);
           const dropDownTime = await page.$$(timeSelector);
           if (dropDownTime.length >= 2) {
             await dropDownTime[2].evaluate((b) => b.click());
           }
-          await page.waitForSelector(".cg-style-1872y3 li");
+          await page?.waitForSelector(".cg-style-1872y3 li");
           const options = await page.$$(".cg-style-1872y3 li");
           for (let i = 0; i < options.length; i++) {
             const optionTitle = await options[i].evaluate((el) => el.textContent);
@@ -154,7 +154,7 @@ router.post("/long-short", async (req, res) => {
             }
           }
         } else {
-          await page.waitForSelector(timeSelector);
+          await page?.waitForSelector(timeSelector);
           const dropDownTime = await page.$$(timeSelector);
           if (dropDownTime.length >= 2) {
             await dropDownTime[2].evaluate((b) => b.click());

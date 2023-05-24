@@ -180,7 +180,7 @@ function removeLy() {
             v-for="(d, i) in time"
             :key="i"
           >
-            {{ year[1][`${currentMonth}`][d]?.difference.toFixed(2) }}
+            {{ year[1][`${currentMonth}`][d]?.difference?.toFixed(2) }}
           </td>
         </tr>
       </tbody>
