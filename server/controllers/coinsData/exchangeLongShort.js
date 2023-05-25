@@ -79,6 +79,7 @@ async function startBrowser() {
 setTimeout(() => {
   startBrowser();
 }, 1000);
+
 //TODO remove console logs after all tests
 router.post("/long-short", async (req, res) => {
   try {
@@ -110,7 +111,7 @@ router.post("/long-short", async (req, res) => {
         if (shouldChangeSymbol) {
           previousSymbol = symbol;
           await page?.waitForSelector(inputSelector);
-          const dropDownSymbol = await page.$$(inputSelector);
+          const dropDownSymbol = await page?.$$(inputSelector);
           await dropDownSymbol[1].evaluate((b) => b.click());
           await dropDownSymbol[1].type(`${symbol}`);
 
@@ -190,7 +191,7 @@ router.post("/long-short", async (req, res) => {
         );
 
         isRequestDone = true;
-        console.log("result =>>>", result);
+        // console.log("result =>>>", result);
         res.status(200).json(result);
         result = [];
       } catch (err) {
