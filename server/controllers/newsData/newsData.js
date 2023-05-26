@@ -1,6 +1,8 @@
 const puppeteer = require("puppeteer-extra");
+const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 const router = require("express").Router();
 const CronJob = require("cron").CronJob;
+puppeteer.use(StealthPlugin());
 
 fetchNews();
 
@@ -19,14 +21,23 @@ const job = new CronJob(" */3 * * * *", () => {
 job.start();
 
 async function fetchNews() {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
+  const navigationPromise = page?.waitForNavigation({});
   await page.goto("https://cryptopotato.com/crypto-news/");
+  await navigationPromise;
+
   const newsArray = [];
 
   const newsData = await page.evaluate(() => {
-    const newsItems = document.querySelectorAll(".rpwe-title > a").innerText;
-    newsArray.push({ newsItems });
-  });
-  console.log(newsArray);
+    const newsItems = document.querySelectorAll(".rpwe-title");
+    const newsArray = [];
+    newsItems.forEach((item) => {
+      newsArray.push(item.innerText);
+    });
+
+    return newsArray;
+  }, );
+  console.log(newsData[0]);
 }
+module.exports = router;
