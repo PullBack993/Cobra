@@ -27,9 +27,7 @@ async function fetchNews() {
   await page.goto("https://cryptopotato.com/crypto-news/");
   await navigationPromise;
 
-  const newsArray = [];
-
-  const newsData = await page.evaluate(() => {
+  const newsAllTitles = await page.evaluate(() => {
     const newsItems = document.querySelectorAll(".rpwe-title");
     const newsArray = [];
     newsItems.forEach((item) => {
@@ -38,6 +36,6 @@ async function fetchNews() {
 
     return newsArray;
   }, );
-  console.log(newsData[0]);
+  console.log(newsAllTitles[0]);
 }
 module.exports = router;
