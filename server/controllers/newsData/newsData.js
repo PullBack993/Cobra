@@ -44,15 +44,14 @@ async function fetchNews() {
     console.log("title", newsAllTitles[i].title);
     console.log("href", newsAllTitles[i].href);
     const title = newsAllTitles[i].title;
-    // const isInDatabase = await checkIfTitleExistsInDatabase(title) ; //Enable after some article
-    const isInDatabase = false;
+    const isInDatabase = await checkIfTitleExistsInDatabase(title); //Enable after some article
 
     if (!isInDatabase) {
       const articlePage = await browser.newPage();
       await articlePage.goto(`${newsAllTitles[i].href}`);
       const articleData = await extractArticleData(articlePage);
       if (articleData) {
-        // await saveArticleToDatabase(articleData); // Save to DB
+        await saveArticleToDatabase(articleData); // Save to DB
         await articlePage.close();
       }
     }
@@ -87,28 +86,59 @@ async function extractArticleData(page) {
 
   for (const section of sections) {
     const tagName = await section.evaluate((node) => node.tagName.toLowerCase());
-    console.log('tagName =>>', tagName)
+    console.log("tagName =>>", tagName);
 
     if (!lastSection) {
-      lastSection = { heading: "", text: "", image: "" };
+      lastSection = { heading: "", text: "", paragraph: "", image: [], listItems: [] };
     }
 
     if (tagName === "h2") {
-      if (lastSection.heading !== "" || lastSection.text !== "" || lastSection.image !== "") {
+      if (
+        lastSection.heading !== "" ||
+        lastSection.text !== "" ||
+        lastSection.image.length >= 0 ||
+        lastSection.paragraph !== ""
+      ) {
         articleData.sections.push(lastSection);
       }
-      const heading = await section.evaluate((node) => node.textContent.trim());
-      lastSection = { heading, text: "", image: "" };
+      let heading = await section.evaluate((node) => node.textContent.trim());
+      heading = heading.replace(/cryptopotato/gi, "ZTH");
+      lastSection = { heading, text: "", paragraph: "", image: [], listItems: [] };
+    } else if (tagName === "h3") {
+      let paragraph = await section.evaluate((node) => node.textContent.trim());
+      if (!paragraph) {
+        const image = await section.$eval("img", (element) => element.src);
+        if (lastSection && image) {
+          lastSection.image.push(image);
+        }
+      } else if (lastSection.image.length >= 0 || lastSection.paragraph !== "") {
+        articleData.sections.push(lastSection);
+        lastSection = { heading: "", text: "", paragraph: "", image: [], listItems: [] };
+      } else if (paragraph) {
+        paragraph = paragraph.replace(/cryptopotato/gi, "ZTH");
+        lastSection = { heading: "", text: "", paragraph, image: [], listItems: [] };
+      }
     } else if (tagName === "p" || tagName === "blockquote") {
       let text = await section.evaluate((node) => node.textContent.trim());
       text = text.replace(/cryptopotato/gi, "ZTH");
-      if (lastSection) {
+      text = text.replace(/By\sEdris|By\sShayan/gi, "");
+      if (lastSection && text) {
         lastSection.text += text + " ";
+      } else {
+        try {
+          const image = await section.$eval("img", (element) => element.src);
+          if (lastSection && image) {
+            lastSection.image.push(image);
+          }
+        } catch (error) {
+          console.error(error);
+          continue;
+        }
       }
     } else if (tagName === "figure") {
       const image = await section.$eval("img", (element) => element.src);
-      if (lastSection) {
-        lastSection.image = image;
+      if (lastSection && image) {
+        lastSection.image.push(image);
       }
     } else if (tagName === "ul") {
       currentList = [];
@@ -117,84 +147,43 @@ async function extractArticleData(page) {
         let listItem = await listItemElement.evaluate((node) => node.textContent.trim());
         listItem = listItem.replace(/cryptopotato/gi, "ZTH");
         currentList.push(listItem);
-      }
-      if (lastSection && currentList.length > 0) {
-        lastSection.text += "\n"; // Add a new line before the list
-        lastSection.text += currentList.join("\n"); // Append the list items to the text
+
+        const nextSibling = await section.evaluateHandle((node) => node.nextElementSibling);
+        const nextSiblingTagName = nextSibling
+          ? await nextSibling.evaluate((node) => node.tagName.toLowerCase())
+          : null;
+        console.log("next siblings ===>>", nextSiblingTagName);
+
+        if (
+          nextSiblingTagName === "blockquote" ||
+          nextSiblingTagName === "p" ||
+          nextSiblingTagName === "figure" ||
+          nextSiblingTagName === "h2"
+        ) {
+          lastSection.text += "\n"; // Add a new line before the list
+          lastSection.text += currentList.join("\n");
+        } else if (lastSection && currentList.length > 0) {
+          lastSection.listItems = currentList;
+        }
+        // lastSection.text += "\n"; // Add a new line before the list
+        // lastSection.text += listItem + '\n' // Append the list items to the text
       }
     }
   }
 
-  if (currentList && lastSection) {
-    lastSection.text += "\n"; // Add a new line before the list
-    lastSection.text += currentList.join("\n"); // Append the list items to the text
-  }
+  // if (currentList && lastSection) {
+  //   lastSection.text += "\n"; // Add a new line before the list
+  //   lastSection.text += currentList.join("\n"); // Append the list items to the text
+  // }
 
   if (lastSection) {
     articleData.sections.push(lastSection);
   }
 
-
   // Push the last section into articleData.sections if it exists
-
   console.log(articleData);
   return articleData;
 }
-
-// async function extractArticleData(page) { //old
-//   const articleData = {
-//     title: "",
-//     sections: [{ heading: "", text: "", image: "" }],
-//     createTime: new Date().toISOString(),
-//   };
-
-//   let title = await page.$eval(".page-title", (element) => element.innerText);
-//   const existingArticle = await Article.findOne({ title });
-//   if (existingArticle) {
-//     console.log("return");
-//     return;
-//   }
-//   title = title.replace(/cryptopotato/gi, "ZTH");
-//   articleData.title = title;
-
-//   const sections = await page.$$("div.coincodex-content > *");
-
-//   let lastSection = '';
-//   let currentList = [];
-
-//   for (const section of sections) {
-//     const tagName = await section.evaluate((node) => node.tagName.toLowerCase());
-//     console.log(tagName)
-//     if (tagName === "h2") {
-//       const heading = await section.evaluate((node) => node.textContent.trim());
-//       articleData.sections.heading = heading;
-//     } else if (tagName === "p" || tagName === "blockquote") {
-//       let text = await section.evaluate((node) => node.textContent.trim());
-//       text = text.replace(/cryptopotato/gi, "ZTH");
-//       if (lastSection) {
-//         articleData.sections.text += text + " ";
-//       }
-//     } else if (tagName === "figure") {
-//       const image = await section.$eval("img", (element) => element.src);
-//       if (lastSection) {
-//         lastSection.image = image;
-//       }
-//     } else if (tagName === "ul") {
-//       if (lastSection) {
-//         articleData.sections.text += "\n"; // Add a new line before the list
-//         // articleData.sections.text += currentList.join("\n"); // Append the list items to the text
-//       }
-//     } else if (tagName === "li") {
-//       let listItem = await section.evaluate((node) => node.textContent.trim());
-//       listItem = listItem.replace(/cryptopotato/gi, "ZTH");
-//       if (currentList) {
-//         currentList.push(listItem);
-//       }
-//     }
-//   }
-//   console.log(articleData)
-//   return articleData;
-// }
 
 async function saveArticleToDatabase(data) {
   console.log(data);

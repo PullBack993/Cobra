@@ -13,15 +13,24 @@ const articleSchema = new Schema({
       },
       text: {
         type: String,
-        required: true,
       },
-      image: {
+      paragraph: {
         type: String,
-        default: "",
       },
+
+      image: [
+        {
+          type: String,
+        },
+      ],
+      listItems: [
+        {
+          type: String,
+        },
+      ],
     },
   ],
-  createTime: {type: String, required: true },
+  createTime: { type: String, required: true },
 });
 
 const Article = model("Article", articleSchema);
