@@ -5,6 +5,7 @@ const articleSchema = new Schema({
     type: String,
     required: true,
   },
+  titleImage: { type: String, required: true },
   sections: [
     {
       heading: {

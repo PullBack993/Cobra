@@ -10,11 +10,12 @@ const mainUrl = "https://cryptopotato.com/crypto-news/";
 fetchNews();
 
 router.get("/news", async (req, res) => {
-  // 2. Then that
-  //  1.2. TODO fetch data from db and return.
-  // 1. First implement this.
-  //   2.1. TODO Every 3-5min. go to website fetch the news and check the title.
-  //   3.1. TODO if title not exist,then go to news,fetch data,add to db.
+  try {
+    const articles = await Article.find().limit(40);
+    res.json(articles);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
 const job = new CronJob(" */3 * * * *", () => {
@@ -30,11 +31,13 @@ async function fetchNews() {
 
   const newsAllTitles = await page.evaluate(() => {
     const newsItems = document.querySelectorAll(".rpwe-title a");
+    const newsItemsImg = document.querySelectorAll('li.rpwe-li a img');
     const newsArray = [];
-    newsItems.forEach((item) => {
+    newsItems.forEach((item, i) => {
       const title = item.innerText;
-      const href = item.getAttribute("href");
-      newsArray.push({ title, href });
+      const href = item.href;
+      const src = newsItemsImg[i].src
+      newsArray.push({ title, href, src });
     });
 
     return newsArray;
@@ -42,14 +45,15 @@ async function fetchNews() {
 
   for (let i = 0; i < newsAllTitles.length; i++) {
     console.log("title", newsAllTitles[i].title);
-    console.log("href", newsAllTitles[i].href);
+    console.log("href", newsAllTitles[i]);
     const title = newsAllTitles[i].title;
+    const src = newsAllTitles[i].src;
     const isInDatabase = await checkIfTitleExistsInDatabase(title); //Enable after some article
 
     if (!isInDatabase) {
       const articlePage = await browser.newPage();
       await articlePage.goto(`${newsAllTitles[i].href}`);
-      const articleData = await extractArticleData(articlePage);
+      const articleData = await extractArticleData(articlePage, src);
       if (articleData) {
         await saveArticleToDatabase(articleData); // Save to DB
         await articlePage.close();
@@ -63,9 +67,10 @@ async function checkIfTitleExistsInDatabase(title) {
   return article !== null;
 }
 
-async function extractArticleData(page) {
+async function extractArticleData(page, imageUrl) {
   const articleData = {
     title: "",
+    titleImage: "",
     sections: [],
     createTime: new Date().toISOString(),
   };
@@ -78,6 +83,7 @@ async function extractArticleData(page) {
   }
   title = title.replace(/cryptopotato/gi, "ZTH");
   articleData.title = title;
+  articleData.titleImage = imageUrl;
 
   const sections = await page.$$("div.coincodex-content > *");
 
@@ -165,23 +171,13 @@ async function extractArticleData(page) {
         } else if (lastSection && currentList.length > 0) {
           lastSection.listItems = currentList;
         }
-        // lastSection.text += "\n"; // Add a new line before the list
-        // lastSection.text += listItem + '\n' // Append the list items to the text
       }
     }
   }
-
-  // if (currentList && lastSection) {
-  //   lastSection.text += "\n"; // Add a new line before the list
-  //   lastSection.text += currentList.join("\n"); // Append the list items to the text
-  // }
-
   if (lastSection) {
     articleData.sections.push(lastSection);
   }
 
-  // Push the last section into articleData.sections if it exists
-  console.log(articleData);
   return articleData;
 }
 
@@ -189,6 +185,7 @@ async function saveArticleToDatabase(data) {
   console.log(data);
   const article = new Article({
     title: data.title,
+    titleImage: data.titleImage,
     sections: data.sections,
     createTime: new Date().toISOString(),
   });
