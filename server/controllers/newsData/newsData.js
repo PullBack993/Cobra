@@ -7,11 +7,13 @@ const Article = require("../../models/NewsCoins");
 puppeteer.use(StealthPlugin());
 const mainUrl = "https://cryptopotato.com/crypto-news/";
 
-fetchNews();
+// fetchNews();
 
-router.get("/news", async (req, res) => {
+router.get("/newsList", async (req, res) => {
+  console.log("test");
   try {
-    const articles = await Article.find().limit(40);
+    const articles = await Article.find().limit(20);
+    console.log(articles);
     res.json(articles);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -31,12 +33,12 @@ async function fetchNews() {
 
   const newsAllTitles = await page.evaluate(() => {
     const newsItems = document.querySelectorAll(".rpwe-title a");
-    const newsItemsImg = document.querySelectorAll('li.rpwe-li a img');
+    const newsItemsImg = document.querySelectorAll("li.rpwe-li a img");
     const newsArray = [];
     newsItems.forEach((item, i) => {
       const title = item.innerText;
       const href = item.href;
-      const src = newsItemsImg[i].src
+      const src = newsItemsImg[i].src;
       newsArray.push({ title, href, src });
     });
 
