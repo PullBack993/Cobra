@@ -34,7 +34,6 @@ watch(
   () => props.coins,
   (value) => {
     coinsData.value = value;
-    console.log(coinsData.value);
   }
 );
 </script>

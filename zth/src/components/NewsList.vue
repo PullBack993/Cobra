@@ -3,6 +3,7 @@ import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import { useGlobalStore } from '../store/global';
 
+const store = useGlobalStore();
 const newsList = ref();
 
 onMounted(async () => {
@@ -51,6 +52,7 @@ onMounted(async () => {
 .news {
   max-width: 100%;
   margin: auto;
+  cursor: pointer;
 
   &__list-items {
     display: flex;
