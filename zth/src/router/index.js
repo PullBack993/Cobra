@@ -16,7 +16,7 @@ const router = createRouter({
       name: 'news',
       component: NewsList,
     },
-    { path: '/article/:id', component: ArticleDetails, name: 'ArticleDetails' },
+    { path: '/news/:id', component: ArticleDetails, name: 'ArticleDetails' },
     {
       path: '/long-short',
       name: 'long-short',

@@ -248,7 +248,7 @@ function calculateQuarterly(data, dataLength) {
 }
 
 function calculateCountOfWeeks(data) {
-  const inputDate = new Date(data[data.length - 1].createTime);
+  const inputDate = new Date(data[data.length - 1]?.createTime);
   const yearStart = new Date(inputDate.getFullYear(), 0, 1);
   const timeDiff = inputDate.getTime() - yearStart.getTime();
   return Math.ceil(timeDiff / (1000 * 60 * 60 * 24 * 7));
