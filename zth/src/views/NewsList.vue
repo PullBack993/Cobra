@@ -5,7 +5,7 @@ import { useRoute } from 'vue-router';
 import { useGlobalStore } from '../store/global';
 
 const route = useRoute();
-const { article } = route.params;
+
 const store = useGlobalStore();
 const newsList = ref();
 
@@ -40,7 +40,7 @@ onMounted(async () => {
         </div>
         <div>
           <router-link
-          :to="{ name: 'ArticleDetails', params: { id: section._id }, state: { article: section} }"
+          :to="{ name: 'ArticleDetails', params: { id: section._id } }"
           >
             {{ section.title }}
           </router-link>

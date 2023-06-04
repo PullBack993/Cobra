@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
-import NewsList from '../components/NewsList.vue';
-import ArticleDetails from '../components/ArticleDetails.vue';
+import NewsList from '../views/NewsList.vue';
+import ArticleDetails from '../views/ArticleDetails.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,9 +20,6 @@ const router = createRouter({
     {
       path: '/long-short',
       name: 'long-short',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: () => import('../views/LongShortView.vue'),
     },
   ],
