@@ -3,6 +3,7 @@ const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 const router = require("express").Router();
 const CronJob = require("cron").CronJob;
 const Article = require("../../models/NewsCoins");
+const https = require("https");
 
 puppeteer.use(StealthPlugin());
 const mainUrl = "https://cryptopotato.com/crypto-news/";
@@ -19,6 +20,61 @@ router.get("/newsList", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+const imageCache = new Map();
+
+router.get('/article/:id', async (req, res) => {
+  try {
+    console.log(req.params.id)
+    const articleId = req.params.id;
+    const article = await Article.findById(articleId);
+
+    if (!article) {
+      return res.status(404).json({ message: 'Article not found' });
+    }
+
+    const updatedArticle = JSON.parse(JSON.stringify(article));
+    updatedArticle.titleImage = await getImageProxyUrl(article.titleImage);
+
+    updatedArticle.sections.forEach(async (section) => {
+      for (let i = 0; i < section.image.length; i++) {
+        section.image[i] = await getImageProxyUrl(section.image[i]);
+      }
+    });
+
+    res.json(updatedArticle);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+async function getImageProxyUrl(imageUrl) {
+  if (imageCache.has(imageUrl)) {
+    return imageCache.get(imageUrl);
+  }
+
+  return new Promise((resolve, reject) => {
+    https.get(imageUrl, (response) => {
+      const chunks = [];
+
+      response.on('data', (chunk) => {
+        chunks.push(chunk);
+      });
+
+      response.on('end', () => {
+        const imageContent = Buffer.concat(chunks);
+        const base64Image = imageContent.toString('base64');
+        const dataUri = `data:${response.headers['content-type']};base64,${base64Image}`;
+        imageCache.set(imageUrl, dataUri);
+        resolve(dataUri);
+      });
+    }).on('error', (error) => {
+      console.error(error);
+      reject(error);
+    });
+  });
+}
 
 const job = new CronJob(" */3 * * * *", () => {
   // fetchNews();

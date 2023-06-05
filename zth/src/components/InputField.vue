@@ -131,7 +131,7 @@ function documentKey(event: KeyboardEvent) {
     dropDownOpen.value === false &&
     !props.prevent
   ) {
-    console.log('fffff')
+    console.log('fffff');
     emit('open', true);
     event.preventDefault();
     input?.value?.focus();

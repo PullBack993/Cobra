@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
-import NewsList from '../views/NewsList.vue';
 import ArticleDetails from '../views/ArticleDetails.vue';
 
 const router = createRouter({
@@ -14,9 +13,14 @@ const router = createRouter({
     {
       path: '/news',
       name: 'news',
-      component: NewsList,
+      component: () => import('@/views/NewsList.vue'),
     },
-    { path: '/news/:id', component: ArticleDetails, name: 'ArticleDetails' },
+    {
+      path: '/news/:id',
+      component: ArticleDetails,
+      name: 'ArticleDetails',
+      props: (route) => ({ id: route.params.id }),
+    },
     {
       path: '/long-short',
       name: 'long-short',

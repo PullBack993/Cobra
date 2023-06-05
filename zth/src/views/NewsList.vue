@@ -29,29 +29,30 @@ onMounted(async () => {
       :key="index"
       class="news__list-items"
     >
-      <li class="news__list-content">
-        <div>
-          <img
-            :src="section.titleImage"
-            :alt="section.title"
-            class="news__image"
-            loading="lazy"
-          />
-        </div>
-        <div>
-          <router-link
-          :to="{ name: 'ArticleDetails', params: { id: section._id } }"
-          >
-            {{ section.title }}
-          </router-link>
-          <h3 class="news__title">
-            {{ section.title }}
-          </h3>
-          <p class="news__list-text">
-            {{ section.sections[0]?.text }}
-          </p>
-        </div>
-      </li>
+      <router-link class="news__list-link"
+        :to="{
+          name: 'ArticleDetails', params:{id: section._id}
+        }"
+      >
+        <li class="news__list-content">
+          <div>
+            <img
+              :src="section.titleImage"
+              :alt="section.title"
+              class="news__image"
+              loading="lazy"
+            />
+          </div>
+          <div>
+            <h3 class="news__title">
+              {{ section.title }}
+            </h3>
+            <p class="news__list-text">
+              {{ section.sections[0]?.text }}
+            </p>
+          </div>
+        </li>
+      </router-link>
     </ul>
   </div>
 </template>
@@ -67,6 +68,9 @@ onMounted(async () => {
     flex-direction: colum;
     margin: 6rem auto;
     width: 90%;
+  }
+  &__list-link{
+    text-decoration: none;
   }
   &__image {
     margin-right: 1rem;

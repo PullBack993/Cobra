@@ -162,7 +162,7 @@ onMounted(() => {
         <p :class="`${isToggle ? 'visible' : 'notVisible'}`">Global Metrics</p>
       </RouterLink>
 
-      <RouterLink to="/pass" class="sidebar-home">
+      <RouterLink to="news" class="sidebar-home">
         <span class="material-symbols-outlined sidebar-home-icon">
           monitoring
         </span>
