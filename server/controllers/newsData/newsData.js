@@ -13,7 +13,7 @@ const mainUrl = "https://cryptopotato.com/crypto-news/";
 router.get("/newsList", async (req, res) => {
   console.log("test");
   try {
-    const articles = await Article.find().limit(20);
+    const articles = await Article.find().sort({createTime:-1}).limit(20);
     console.log(articles);
     res.json(articles);
   } catch (error) {

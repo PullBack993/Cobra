@@ -68,8 +68,8 @@ onMounted(async () => {
           </ul>
           <div v-if="section.image" class="article-image">
             <img
-              v-for="(image, index) in section.image"
-              :key="index"
+              v-for="(image, i) in section.image"
+              :key="i"
               :src="image"
               alt="Section Image"
             />
@@ -145,28 +145,27 @@ onMounted(async () => {
   &-list-container {
     margin-bottom: 1rem;
     padding-left: 2.5rem;
-    color: white;
+    color: $white;
   }
 
   &-list-item {
     margin-bottom: 0.5rem;
     line-height: 1.5;
-    // list-style: circle;
     word-wrap: break-word;
     &::before {
       content: '';
       display: inline-block;
-      width: 10px;
-      height: 10px;
+      width: 1rem;
+      height: 1rem;
       border-radius: 50%;
-      background-color: red; /* Set your desired color */
-      margin-right: 0.5em;
+      background-color: red; 
+      margin-right: 0.5rem;
     }
     &::before {
-      border: 2px solid $main-purple;
+      border: 0.2rem solid $main-purple;
       border-radius: 50%;
       background: rgba(0, 0, 0, 0);
-      color: white;
+      color: $white
       width: 1rem;
       height: 1rem;
       text-align: center;
