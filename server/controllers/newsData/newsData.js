@@ -185,7 +185,7 @@ async function extractArticleData(page, imageUrl) {
     } else if (tagName === "p" || tagName === "blockquote") {
       let text = await section.evaluate((node) => node.textContent.trim());
       text = text.replace(/cryptopotato/gi, "ZTH");
-      text = text.replace(/By\sEdris|By\sShayan/gi, "");
+      text = text.replace(/By:\sEdris|By:\sShayan/gi, "");
       if (lastSection && text) {
         lastSection.text += text + " ";
       } else {

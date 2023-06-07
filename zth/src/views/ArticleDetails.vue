@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 
 interface ArticleDetails {
@@ -23,6 +23,18 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {});
 
 const article = ref<ArticleDetails>();
+const a  = ref()
+
+const formattedText = () => {
+  if (article.value) {
+    article.value.sections.forEach((section, index) => {
+      if (section.text) {
+        a.value += section.text.replace(/\./g, '.</br>');
+        console.log('yes')
+      }
+    });
+  }
+};
 
 onMounted(async () => {
   try {
@@ -31,6 +43,7 @@ onMounted(async () => {
       `http://localhost:3000/news/article/${props.id}`
     );
     article.value = response.data;
+    formattedText();
   } catch (err: any) {
     console.error(err);
   }
@@ -55,8 +68,10 @@ onMounted(async () => {
       >
         <h2 class="article-title">{{ section.heading }}</h2>
         <div class="article-content">
-          <p class="article-text">{{ section?.text }}</p>
-          <p class="article-paragraph">{{ section?.paragraph }}</p>
+          <p v-show="section.text" ref="text" class="article-text">
+            {{ section?.text }}
+          </p>
+          <p class="article-paragraph">{{ a }}</p>
           <ul v-if="section.listItems" class="article-list-container">
             <li
               v-for="(item, index) in section.listItems"
@@ -140,6 +155,18 @@ onMounted(async () => {
     margin-bottom: 1rem;
     color: white;
     word-wrap: break-word;
+    &::after {
+      content: '\a';
+      white-space: pre;
+      color: white;
+    }
+  }
+
+  &-paragraph {
+    &::after {
+      content: '\a';
+      white-space: pre;
+    }
   }
 
   &-list-container {
@@ -158,14 +185,14 @@ onMounted(async () => {
       width: 1rem;
       height: 1rem;
       border-radius: 50%;
-      background-color: red; 
+      background-color: red;
       margin-right: 0.5rem;
     }
     &::before {
       border: 0.2rem solid $main-purple;
       border-radius: 50%;
       background: rgba(0, 0, 0, 0);
-      color: $white
+      color: $white;
       width: 1rem;
       height: 1rem;
       text-align: center;

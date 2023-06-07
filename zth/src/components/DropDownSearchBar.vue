@@ -37,12 +37,12 @@ function scrollPosition(direction) {
       Math.max(0, activeScrollItem + direction),
       items.length - 1
     );
-    let top = items[activeScrollItem].offsetTop;
+    let top = items[activeScrollItem]?.offsetTop;
     console.log('top dropdown', top);
     if (top === 71) {
       top = 1;
     }
-    list.value.scrollTo({ top, behavior: 'smooth' });
+    list.value?.scrollTo({ top, behavior: 'smooth' });
   });
 }
 

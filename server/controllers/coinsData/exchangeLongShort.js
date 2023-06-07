@@ -63,16 +63,27 @@ router.post("/daily-return", async (req, res) => {
 });
 
 async function startBrowser() {
-  browser = await puppeteer.launch({ headless: true });
-  console.log("Launching browser...");
-
-  if (!page) {
-    page = await browser.newPage();
-    const navigationPromise = page?.waitForNavigation({ signal });
-
-    console.log("Go to coinglass...");
-    await page.goto("https://www.coinglass.com/LongShortRatio", { signal });
-    await navigationPromise;
+  counter = 0
+  try{
+    browser = await puppeteer.launch({ headless: true });
+    console.log("Launching browser...");
+  
+    if (!page) {
+      page = await browser.newPage();
+      const navigationPromise = page?.waitForNavigation({ signal });
+  
+      console.log("Go to coinglass...");
+      await page.goto("https://www.coinglass.com/LongShortRatio", { signal });
+      await navigationPromise;
+    }
+  }
+  catch(error){
+    console.error(error);
+    if(counter >= 7){
+      throw new Error
+    }
+    startBrowser()
+    counter++
   }
 }
 
