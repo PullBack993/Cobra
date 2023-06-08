@@ -8,7 +8,7 @@ interface ArticleDetails {
   sections: [
     {
       heading: string;
-      text: string;
+      text: [string];
       paragraph: string;
       image: [string];
       listItems: [string];
@@ -23,18 +23,6 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {});
 
 const article = ref<ArticleDetails>();
-const a  = ref()
-
-const formattedText = () => {
-  if (article.value) {
-    article.value.sections.forEach((section, index) => {
-      if (section.text) {
-        a.value += section.text.replace(/\./g, '.</br>');
-        console.log('yes')
-      }
-    });
-  }
-};
 
 onMounted(async () => {
   try {
@@ -43,7 +31,6 @@ onMounted(async () => {
       `http://localhost:3000/news/article/${props.id}`
     );
     article.value = response.data;
-    formattedText();
   } catch (err: any) {
     console.error(err);
   }
@@ -66,12 +53,21 @@ onMounted(async () => {
         :key="index"
         class="article-section"
       >
-        <h2 class="article-title">{{ section.heading }}</h2>
+        <h2 class="article-title">{{ section?.heading }}</h2>
         <div class="article-content">
-          <p v-show="section.text" ref="text" class="article-text">
-            {{ section?.text }}
+          <p
+            v-for="(text, index) in section.text" :key="index"
+            ref="text"
+            class="article-text"
+          >
+            {{ text }}
           </p>
-          <p class="article-paragraph">{{ a }}</p>
+          <br />
+          <blockquote>
+            <em>
+              <p class="article-paragraph">{{ section?.paragraph }}</p>
+            </em>
+          </blockquote>
           <ul v-if="section.listItems" class="article-list-container">
             <li
               v-for="(item, index) in section.listItems"
@@ -146,7 +142,7 @@ onMounted(async () => {
     font-weight: bold;
     margin-bottom: 1rem;
     word-wrap: break-word;
-    line-height: 3rem;
+    line-height: 4rem;
   }
 
   &-text {
@@ -163,10 +159,9 @@ onMounted(async () => {
   }
 
   &-paragraph {
-    &::after {
-      content: '\a';
-      white-space: pre;
-    }
+    font-size: 2rem;
+    line-height: 1.3;
+    color: white;
   }
 
   &-list-container {

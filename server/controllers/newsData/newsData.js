@@ -8,13 +8,11 @@ const https = require("https");
 puppeteer.use(StealthPlugin());
 const mainUrl = "https://cryptopotato.com/crypto-news/";
 
-// fetchNews();
+fetchNews();
 
 router.get("/newsList", async (req, res) => {
-  console.log("test");
   try {
-    const articles = await Article.find().sort({createTime:-1}).limit(20);
-    console.log(articles);
+    const articles = await Article.find().sort({ createTime: -1 }).limit(20);
     res.json(articles);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -23,14 +21,13 @@ router.get("/newsList", async (req, res) => {
 
 const imageCache = new Map();
 
-router.get('/article/:id', async (req, res) => {
+router.get("/article/:id", async (req, res) => {
   try {
-    console.log(req.params.id)
     const articleId = req.params.id;
     const article = await Article.findById(articleId);
 
     if (!article) {
-      return res.status(404).json({ message: 'Article not found' });
+      return res.status(404).json({ message: "Article not found" });
     }
 
     const updatedArticle = JSON.parse(JSON.stringify(article));
@@ -45,7 +42,7 @@ router.get('/article/:id', async (req, res) => {
     res.json(updatedArticle);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -55,24 +52,26 @@ async function getImageProxyUrl(imageUrl) {
   }
 
   return new Promise((resolve, reject) => {
-    https.get(imageUrl, (response) => {
-      const chunks = [];
+    https
+      .get(imageUrl, (response) => {
+        const chunks = [];
 
-      response.on('data', (chunk) => {
-        chunks.push(chunk);
-      });
+        response.on("data", (chunk) => {
+          chunks.push(chunk);
+        });
 
-      response.on('end', () => {
-        const imageContent = Buffer.concat(chunks);
-        const base64Image = imageContent.toString('base64');
-        const dataUri = `data:${response.headers['content-type']};base64,${base64Image}`;
-        imageCache.set(imageUrl, dataUri);
-        resolve(dataUri);
+        response.on("end", () => {
+          const imageContent = Buffer.concat(chunks);
+          const base64Image = imageContent.toString("base64");
+          const dataUri = `data:${response.headers["content-type"]};base64,${base64Image}`;
+          imageCache.set(imageUrl, dataUri);
+          resolve(dataUri);
+        });
+      })
+      .on("error", (error) => {
+        console.error(error);
+        reject(error);
       });
-    }).on('error', (error) => {
-      console.error(error);
-      reject(error);
-    });
   });
 }
 
@@ -83,7 +82,14 @@ const job = new CronJob(" */3 * * * *", () => {
 job.start();
 
 async function fetchNews() {
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch({ headless: true,
+    args: [
+      "--disable-setuid-sandbox",
+      "--no-sandbox",
+      "--single-process",
+      "--no-zygote",
+    ],
+    protocolTimeout: 240000 });
   const page = await browser.newPage();
   await page.goto(`${mainUrl}`);
 
@@ -103,7 +109,6 @@ async function fetchNews() {
 
   for (let i = 0; i < newsAllTitles.length; i++) {
     console.log("title", newsAllTitles[i].title);
-    console.log("href", newsAllTitles[i]);
     const title = newsAllTitles[i].title;
     const src = newsAllTitles[i].src;
     const isInDatabase = await checkIfTitleExistsInDatabase(title); //Enable after some article
@@ -114,10 +119,11 @@ async function fetchNews() {
       const articleData = await extractArticleData(articlePage, src);
       if (articleData) {
         await saveArticleToDatabase(articleData); // Save to DB
-        await articlePage.close();
       }
     }
   }
+  browser.close()
+  console.log('Browser CLOSE =>>> X')
 }
 
 async function checkIfTitleExistsInDatabase(title) {
@@ -153,13 +159,13 @@ async function extractArticleData(page, imageUrl) {
     console.log("tagName =>>", tagName);
 
     if (!lastSection) {
-      lastSection = { heading: "", text: "", paragraph: "", image: [], listItems: [] };
+      lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };
     }
-
+    //Title
     if (tagName === "h2") {
       if (
         lastSection.heading !== "" ||
-        lastSection.text !== "" ||
+        lastSection.text.length >= 0 ||
         lastSection.image.length >= 0 ||
         lastSection.paragraph !== ""
       ) {
@@ -167,27 +173,58 @@ async function extractArticleData(page, imageUrl) {
       }
       let heading = await section.evaluate((node) => node.textContent.trim());
       heading = heading.replace(/cryptopotato/gi, "ZTH");
-      lastSection = { heading, text: "", paragraph: "", image: [], listItems: [] };
+      lastSection = { heading, text: [], paragraph: "", image: [], listItems: [] };
+      //Under title
     } else if (tagName === "h3") {
+      console.log('h3')
       let paragraph = await section.evaluate((node) => node.textContent.trim());
       if (!paragraph) {
         const image = await section.$eval("img", (element) => element.src);
         if (lastSection && image) {
           lastSection.image.push(image);
         }
+        // image
       } else if (lastSection.image.length >= 0 || lastSection.paragraph !== "") {
+        console.log('img check')
+
         articleData.sections.push(lastSection);
-        lastSection = { heading: "", text: "", paragraph: "", image: [], listItems: [] };
+        lastSection = { heading: "", text: [] ,paragraph: "", image: [], listItems: [] };
+
       } else if (paragraph) {
+        console.log('parapgraph')
         paragraph = paragraph.replace(/cryptopotato/gi, "ZTH");
-        lastSection = { heading: "", text: "", paragraph, image: [], listItems: [] };
+        lastSection = { heading: "", text: [], paragraph, image: [], listItems: [] };
       }
-    } else if (tagName === "p" || tagName === "blockquote") {
+
+    } else if (tagName === "blockquote") {
+      console.log("=>>>> Blockquate");
+      let paragraphText;
+      const paragraphElement = await section.$("p");
+      if (paragraphElement) {
+        paragraphText = await paragraphElement.evaluate((node) => node.textContent.trim());
+        paragraphText = paragraphText.replace(/cryptopotato/gi, "ZTH");
+        paragraphText = paragraphText.replace(/By:\sEdris|By:\sShayan/gi, "");
+      }
+      if (lastSection && paragraphText) {
+        lastSection.paragraph += paragraphText + "\n";
+      } else {
+        try {
+          const image = await section.$eval("img", (element) => element.src);
+          if (lastSection && image) {
+            lastSection.image.push(image);
+          }
+        } catch (error) {
+          console.error(error);
+          continue;
+        }
+      }
+    } else if (tagName === "p") {
+      console.log('p tag')
       let text = await section.evaluate((node) => node.textContent.trim());
       text = text.replace(/cryptopotato/gi, "ZTH");
       text = text.replace(/By:\sEdris|By:\sShayan/gi, "");
       if (lastSection && text) {
-        lastSection.text += text + " ";
+        lastSection.text.push(text);
       } else {
         try {
           const image = await section.$eval("img", (element) => element.src);
@@ -224,8 +261,7 @@ async function extractArticleData(page, imageUrl) {
           nextSiblingTagName === "figure" ||
           nextSiblingTagName === "h2"
         ) {
-          lastSection.text += "\n"; // Add a new line before the list
-          lastSection.text += currentList.join("\n");
+          lastSection.text.push(currentList.join("\n"));
         } else if (lastSection && currentList.length > 0) {
           lastSection.listItems = currentList;
         }
@@ -240,7 +276,6 @@ async function extractArticleData(page, imageUrl) {
 }
 
 async function saveArticleToDatabase(data) {
-  console.log(data);
   const article = new Article({
     title: data.title,
     titleImage: data.titleImage,
@@ -249,7 +284,5 @@ async function saveArticleToDatabase(data) {
   });
 
   await article.save();
-
-  console.log("Article saved:", article);
 }
 module.exports = router;

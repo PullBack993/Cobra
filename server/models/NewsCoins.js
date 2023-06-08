@@ -12,9 +12,9 @@ const articleSchema = new Schema({
         type: String,
         default: "",
       },
-      text: {
+      text: [{
         type: String,
-      },
+      }],
       paragraph: {
         type: String,
       },
