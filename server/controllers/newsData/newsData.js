@@ -12,7 +12,7 @@ fetchNews();
 
 router.get("/newsList", async (req, res) => {
   try {
-    const articles = await Article.find().sort({ createTime: -1 }).limit(20);
+    const articles = await Article.find().sort({ createTime: -1 })
     res.json(articles);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -82,14 +82,11 @@ const job = new CronJob(" */3 * * * *", () => {
 job.start();
 
 async function fetchNews() {
-  const browser = await puppeteer.launch({ headless: true,
-    args: [
-      "--disable-setuid-sandbox",
-      "--no-sandbox",
-      "--single-process",
-      "--no-zygote",
-    ],
-    protocolTimeout: 240000 });
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ["--disable-setuid-sandbox", "--no-sandbox", "--single-process", "--no-zygote"],
+    protocolTimeout: 240000,
+  });
   const page = await browser.newPage();
   await page.goto(`${mainUrl}`);
 
@@ -122,8 +119,8 @@ async function fetchNews() {
       }
     }
   }
-  browser.close()
-  console.log('Browser CLOSE =>>> X')
+  browser.close();
+  console.log("Browser CLOSE =>>> X");
 }
 
 async function checkIfTitleExistsInDatabase(title) {
@@ -176,7 +173,7 @@ async function extractArticleData(page, imageUrl) {
       lastSection = { heading, text: [], paragraph: "", image: [], listItems: [] };
       //Under title
     } else if (tagName === "h3") {
-      console.log('h3')
+      console.log("h3");
       let paragraph = await section.evaluate((node) => node.textContent.trim());
       if (!paragraph) {
         const image = await section.$eval("img", (element) => element.src);
@@ -185,41 +182,61 @@ async function extractArticleData(page, imageUrl) {
         }
         // image
       } else if (lastSection.image.length >= 0 || lastSection.paragraph !== "") {
-        console.log('img check')
+        console.log("img check");
 
         articleData.sections.push(lastSection);
-        lastSection = { heading: "", text: [] ,paragraph: "", image: [], listItems: [] };
-
+        lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };
       } else if (paragraph) {
-        console.log('parapgraph')
+        console.log("parapgraph");
         paragraph = paragraph.replace(/cryptopotato/gi, "ZTH");
         lastSection = { heading: "", text: [], paragraph, image: [], listItems: [] };
       }
-
-    } else if (tagName === "blockquote") {
-      console.log("=>>>> Blockquate");
-      let paragraphText;
-      const paragraphElement = await section.$("p");
-      if (paragraphElement) {
-        paragraphText = await paragraphElement.evaluate((node) => node.textContent.trim());
+    }
+    // else if (tagName === "blockquote") {
+    //   console.log("=>>>> Blockquate");
+    //   let paragraphText;
+    //   const paragraphElement = await section.$("p");
+    //   if (paragraphElement) {
+    //     paragraphText = await paragraphElement.evaluate((node) => node.textContent.trim());
+    //     paragraphText = paragraphText.replace(/cryptopotato/gi, "ZTH");
+    //     paragraphText = paragraphText.replace(/By:\sEdris|By:\sShayan/gi, "");
+    //   }
+    //   if (lastSection && paragraphText) {
+    //     lastSection.paragraph += paragraphText + "\n";
+    //   } else {
+    //     try {
+    //       const image = await section.$eval("img", (element) => element.src);
+    //       if (lastSection && image) {
+    //         lastSection.image.push(image);
+    //       }
+    //     } catch (error) {
+    //       console.error(error);
+    //       continue;
+    //     }
+    //   }
+    else if (tagName === "blockquote") {
+      const paragraphElements = await section.$$("p");
+      for (const paragraphElement of paragraphElements) {
+        let paragraphText = await paragraphElement.evaluate((node) => node.textContent.trim());
+        console.log(paragraphText);
         paragraphText = paragraphText.replace(/cryptopotato/gi, "ZTH");
         paragraphText = paragraphText.replace(/By:\sEdris|By:\sShayan/gi, "");
-      }
-      if (lastSection && paragraphText) {
-        lastSection.paragraph += paragraphText + "\n";
-      } else {
-        try {
-          const image = await section.$eval("img", (element) => element.src);
-          if (lastSection && image) {
-            lastSection.image.push(image);
+        if (lastSection && paragraphText) {
+          lastSection.paragraph += paragraphText + "\n";
+        } else {
+          try {
+            const image = await section.$eval("img", (element) => element.src);
+            if (lastSection && image) {
+              lastSection.image.push(image);
+            }
+          } catch (error) {
+            console.error(error);
+            continue;
           }
-        } catch (error) {
-          console.error(error);
-          continue;
         }
       }
     } else if (tagName === "p") {
-      console.log('p tag')
+      console.log("p tag");
       let text = await section.evaluate((node) => node.textContent.trim());
       text = text.replace(/cryptopotato/gi, "ZTH");
       text = text.replace(/By:\sEdris|By:\sShayan/gi, "");
@@ -240,8 +257,11 @@ async function extractArticleData(page, imageUrl) {
       const image = await section.$eval("img", (element) => element.src);
       if (lastSection && image) {
         lastSection.image.push(image);
+        articleData.sections.push(lastSection);
+        lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };
       }
     } else if (tagName === "ul") {
+      console.log("ul tag =>>>>>>>>>>>>>>>");
       currentList = [];
       const listItems = await section.$$("li");
       for (const listItemElement of listItems) {
@@ -261,7 +281,7 @@ async function extractArticleData(page, imageUrl) {
           nextSiblingTagName === "figure" ||
           nextSiblingTagName === "h2"
         ) {
-          lastSection.text.push(currentList.join("\n"));
+          lastSection.listItems.push(currentList.join("\n"));
         } else if (lastSection && currentList.length > 0) {
           lastSection.listItems = currentList;
         }

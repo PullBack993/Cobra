@@ -29,9 +29,11 @@ onMounted(async () => {
       :key="index"
       class="news__list-items"
     >
-      <router-link class="news__list-link"
+      <router-link
+        class="news__list-link"
         :to="{
-          name: 'ArticleDetails', params:{id: section._id}
+          name: 'ArticleDetails',
+          params: { id: section._id },
         }"
       >
         <li class="news__list-content">
@@ -48,7 +50,7 @@ onMounted(async () => {
               {{ section.title }}
             </h3>
             <p class="news__list-text">
-              {{ section.sections[0]?.text }}
+              {{ section.sections[0]?.text[0] }}..
             </p>
           </div>
         </li>
@@ -59,7 +61,7 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 .news {
-  max-width: 100%;
+  max-width: 80%;
   margin: auto;
   cursor: pointer;
 
@@ -69,7 +71,7 @@ onMounted(async () => {
     margin: 6rem auto;
     width: 90%;
   }
-  &__list-link{
+  &__list-link {
     text-decoration: none;
   }
   &__image {

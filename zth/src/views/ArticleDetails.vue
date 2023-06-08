@@ -56,7 +56,8 @@ onMounted(async () => {
         <h2 class="article-title">{{ section?.heading }}</h2>
         <div class="article-content">
           <p
-            v-for="(text, index) in section.text" :key="index"
+            v-for="(text, index) in section.text"
+            :key="index"
             ref="text"
             class="article-text"
           >
@@ -201,6 +202,7 @@ onMounted(async () => {
 
     img {
       max-width: 100%;
+      width: 100%;
     }
   }
 
