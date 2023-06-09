@@ -45,7 +45,7 @@ onMounted(async () => {
               loading="lazy"
             />
           </div>
-          <div>
+          <div class="news__content">
             <h3 class="news__title">
               {{ section.title }}
             </h3>
@@ -69,7 +69,7 @@ onMounted(async () => {
     display: flex;
     flex-direction: colum;
     margin: 6rem auto;
-    width: 90%;
+    width: 70%;
   }
   &__list-link {
     text-decoration: none;
@@ -87,6 +87,9 @@ onMounted(async () => {
     font-size: 2rem;
     color: $main-purple;
     line-height: 2.7rem;
+  }
+  &__content{
+    margin-left: 3rem;
   }
   &__title {
     overflow: hidden;

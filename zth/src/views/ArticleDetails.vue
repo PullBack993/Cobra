@@ -172,8 +172,8 @@ onMounted(async () => {
   }
 
   &-list-item {
-    margin-bottom: 0.5rem;
-    line-height: 1.5;
+    margin-bottom: 2.5rem;
+    line-height: 1.7;
     word-wrap: break-word;
     &::before {
       content: '';

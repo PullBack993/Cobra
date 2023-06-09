@@ -12,7 +12,7 @@ fetchNews();
 
 router.get("/newsList", async (req, res) => {
   try {
-    const articles = await Article.find().sort({ createTime: -1 })
+    const articles = await Article.find().sort({ createTime: -1 });
     res.json(articles);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -153,7 +153,6 @@ async function extractArticleData(page, imageUrl) {
 
   for (const section of sections) {
     const tagName = await section.evaluate((node) => node.tagName.toLowerCase());
-    console.log("tagName =>>", tagName);
 
     if (!lastSection) {
       lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };
@@ -173,52 +172,24 @@ async function extractArticleData(page, imageUrl) {
       lastSection = { heading, text: [], paragraph: "", image: [], listItems: [] };
       //Under title
     } else if (tagName === "h3") {
-      console.log("h3");
       let paragraph = await section.evaluate((node) => node.textContent.trim());
       if (!paragraph) {
         const image = await section.$eval("img", (element) => element.src);
         if (lastSection && image) {
           lastSection.image.push(image);
+          articleData.sections.push(lastSection);
+          lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };
         }
-        // image
-      } else if (lastSection.image.length >= 0 || lastSection.paragraph !== "") {
-        console.log("img check");
-
+      } else if (paragraph) {
+        paragraph = paragraph.replace(/cryptopotato/gi, "ZTH");
+        lastSection.paragraph = paragraph;
         articleData.sections.push(lastSection);
         lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };
-      } else if (paragraph) {
-        console.log("parapgraph");
-        paragraph = paragraph.replace(/cryptopotato/gi, "ZTH");
-        lastSection = { heading: "", text: [], paragraph, image: [], listItems: [] };
       }
-    }
-    // else if (tagName === "blockquote") {
-    //   console.log("=>>>> Blockquate");
-    //   let paragraphText;
-    //   const paragraphElement = await section.$("p");
-    //   if (paragraphElement) {
-    //     paragraphText = await paragraphElement.evaluate((node) => node.textContent.trim());
-    //     paragraphText = paragraphText.replace(/cryptopotato/gi, "ZTH");
-    //     paragraphText = paragraphText.replace(/By:\sEdris|By:\sShayan/gi, "");
-    //   }
-    //   if (lastSection && paragraphText) {
-    //     lastSection.paragraph += paragraphText + "\n";
-    //   } else {
-    //     try {
-    //       const image = await section.$eval("img", (element) => element.src);
-    //       if (lastSection && image) {
-    //         lastSection.image.push(image);
-    //       }
-    //     } catch (error) {
-    //       console.error(error);
-    //       continue;
-    //     }
-    //   }
-    else if (tagName === "blockquote") {
+    } else if (tagName === "blockquote") {
       const paragraphElements = await section.$$("p");
       for (const paragraphElement of paragraphElements) {
         let paragraphText = await paragraphElement.evaluate((node) => node.textContent.trim());
-        console.log(paragraphText);
         paragraphText = paragraphText.replace(/cryptopotato/gi, "ZTH");
         paragraphText = paragraphText.replace(/By:\sEdris|By:\sShayan/gi, "");
         if (lastSection && paragraphText) {
@@ -228,6 +199,8 @@ async function extractArticleData(page, imageUrl) {
             const image = await section.$eval("img", (element) => element.src);
             if (lastSection && image) {
               lastSection.image.push(image);
+              articleData.sections.push(lastSection);
+              lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };
             }
           } catch (error) {
             console.error(error);
@@ -235,9 +208,10 @@ async function extractArticleData(page, imageUrl) {
           }
         }
       }
+      articleData.sections.push(lastSection);
+      lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };
     } else if (tagName === "p") {
-      console.log("p tag");
-      let text = await section.evaluate((node) => node.textContent.trim());
+      let text = await section.evaluate((node) => node?.textContent.trim());
       text = text.replace(/cryptopotato/gi, "ZTH");
       text = text.replace(/By:\sEdris|By:\sShayan/gi, "");
       if (lastSection && text) {
@@ -246,7 +220,10 @@ async function extractArticleData(page, imageUrl) {
         try {
           const image = await section.$eval("img", (element) => element.src);
           if (lastSection && image) {
+            console.log("eeee=>>", image);
             lastSection.image.push(image);
+            articleData.sections.push(lastSection);
+            lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };
           }
         } catch (error) {
           console.error(error);
@@ -261,30 +238,22 @@ async function extractArticleData(page, imageUrl) {
         lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };
       }
     } else if (tagName === "ul") {
-      console.log("ul tag =>>>>>>>>>>>>>>>");
       currentList = [];
       const listItems = await section.$$("li");
       for (const listItemElement of listItems) {
         let listItem = await listItemElement.evaluate((node) => node.textContent.trim());
         listItem = listItem.replace(/cryptopotato/gi, "ZTH");
+        console.log(listItem);
         currentList.push(listItem);
-
-        const nextSibling = await section.evaluateHandle((node) => node.nextElementSibling);
-        const nextSiblingTagName = nextSibling
-          ? await nextSibling.evaluate((node) => node.tagName.toLowerCase())
-          : null;
-        console.log("next siblings ===>>", nextSiblingTagName);
-
-        if (
-          nextSiblingTagName === "blockquote" ||
-          nextSiblingTagName === "p" ||
-          nextSiblingTagName === "figure" ||
-          nextSiblingTagName === "h2"
-        ) {
-          lastSection.listItems.push(currentList.join("\n"));
-        } else if (lastSection && currentList.length > 0) {
-          lastSection.listItems = currentList;
-        }
+      }
+      console.log("lst section list =>", lastSection.listItems);
+      console.log("curr list =>", currentList);
+      lastSection.listItems = currentList;
+      articleData.sections.push(lastSection);
+      console.log("section index", sections.indexOf(section));
+      console.log("section length", sections.length);
+      if (sections.length > sections.indexOf(section)) {
+        lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };
       }
     }
   }
