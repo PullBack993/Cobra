@@ -14,7 +14,7 @@ import HeaderComponent from './pages/HeaderConponent.vue';
   </main>
 </template>
 
-<style lang="scss">
+<style scoped lang="scss">
 .main {
   margin: 1rem;
 }

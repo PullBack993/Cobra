@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 interface ArticleDetails {
   title: string;
@@ -25,15 +25,14 @@ const props = withDefaults(defineProps<Props>(), {});
 const article = ref<ArticleDetails>();
 
 onMounted(async () => {
-  try {
-    console.log(props.id);
-    const response = await axios.get(
-      `http://localhost:3000/news/article/${props.id}`
-    );
-    article.value = response.data;
-  } catch (err: any) {
-    console.error(err);
-  }
+  await axios
+    .get(`http://localhost:3000/news/article/${props.id}`)
+    .then((res) => {
+      article.value = res.data;
+    })
+    .catch((error: AxiosError) => {
+      console.log(error.message);
+    });
 });
 </script>
 
@@ -55,15 +54,12 @@ onMounted(async () => {
       >
         <h2 class="article-title">{{ section?.heading }}</h2>
         <div class="article-content">
-          <p
-            v-for="(text, index) in section.text"
-            :key="index"
-            ref="text"
-            class="article-text"
-          >
-            {{ text }}
-          </p>
-          <br />
+          <div v-for="(text, index) in section.text" :key="index">
+            <p ref="text" class="article-text">
+              {{ text }}
+            </p>
+            <br />
+          </div>
           <blockquote>
             <em>
               <p class="article-paragraph">{{ section?.paragraph }}</p>
@@ -135,7 +131,7 @@ onMounted(async () => {
     font-size: 3rem;
     background: linear-gradient(
       90deg,
-      rgba(123, 67, 151, 1) 0%,
+      rgb(110, 42, 144) 0%,
       rgba(220, 36, 48, 1) 100%
     );
     -webkit-background-clip: text;
@@ -148,7 +144,7 @@ onMounted(async () => {
 
   &-text {
     font-size: 1.9rem;
-    line-height: 1.7;
+    line-height: 1.5;
     margin-bottom: 1rem;
     color: white;
     word-wrap: break-word;
@@ -161,8 +157,17 @@ onMounted(async () => {
 
   &-paragraph {
     font-size: 2rem;
-    line-height: 1.3;
-    color: white;
+    background: linear-gradient(
+      120deg,
+      rgb(131, 51, 171) 0%,
+      rgba(220, 36, 48, 1) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    word-wrap: break-word;
+    line-height: 4rem;
   }
 
   &-list-container {
@@ -175,23 +180,18 @@ onMounted(async () => {
     margin-bottom: 2.5rem;
     line-height: 1.7;
     word-wrap: break-word;
+
     &::before {
       content: '';
       display: inline-block;
-      width: 1rem;
-      height: 1rem;
-      border-radius: 50%;
-      background-color: red;
-      margin-right: 0.5rem;
-    }
-    &::before {
       border: 0.2rem solid $main-purple;
       border-radius: 50%;
       background: rgba(0, 0, 0, 0);
       color: $white;
-      width: 1rem;
-      height: 1rem;
+      width: 1.3rem;
+      height: 1.3rem;
       text-align: center;
+      margin-right: 0.5rem;
     }
   }
 

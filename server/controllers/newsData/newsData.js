@@ -38,7 +38,7 @@ router.get("/article/:id", async (req, res) => {
         section.image[i] = await getImageProxyUrl(section.image[i]);
       }
     });
-
+    console.log(updatedArticle)
     res.json(updatedArticle);
   } catch (error) {
     console.error(error);

@@ -37,7 +37,7 @@ body *{
 
 main{
   margin: 0;
-  overflow: hidden;
+  overflow: clip;
   @media (min-width: $breakpoint_small){
     margin: 1rem;
     margin: 0 0 0 8.5rem;

@@ -58,32 +58,35 @@ router.post("/daily-return", async (req, res) => {
     res.json(result);
   } catch (err) {
     res.json(err, 500);
-    console.log('daily return', err);
+    console.log("daily return", err);
   }
 });
 
 async function startBrowser() {
-  counter = 0
-  try{
-    browser = await puppeteer.launch({ headless: true });
+  counter = 0;
+  try {
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ["--disable-setuid-sandbox", "--no-sandbox", "--single-process", "--no-zygote"],
+      protocolTimeout: 240000,
+    });
     console.log("Launching browser...");
-  
+
     if (!page) {
       page = await browser.newPage();
       const navigationPromise = page?.waitForNavigation({ signal });
-  
+
       console.log("Go to coinglass...");
-      await page.goto("https://www.coinglass.com/LongShortRatio", { signal });
+      await page.goto("https://www.coinglass.com/LongShortRatio", { timeout: 240000 }, { signal });
       await navigationPromise;
     }
-  }
-  catch(error){
+  } catch (error) {
     console.error(error);
-    if(counter >= 7){
-      throw new Error
+    if (counter >= 7) {
+      throw new Error();
     }
-    startBrowser()
-    counter++
+    startBrowser();
+    counter++;
   }
 }
 

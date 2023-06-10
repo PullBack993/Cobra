@@ -274,7 +274,7 @@ function calculateDifferenceFromBeginMonth(data) {
 }
 
 function calculateCurrentQuarter(data) {
-  const currentDate = new Date(data[data.length - 1].createTime);
+  const currentDate = new Date(data[data.length - 1]?.createTime);
 
   // Get the current month (0-11)
   const currentMonth = currentDate.getMonth();

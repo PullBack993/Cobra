@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, computed } from 'vue';
+import { onMounted } from 'vue';
 import AuthPopUpComponent from '../components/AuthPopUpComponent.vue';
 import DropdownInputComponent from '../components/DropDownSearchBar.vue';
 import { useGlobalStore } from '../store/global';
@@ -8,34 +8,28 @@ const store = useGlobalStore();
 
 onMounted(() => {
   store.isLogin();
-  // store.a();
 });
-
-
 </script>
 
 <template>
-  <header>
+  <header class="header">
     <div class="main">
       <div class="search">
         <DropdownInputComponent />
       </div>
-        <AuthPopUpComponent />
+      <AuthPopUpComponent />
     </div>
   </header>
 </template>
 
 <style scoped lang="scss">
-.key {
-  width: 3rem;
-  position: absolute;
-  right: 0;
-  margin-right: 1rem;
-  background-color: $input-bg-dark;
-  border-radius: 0.5rem;
+.header {
+  top: 0;
+  position: sticky;
+  z-index: 9;
+  background: transparent;
+  backdrop-filter: blur(9rem);
 }
-
-
 .main {
   border-bottom: 0.1rem solid $main-purple;
   height: 9.5rem;
