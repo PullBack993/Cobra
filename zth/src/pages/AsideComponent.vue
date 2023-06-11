@@ -3,6 +3,7 @@ import { RouterLink } from 'vue-router';
 import { ref, onMounted } from 'vue';
 import Cookies from 'js-cookie';
 import bgp from '../assets/BaseIcons/bgp.jpeg';
+import hamburger from '../assets/BaseIcons/hamburger.svg';
 import { useGlobalStore } from '../store/global';
 
 const isToggle = ref(false);
@@ -19,15 +20,20 @@ const width = ref('');
 });
 
 const toggle = () => {
+  console.log('toggle', isToggle.value);
   isToggle.value = !isToggle.value;
+  console.log('toggle2', isToggle.value);
+
   if (isToggle.value === true) {
     if (screenSize.value < 768) {
       width.value = '8rem';
       opacity.value = '100';
       document.dispatchEvent(new Event(''));
     }
+    console.log('is true toggle add click listener');
     document.addEventListener('click', documentClick);
   } else {
+    console.log('remove event listener');
     if (screenSize.value < 768) {
       width.value = '0rem';
       opacity.value = '0';
@@ -46,33 +52,56 @@ const switchTheme = () => {
       'linear-gradient(189deg, rgba(29,12,56,1) 0%, rgba(12,20,68,1) 53%, rgba(44,16,65,1) 100%)';
   }
 };
-function documentClick() {
-  document.onclick = (e) => {
-    if (
-      (e.target as HTMLButtonElement).className === 'sidebar-btn' ||
-      (e.target as HTMLButtonElement).className === 'sidebar is-expand' ||
-      (e.target as HTMLButtonElement).className === 'active sidebar-icon' ||
-      (e.target as HTMLButtonElement).className === 'theme' ||
-      (e.target as HTMLButtonElement).className ===
-        'material-symbols-outlined light' ||
-      (e.target as HTMLButtonElement).className ===
-        'material-symbols-outlined dark' ||
-      (e.target as HTMLButtonElement).className === 'theme dark-icon' ||
-      (e.target as HTMLButtonElement).className === 'theme light-icon' ||
-      (e.target as HTMLButtonElement).className ===
-        'sidebar darkUnActive is-expand' ||
-      (e.target as HTMLButtonElement).className === 'search__lines' ||
-      (e.target as HTMLButtonElement).className === 'search__lines-icon'
-    ) {
-      return;
+const HTMLElementsNotClickable = [
+  'sidebar-btn',
+  'sidebar is-expand',
+  'active sidebar-icon',
+  'theme',
+  'material-symbols-outlined light',
+  'material-symbols-outlined dark',
+  'theme dark-icon',
+  'theme light-icon',
+  'sidebar darkUnActive is-expand',
+  'search__lines',
+  'search__lines-icon',
+  '',
+];
+
+const checkElements = (clickedElement: string, isMobile: boolean): boolean => {
+  const found = HTMLElementsNotClickable.some((htmlElement) => {
+    if (!isMobile) {
+      return clickedElement === htmlElement;
     }
+    if (clickedElement === undefined) {
+      return false;
+    }
+    console.log(new RegExp(htmlElement, 'i').test(clickedElement));
+    return new RegExp(htmlElement, 'i').test(clickedElement);
+  });
+  return found;
+};
+function documentClick(e: Event) {
+  console.log('documentClick');
+  console.log((e.target as HTMLButtonElement).className);
+  const HTMLElement = (e.target as HTMLButtonElement).className?.baseVal;
+  const HTMLElementClass = (e.target as HTMLButtonElement).className;
+  console.log('checkElements', checkElements(HTMLElement, true));
+
+  if (screenSize.value < 768 && !checkElements(HTMLElement, true)) {
+    console.log('yes');
     isToggle.value = false;
-    if (screenSize.value < 768 && isToggle.value === false) {
-      opacity.value = '0';
-      width.value = '0rem';
-    }
-    destroyClickEvent();
-  };
+    opacity.value = '0';
+    width.value = '0rem';
+    document.removeEventListener('click', documentClick);
+  }
+
+  if (
+    (screenSize.value > 768 && checkElements(HTMLElementClass, false)) ||
+    HTMLElementClass === ''
+  ) {
+    isToggle.value = false;
+    document.removeEventListener('click', documentClick);
+  }
 }
 
 function destroyClickEvent() {
@@ -115,15 +144,15 @@ onMounted(() => {
 
 <template>
   <div class="search__lines" @click="toggle()">
-    <span
+    <hamburger
       class="search__lines-icon"
       :class="`${
         store.themeDark
           ? 'search__lines-icon--light'
           : 'search__lines-icon--dark'
       }`"
-      >&nbsp;</span
-    >
+      alt="hamburger"
+    ></hamburger>
   </div>
   <aside
     :style="{ opacity: opacity, width: width }"
@@ -233,59 +262,63 @@ onMounted(() => {
   }
 }
 .search__lines {
-  position: absolute;
+  position: sticky;
   top: 3.4rem;
-  left: 2.6rem;
+  left: 2rem;
+  margin-left: 1rem;
   cursor: pointer;
   width: 3.7rem;
   z-index: 99;
-  height: 4rem;
+  height: 0;
+  fill: white;
+  // padding: 2.4rem;
+  // padding-bottom: 2rem;
 
   &-icon {
     display: block;
     cursor: pointer;
 
-    &,
-    &::before,
-    &::after {
-      width: 3rem;
-      height: 0.2rem;
-      background-color: black;
-      display: inline-block;
-      position: absolute;
-      top: 45%;
-      left: 11%;
-      cursor: pointer;
-    }
-    &--light,
-    &--light::before,
-    &--light::after {
-      background-color: $main-purple;
-    }
-    &--dark,
-    &--dark::before,
-    &--dark::after {
-      background-color: $white;
-    }
+    // &,
+    // &::before,
+    // &::after {
+    //   width: 3rem;
+    //   height: 0.2rem;
+    //   background-color: black;
+    //   display: inline-block;
+    //   position: absolute;
+    //   top: 45%;
+    //   left: 11%;
+    //   cursor: pointer;
+    // }
+    // &--light,
+    // &--light::before,
+    // &--light::after {
+    //   background-color: $main-purple;
+    // }
+    // &--dark,
+    // &--dark::before,
+    // &--dark::after {
+    //   background-color: $white;
+    // }
 
-    &::before,
-    &::after {
-      content: '';
-      position: absolute;
-      left: 0;
-      transition: all 0.15s ease;
-      cursor: pointer;
-    }
+    // &::before,
+    // &::after {
+    //   content: '';
+    //   position: absolute;
+    //   left: 0;
+    //   transition: all 0.15s ease;
+    //   cursor: pointer;
+    // }
 
-    &::before {
-      top: -0.8rem;
-      cursor: pointer;
-    }
+    // &::before {
+    //   top: -0.8rem;
+    //   cursor: pointer;
+    // }
 
-    &::after {
-      top: 0.8rem;
-      cursor: pointer;
-    }
+    // &::after {
+    //   top: 0.8rem;
+    //   cursor: pointer;
+    // }
   }
 }
 

@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import AuthPopUpComponent from '../components/AuthPopUpComponent.vue';
 import DropdownInputComponent from '../components/DropDownSearchBar.vue';
 import { useGlobalStore } from '../store/global';
@@ -9,10 +9,31 @@ const store = useGlobalStore();
 onMounted(() => {
   store.isLogin();
 });
+
+const header = ref(null);
+let lastScrollPosition = 0;
+
+const scrollHandler = () => {
+  const currentScrollPosition = window.pageYOffset;
+  if (currentScrollPosition < lastScrollPosition) {
+    header.value.style.top = '0';
+  } else {
+    header.value.style.top = '-100%';
+  }
+  lastScrollPosition = currentScrollPosition;
+};
+
+onMounted(() => {
+  window.addEventListener('scroll', scrollHandler);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', scrollHandler);
+});
 </script>
 
 <template>
-  <header class="header">
+  <header class="header" ref="header">
     <div class="main">
       <div class="search">
         <DropdownInputComponent />
