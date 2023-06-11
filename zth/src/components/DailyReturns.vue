@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import axios from 'axios';
-import { onMounted, ref, computed, watch } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import DropdownSmall from '@/components/DropDownLongShort.vue';
 import { useGlobalStore } from '../store/global';
 
 const store = useGlobalStore();
-
+const baseApiUrl = import.meta.env.VITE_APP_BASE_URL
 const data = ref();
 const time = ref<string[] | number>();
 const baseData = ref();
@@ -33,7 +33,6 @@ const themeClass = computed(() =>
 );
 
 const colorPriceAction = computed(() => (difference: number) => {
-  console.log(store.themeDark);
   if (difference > 0) {
     return store.themeDark
       ? 'returns__table-year-percentage--positive-light'
@@ -54,7 +53,10 @@ function reqData(month: number, type: string) {
   data.value = null;
   // const coinData = { time: currentTime.value, symbol: currentValue.value };
   axios
-    .post('http://localhost:3000/exchange/daily-return', { month, type })
+    .post(`${baseApiUrl}/exchange/daily-return`, {
+      month,
+      type,
+    })
     .then((res) => {
       if (res.status === 200) {
         // WEEK BASED
@@ -72,7 +74,6 @@ function reqData(month: number, type: string) {
           );
           // Reverse object to take first year
           baseData.value = { ...Object.entries(baseData.value).reverse() };
-          console.log(time.value);
         }
       }
     })
@@ -106,7 +107,6 @@ function removeLy() {
   } else {
     currentType.value = currentType.value.slice(0, -2).toLocaleLowerCase();
   }
-  console.log(currentType.value);
 }
 </script>
 

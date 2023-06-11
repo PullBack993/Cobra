@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import Cookies from 'js-cookie';
 import bgp from '../assets/BaseIcons/bgp.jpeg';
 import hamburger from '../assets/BaseIcons/hamburger.svg';
@@ -12,6 +12,8 @@ const opacity = ref('');
 const store = useGlobalStore();
 const screenSize = ref(0);
 const width = ref('');
+const hamburgerRefs = ref(null);
+let lastScrollPosition = 0;
 
 (window as any).ethereum?.on('accountsChanged', () => {
   Cookies.remove('zth_rLt_K6u3hTf');
@@ -20,9 +22,7 @@ const width = ref('');
 });
 
 const toggle = () => {
-  console.log('toggle', isToggle.value);
   isToggle.value = !isToggle.value;
-  console.log('toggle2', isToggle.value);
 
   if (isToggle.value === true) {
     if (screenSize.value < 768) {
@@ -30,10 +30,8 @@ const toggle = () => {
       opacity.value = '100';
       document.dispatchEvent(new Event(''));
     }
-    console.log('is true toggle add click listener');
     document.addEventListener('click', documentClick);
   } else {
-    console.log('remove event listener');
     if (screenSize.value < 768) {
       width.value = '0rem';
       opacity.value = '0';
@@ -62,33 +60,47 @@ const HTMLElementsNotClickable = [
   'theme dark-icon',
   'theme light-icon',
   'sidebar darkUnActive is-expand',
-  'search__lines',
-  'search__lines-icon',
   '',
 ];
 
-const checkElements = (clickedElement: string, isMobile: boolean): boolean => {
-  const found = HTMLElementsNotClickable.some((htmlElement) => {
+const checkElements = (
+  clickedElement: string,
+  clickedElementClass: string | '',
+  isMobile: boolean
+): boolean => {
+  let found = false;
+  HTMLElementsNotClickable.some((htmlElement) => {
     if (!isMobile) {
-      return clickedElement === htmlElement;
+      HTMLElementsNotClickable.push('search__lines', 'search__lines-icon');
+      if (clickedElement === htmlElement) {
+        found = true;
+        return true;
+      }
+    } else if (
+      new RegExp(htmlElement, 'i').test(clickedElement) ||
+      clickedElement === undefined
+    ) {
+      if (clickedElement === undefined) {
+        if (clickedElementClass === htmlElement) {
+          found = true;
+          return true;
+        }
+      } else {
+        found = true;
+        return true;
+      }
     }
-    if (clickedElement === undefined) {
-      return false;
-    }
-    console.log(new RegExp(htmlElement, 'i').test(clickedElement));
-    return new RegExp(htmlElement, 'i').test(clickedElement);
   });
   return found;
 };
 function documentClick(e: Event) {
-  console.log('documentClick');
-  console.log((e.target as HTMLButtonElement).className);
   const HTMLElement = (e.target as HTMLButtonElement).className?.baseVal;
   const HTMLElementClass = (e.target as HTMLButtonElement).className;
-  console.log('checkElements', checkElements(HTMLElement, true));
 
-  if (screenSize.value < 768 && !checkElements(HTMLElement, true)) {
-    console.log('yes');
+  if (
+    screenSize.value < 768 &&
+    !checkElements(HTMLElement, HTMLElementClass, true)
+  ) {
     isToggle.value = false;
     opacity.value = '0';
     width.value = '0rem';
@@ -96,7 +108,7 @@ function documentClick(e: Event) {
   }
 
   if (
-    (screenSize.value > 768 && checkElements(HTMLElementClass, false)) ||
+    (screenSize.value > 768 && !checkElements(HTMLElementClass, '', false)) ||
     HTMLElementClass === ''
   ) {
     isToggle.value = false;
@@ -115,9 +127,28 @@ function onScreenResize() {
   });
 }
 
+const scrollHandler = () => {
+  const currentScrollPosition = window.pageYOffset;
+  console.log(currentScrollPosition);
+
+  if (hamburgerRefs.value) {
+    if (
+      currentScrollPosition < lastScrollPosition
+    ) {
+      (hamburgerRefs.value as HTMLElement).style.top = '3.4rem';
+      (hamburgerRefs.value as HTMLElement).style.opacity = '1';
+
+    } else {
+      (hamburgerRefs.value as HTMLElement).style.opacity = '0';
+    }
+    lastScrollPosition = currentScrollPosition;
+  }
+};
+
 function updateScreenWidth() {
   screenSize.value = window.innerWidth;
   if (screenSize.value < 768) {
+    window.addEventListener('scroll', scrollHandler);
     opacity.value = '0';
     width.value = '0rem';
     isToggle.value = false;
@@ -126,6 +157,7 @@ function updateScreenWidth() {
     opacity.value = '100';
     isToggle.value = false;
     document.dispatchEvent(new Event(''));
+    window.removeEventListener('scroll', scrollHandler);
   }
 }
 
@@ -134,16 +166,26 @@ function handelEscape(event: KeyboardEvent) {
     isToggle.value = false;
   }
 }
+
 onMounted(() => {
   dark.value = store.themeDark;
   document.addEventListener('keydown', handelEscape);
   updateScreenWidth();
   onScreenResize();
 });
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', scrollHandler);
+});
 </script>
 
 <template>
-  <div class="search__lines" @click="toggle()">
+  <div
+    v-if="screenSize < 768"
+    class="search__lines"
+    ref="hamburgerRefs"
+    @click="toggle()"
+  >
     <hamburger
       class="search__lines-icon"
       :class="`${
@@ -154,6 +196,7 @@ onMounted(() => {
       alt="hamburger"
     ></hamburger>
   </div>
+
   <aside
     :style="{ opacity: opacity, width: width }"
     class="sidebar"
@@ -278,47 +321,12 @@ onMounted(() => {
     display: block;
     cursor: pointer;
 
-    // &,
-    // &::before,
-    // &::after {
-    //   width: 3rem;
-    //   height: 0.2rem;
-    //   background-color: black;
-    //   display: inline-block;
-    //   position: absolute;
-    //   top: 45%;
-    //   left: 11%;
-    //   cursor: pointer;
-    // }
-    // &--light,
-    // &--light::before,
-    // &--light::after {
-    //   background-color: $main-purple;
-    // }
-    // &--dark,
-    // &--dark::before,
-    // &--dark::after {
-    //   background-color: $white;
-    // }
-
-    // &::before,
-    // &::after {
-    //   content: '';
-    //   position: absolute;
-    //   left: 0;
-    //   transition: all 0.15s ease;
-    //   cursor: pointer;
-    // }
-
-    // &::before {
-    //   top: -0.8rem;
-    //   cursor: pointer;
-    // }
-
-    // &::after {
-    //   top: 0.8rem;
-    //   cursor: pointer;
-    // }
+    &--light {
+      fill: $main_purple;
+    }
+    &--dark {
+      fill: $white;
+    }
   }
 }
 

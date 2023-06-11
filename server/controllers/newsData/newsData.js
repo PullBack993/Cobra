@@ -76,7 +76,7 @@ async function getImageProxyUrl(imageUrl) {
 }
 
 const job = new CronJob(" */3 * * * *", () => {
-  // fetchNews();
+  fetchNews();
 });
 
 job.start();

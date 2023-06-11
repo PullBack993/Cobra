@@ -11,12 +11,13 @@ onMounted(() => {
 });
 
 const header = ref(null);
+
 let lastScrollPosition = 0;
 
 const scrollHandler = () => {
   const currentScrollPosition = window.pageYOffset;
   if (currentScrollPosition < lastScrollPosition) {
-    header.value.style.top = '0';
+    header.value.style.top = '';
   } else {
     header.value.style.top = '-100%';
   }
