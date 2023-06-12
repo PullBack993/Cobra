@@ -8,7 +8,7 @@ const https = require("https");
 puppeteer.use(StealthPlugin());
 const mainUrl = "https://cryptopotato.com/crypto-news/";
 
-fetchNews();
+// fetchNews();
 
 router.get("/newsList", async (req, res) => {
   try {

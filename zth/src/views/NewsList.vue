@@ -49,9 +49,7 @@ onMounted(async () => {
             <h3 class="news__title">
               {{ section.title }}
             </h3>
-            <p class="news__list-text">
-              {{ section.sections[0]?.text[0] }}..
-            </p>
+            <p class="news__list-text">{{ section.sections[0]?.text[0] }}..</p>
           </div>
         </li>
       </router-link>
@@ -61,15 +59,21 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 .news {
-  max-width: 80%;
+  max-width: 100%;
   margin: auto;
   cursor: pointer;
+  @media (min-width: $breakpoint_container) {
+    width: 80%;
+  }
 
   &__list-items {
     display: flex;
     flex-direction: colum;
     margin: 6rem auto;
-    width: 70%;
+    width: 95%;
+    @media (min-width: $breakpoint_large) {
+      width: 80%;
+    }
   }
   &__list-link {
     text-decoration: none;
@@ -88,8 +92,10 @@ onMounted(async () => {
     color: $main-purple;
     line-height: 2.7rem;
   }
-  &__content{
-    margin-left: 3rem;
+  &__content {
+    @media (min-width: $breakpoint_container) {
+      margin-left: 3rem;
+    }
   }
   &__title {
     overflow: hidden;

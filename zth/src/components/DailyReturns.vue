@@ -5,7 +5,7 @@ import DropdownSmall from '@/components/DropDownLongShort.vue';
 import { useGlobalStore } from '../store/global';
 
 const store = useGlobalStore();
-const baseApiUrl = import.meta.env.VITE_APP_BASE_URL
+const baseApiUrl = import.meta.env.VITE_APP_BASE_URL;
 const data = ref();
 const time = ref<string[] | number>();
 const baseData = ref();
@@ -135,7 +135,13 @@ function removeLy() {
         @new-value:input="timeChange"
       />
     </div>
-    <div class="returns__chart-select-item" :class="themeClass">
+    <div
+      class="returns__chart-select-item"
+      :class="[
+        themeClass,
+        currentType != 'day' ? 'returns__chart-select-item--non' : '',
+      ]"
+    >
       <div class="returns__chart-select-item">Symbol</div>
 
       <DropdownSmall :data="['BTC']" :readonly="true" :with-arrow-icon="true" />
@@ -207,6 +213,9 @@ function removeLy() {
     margin-bottom: 0.5rem;
     font-size: 1.6rem;
     width: 12rem;
+    &--non {
+      margin-top: 0 !important;
+    }
   }
   &__chart-select-item:last-child {
     margin-top: 1.5rem;
