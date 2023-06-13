@@ -13,6 +13,8 @@ const coins = ref();
 const intervalId = ref(0);
 const loading = ref(false);
 const store = useGlobalStore();
+const baseApiUrl = import.meta.env.VITE_APP_BASE_URL;
+
 
 interface Props {
   coins?: any;
@@ -39,7 +41,7 @@ onMounted(() => {
 onUnmounted(() => {
   clearInterval(intervalId.value);
   // close browser back end
-  axios.post('http://localhost:3000/exchange/long-short', { exit: true });
+  axios.post(`${baseApiUrl}/exchange/long-short`, { exit: true });
 });
 
 watch(
@@ -57,7 +59,7 @@ watch(
 function reqData() {
   const coinData = { time: currentTime.value, symbol: currentValue.value };
   axios
-    .post('http://localhost:3000/exchange/long-short', coinData)
+    .post(`${baseApiUrl}/exchange/long-short`, coinData)
     .then((res) => {
       coins.value = res.data;
       loading.value = false;

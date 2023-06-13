@@ -205,8 +205,8 @@ function updateNewDataQuarter(calculatedData, fetchedData) {
 }
 
 function calculateDailyChanges(data, dataLength) {
-  const prevPrice = data[dataLength - 1].price;
-  const currentPrice = data[dataLength].price;
+  const prevPrice = data[dataLength - 1]?.price;
+  const currentPrice = data[dataLength]?.price;
 
   const calculatePercentageChange = calculateDifference(currentPrice, prevPrice);
   return { difference: calculatePercentageChange };

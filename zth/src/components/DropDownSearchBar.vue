@@ -543,5 +543,4 @@ function onOpen(value) {
     opacity: 1;
   }
 }
-//TODO responsive searchbar after implement login/register
 </style>
