@@ -111,10 +111,9 @@ function onInput(value) {
 
               error.value = false;
               loading.value = false;
-              console.log(res);
             })
             .catch((err) => {
-              console.log(err);
+              console.log('drop down', err);
               loading.value = false;
               error.value = true;
             });
@@ -127,7 +126,7 @@ function onInput(value) {
       }
     }, 500);
   } catch (err) {
-    console.log(err);
+    console.log('drop down =>', err);
     loading.value = false;
     error.value = true; // check it
   }

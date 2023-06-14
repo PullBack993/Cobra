@@ -77,7 +77,6 @@ function onInput(value: string) {
     savedValue.value = currentIndexItem.value;
   }
   if (value) {
-    console.log('input', currentIndexItem.value);
     const searchedCoin = findCoin(value);
     if (searchedCoin.length > 0) {
       data.value = searchedCoin;

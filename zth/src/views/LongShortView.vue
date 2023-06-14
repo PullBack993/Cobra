@@ -27,7 +27,6 @@ const themeClass = computed(() =>
 
 function valueChange(value: string) {
   currentValue.value = value; // ETH req
-  console.log(currentValue.value);
 }
 
 function timeChange(value: string) {
