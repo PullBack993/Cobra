@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import axios, { AxiosError } from 'axios';
+import { useGlobalStore } from '../store/global';
 
 interface ArticleDetails {
   title: string;
@@ -19,6 +20,8 @@ interface ArticleDetails {
 interface Props {
   id: string; // URL params
 }
+
+const store = useGlobalStore();
 
 const props = withDefaults(defineProps<Props>(), {});
 
@@ -55,7 +58,13 @@ onMounted(async () => {
         <h2 class="article-title">{{ section?.heading }}</h2>
         <div class="article-content">
           <div v-for="(text, index) in section.text" :key="index">
-            <p ref="text" class="article-text">
+            <p ref="text" class="article-text"
+            :class="`${
+                store.themeDark
+                  ? 'article-text--light'
+                  : 'article-text--dark'
+              }`"
+            >
               {{ text }}
             </p>
             <br />
@@ -146,12 +155,19 @@ onMounted(async () => {
     font-size: 1.9rem;
     line-height: 1.5;
     margin-bottom: 1rem;
-    color: white;
     word-wrap: break-word;
     &::after {
       content: '\a';
       white-space: pre;
       color: white;
+    }
+
+    &--light{
+      color: $black;
+    }
+    &--dark{
+    color: $white;
+
     }
   }
 
