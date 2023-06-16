@@ -112,7 +112,7 @@ async function fetchNews() {
 
     if (!isInDatabase) {
       const articlePage = await browser.newPage();
-      await articlePage.goto(`${newsAllTitles[i].href}`);
+      await articlePage.goto(`${newsAllTitles[i]?.href}`);
       const articleData = await extractArticleData(articlePage, src);
       if (articleData) {
         await saveArticleToDatabase(articleData); // Save to DB

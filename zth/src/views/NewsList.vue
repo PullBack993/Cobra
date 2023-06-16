@@ -4,6 +4,7 @@ import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useGlobalStore } from '../store/global';
 import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
+import baseButton from '../components/utils/BaseButton.vue';
 
 const route = useRoute();
 
@@ -28,6 +29,10 @@ onMounted(async () => {
     console.error(err);
   }
 });
+
+const handleClick = () => {
+  console.log('clicked');
+};
 </script>
 
 <template>
@@ -65,12 +70,13 @@ onMounted(async () => {
                   : 'news__list-text--dark'
               }`"
             >
-              {{ section.sections[0]?.text[0] }}..
+              {{ section.sections[0]?.text[0] }}
             </p>
           </div>
         </li>
       </router-link>
     </ul>
+    <baseButton @onClick="handleClick" :disabled="true">Show more</baseButton>
   </div>
 
   <div v-if="!newsListData && loading" class="container">
