@@ -5,34 +5,38 @@ import { useRoute } from 'vue-router';
 import { useGlobalStore } from '../store/global';
 import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
 import baseButton from '../components/utils/BaseButton.vue';
-
-const route = useRoute();
+import { Article } from '../Interfaces/Article';
 
 const store = useGlobalStore();
-const newsListData = ref();
+const newsListData = ref<Array<Article>>([]);
 const loading = ref(true);
 const loadingLength = ref(12);
+const page = ref(0);
 
-onMounted(async () => {
-  loadingLength.value = Math.ceil(window.innerHeight / 10 / 17);
+const loadNews = () => {
+  page.value += 1;
+  loading.value = true;
   try {
-    axios.get('http://localhost:3000/news/newsList').then((response) => {
-      if (response.status === 200) {
-        newsListData.value = response.data;
-        setTimeout(() => {
-          loading.value = false;
-        }, 5000);
-      }
-    });
+    axios
+      .get(`http://localhost:3000/news/newsList?page=${page.value}`)
+      .then((response) => {
+        if (response.status === 200) {
+          newsListData.value.push(...response.data);
+          setTimeout(() => {
+            loading.value = false;
+          }, 5000);
+        }
+      });
   } catch (err) {
     loading.value = false;
     console.error(err);
   }
-});
-
-const handleClick = () => {
-  console.log('clicked');
 };
+
+onMounted(async () => {
+  loadingLength.value = Math.ceil(window.innerHeight / 10 / 17);
+  loadNews();
+});
 </script>
 
 <template>
@@ -76,10 +80,14 @@ const handleClick = () => {
         </li>
       </router-link>
     </ul>
-    <baseButton @onClick="handleClick" :disabled="true">Show more</baseButton>
+    <div class="button-container">
+      <baseButton @onClick="loadNews" :disabled="false" :theme="''"
+        >Show more</baseButton
+      >
+    </div>
   </div>
 
-  <div v-if="!newsListData && loading" class="container">
+  <div v-if="loading" class="container">
     <div v-for="(_, index) in loadingLength" :key="index">
       <div class="loader">
         <placeHolderLoader
@@ -212,5 +220,10 @@ const handleClick = () => {
 }
 .news__list-link:hover .news__title {
   text-decoration: underline;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
 }
 </style>

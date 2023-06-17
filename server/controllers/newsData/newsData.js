@@ -11,8 +11,11 @@ const mainUrl = "https://cryptopotato.com/crypto-news/";
 // fetchNews();
 
 router.get("/newsList", async (req, res) => {
+  const limit = 20
   try {
-    const articles = await Article.find().sort({ createTime: -1 });
+    const page = parseInt(req.query.page);
+    const skip = (page - 1) * limit
+    const articles = await Article.find().skip(skip).sort({ createTime: -1 }).limit(limit);
     res.json(articles);
   } catch (error) {
     res.status(500).json({ message: error.message });
