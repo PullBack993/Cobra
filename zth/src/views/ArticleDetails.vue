@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue';
 import axios, { AxiosError } from 'axios';
 import { useGlobalStore } from '../store/global';
+import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
 
 interface ArticleDetails {
   title: string;
@@ -19,10 +20,11 @@ interface ArticleDetails {
 }
 interface Props {
   id: string; // URL params
+  title: string
 }
 
 const store = useGlobalStore();
-
+const loading = ref(true);
 const props = withDefaults(defineProps<Props>(), {});
 
 const article = ref<ArticleDetails>();
@@ -32,16 +34,21 @@ onMounted(async () => {
     .get(`http://localhost:3000/news/article/${props.id}`)
     .then((res) => {
       article.value = res.data;
+      loading.value = false;
     })
     .catch((error: AxiosError) => {
       console.log(error.message);
+      loading.value = false;
+    })
+    .finally(() => {
+      loading.value = false;
     });
 });
 </script>
 
 <template>
-  <div class="article" v-if="article">
-    <div class="article-header">
+  <div class="article">
+    <div class="article-header" v-if="article">
       <img
         class="article-header--image"
         :src="article.titleImage"
@@ -51,18 +58,18 @@ onMounted(async () => {
     </div>
     <div class="article-body">
       <div
-        v-for="(section, index) in article.sections"
+        v-for="(section, index) in article?.sections"
         :key="index"
         class="article-section"
       >
         <h2 class="article-title">{{ section?.heading }}</h2>
         <div class="article-content">
           <div v-for="(text, index) in section.text" :key="index">
-            <p ref="text" class="article-text"
-            :class="`${
-                store.themeDark
-                  ? 'article-text--light'
-                  : 'article-text--dark'
+            <p
+              ref="text"
+              class="article-text"
+              :class="`${
+                store.themeDark ? 'article-text--light' : 'article-text--dark'
               }`"
             >
               {{ text }}
@@ -71,13 +78,27 @@ onMounted(async () => {
           </div>
           <blockquote>
             <em>
-              <p class="article-paragraph">{{ section?.paragraph }}</p>
+              <p
+                class="article-paragraph"
+                :class="`${
+                  store.themeDark
+                    ? 'article-paragraph--light'
+                    : 'article-paragraph--dark'
+                }`"
+              >
+                {{ section?.paragraph }}
+              </p>
             </em>
           </blockquote>
           <ul v-if="section.listItems" class="article-list-container">
             <li
               v-for="(item, index) in section.listItems"
               class="article-list-item"
+              :class="`${
+                store.themeDark
+                  ? 'article-list-item--light'
+                  : 'article-list-item--dark'
+              }`"
               :key="index"
             >
               {{ item }}
@@ -93,12 +114,77 @@ onMounted(async () => {
           </div>
         </div>
       </div>
-      <p class="article-create-time">Created on {{ article.createTime }}</p>
+      <p class="article-create-time">Created on {{ article?.createTime }}</p>
+    </div>
+    <div v-if="loading">
+      <div class="loader">
+        <div class="loader-content">
+          <div class="loader-content-title">
+            <placeHolderLoader
+              class="loader-spliter"
+              :loader-width="20"
+              width-unit="%"
+              :loader-height="11"
+            ></placeHolderLoader>
+            <placeHolderLoader
+              class="loader-spliter"
+              :loader-width="81"
+              width-unit="%"
+              :loader-height="11"
+            ></placeHolderLoader>
+          </div>
+
+          <br />
+          <placeHolderLoader
+            class="loader-spliter"
+            :loader-width="100"
+            width-unit="%"
+            :loader-height="5"
+          ></placeHolderLoader>
+          <br />
+          <placeHolderLoader
+            class="loader-spliter"
+            :loader-width="100"
+            width-unit="%"
+            :loader-height="10"
+          ></placeHolderLoader>
+          <br />
+          <placeHolderLoader
+            class="loader-spliter"
+            :loader-width="100"
+            width-unit="%"
+            :loader-height="5"
+          ></placeHolderLoader>
+          <br />
+          <placeHolderLoader
+            class="loader-spliter"
+            :loader-width="100"
+            width-unit="%"
+            :loader-height="30"
+          ></placeHolderLoader>
+          <br />
+          <placeHolderLoader
+            class="loader-spliter"
+            :loader-width="100"
+            width-unit="%"
+            :loader-height="10"
+          ></placeHolderLoader>
+          <br />
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
+.loader-content-title {
+  display: flex;
+  gap: 3rem;
+}
+.loader-spliter {
+  border-radius: 0.5rem;
+  box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
+}
 .article {
   max-width: 90rem;
   margin: 0 auto;
@@ -109,19 +195,20 @@ onMounted(async () => {
     margin-bottom: 2rem;
     display: flex;
     align-items: center;
+    flex-direction: column;
+    @media (min-width: $breakpoint_verysmall) {
+      flex-direction: row;
+    }
 
     &--title {
-      background: linear-gradient(
-        90deg,
-        rgba(204, 43, 94, 1) 0%,
-        rgba(117, 58, 136, 1) 100%
-      );
+      background: $gradient-news-text;
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
       word-wrap: break-word;
       overflow: hidden;
       -webkit-box-orient: vertical;
-      line-height: 3.5rem;
+      line-height: 5rem;
       font-weight: bold;
     }
 
@@ -130,6 +217,7 @@ onMounted(async () => {
       width: 10rem;
       margin-bottom: 1rem;
       margin-right: 2rem;
+      border-radius: 1.5rem;
     }
   }
 
@@ -138,17 +226,14 @@ onMounted(async () => {
   }
   &-title {
     font-size: 3rem;
-    background: linear-gradient(
-      90deg,
-      rgb(110, 42, 144) 0%,
-      rgba(220, 36, 48, 1) 100%
-    );
+    background: $gradient-news-text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
     font-weight: bold;
     margin-bottom: 1rem;
     word-wrap: break-word;
-    line-height: 4rem;
+    line-height: 6rem;
   }
 
   &-text {
@@ -162,40 +247,46 @@ onMounted(async () => {
       color: white;
     }
 
-    &--light{
+    &--light {
       color: $black;
     }
-    &--dark{
-    color: $white;
-
+    &--dark {
+      color: $white;
     }
   }
 
   &-paragraph {
     font-size: 2rem;
-    background: linear-gradient(
-      120deg,
-      rgb(131, 51, 171) 0%,
-      rgba(220, 36, 48, 1) 100%
-    );
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: bold;
     margin-bottom: 1rem;
     word-wrap: break-word;
     line-height: 4rem;
+    &--light {
+      background-color: $black;
+    }
+    &--dark {
+      background-color: $white;
+    }
   }
 
   &-list-container {
     margin-bottom: 1rem;
     padding-left: 2.5rem;
-    color: $white;
   }
 
   &-list-item {
     margin-bottom: 2.5rem;
     line-height: 1.7;
     word-wrap: break-word;
+    &--light {
+      color: $black;
+    }
+    &--dark {
+      color: $white;
+    }
 
     &::before {
       content: '';

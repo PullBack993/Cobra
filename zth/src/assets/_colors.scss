@@ -31,3 +31,11 @@ $chart-light-green: #16C784;
 
 $chart-green: #0ead98;
 $chart-red: #db5541;
+
+
+// Gradient 
+$gradient-news-text: linear-gradient(
+    90deg,
+    rgb(110, 42, 144) 0%,
+    rgba(220, 36, 48, 1) 100%
+  );

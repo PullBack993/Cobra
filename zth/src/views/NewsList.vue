@@ -7,6 +7,8 @@ import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
 import baseButton from '../components/utils/BaseButton.vue';
 import { Article } from '../Interfaces/Article';
 
+const baseApiUrl = import.meta.env.VITE_APP_BASE_URL;
+
 const store = useGlobalStore();
 const newsListData = ref<Array<Article>>([]);
 const loading = ref(true);
@@ -20,7 +22,7 @@ const loadNews = () => {
   loading.value = true;
   try {
     axios
-      .get(`http://localhost:3000/news/newsList?page=${page.value}`)
+      .get(`${baseApiUrl}/news/newsList?page=${page.value}`)
       .then((response) => {
         if (response.status === 200) {
           if (response.data.length !== 0) {
@@ -59,7 +61,7 @@ onMounted(async () => {
         class="news__list-link"
         :to="{
           name: 'ArticleDetails',
-          params: { id: section._id },
+          params: { id: section._id, title: section.title },
         }"
       >
         <li class="news__list-content">
@@ -117,9 +119,13 @@ onMounted(async () => {
       </div>
     </div>
     <div class="button-container">
-      <baseButton @onClick="loadNews" :disabled="disabledBtn" :theme="''">{{
-        buttonText
-      }}</baseButton>
+      <baseButton
+        @onClick="loadNews"
+        :disabled="disabledBtn"
+        :theme="''"
+        :type="undefined"
+        >{{ buttonText }}</baseButton
+      >
     </div>
   </div>
 </template>
