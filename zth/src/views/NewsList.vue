@@ -12,6 +12,8 @@ const newsListData = ref<Array<Article>>([]);
 const loading = ref(true);
 const loadingLength = ref(12);
 const page = ref(0);
+const disabledBtn = ref(false);
+const buttonText = ref('Show more');
 
 const loadNews = () => {
   page.value += 1;
@@ -21,11 +23,18 @@ const loadNews = () => {
       .get(`http://localhost:3000/news/newsList?page=${page.value}`)
       .then((response) => {
         if (response.status === 200) {
-          newsListData.value.push(...response.data);
-          setTimeout(() => {
+          if (response.data.length !== 0) {
+            newsListData.value.push(...response.data);
             loading.value = false;
-          }, 5000);
+          } else {
+            disabledBtn.value = true;
+            loading.value = false;
+            buttonText.value = 'No more news available';
+          }
         }
+      })
+      .finally(() => {
+        loading.value = false;
       });
   } catch (err) {
     loading.value = false;
@@ -54,7 +63,7 @@ onMounted(async () => {
         }"
       >
         <li class="news__list-content">
-          <div>
+          <div class="news__container-image">
             <img
               :src="section.titleImage"
               :alt="section.title"
@@ -80,38 +89,37 @@ onMounted(async () => {
         </li>
       </router-link>
     </ul>
-    <div class="button-container">
-      <baseButton @onClick="loadNews" :disabled="false" :theme="''"
-        >Show more</baseButton
-      >
-    </div>
-  </div>
-
-  <div v-if="loading" class="container">
-    <div v-for="(_, index) in loadingLength" :key="index">
-      <div class="loader">
-        <placeHolderLoader
-          class="loader-spliter"
-          :loader-width="10"
-          width-unit="rem"
-          :loader-height="8.5"
-        ></placeHolderLoader>
-        <div class="loader-content">
+    <div v-if="loading" class="container">
+      <div v-for="(_, index) in loadingLength" :key="index">
+        <div class="loader">
           <placeHolderLoader
             class="loader-spliter"
-            :loader-width="95"
-            width-unit="%"
-            :loader-height="5"
+            :loader-width="26"
+            width-unit="rem"
+            :loader-height="12"
           ></placeHolderLoader>
+          <div class="loader-content">
+            <placeHolderLoader
+              class="loader-spliter"
+              :loader-width="95"
+              width-unit="%"
+              :loader-height="5"
+            ></placeHolderLoader>
 
-          <placeHolderLoader
-            class="loader-spliter"
-            :loader-width="95"
-            width-unit="%"
-            :loader-height="4"
-          ></placeHolderLoader>
+            <placeHolderLoader
+              class="loader-spliter"
+              :loader-width="95"
+              width-unit="%"
+              :loader-height="4"
+            ></placeHolderLoader>
+          </div>
         </div>
       </div>
+    </div>
+    <div class="button-container">
+      <baseButton @onClick="loadNews" :disabled="disabledBtn" :theme="''">{{
+        buttonText
+      }}</baseButton>
     </div>
   </div>
 </template>
@@ -122,9 +130,6 @@ onMounted(async () => {
   width: 97%;
   @media (min-width: $breakpoint_large) {
     width: 82%;
-  }
-  @media (min-width: $breakpoint_container) {
-    width: 65%;
   }
 }
 .loader {
@@ -141,6 +146,11 @@ onMounted(async () => {
     display: flex;
     width: 100%;
     flex-direction: column;
+    margin-left: 1rem;
+    height: 14rem;
+    @media (min-width: $breakpoint_medium) {
+      margin-left: 3rem;
+    }
   }
   &-spliter {
     box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
@@ -160,29 +170,10 @@ onMounted(async () => {
 }
 
 .news {
-  max-width: 100%;
+  width: 100%;
   margin: auto;
-  cursor: pointer;
   @media (min-width: $breakpoint_container) {
     width: 80%;
-  }
-
-  &__list-items {
-    display: flex;
-    flex-direction: colum;
-    margin: 6rem auto;
-    width: 95%;
-    @media (min-width: $breakpoint_large) {
-      width: 80%;
-    }
-  }
-  &__list-link {
-    text-decoration: none;
-  }
-  &__image {
-    margin-right: 1rem;
-    height: 8rem;
-    border-radius: 1rem;
   }
 
   &__list-content {
@@ -192,7 +183,44 @@ onMounted(async () => {
     font-size: 2rem;
     color: $main-purple;
     line-height: 2.7rem;
+    flex-direction: column;
+    border-bottom: 1px solid black;
+    padding-bottom: 6rem;
+
+    @media (min-width: $breakpoint_verysmall) {
+      flex-direction: row;
+      padding-bottom: 3rem;
+    }
   }
+
+  &__list-items {
+    display: flex;
+    flex-direction: colum;
+    margin: 6rem auto;
+    width: 95%;
+    cursor: pointer;
+
+    @media (min-width: $breakpoint_large) {
+      width: 80%;
+    }
+  }
+  &__list-link {
+    text-decoration: none;
+  }
+  &__list-content {
+    max-width: 100vw;
+  }
+
+  &__image {
+    min-width: 12rem;
+    min-height: 12rem;
+    margin-right: 1rem;
+    height: 12rem;
+    min-height: 12rem;
+    border-radius: 1rem;
+    object-fit: cover;
+  }
+
   &__content {
     @media (min-width: $breakpoint_container) {
       margin-left: 3rem;
@@ -225,5 +253,6 @@ onMounted(async () => {
 .button-container {
   display: flex;
   justify-content: center;
+  margin-bottom: 5rem;
 }
 </style>

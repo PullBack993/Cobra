@@ -47,8 +47,7 @@ const classes: Record<string, any> = computed(() => ({
   font-weight: 600;
   cursor: pointer;
 
-  &:hover,
-  &:focus {
+  &:hover {
     border-color: $main-purple-dark-5;
     background: $main-purple-dark-5;
     color: $white;

@@ -6,15 +6,16 @@ const Article = require("../../models/NewsCoins");
 const https = require("https");
 
 puppeteer.use(StealthPlugin());
-const mainUrl = "https://cryptopotato.com/crypto-news/";
+// const mainUrl = "https://cryptopotato.com/crypto-news/";
+const mainUrl = "https://cryptopotato.com/category/crypto-news/";
 
-// fetchNews();
+fetchNews();
 
 router.get("/newsList", async (req, res) => {
-  const limit = 20
+  const limit = 5;
   try {
     const page = parseInt(req.query.page);
-    const skip = (page - 1) * limit
+    const skip = (page - 1) * limit;
     const articles = await Article.find().skip(skip).sort({ createTime: -1 }).limit(limit);
     res.json(articles);
   } catch (error) {
@@ -34,6 +35,7 @@ router.get("/article/:id", async (req, res) => {
     }
 
     const updatedArticle = JSON.parse(JSON.stringify(article));
+    console.log("article title", article.titleImage);
     updatedArticle.titleImage = await getImageProxyUrl(article.titleImage);
 
     updatedArticle.sections.forEach(async (section) => {
@@ -41,7 +43,7 @@ router.get("/article/:id", async (req, res) => {
         section.image[i] = await getImageProxyUrl(section.image[i]);
       }
     });
-    console.log(updatedArticle)
+    console.log(updatedArticle);
     res.json(updatedArticle);
   } catch (error) {
     console.error(error);
@@ -94,13 +96,15 @@ async function fetchNews() {
   await page.goto(`${mainUrl}`);
 
   const newsAllTitles = await page.evaluate(() => {
-    const newsItems = document.querySelectorAll(".rpwe-title a");
-    const newsItemsImg = document.querySelectorAll("li.rpwe-li a img");
+    const newsItems = document.querySelectorAll(".list-item");
+    const newsItemsImg = document.querySelectorAll(".list-item a img");
     const newsArray = [];
     newsItems.forEach((item, i) => {
-      const title = item.innerText;
-      const href = item.href;
-      const src = newsItemsImg[i].src;
+      const titleElement = item.querySelector(".media-heading a");
+      const title = titleElement ? titleElement.innerText : null;
+      const href = titleElement ? titleElement.href : null;
+      const imgElement = item.querySelector(".media-object");
+      const src = imgElement ? imgElement.src : null;
       newsArray.push({ title, href, src });
     });
 
@@ -115,6 +119,7 @@ async function fetchNews() {
 
     if (!isInDatabase) {
       const articlePage = await browser.newPage();
+      console.log(newsAllTitles[i].src);
       await articlePage.goto(`${newsAllTitles[i]?.href}`);
       const articleData = await extractArticleData(articlePage, src);
       if (articleData) {
