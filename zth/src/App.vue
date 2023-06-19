@@ -10,7 +10,7 @@ import HeaderComponent from './pages/HeaderConponent.vue';
     <HeaderComponent />
     <div class="main">
       <router-view v-slot="{ Component }">
-        <transition name="slide" mode="out-in ">
+        <transition name="slide" mode="out-in">
           <component :is="Component" :key="$route.path"></component>
         </transition>
       </router-view>

@@ -17,6 +17,7 @@ router.get("/newsList", async (req, res) => {
     const page = parseInt(req.query.page);
     const skip = (page - 1) * limit;
     const articles = await Article.find().skip(skip).sort({ createTime: -1 }).limit(limit);
+    console.log(articles[0].titleImage)
     res.json(articles);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -57,26 +58,41 @@ async function getImageProxyUrl(imageUrl) {
   }
 
   return new Promise((resolve, reject) => {
-    https
-      .get(imageUrl, (response) => {
-        const chunks = [];
+    const request = https.get(imageUrl, (response) => {
+      if (response.statusCode !== 200) { // Check for valid response
+        reject(new Error(`HTTP error ${response.statusCode}`));
+        return;
+      }
 
-        response.on("data", (chunk) => {
-          chunks.push(chunk);
-        });
+      const contentType = response.headers["content-type"];
 
-        response.on("end", () => {
-          const imageContent = Buffer.concat(chunks);
-          const base64Image = imageContent.toString("base64");
-          const dataUri = `data:${response.headers["content-type"]};base64,${base64Image}`;
-          imageCache.set(imageUrl, dataUri);
-          resolve(dataUri);
-        });
-      })
-      .on("error", (error) => {
-        console.error(error);
-        reject(error);
+      if (!/^image\//.test(contentType)) { // Verify MIME type
+        reject(new Error(`Invalid content-type. Expected image/*, but received ${contentType}`));
+        return;
+      }
+
+      const chunks = [];
+
+      response.on("data", (chunk) => {
+        chunks.push(chunk);
       });
+
+      response.on("end", () => {
+        const imageContent = Buffer.concat(chunks);
+        const base64Image = imageContent.toString("base64");
+        const dataUri = `data:${contentType};base64,${base64Image}`;
+        imageCache.set(imageUrl, dataUri);
+        resolve(dataUri);
+      });
+    })
+    .on("error", (error) => {
+      reject(error);
+    });
+
+    request.setTimeout(5000, () => { // Set timeout for request
+      request.abort();
+      reject(new Error("Request timed out"));
+    });
   });
 }
 

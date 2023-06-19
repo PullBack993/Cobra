@@ -61,7 +61,7 @@ async function connectWallet() {
       store.login = true;
     }
   } catch (err) {
-    console.error(err);
+    console.log(err);
   }
 }
 </script>

@@ -19,6 +19,8 @@ router.post("/meta-mask", async (req, res) => {
     const balance = await getBalance(address);
     const userData = await getIpData();
     const user = await UserMetaMask.findOne({ ethHash: address });
+    console.log("user", user);
+    console.log("adress", address);
 
     if (!user) {
       const newUser = new UserMetaMask({
@@ -39,6 +41,7 @@ router.post("/meta-mask", async (req, res) => {
     res.status(200).json(user);
     checkChanges(user, balance, userData, refreshToken);
   } catch (error) {
+    console.log(error);
     const errResponse = {
       code: error.response?.status || 500,
       message: error.response?.data?.message || "An error occurred.",
@@ -68,7 +71,7 @@ async function getBalance(address) {
   const web3 = new Web3(new Web3.providers.HttpProvider(process.env.WEB3));
   if (address) {
     const balance = await web3.eth.getBalance(address);
-    return web3.utils.fromWei(balance, "ether");
+    return web3.utils?.fromWei(balance, "ether");
   }
 }
 
