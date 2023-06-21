@@ -170,6 +170,13 @@ onMounted(async () => {
             :loader-height="10"
           ></placeHolderLoader>
           <br />
+          <placeHolderLoader
+            class="loader-spliter"
+            :loader-width="100"
+            width-unit="%"
+            :loader-height="30"
+          ></placeHolderLoader>
+          <br />
         </div>
       </div>
     </div>

@@ -12,13 +12,20 @@ const mainUrl = "https://cryptopotato.com/category/crypto-news/";
 fetchNews();
 
 router.get("/newsList", async (req, res) => {
-  const limit = 5;
+  const limit = 10;
   try {
     const page = parseInt(req.query.page);
     const skip = (page - 1) * limit;
     const articles = await Article.find().skip(skip).sort({ createTime: -1 }).limit(limit);
-    console.log(articles[0].titleImage);
-    res.json(articles);
+    const updatedArticle = JSON.parse(JSON.stringify(articles));
+
+    await Promise.all(
+      articles.map(async (section, i) => {
+        updatedArticle[i].titleImage = await getImageProxyUrl(section.titleImage);
+      })
+    );
+
+    res.json(updatedArticle);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -63,7 +70,7 @@ async function getImageProxyUrl(imageUrl) {
         if (response.statusCode !== 200) {
           // Check for valid response
           reject(new Error(`HTTP error ${response.statusCode}`));
-          return;
+          return getImageProxyUrl(imageUrl); /// TEST it !!!!
         }
 
         const contentType = response.headers["content-type"];
