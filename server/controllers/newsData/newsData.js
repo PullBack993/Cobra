@@ -70,7 +70,7 @@ async function getImageProxyUrl(imageUrl) {
         if (response.statusCode !== 200) {
           // Check for valid response
           reject(new Error(`HTTP error ${response.statusCode}`));
-          return getImageProxyUrl(imageUrl); /// TEST it !!!!
+           getImageProxyUrl(imageUrl); /// TEST it !!!!
         }
 
         const contentType = response.headers["content-type"];

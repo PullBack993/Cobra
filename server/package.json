@@ -21,11 +21,12 @@
     "express-rate-limit": "^6.7.0",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.9.0",
-    "nodemon": "^2.0.20",
+    "nodemon": "^1.14.9",
     "puppeteer": "^19.8.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
-    "web3": "^0.20.7"
+    "web3": "^4.0.1",
+    "ws": "^8.13.0"
   },
   "devDependencies": {
     "ts-node": "^10.9.1"

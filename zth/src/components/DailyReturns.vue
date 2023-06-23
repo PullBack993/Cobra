@@ -50,6 +50,7 @@ onMounted(() => {
 // DAY => month: 3, type: day, year: 2023 => DAY
 // WEEK => month: 0, type: week, year 2023
 function reqData(month: number, type: string) {
+  axios.get(`${baseApiUrl}/transfer`).then((res) => console.log(res));
   data.value = null;
   // const coinData = { time: currentTime.value, symbol: currentValue.value };
   axios
