@@ -12,6 +12,7 @@
   "dependencies": {
     "@types/express": "^4.17.16",
     "abort-controller": "^3.0.0",
+    "binance-api-node": "^0.12.6",
     "coingecko-api": "^1.0.10",
     "cookie-parser": "^1.4.6",
     "cron": "^2.3.0",
