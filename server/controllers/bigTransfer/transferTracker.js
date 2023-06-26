@@ -30,41 +30,78 @@ router.get("/", async (req, res) => {
     }
     lastMessageTime = now;
   });
-
+  test()
   // client.websockets.trades(["BTCUSDT"], (trade) => {
   //   // Trade update from REST API
   //   console.log('=>>>>>', trade);
   // });
 
   //1. Step one take first 100 coins
+ 
+});
+
+function test(){
   try {
-    const options = {
-      hostname: 'pro-api.coinmarketcap.com',
-      path: '/v1/cryptocurrency/listings/latest',
-      port: 443, 
-      method: "GET",
-      headers: {
-        "X-CMC_PRO_API_KEY": "",
-      },
-    };
 
-    const requ = https.request(options, (res) => {
-      console.log(`Status: ${res.statusCode}`);
-      console.log(`Headers: ${JSON.stringify(res.headers)}`);
-      res.setEncoding("utf8");
-      res.on("data", (chunk) => {
-        console.log(`Body: ${chunk}`);
-      });
-      res.on("end", () => {
-        console.log("No more data in response.");
-      });
-    });
+https.get('https://api.binance.com/api/v3/ticker/24hr', (resp) => {
+  let data = '';
 
-    requ.end();
+  resp.on('data', (chunk) => {
+    data += chunk;
+  });
+
+  resp.on('end', () => {
+    const results = JSON.parse(data);
+    const usdtPairs = results.filter(pair => pair.symbol.endsWith("USDT"));
+    
+    // Sort the usdtPairs array by market capitalizaton
+    const sortedPairs = usdtPairs.sort((a, b) => b.lastPrice * b.weightedAvgPrice - a.lastPrice * a.weightedAvgPrice);
+    
+    const pairs = sortedPairs
+      .slice(0, 100)
+      .map(result => result.symbol);
+
+    console.log("Top 100 pairs by market capitalization with USDT:", pairs);
+  });
+  
+}).on("error", (err) => {
+  console.log("Error: " + err.message);
+});
   } catch (err) {
     console.log(err);
   }
-});
+}
+
+function get100CoinsByMarketCap(){
+  try {
+    https.get('https://api.binance.com/api/v3/ticker/price', (resp) => {
+      let data = '';
+    
+      resp.on('data', (chunk) => {
+        data += chunk;
+      });
+    
+      resp.on('end', () => {
+        const results = JSON.parse(data);
+        const usdtPairs = results.filter(pair => pair.symbol.endsWith("USDT"));
+        
+        const sortedPairs = usdtPairs.sort((a, b) => parseFloat(b.price)  - parseFloat(a.price) );
+        
+        const pairs = sortedPairs
+          .slice(0, 150)
+          .map(result => result.symbol.toLowerCase() + '@aggTrade');
+    
+        console.log("Top 100 pairs by market capitalization with USDT:", pairs);
+        return pairs
+      });
+      
+    }).on("error", (err) => {
+      console.log("Error: " + err.message);
+    });
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 module.exports = router;
 
