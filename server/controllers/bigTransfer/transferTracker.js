@@ -30,76 +30,72 @@ router.get("/", async (req, res) => {
     }
     lastMessageTime = now;
   });
-  test()
+  get100CoinsByMarketCap();
   // client.websockets.trades(["BTCUSDT"], (trade) => {
   //   // Trade update from REST API
   //   console.log('=>>>>>', trade);
   // });
 
   //1. Step one take first 100 coins
- 
 });
 
-function test(){
+async function getBtcPrice() {
   try {
+  return new Promise((resolve, reject) => {
+    https.get("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT", (response) => {
+      let btcPrice = '';
 
-https.get('https://api.binance.com/api/v3/ticker/24hr', (resp) => {
-  let data = '';
+      response.on("data", (chunk) => {
+        btcPrice += chunk;
+      });
 
-  resp.on('data', (chunk) => {
-    data += chunk;
-  });
-
-  resp.on('end', () => {
-    const results = JSON.parse(data);
-    const usdtPairs = results.filter(pair => pair.symbol.endsWith("USDT"));
-    
-    // Sort the usdtPairs array by market capitalizaton
-    const sortedPairs = usdtPairs.sort((a, b) => b.lastPrice * b.weightedAvgPrice - a.lastPrice * a.weightedAvgPrice);
-    
-    const pairs = sortedPairs
-      .slice(0, 100)
-      .map(result => result.symbol);
-
-    console.log("Top 100 pairs by market capitalization with USDT:", pairs);
-  });
-  
-}).on("error", (err) => {
-  console.log("Error: " + err.message);
-});
-  } catch (err) {
-    console.log(err);
+      response.on("end", () => {
+        resolve(JSON.parse(btcPrice).price);
+      });
+    }).on('error', (error) => {
+      reject(error);
+    });
+  })}
+  catch(error){
+    console.error(error);
+    throw error;
   }
 }
 
-function get100CoinsByMarketCap(){
+async function get100CoinsByMarketCap() {
+  const btcPrice = await getBtcPrice();
   try {
-    https.get('https://api.binance.com/api/v3/ticker/price', (resp) => {
-      let data = '';
-    
-      resp.on('data', (chunk) => {
-        data += chunk;
+
+    https
+      .get("https://api.binance.com/api/v3/ticker/price", (resp) => {
+        let data = "";
+
+        resp.on("data", (chunk) => {
+          data += chunk;
+        });
+
+        resp.on("end", () => {
+          const results = JSON.parse(data);
+          const usdtPairs = results.filter((pair) => pair.symbol.endsWith("USDT"));
+
+          const sortedPairs = usdtPairs.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+
+          const pairs = sortedPairs.slice(0, 150).map((result) => ({
+            name: result.symbol.toLowerCase() + "@aggTrade",
+            price: result.price,
+            qEqBTC: btcPrice / result.price,
+          }));
+
+          console.log("Top 100 pairs by market capitalization with USDT:", pairs.slice(0, 100));
+          console.log("Top 50 pairs by market capitalization with USDT:", pairs.slice(100, 50));
+          return pairs;
+        });
+      })
+      .on("error", (err) => {
+        console.log("Error: " + err.message);
       });
-    
-      resp.on('end', () => {
-        const results = JSON.parse(data);
-        const usdtPairs = results.filter(pair => pair.symbol.endsWith("USDT"));
-        
-        const sortedPairs = usdtPairs.sort((a, b) => parseFloat(b.price)  - parseFloat(a.price) );
-        
-        const pairs = sortedPairs
-          .slice(0, 150)
-          .map(result => result.symbol.toLowerCase() + '@aggTrade');
-    
-        console.log("Top 100 pairs by market capitalization with USDT:", pairs);
-        return pairs
-      });
-      
-    }).on("error", (err) => {
-      console.log("Error: " + err.message);
-    });
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    console.error(error);
   }
 }
 

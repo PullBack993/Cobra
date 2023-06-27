@@ -63,48 +63,54 @@ async function getImageProxyUrl(imageUrl) {
   if (imageCache.has(imageUrl)) {
     return imageCache.get(imageUrl);
   }
+  try {
+    return new Promise((resolve, reject) => {
+      const request = https
+        .get(imageUrl, (response) => {
+          if (response.statusCode !== 200) {
+            // Check for valid response
+            reject(new Error(`HTTP error ${response?.statusCode}`));
+            getImageProxyUrl(imageUrl); /// TEST it !!!!
+          }
 
-  return new Promise((resolve, reject) => {
-    const request = https
-      .get(imageUrl, (response) => {
-        if (response.statusCode !== 200) {
-          // Check for valid response
-          reject(new Error(`HTTP error ${response.statusCode}`));
-           getImageProxyUrl(imageUrl); /// TEST it !!!!
-        }
+          const contentType = response.headers["content-type"];
 
-        const contentType = response.headers["content-type"];
+          if (!/^image\//.test(contentType)) {
+            // Verify MIME type
+            reject(
+              new Error(`Invalid content-type. Expected image/*, but received ${contentType}`)
+            );
+            return;
+          }
 
-        if (!/^image\//.test(contentType)) {
-          // Verify MIME type
-          reject(new Error(`Invalid content-type. Expected image/*, but received ${contentType}`));
-          return;
-        }
+          const chunks = [];
 
-        const chunks = [];
+          response.on("data", (chunk) => {
+            chunks.push(chunk);
+          });
 
-        response.on("data", (chunk) => {
-          chunks.push(chunk);
+          response.on("end", () => {
+            const imageContent = Buffer.concat(chunks);
+            const base64Image = imageContent.toString("base64");
+            const dataUri = `data:${contentType};base64,${base64Image}`;
+            imageCache.set(imageUrl, dataUri);
+            resolve(dataUri);
+          });
+        })
+        .on("error", (error) => {
+          reject(error);
         });
 
-        response.on("end", () => {
-          const imageContent = Buffer.concat(chunks);
-          const base64Image = imageContent.toString("base64");
-          const dataUri = `data:${contentType};base64,${base64Image}`;
-          imageCache.set(imageUrl, dataUri);
-          resolve(dataUri);
-        });
-      })
-      .on("error", (error) => {
-        reject(error);
+      request.setTimeout(5000, () => {
+        // Set timeout for request
+        request.destroy();
+        reject(new Error("Request timed out"));
       });
-
-    request.setTimeout(5000, () => {
-      // Set timeout for request
-      request.destroy();
-      reject(new Error("Request timed out"));
     });
-  });
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
 }
 
 const job = new CronJob(" */3 * * * *", () => {
