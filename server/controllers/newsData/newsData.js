@@ -143,6 +143,7 @@ async function fetchNews() {
 
     return newsArray;
   });
+  try{
 
   for (let i = 0; i < newsAllTitles.length; i++) {
     console.log("title", newsAllTitles[i].title);
@@ -160,7 +161,10 @@ async function fetchNews() {
       }
     }
   }
+}catch(error){
   browser.close();
+  console.error(error)
+}
   console.log("Browser CLOSE =>>> X");
 }
 
