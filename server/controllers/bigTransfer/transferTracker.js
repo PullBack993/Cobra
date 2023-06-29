@@ -35,7 +35,7 @@ router.get("/", async (req, res) => {
         console.log(msg.s, coin.symbol);
         console.log(msg.q, coin.qEqBTC);
         if (msg.m) {
-          console.log(msg.m, "BUY");
+          console.log(msg.m, "BUY");BTC
         } else {
           console.log("SELL");
         }
@@ -95,8 +95,9 @@ async function get100CoinsByPrice(selectedValue = 1) {
             const usdtPairs = results.filter((pair) => pair.symbol.endsWith("USDT"));
 
             const sortedPairs = usdtPairs.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+            console.log(sortedPairs)
 
-            const pairs = sortedPairs.slice(0, 150).map((result) => ({
+            const pairs = sortedPairs.map((result) => ({
               symbol: result.symbol,
               name: result.symbol.toLowerCase() + "@aggTrade",
               price: result.price,
