@@ -146,14 +146,12 @@ async function fetchNews() {
   try{
 
   for (let i = 0; i < newsAllTitles.length; i++) {
-    console.log("title", newsAllTitles[i].title);
     const title = newsAllTitles[i].title;
     const src = newsAllTitles[i].src;
     const isInDatabase = await checkIfTitleExistsInDatabase(title); //Enable after some article
 
     if (!isInDatabase) {
       const articlePage = await browser.newPage();
-      console.log(newsAllTitles[i].src);
       await articlePage.goto(`${newsAllTitles[i]?.href}`);
       const articleData = await extractArticleData(articlePage, src);
       if (articleData) {
@@ -288,15 +286,10 @@ async function extractArticleData(page, imageUrl) {
       for (const listItemElement of listItems) {
         let listItem = await listItemElement.evaluate((node) => node.textContent.trim());
         listItem = listItem.replace(/cryptopotato/gi, "ZTH");
-        console.log(listItem);
         currentList.push(listItem);
       }
-      console.log("lst section list =>", lastSection.listItems);
-      console.log("curr list =>", currentList);
       lastSection.listItems = currentList;
       articleData.sections.push(lastSection);
-      console.log("section index", sections.indexOf(section));
-      console.log("section length", sections.length);
       if (sections.length > sections.indexOf(section)) {
         lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };
       }

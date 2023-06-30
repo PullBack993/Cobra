@@ -126,7 +126,7 @@ router.post("/long-short", async (req, res) => {
           previousSymbol = symbol;
           await page?.waitForSelector(inputSelector);
           const dropDownSymbol = await page?.$$(inputSelector);
-          await dropDownSymbol[1].evaluate((b) => b.click());
+          await dropDownSymbol[1]?.evaluate((b) => b.click());
           await dropDownSymbol[1].type(`${symbol}`);
 
           await new Promise((resolve) => setTimeout(resolve, 500));
