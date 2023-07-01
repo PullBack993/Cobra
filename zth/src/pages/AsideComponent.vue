@@ -227,7 +227,7 @@ onUnmounted(() => {
         <span class="material-symbols-outlined sidebar-home-icon">home</span>
         <p :class="`${isToggle ? 'visible' : 'notVisible'}`">Home</p>
       </RouterLink>
-      <RouterLink to="/pass" class="sidebar-home">
+      <RouterLink to="/volume-monitor" class="sidebar-home">
         <span class="material-symbols-outlined sidebar-home-icon">
           data_usage
         </span>

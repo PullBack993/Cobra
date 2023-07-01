@@ -12,8 +12,6 @@ module.exports = (app) => {
   app.use(cors());
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
-  app.use(express.json());
   // Apply rate limiter to all requests
   app.use(limiter);
-
 };

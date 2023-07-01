@@ -1,19 +1,14 @@
 const WebSocket = require("ws");
-const WebSocketServer = require("ws");
+const http = require("http");
+const socketIO = require("socket.io");
 const router = require("../newsData/newsData");
 const https = require("https");
-
-const wws = new WebSocketServer({
-  port: 8081,
-});
-
+let io;
 let lastMessageTime = 0;
 const maxValues = 50;
 let last50Values = [];
-let retry = 0;
-const maxRetry = 10;
-const destinationWebSocket = createWebSocket();
-router.get("/", async (req, res) => {
+
+async function connectToBinanceWS() {
   const coins100 = await get100CoinsByPrice();
   const ws = new WebSocket("wss://stream.binance.com:9443/ws");
 
@@ -41,10 +36,10 @@ router.get("/", async (req, res) => {
         if (last50Values.length > maxValues) {
           last50Values.shift();
         }
-
-        destinationWebSocket.send(JSON.stringify(last50Values));
         console.log(msg.s, coin.symbol);
         console.log(msg.q, coin.qEqBTC);
+        sendToClient(last50Values);
+
         if (msg.m) {
           console.log(msg.m, "BUY");
         } else {
@@ -55,7 +50,38 @@ router.get("/", async (req, res) => {
 
     lastMessageTime = now;
   });
-});
+
+  return sendToClient;
+}
+
+function createWebSocketServer(port) {
+  const server = http.createServer();
+  const corsWhitelist = ["http://127.0.0.1:5173", "http://localhost:5173", "http://localhost:8080"];
+
+  io = socketIO(server, {
+    cors: {
+      origin: corsWhitelist,
+      methods: ["GET", "POST"],
+      allowedHeaders: ["my-custom-header"],
+      credentials: true,
+    },
+  });
+
+  io.on("connection", (socket) => {
+    console.log("Connected to transfer tracker!");
+    if (last50Values.length > 0) {
+      io.emit("message", JSON.stringify(last50Values));
+    }
+  });
+
+  server.listen(port, () => {
+    console.log(`WebSocket server is listening on port ${port}`);
+  });
+}
+
+function sendToClient(data) {
+  io.emit("message", JSON.stringify(data));
+}
 
 async function getBtcPrice() {
   try {
@@ -122,33 +148,7 @@ async function get100CoinsByPrice(selectedValue = 1) {
     console.error(error);
   }
 }
-
-function createWebSocket() {
-  try {
-    const ws = new WebSocket(process.env.WEBSOCKET_URL);
-
-    ws.on("open", () => {
-      console.log("WebSocket connection opened");
-    });
-
-    ws.on("message", (message) => {
-      console.log(message);
-    });
-
-    ws.on("close", () => {
-      console.log("WebSocket connection closed");
-    });
-
-    return ws; // return the WebSocket instance
-  } catch (error) {
-    console.log(error);
-    if (maxRetry >= retry) {
-      retry++;
-      return createWebSocket();
-    } else {
-      throw error;
-    }
-  }
-}
-
-module.exports = router;
+module.exports = {
+  connectToBinanceWS,
+  createWebSocketServer,
+};

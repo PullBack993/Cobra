@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
-// import ArticleDetails from '../views/ArticleDetails.vue';
+
 const routes = [
   {
     path: '/',
@@ -11,6 +11,11 @@ const routes = [
     path: '/news',
     name: 'news',
     component: () => import('@/views/NewsList.vue'),
+  },
+  {
+    path: '/volume-monitor',
+    name: 'volume monitor',
+    component: () => import('@/views/VolumeMonitor.vue'),
   },
   {
     path: '/news/:id/:title',
@@ -39,6 +44,7 @@ const scrollBehavior = async (to, from, savedPosition) => {
     setTimeout(() => resolve(savedPosition), 300);
   });
 };
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
