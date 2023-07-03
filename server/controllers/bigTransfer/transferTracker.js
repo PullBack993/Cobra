@@ -125,9 +125,9 @@ async function get100CoinsByPrice(selectedValue = 1) {
             const usdtPairs = results.filter((pair) => pair.symbol.endsWith("USDT"));
 
             const sortedPairs = usdtPairs.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
-            console.log(sortedPairs);
+            console.log(sortedPairs.slice(0, 250));
 
-            const pairs = sortedPairs.slice(0, 150).map((result) => ({
+            const pairs = sortedPairs.slice(0, 250).map((result) => ({
               symbol: result.symbol,
               name: result.symbol.toLowerCase() + "@aggTrade",
               price: result.price,
