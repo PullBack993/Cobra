@@ -1,12 +1,15 @@
 const WebSocket = require("ws");
 const http = require("http");
 const socketIO = require("socket.io");
-const router = require("../newsData/newsData");
 const https = require("https");
+const CronJob = require("cron").CronJob;
 let io;
 let lastMessageTime = 0;
 const maxValues = 50;
 let last50Values = [];
+let selectedVolume = 1;
+let btcPrice;
+startCronJobs();
 
 async function connectToBinanceWS() {
   const coins100 = await get100CoinsByPrice();
@@ -32,12 +35,14 @@ async function connectToBinanceWS() {
         msg.q > coin.qEqBTC &&
         now - lastMessageTime < 50
       ) {
+        const test = (msg.p * msg.q) / (btcPrice * selectedVolume);
+        console.log(msg.s, "bitcoin equivalent quantity", test, "coin price => ", msg.p);
         last50Values.push(msg);
         if (last50Values.length > maxValues) {
           last50Values.shift();
         }
         console.log(msg.s, coin.symbol);
-        console.log(msg.q, coin.qEqBTC);
+        console.log(msg.q, "qEQBTC", coin.qEqBTC);
         sendToClient(last50Values);
 
         if (msg.m) {
@@ -108,8 +113,9 @@ async function getBtcPrice() {
   }
 }
 
-async function get100CoinsByPrice(selectedValue = 1) {
-  const btcPrice = await getBtcPrice();
+async function get100CoinsByPrice(volumeInBitcoinEq = 1) {
+  selectedVolume = volumeInBitcoinEq;
+  btcPrice = await getBtcPrice();
   try {
     return new Promise((resolve, reject) => {
       https
@@ -131,7 +137,7 @@ async function get100CoinsByPrice(selectedValue = 1) {
               symbol: result.symbol,
               name: result.symbol.toLowerCase() + "@aggTrade",
               price: result.price,
-              qEqBTC: (btcPrice * selectedValue) / result.price,
+              qEqBTC: (btcPrice * selectedVolume) / result.price,
             }));
 
             // console.log("Top 100 pairs by market capitalization with USDT:", pairs.slice(0, 100));
@@ -147,6 +153,21 @@ async function get100CoinsByPrice(selectedValue = 1) {
   } catch (error) {
     console.error(error);
   }
+}
+
+function startCronJobs() {
+  const job = new CronJob("0 */2 * * * ", () => {
+    console.log("connect to binance websocket =>", new Date().toLocaleTimeString());
+    connectToBinanceWS();
+  });
+
+  const jobGetCurrentPriceBTC = new CronJob(" */1 * * * *", async() => {
+    console.log("get bitcoin price =>", new Date().toLocaleTimeString());
+    btcPrice = await getBtcPrice();
+  });
+
+  jobGetCurrentPriceBTC.start();
+  job.start();
 }
 module.exports = {
   connectToBinanceWS,
