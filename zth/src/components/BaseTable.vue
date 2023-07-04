@@ -9,11 +9,11 @@
           <tbody>
             <tr class="card__td-body">
               <td>
-                <div class="card__td-symbol symbol-50px me-2">
+                <div class="card__td-symbol">
                   <span class="card__td-symbol-label">
                     <img
                       src="/UIFramework/Core/logos/BCH.png"
-                      class="h-50"
+                      class="img"
                       style="border-radius: 50%"
                       alt=""
                     />
@@ -27,50 +27,113 @@
                 </div>
               </td>
               <td>
-                <span class="card__td-text-muted fw-semibold d-block fs-7"
+                <span class="card__td-text-muted"
                   >Tick</span
                 >
-                <span class="">3</span>
+                <span class="card__td-text-dynamic">3</span>
               </td>
               <td>
-                <span class="text-primary fs-7 fw-bold">
-                  <span class="card__td-text-muted fw-semibold d-block fs-7"
+                <span class="text-primary">
+                  <span class="card__td-text-muted"
                     >Volume (₿)</span
                   >
-                  ><span
-                    class="fw-bold d-block fs-5 ng-binding ng-scope"
-                    ng-if="volume.netvolume >= 0"
-                    style="color: #0ec56b"
-                    >3.71</span
-                  ><!-- end ngIf: volume.netvolume >= 0 -->
+                  <span class="card__td-text-dynamic" style="color: #0ec56b">
+                    3.71
+                  </span>
                 </span>
               </td>
               <td>
-                <span class="text-primary fs-7 fw-bold">
-                  <span class="card__td-text-muted fw-semibold d-block fs-7"
+                <span class="text-primary">
+                  <span class="card__td-text-muted"
                     >Total (₿)</span
                   >
-                  <span class="text-dark fw-bold d-block fs-5 ng-binding">
+                  <span class="card__td-text-dynamic">
                     610.47
                   </span>
                 </span>
               </td>
               <td>
-                <span class="text-primary fs-7 fw-bold">
-                  <span class="card__td-text-muted fw-semibold d-block fs-7"
+                <span class="text-primary">
+                  <span class="card__td-text-muted"
                     >Recent (₿)</span
                   >
-                  <span class="text-dark fw-bold d-block fs-5 ng-binding">
+                  <span class="card__td-text-dynamic">
                     606.77
                   </span>
                 </span>
               </td>
               <td class="text-end">
-                <span class="text-primary fs-7 fw-bold">
-                  <span class="card__td-text-muted fw-semibold d-block fs-7"
+                <span class="text-primary">
+                  <span class="card__td-text-muted"
                     >Date</span
                   >
-                  <span class="text-dark fw-bold d-block fs-5 ng-binding">
+                  <span class="card__td-text-dynamic">
+                    02.07.2023 11:51:08
+                  </span>
+                </span>
+              </td>
+            </tr>
+            <tr class="card__td-body">
+              <td>
+                <div class="card__td-symbol">
+                  <span class="card__td-symbol-label">
+                    <img
+                      src="/UIFramework/Core/logos/BCH.png"
+                      class="img"
+                      style="border-radius: 50%"
+                      alt=""
+                    />
+                  </span>
+                </div>
+              </td>
+              <td>
+                <div href="/Crypto/Single?symbol=BCH" class="image">
+                  <label class="card__td-symbol-text">BCH</label>
+                  <label class="card__td-symbol-text-label">/BTC</label>
+                </div>
+              </td>
+              <td>
+                <span class="card__td-text-muted"
+                  >Tick</span
+                >
+                <span class="card__td-text-dynamic">3</span>
+              </td>
+              <td>
+                <span class="text-primary">
+                  <span class="card__td-text-muted"
+                    >Volume (₿)</span
+                  >
+                  <span class="card__td-text-dynamic" style="color: #0ec56b">
+                    3.71
+                  </span>
+                </span>
+              </td>
+              <td>
+                <span class="text-primary">
+                  <span class="card__td-text-muted"
+                    >Total (₿)</span
+                  >
+                  <span class="card__td-text-dynamic">
+                    610.47
+                  </span>
+                </span>
+              </td>
+              <td>
+                <span class="text-primary">
+                  <span class="card__td-text-muted"
+                    >Recent (₿)</span
+                  >
+                  <span class="card__td-text-dynamic">
+                    606.77
+                  </span>
+                </span>
+              </td>
+              <td class="text-end">
+                <span class="text-primary">
+                  <span class="card__td-text-muted"
+                    >Date</span
+                  >
+                  <span class="card__td-text-dynamic">
                     02.07.2023 11:51:08
                   </span>
                 </span>
@@ -142,11 +205,15 @@
       }
     }
   }
-  &-text-muted {
+  &__td-text-muted {
     display: block;
     color: #565674;
-    font-weight: 500;
+    font-weight: 600;
+    font-size: 1.4rem;
     padding-bottom: 0.5rem;
+  }
+  &__td-text-dynamic {
+    font-weight: 700;
   }
 }
 
@@ -155,7 +222,7 @@ td {
 }
 
 tr:nth-child(odd) {
-  background-color: #a7a5a5;
+  // background-color: #484747;
 }
 
 tr:nth-child(even) {
