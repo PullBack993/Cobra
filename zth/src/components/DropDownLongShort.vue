@@ -96,7 +96,7 @@ function onInput(value: string) {
 }
 
 function onOpen(value: boolean) {
-  topElement?.value?.scrollIntoView();
+  // topElement?.value?.scrollIntoView();
   open.value = value;
 }
 
@@ -137,7 +137,7 @@ function selectInput() {
 </script>
 
 <template>
-  <div ref="root">
+  <div class="root" ref="root">
     <InputField
       class="long__short-value"
       :current-item="currentIndexItem"
@@ -326,6 +326,7 @@ function selectInput() {
     font-weight: 500;
     padding: 0.5rem 1.1rem;
     &--dark {
+      color:$white;
       &:hover {
         background-color: $main-purple-dark;
         border-radius: 0.4rem;

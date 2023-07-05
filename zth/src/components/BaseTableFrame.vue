@@ -4,12 +4,7 @@
   <div class="tb">
     <div class="tb__body">
       <div class="tb__responsive">
-        <table class="tb__table">
-          <thead></thead>
-          <tbody>
             <slot />
-          </tbody>
-        </table>
       </div>
     </div>
   </div>
@@ -34,11 +29,6 @@
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
-  &__table {
-    width: 100%;
-    color: $white;
-    caption-side: bottom;
-    border-collapse: collapse;
-  }
+
 }
 </style>
