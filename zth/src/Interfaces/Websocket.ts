@@ -9,5 +9,6 @@ export type Websocket = {
     l: number,    // Last trade ID
     T: number,    // Trade time
     m: boolean,   // Is the buyer the market maker? BUY/SELL
-    M: boolean    // Ignore
+    M: boolean,   // Ignore
+    beq: number,  // Bitcoin equal quantity
   }
