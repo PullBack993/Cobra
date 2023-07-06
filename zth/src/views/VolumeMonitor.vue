@@ -139,10 +139,17 @@ onBeforeUnmount(() => {
 :deep(.root) {
   margin-bottom: 5rem;
   align-content: rig;
-  width: 8%;
+  width: 9rem;
   float: right;
-  margin-right: 5rem;
+  margin-right: 1rem;
   margin-top: 1rem;
+}
+
+@media (min-width: $breakpoint_medium){
+  :deep(.root){
+  margin-right: 5rem;
+  margin-bottom: 6rem;
+  }
 }
 
 .dropdown-container{

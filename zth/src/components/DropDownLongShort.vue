@@ -262,11 +262,10 @@ function selectInput() {
   }
 
   &-dropdown-symbol {
-    margin-top: 0.3rem;
     width: 11rem;
     background: $bg-dark-purple;
     border-radius: $border-light;
-    top: 3.2rem;
+    top: 3.5rem;
 
     &--is-open {
       display: none;
