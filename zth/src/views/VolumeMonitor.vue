@@ -86,7 +86,7 @@ onBeforeUnmount(() => {
             <span class="card__td-text-dynamic">3</span>
           </td>
           <td>
-            <span class="text-primary">
+            <span>
               <span class="card__td-text-muted">Volume (₿)</span>
               <span
                 class="card__td-text-dynamic"
@@ -97,7 +97,7 @@ onBeforeUnmount(() => {
             </span>
           </td>
           <td>
-            <span class="text-primary">
+            <span>
               <span class="card__td-text-muted">Market Maker</span>
               <span
                 class="card__td-text-dynamic"
@@ -108,7 +108,7 @@ onBeforeUnmount(() => {
             </span>
           </td>
           <td>
-            <span class="text-primary">
+            <span>
               <span class="card__td-text-muted">Current Price</span>
               <span class="card__td-text-dynamic">
                 {{ Number(transaction.p).toFixed(2) }}
@@ -116,14 +116,14 @@ onBeforeUnmount(() => {
             </span>
           </td>
           <td>
-            <span class="text-primary">
+            <span >
               <span class="card__td-text-muted">Quantity</span>
               <span class="card__td-text-dynamic">
                 {{ Number(transaction.q).toFixed(2) }}
               </span>
             </span>
           </td>
-          <td class="text-end">
+          <td >
             <span class="text-primary">
               <span class="card__td-text-muted">Date</span>
               <span class="card__td-text-dynamic"> {{ transaction.T }} </span>
