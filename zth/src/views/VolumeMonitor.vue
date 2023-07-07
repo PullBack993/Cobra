@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { io, Socket } from 'socket.io-client';
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
 import { Websocket } from '../Interfaces/Websocket';
 import BaseTableFrame from '../components/BaseTableFrame.vue';
@@ -9,7 +9,7 @@ import DropdownSmall from '@/components/DropDownLongShort.vue';
 const baseApiUrl = import.meta.env.VITE_APP_WEBSOCKET;
 const allowsCoins = ['BTC', 'USDT'];
 const transactions = ref<[Websocket]>([]);
-const test = ref();
+const ticks = ref();
 let socket: Socket;
 
 function connectToSocket() {
@@ -29,6 +29,19 @@ function connectToSocket() {
   });
 }
 
+watch(
+  () => transactions.value,
+  () => {
+    ticks.value = Object.entries(
+      transactions.value.reduce((acc, obj) => {
+        const symbol = obj.s.split('USDT')[0];
+        acc[symbol] = (acc[symbol] || 0) + Number(obj.beq);
+        return acc;
+      }, {})
+    ).map(([symbol, count]) => ({ symbol, count })).sort((a, b) => b.count - a.count);
+  }
+);
+
 onMounted(() => {
   connectToSocket();
 });
@@ -40,102 +53,121 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <BaseTableFrame>
-    <div class="dropdown-container">
-    <DropdownSmall
-      :data="allowsCoins"
-      :with-arrow-icon="true"
-      :readonly="true"
-    />
-    <DropdownSmall
-      :data="['1 BTC', '2 BTC', '3 BTC', '4 BTC', '5 BTC']"
-      :with-arrow-icon="true"
-      :readonly="true"
-    />
+  <div class="test">
+    <BaseTableFrame>
+      <table class="tb__table">
+        <tbody>
+          <tr class="card__td-body" v-for="(tick, i) in ticks" :key="i">
+            <td>
+              <span class="card__td-text-muted">Tick</span>
+              <span class="card__td-text-dynamic">{{ tick.symbol }}</span>
+            </td>
+            <td>
+              <span class="card__td-text-muted">Tick</span>
+              <span class="card__td-text-dynamic">{{ tick.count }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </BaseTableFrame>
+    <BaseTableFrame>
+      <div class="dropdown-container">
+        <DropdownSmall
+          :data="allowsCoins"
+          :with-arrow-icon="true"
+          :readonly="true"
+        />
+        <DropdownSmall
+          :data="['1 BTC', '2 BTC', '3 BTC', '4 BTC', '5 BTC']"
+          :with-arrow-icon="true"
+          :readonly="true"
+        />
+      </div>
+      <table class="tb__table">
+        <thead></thead>
+        <tbody>
+          <tr
+            class="card__td-body"
+            v-for="(transaction, i) in transactions"
+            :key="i"
+          >
+            <td>
+              <div class="card__td-symbol">
+                <span class="card__td-symbol-label">
+                  <img src="" class="img" style="border-radius: 50%" alt="" />
+                </span>
+              </div>
+            </td>
+            <td>
+              <div href="" class="image">
+                <label class="card__td-symbol-text">{{
+                  transaction.s.split('USDT')[0]
+                }}</label>
+                <label class="card__td-symbol-text-label">/USDT</label>
+              </div>
+            </td>
+            <td>
+              <span class="card__td-text-muted">Tick</span>
+              <span class="card__td-text-dynamic">3</span>
+            </td>
+            <td>
+              <span>
+                <span class="card__td-text-muted">Volume (₿)</span>
+                <span
+                  class="card__td-text-dynamic"
+                  :class="transaction.m ? 'green' : 'red'"
+                >
+                  {{ Number(transaction.beq).toFixed(2) }}
+                </span>
+              </span>
+            </td>
+            <td>
+              <span>
+                <span class="card__td-text-muted">Market Maker</span>
+                <span
+                  class="card__td-text-dynamic"
+                  :class="transaction.m ? 'green' : 'red'"
+                >
+                  {{ transaction.m ? 'BUY' : 'SELL' }}
+                </span>
+              </span>
+            </td>
+            <td>
+              <span>
+                <span class="card__td-text-muted">Current Price</span>
+                <span class="card__td-text-dynamic">
+                  {{ Number(transaction.p).toFixed(2) }}
+                </span>
+              </span>
+            </td>
+            <td>
+              <span>
+                <span class="card__td-text-muted">Quantity</span>
+                <span class="card__td-text-dynamic">
+                  {{ Number(transaction.q).toFixed(2) }}
+                </span>
+              </span>
+            </td>
+            <td>
+              <span class="text-primary">
+                <span class="card__td-text-muted">Date</span>
+                <span class="card__td-text-dynamic"> {{ transaction.T }} </span>
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </BaseTableFrame>
   </div>
-    <table class="tb__table">
-      <thead></thead>
-      <tbody>
-        <tr
-          class="card__td-body"
-          v-for="(transaction, i) in transactions"
-          :key="i"
-        >
-          <td>
-            <div class="card__td-symbol">
-              <span class="card__td-symbol-label">
-                <img
-                  src="/UIFramework/Core/logos/BCH.png"
-                  class="img"
-                  style="border-radius: 50%"
-                  alt=""
-                />
-              </span>
-            </div>
-          </td>
-          <td>
-            <div href="/Crypto/Single?symbol=BCH" class="image">
-              <label class="card__td-symbol-text">{{
-                transaction.s.split('USDT')[0]
-              }}</label>
-              <label class="card__td-symbol-text-label">/USDT</label>
-            </div>
-          </td>
-          <td>
-            <span class="card__td-text-muted">Tick</span>
-            <span class="card__td-text-dynamic">3</span>
-          </td>
-          <td>
-            <span>
-              <span class="card__td-text-muted">Volume (₿)</span>
-              <span
-                class="card__td-text-dynamic"
-                :class="transaction.m ? 'green' : 'red'"
-              >
-                {{ Number(transaction.beq).toFixed(2) }}
-              </span>
-            </span>
-          </td>
-          <td>
-            <span>
-              <span class="card__td-text-muted">Market Maker</span>
-              <span
-                class="card__td-text-dynamic"
-                :class="transaction.m ? 'green' : 'red'"
-              >
-                {{ transaction.m ? 'BUY' : 'SELL' }}
-              </span>
-            </span>
-          </td>
-          <td>
-            <span>
-              <span class="card__td-text-muted">Current Price</span>
-              <span class="card__td-text-dynamic">
-                {{ Number(transaction.p).toFixed(2) }}
-              </span>
-            </span>
-          </td>
-          <td>
-            <span >
-              <span class="card__td-text-muted">Quantity</span>
-              <span class="card__td-text-dynamic">
-                {{ Number(transaction.q).toFixed(2) }}
-              </span>
-            </span>
-          </td>
-          <td >
-            <span class="text-primary">
-              <span class="card__td-text-muted">Date</span>
-              <span class="card__td-text-dynamic"> {{ transaction.T }} </span>
-            </span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </BaseTableFrame>
 </template>
 
 <style lang="scss" scoped>
+.test {
+  display: grid;
+  grid-template-columns: 30% 70%;
+  margin: 1rem;
+}
+
 :deep(.root) {
   margin-bottom: 5rem;
   align-content: rig;
@@ -145,15 +177,15 @@ onBeforeUnmount(() => {
   margin-top: 1rem;
 }
 
-@media (min-width: $breakpoint_medium){
-  :deep(.root){
-  margin-right: 5rem;
-  margin-bottom: 6rem;
+@media (min-width: $breakpoint_medium) {
+  :deep(.root) {
+    margin-right: 2rem;
+    margin-bottom: 6rem;
   }
 }
 
-.dropdown-container{
-  display:flex;
+.dropdown-container {
+  display: flex;
   justify-content: right;
 }
 
@@ -216,7 +248,7 @@ td {
 
 tr:nth-child(odd) {
   // background-color: #484747;
-  background-color: #252531;
+  background-color: #07074a6f;
 }
 
 tr:nth-child(even) {
