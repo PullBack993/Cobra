@@ -220,8 +220,8 @@ onMounted(async () => {
     }
 
     &--image {
-      height: 10rem;
-      width: 10rem;
+      height: 11rem;
+width: 17rem;
       margin-bottom: 1rem;
       margin-right: 2rem;
       border-radius: 1.5rem;

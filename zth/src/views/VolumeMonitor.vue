@@ -11,6 +11,19 @@ const allowsCoins = ['BTC', 'USDT'];
 const transactions = ref<[Websocket]>([]);
 const ticks = ref();
 let socket: Socket;
+const firstResponse = ref(false);
+
+const onMountedWS = (dataObject): void => {
+  ticks.value = Object.entries(
+    dataObject.reduce((acc, obj) => {
+      const symbol = obj.s.split('USDT')[0];
+      acc[symbol] = (acc[symbol] || 0) + Number(obj.beq);
+      return acc;
+    }, {})
+  )
+    .map(([symbol, count]) => ({ symbol, count }))
+    .sort((a, b) => b.count - a.count);
+};
 
 function connectToSocket() {
   socket = io(baseApiUrl, {
@@ -25,6 +38,10 @@ function connectToSocket() {
 
   socket.on('message', (responseData) => {
     const dataObject: [Websocket] = JSON.parse(responseData).reverse();
+    if (!firstResponse.value) {
+      firstResponse.value = true;
+      onMountedWS(dataObject);
+    }
     transactions.value = dataObject;
   });
 }
@@ -32,13 +49,21 @@ function connectToSocket() {
 watch(
   () => transactions.value,
   () => {
-    ticks.value = Object.entries(
-      transactions.value.reduce((acc, obj) => {
-        const symbol = obj.s.split('USDT')[0];
-        acc[symbol] = (acc[symbol] || 0) + Number(obj.beq);
-        return acc;
-      }, {})
-    ).map(([symbol, count]) => ({ symbol, count })).sort((a, b) => b.count - a.count);
+    if (firstResponse.value) {
+      transactions.value.forEach(transaction => {
+        const symbol = transaction.s.split('USDT')[0];
+        const count = Number(transaction.beq);
+        if (ticks.value?.hasOwnProperty(symbol)) {
+          ticks.value[symbol] += count; // Increment the count if symbol exists
+        } else {
+          ticks.value[symbol] = count;
+        }
+
+      });
+
+      // Update ticks.value with the new transaction value
+
+    }
   }
 );
 
@@ -54,7 +79,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="test">
-    <BaseTableFrame>
+    <BaseTableFrame class="volume-container">
       <table class="tb__table">
         <tbody>
           <tr class="card__td-body" v-for="(tick, i) in ticks" :key="i">
@@ -70,7 +95,7 @@ onBeforeUnmount(() => {
         </tbody>
       </table>
     </BaseTableFrame>
-    <BaseTableFrame>
+    <BaseTableFrame class="tb">
       <div class="dropdown-container">
         <DropdownSmall
           :data="allowsCoins"
@@ -162,6 +187,9 @@ onBeforeUnmount(() => {
 </template>
 
 <style lang="scss" scoped>
+.volume-container {
+  margin-right: 2rem;
+}
 .test {
   display: grid;
   grid-template-columns: 30% 70%;
@@ -188,57 +216,61 @@ onBeforeUnmount(() => {
   display: flex;
   justify-content: right;
 }
+.tb {
+  max-height: 93.2vh;
+  overflow: hidden;
 
-.tb__table {
-  width: 100%;
-  color: $white;
-  caption-side: bottom;
-  border-collapse: collapse;
-}
-.card__td {
-  &-body:not(:last-child) {
-    border-bottom-width: 1px;
-    border-bottom-style: dashed;
-    border-bottom-color: white;
+  &__table {
+    width: 100%;
+    color: $white;
+    caption-side: bottom;
+    border-collapse: collapse;
   }
-  &-symbol {
-    display: inline-block;
-    flex-shrink: 0;
-    border-radius: 0.475rem;
-    &-label {
-      width: 5rem;
-      height: 5rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 500;
-      color: #cdcdce;
-      background-color: #1b1b29;
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: cover;
-      border-radius: 0.475rem;
+  .card__td {
+    &-body:not(:last-child) {
+      border-bottom-width: 1px;
+      border-bottom-style: dashed;
+      border-bottom-color: white;
     }
-    &-text {
+    &-symbol {
       display: inline-block;
-      color: $white;
-      font-weight: 600;
+      flex-shrink: 0;
+      border-radius: 0.475rem;
       &-label {
-        color: #848e9c;
-        font-size: 11px;
-        text-decoration: none;
+        width: 5rem;
+        height: 5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+        color: #cdcdce;
+        background-color: #1b1b29;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+        border-radius: 0.475rem;
+      }
+      &-text {
+        display: inline-block;
+        color: $white;
+        font-weight: 600;
+        &-label {
+          color: #848e9c;
+          font-size: 11px;
+          text-decoration: none;
+        }
       }
     }
-  }
-  &-text-muted {
-    display: block;
-    color: #565674;
-    font-weight: 600;
-    font-size: 1.4rem;
-    padding-bottom: 0.5rem;
-  }
-  &-text-dynamic {
-    font-weight: 700;
+    &-text-muted {
+      display: block;
+      color: #565674;
+      font-weight: 600;
+      font-size: 1.4rem;
+      padding-bottom: 0.5rem;
+    }
+    &-text-dynamic {
+      font-weight: 700;
+    }
   }
 }
 
