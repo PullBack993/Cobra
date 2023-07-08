@@ -50,19 +50,15 @@ watch(
   () => transactions.value,
   () => {
     if (firstResponse.value) {
-      transactions.value.forEach(transaction => {
+      transactions.value.forEach((transaction) => {
         const symbol = transaction.s.split('USDT')[0];
         const count = Number(transaction.beq);
         if (ticks.value?.hasOwnProperty(symbol)) {
-          ticks.value[symbol] += count; // Increment the count if symbol exists
+          ticks.value[symbol] += count;
         } else {
           ticks.value[symbol] = count;
         }
-
       });
-
-      // Update ticks.value with the new transaction value
-
     }
   }
 );
@@ -78,8 +74,8 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="test">
-    <BaseTableFrame class="volume-container">
+  <div class="volume-monitor">
+    <BaseTableFrame class="volume-monitor__container">
       <table class="tb__table">
         <tbody>
           <tr class="card__td-body" v-for="(tick, i) in ticks" :key="i">
@@ -95,7 +91,7 @@ onBeforeUnmount(() => {
         </tbody>
       </table>
     </BaseTableFrame>
-    <BaseTableFrame class="tb">
+    <BaseTableFrame class="volume-monitor__container-tb">
       <div class="dropdown-container">
         <DropdownSmall
           :data="allowsCoins"
@@ -187,13 +183,17 @@ onBeforeUnmount(() => {
 </template>
 
 <style lang="scss" scoped>
-.volume-container {
-  margin-right: 2rem;
-}
-.test {
+.volume-monitor {
   display: grid;
   grid-template-columns: 30% 70%;
   margin: 1rem;
+  &__container {
+    margin-right: 2rem;
+  }
+  &__container-tb {
+    max-height: 93.2vh;
+    overflow: hidden;
+  }
 }
 
 :deep(.root) {
@@ -216,61 +216,57 @@ onBeforeUnmount(() => {
   display: flex;
   justify-content: right;
 }
-.tb {
-  max-height: 93.2vh;
-  overflow: hidden;
 
-  &__table {
-    width: 100%;
-    color: $white;
-    caption-side: bottom;
-    border-collapse: collapse;
+.tb__table {
+  width: 100%;
+  color: $white;
+  caption-side: bottom;
+  border-collapse: collapse;
+}
+.card__td {
+  &-body:not(:last-child) {
+    border-bottom-width: 1px;
+    border-bottom-style: dashed;
+    border-bottom-color: white;
   }
-  .card__td {
-    &-body:not(:last-child) {
-      border-bottom-width: 1px;
-      border-bottom-style: dashed;
-      border-bottom-color: white;
-    }
-    &-symbol {
-      display: inline-block;
-      flex-shrink: 0;
+  &-symbol {
+    display: inline-block;
+    flex-shrink: 0;
+    border-radius: 0.475rem;
+    &-label {
+      width: 5rem;
+      height: 5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 500;
+      color: #cdcdce;
+      background-color: #1b1b29;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
       border-radius: 0.475rem;
-      &-label {
-        width: 5rem;
-        height: 5rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 500;
-        color: #cdcdce;
-        background-color: #1b1b29;
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: cover;
-        border-radius: 0.475rem;
-      }
-      &-text {
-        display: inline-block;
-        color: $white;
-        font-weight: 600;
-        &-label {
-          color: #848e9c;
-          font-size: 11px;
-          text-decoration: none;
-        }
-      }
     }
-    &-text-muted {
-      display: block;
-      color: #565674;
+    &-text {
+      display: inline-block;
+      color: $white;
       font-weight: 600;
-      font-size: 1.4rem;
-      padding-bottom: 0.5rem;
+      &-label {
+        color: #848e9c;
+        font-size: 11px;
+        text-decoration: none;
+      }
     }
-    &-text-dynamic {
-      font-weight: 700;
-    }
+  }
+  &-text-muted {
+    display: block;
+    color: #565674;
+    font-weight: 600;
+    font-size: 1.4rem;
+    padding-bottom: 0.5rem;
+  }
+  &-text-dynamic {
+    font-weight: 700;
   }
 }
 
