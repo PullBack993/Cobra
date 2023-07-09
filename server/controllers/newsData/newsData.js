@@ -27,7 +27,7 @@ router.get("/newsList", async (req, res) => {
 
     res.json(updatedArticle);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error?.message });
   }
 });
 
@@ -69,7 +69,7 @@ async function getImageProxyUrl(imageUrl) {
         .get(imageUrl, (response) => {
           if (response.statusCode !== 200) {
             // Check for valid response
-            reject(new Error(`HTTP error ${response?.statusCode}`));
+            reject();
             getImageProxyUrl(imageUrl); /// TEST it !!!!
           }
 
@@ -143,26 +143,25 @@ async function fetchNews() {
 
     return newsArray;
   });
-  try{
+  try {
+    for (let i = 0; i < newsAllTitles.length; i++) {
+      const title = newsAllTitles[i].title;
+      const src = newsAllTitles[i].src;
+      const isInDatabase = await checkIfTitleExistsInDatabase(title); //Enable after some article
 
-  for (let i = 0; i < newsAllTitles.length; i++) {
-    const title = newsAllTitles[i].title;
-    const src = newsAllTitles[i].src;
-    const isInDatabase = await checkIfTitleExistsInDatabase(title); //Enable after some article
-
-    if (!isInDatabase) {
-      const articlePage = await browser.newPage();
-      await articlePage.goto(`${newsAllTitles[i]?.href}`);
-      const articleData = await extractArticleData(articlePage, src);
-      if (articleData) {
-        await saveArticleToDatabase(articleData); // Save to DB
+      if (!isInDatabase) {
+        const articlePage = await browser.newPage();
+        await articlePage.goto(`${newsAllTitles[i]?.href}`);
+        const articleData = await extractArticleData(articlePage, src);
+        if (articleData) {
+          await saveArticleToDatabase(articleData); // Save to DB
+        }
       }
     }
+  } catch (error) {
+    browser.close();
+    console.error(error);
   }
-}catch(error){
-  browser.close();
-  console.error(error)
-}
   console.log("Browser CLOSE =>>> X");
 }
 

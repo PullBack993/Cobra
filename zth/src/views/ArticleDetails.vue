@@ -20,7 +20,7 @@ interface ArticleDetails {
 }
 interface Props {
   id: string; // URL params
-  title: string
+  title: string;
 }
 
 const store = useGlobalStore();
@@ -221,7 +221,7 @@ onMounted(async () => {
 
     &--image {
       height: 11rem;
-width: 17rem;
+      width: 17rem;
       margin-bottom: 1rem;
       margin-right: 2rem;
       border-radius: 1.5rem;

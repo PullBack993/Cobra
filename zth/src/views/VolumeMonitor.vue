@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { io, Socket } from 'socket.io-client';
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { onBeforeUnmount, onMounted, ref, watch, computed } from 'vue';
 import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
 import { Websocket } from '../Interfaces/Websocket';
 import BaseTableFrame from '../components/BaseTableFrame.vue';
@@ -17,12 +17,13 @@ const onMountedWS = (dataObject): void => {
   ticks.value = Object.entries(
     dataObject.reduce((acc, obj) => {
       const symbol = obj.s.split('USDT')[0];
-      acc[symbol] = (acc[symbol] || 0) + Number(obj.beq);
+      acc[symbol] = (acc[symbol] || 0) + 1;
       return acc;
     }, {})
   )
     .map(([symbol, count]) => ({ symbol, count }))
     .sort((a, b) => b.count - a.count);
+  console.log(ticks.value);
 };
 
 function connectToSocket() {
@@ -46,20 +47,25 @@ function connectToSocket() {
   });
 }
 
+function getObjectBySymbol(symbol) {
+  return ticks.value.find((obj) => {
+    if (obj.symbol === symbol) {
+      obj.count += 1;
+    }
+  });
+}
+
+const getSymbol = (symbol) => {
+  const a = ticks.value?.find((obj) => obj.symbol === symbol);
+  console.log(a?.count);
+  return a?.count;
+};
+
 watch(
   () => transactions.value,
-  () => {
-    if (firstResponse.value) {
-      transactions.value.forEach((transaction) => {
-        const symbol = transaction.s.split('USDT')[0];
-        const count = Number(transaction.beq);
-        if (ticks.value?.hasOwnProperty(symbol)) {
-          ticks.value[symbol] += count;
-        } else {
-          ticks.value[symbol] = count;
-        }
-      });
-    }
+  (newTransaction) => {
+    // Update object property whenever transactions value changes
+    getObjectBySymbol(newTransaction);
   }
 );
 
@@ -129,7 +135,9 @@ onBeforeUnmount(() => {
             </td>
             <td>
               <span class="card__td-text-muted">Tick</span>
-              <span class="card__td-text-dynamic">3</span>
+              <span class="card__td-text-dynamic">
+                <span>{{ getSymbol(transaction.s.split('USDT')[0]) }}</span>
+              </span>
             </td>
             <td>
               <span>
