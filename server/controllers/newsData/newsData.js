@@ -77,9 +77,7 @@ async function getImageProxyUrl(imageUrl) {
 
           if (!/^image\//.test(contentType)) {
             // Verify MIME type
-            reject(
-              new Error(`Invalid content-type. Expected image/*, but received ${contentType}`)
-            );
+            reject();
             return;
           }
 
@@ -120,30 +118,30 @@ const job = new CronJob(" */3 * * * *", () => {
 job.start();
 
 async function fetchNews() {
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ["--disable-setuid-sandbox", "--no-sandbox", "--single-process", "--no-zygote"],
-    protocolTimeout: 240000,
-  });
-  const page = await browser.newPage();
-  await page.goto(`${mainUrl}`);
-
-  const newsAllTitles = await page.evaluate(() => {
-    const newsItems = document.querySelectorAll(".list-item");
-    const newsItemsImg = document.querySelectorAll(".list-item a img");
-    const newsArray = [];
-    newsItems.forEach((item, i) => {
-      const titleElement = item.querySelector(".media-heading a");
-      const title = titleElement ? titleElement.innerText : null;
-      const href = titleElement ? titleElement.href : null;
-      const imgElement = item.querySelector(".media-object");
-      const src = imgElement ? imgElement.src : null;
-      newsArray.push({ title, href, src });
-    });
-
-    return newsArray;
-  });
   try {
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ["--disable-setuid-sandbox", "--no-sandbox", "--single-process", "--no-zygote"],
+      protocolTimeout: 240000,
+    });
+    const page = await browser.newPage();
+    await page.goto(`${mainUrl}`);
+
+    const newsAllTitles = await page.evaluate(() => {
+      const newsItems = document.querySelectorAll(".list-item");
+      const newsItemsImg = document.querySelectorAll(".list-item a img");
+      const newsArray = [];
+      newsItems.forEach((item, i) => {
+        const titleElement = item.querySelector(".media-heading a");
+        const title = titleElement ? titleElement.innerText : null;
+        const href = titleElement ? titleElement.href : null;
+        const imgElement = item.querySelector(".media-object");
+        const src = imgElement ? imgElement.src : null;
+        newsArray.push({ title, href, src });
+      });
+
+      return newsArray;
+    });
     for (let i = 0; i < newsAllTitles.length; i++) {
       const title = newsAllTitles[i].title;
       const src = newsAllTitles[i].src;

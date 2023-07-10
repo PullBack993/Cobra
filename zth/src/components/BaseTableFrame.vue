@@ -20,9 +20,12 @@
   border-radius: 0.7rem;
   // background-color: #090307;
   border: 1px solid $main-purple;
-background-image: linear-gradient(225deg, #1e07140f 0%, #13061e58 50%, #0e2b40 100%);
-
-
+  background-image: linear-gradient(
+    225deg,
+    #1e07140f 0%,
+    #13061e58 50%,
+    #0e2b40 100%
+  );
 
   &__body {
     color: $black;
@@ -31,6 +34,8 @@ background-image: linear-gradient(225deg, #1e07140f 0%, #13061e58 50%, #0e2b40 1
   &__responsive {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    min-height: 25rem;
+    margin-top: 1rem;
   }
 }
 
