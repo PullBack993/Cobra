@@ -8,8 +8,55 @@ import DropdownSmall from '@/components/DropDownLongShort.vue';
 
 const baseApiUrl = import.meta.env.VITE_APP_WEBSOCKET;
 const allowsCoins = ['BTC', 'USDT'];
-const transactions = ref<[Websocket]>();
-const ticks = ref();
+const transactions = ref<[Websocket]>([
+  {
+    e: 'aggTrade',
+    E: 1688288752003,
+    s: 'BNBUSDT',
+    a: 493574274,
+    p: '244.70000000',
+    q: '183.05800000',
+    f: 659799176,
+    l: 659799198,
+    T: 1688288752001,
+    m: true,
+    M: true,
+    beq: 15.4,
+  },
+  {
+    e: 'aggTrade',
+    E: 1688288600201,
+    s: 'BTCUSDT',
+    a: 2665713610,
+    p: '30500.00000000',
+    q: '2.23799000',
+    f: 3161217562,
+    l: 3161217601,
+    T: 1688288600198,
+    m: false,
+    M: true,
+    beq: 12.31,
+  },
+  {
+    e: 'aggTrade',
+    E: 1688288596170,
+    s: 'SOLUSDT',
+    a: 249176099,
+    p: '19.11000000',
+    q: '1790.97000000',
+    f: 367243316,
+    l: 367243327,
+    T: 1688288596168,
+    m: true,
+    M: true,
+    beq: 1,
+  },
+]);
+const ticks = ref([
+  { symbol: 'BTC', count: 1 },
+  { symbol: 'ETH', count: 5 },
+  { symbol: 'BNB', count: 155 },
+]);
 let socket: Socket;
 const firstResponse = ref(false);
 
@@ -96,7 +143,10 @@ onBeforeUnmount(() => {
             <tr class="card__td-body" v-for="(tick, i) in ticks" :key="i">
               <td>
                 <span class="card__td-text-muted">Tick</span>
-                <span class="card__td-text-dynamic">{{ tick.symbol }}</span>
+                <span class="card__td-text-dynamic"
+                  >{{ tick.symbol }}
+                  <label class="card__td-symbol-text-label">/USDT</label>
+                </span>
               </td>
               <td>
                 <span class="card__td-text-muted">Tick</span>
@@ -108,15 +158,18 @@ onBeforeUnmount(() => {
       </BaseTableFrame>
       <BaseTableFrame class="volume-monitor__container">
         <span class="volume-monitor__left">
-          <h3 class="volume-monitor__title">Tick Board</h3>
-          <small>The most ticked</small>
+          <h3 class="volume-monitor__title">Volume Board</h3>
+          <small>The most volume</small>
         </span>
         <table class="tb__table">
           <tbody>
             <tr class="card__td-body" v-for="(tick, i) in ticks" :key="i">
               <td>
                 <span class="card__td-text-muted">Tick</span>
-                <span class="card__td-text-dynamic">{{ tick.symbol }}</span>
+                <span class="card__td-text-dynamic"
+                  >{{ tick.symbol }}
+                  <label class="card__td-symbol-text-label">/USDT</label>
+                </span>
               </td>
               <td>
                 <span class="card__td-text-muted">Tick</span>
@@ -281,7 +334,6 @@ onBeforeUnmount(() => {
     flex-direction: column;
   }
   &__main {
-    display: flex;
     width: 66.66%;
     flex: 0 0 auto;
   }
