@@ -83,7 +83,7 @@ async function startBrowser() {
   } catch (error) {
     console.error(error);
     if (counter >= 7) {
-      throw new Error();
+      throw new Error(error);
     }
     startBrowser();
     counter++;
@@ -221,31 +221,34 @@ router.post("/long-short", async (req, res) => {
     }
     isRequestDone = true;
     console.error("exchange long short main ==>", err);
-    return;
   }
 });
 
 async function getNameWithLogo(page, symbol) {
-  let nameWithLogo = await page.evaluate(async (symbol) => {
-    const symbolName = document.querySelectorAll(".symbol-name");
-    const exchangeLogo = document.querySelectorAll("div.symbol-and-logo img.symbol-logo");
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const sName = [];
-    const xName = [];
-    let beginPush = false;
-    for (let i = 0; i < symbolName.length; i++) {
-      console.log(symbolName[i]);
-      if (symbolName[i].textContent.trim() === symbol && !beginPush) {
-        beginPush = true;
+  try {
+    let nameWithLogo = await page.evaluate(async (symbol) => {
+      const symbolName = document.querySelectorAll(".symbol-name");
+      const exchangeLogo = document.querySelectorAll("div.symbol-and-logo img.symbol-logo");
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const sName = [];
+      const xName = [];
+      let beginPush = false;
+      for (let i = 0; i < symbolName.length; i++) {
+        console.log(symbolName[i]);
+        if (symbolName[i].textContent.trim() === symbol && !beginPush) {
+          beginPush = true;
+        }
+        if (beginPush) {
+          sName.push(symbolName[i].textContent.trim()); // extract the text content of each element and add to the array
+          xName.push(exchangeLogo[i].getAttribute("src"));
+        }
       }
-      if (beginPush) {
-        sName.push(symbolName[i].textContent.trim()); // extract the text content of each element and add to the array
-        xName.push(exchangeLogo[i].getAttribute("src"));
-      }
-    }
-    return [sName, xName];
-  }, symbol);
-  return nameWithLogo;
+      return [sName, xName];
+    }, symbol);
+    return nameWithLogo;
+  } catch (error) {
+    console.error("getNameWithLogo error: " + error);
+  }
 }
 
 module.exports = router;

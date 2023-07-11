@@ -4,7 +4,7 @@ import { onBeforeUnmount, onMounted, ref, watch, computed } from 'vue';
 import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
 import { IWebsocket } from '../Interfaces/IWebsocket';
 import BaseTableFrame from '../components/BaseTableFrame.vue';
-import DropdownSmall from '@/components/DropDownLongShort.vue';
+import DropdownSmall from '../components/DropDownLongShort.vue';
 
 const baseApiUrl = import.meta.env.VITE_APP_WEBSOCKET;
 const allowsCoins = ['BTC', 'USDT'];
@@ -52,27 +52,58 @@ const transactions = ref<[IWebsocket]>([
     beq: 1,
   },
 ]);
-const ticks = ref([
+const ticks = ref<[ITick]>([
   { symbol: 'BTC', count: 1 },
   { symbol: 'ETH', count: 5 },
   { symbol: 'BNB', count: 155 },
 ]);
+interface ITickVolume {
+  symbol: string;
+  volume: number;
+}
+
+interface ITick {
+  symbol: string;
+  count: number;
+}
+const tickVolume = ref<[ITickVolume]>();
 let socket: Socket;
 const firstResponse = ref(false);
 
-const sortTicksAscending = () => {
-  ticks.value.sort((a, b) => b.count - a.count);
+const sortAscending = (data: [ITickVolume] | [ITick], objProperty: string) => {
+  data?.sort((a, b) => (b as any)[objProperty] - (a as any)[objProperty]);
 };
 
-const onMountedWS = (dataObject: IWebsocket): void => {
-  ticks.value = Object.entries(
+const onMountedWS = (
+  dataObject: [IWebsocket],
+  objToAssign: [ITickVolume] | [ITick],
+  objType: string
+): void => {
+  const transformedData = Object.entries(
     dataObject.reduce((acc, obj) => {
       const symbol = obj.s.split('USDT')[0];
-      acc[symbol] = (acc[symbol] || 0) + 1;
+      const volumeEqualBtc = obj.beq;
+      if (objType === 'count') {
+        acc[symbol] = (acc[symbol] || 0) + 1;
+      } else {
+        acc[symbol] = (acc[symbol] || 0) + volumeEqualBtc;
+      }
       return acc;
-    }, {})
-  ).map(([symbol, count]) => ({ symbol, count }));
-  sortTicksAscending();
+    }, {} as { [key: string]: number })
+  );
+
+  if (objType === 'count') {
+    ticks.value = transformedData.map(([symbol, count]) => ({
+      symbol,
+      count,
+    })) as [ITick];
+  } else {
+    tickVolume.value = transformedData.map(([symbol, volume]) => ({
+      symbol,
+      volume,
+    })) as [ITickVolume];
+  }
+  sortAscending(objToAssign, objType);
 };
 
 function connectToSocket() {
@@ -90,25 +121,42 @@ function connectToSocket() {
     const dataObject: [IWebsocket] = JSON.parse(responseData).reverse();
     if (!firstResponse.value) {
       firstResponse.value = true;
-      onMountedWS(dataObject);
+      onMountedWS(dataObject, ticks.value, 'count');
+      onMountedWS(dataObject, tickVolume.value, 'value');
     }
     transactions.value = dataObject;
   });
 }
 
-const getObjectBySymbol = (newTransaction: [IWebsocket] | undefined) => {
-  const symbol = newTransaction[0].s.split('USDT')[0];
-  console.log(symbol);
-
-  const matchingSymbol = ticks.value.find((obj) => obj.symbol === symbol);
-  if (matchingSymbol) {
-    matchingSymbol.count += 1;
-  } else {
-    ticks.value.push({ symbol, count: 1 });
+const getObjectBySymbol = (newTransaction: [IWebsocket]) => {
+  if (newTransaction) {
+    const symbol = newTransaction[0].s.split('USDT')[0];
+    const volumeEqualBtc = newTransaction[0].beq;
+    const matchingSymbol = tickVolume.value?.find(
+      (obj) => obj.symbol === symbol
+    );
+    if (matchingSymbol) {
+      matchingSymbol.volume += volumeEqualBtc;
+    } else {
+      tickVolume.value?.push({ symbol, volume: volumeEqualBtc });
+    }
   }
 };
 
-const getTickForSymbol = (symbol) => {
+const getVolumeBySymbol = (newTransaction: [IWebsocket] | undefined) => {
+  if (newTransaction) {
+    const symbol = newTransaction[0].s.split('USDT')[0];
+
+    const matchingSymbol = ticks.value.find((obj) => obj.symbol === symbol);
+    if (matchingSymbol) {
+      matchingSymbol.count += 1;
+    } else {
+      ticks.value.push({ symbol, count: 1 });
+    }
+  }
+};
+
+const getTickForSymbol = (symbol: string) => {
   const tick = ticks.value?.find((obj) => obj.symbol === symbol);
   return tick?.count;
 };
@@ -117,8 +165,13 @@ watch(
   () => transactions.value,
   (newTransaction) => {
     // Update object property whenever transactions value changes
-    sortTicksAscending();
+    // sortTicksAscending();
     getObjectBySymbol(newTransaction);
+    getVolumeBySymbol(newTransaction);
+    sortAscending(ticks.value, 'count');
+    if (tickVolume.value) {
+      sortAscending(tickVolume.value, 'volume');
+    }
   }
 );
 
@@ -144,7 +197,7 @@ onBeforeUnmount(() => {
           <tbody>
             <tr class="card__td-body" v-for="(tick, i) in ticks" :key="i">
               <td>
-                <span class="card__td-text-muted">Tick</span>
+                <span class="card__td-text-muted"></span>
                 <span class="card__td-text-dynamic"
                   >{{ tick.symbol }}
                   <label class="card__td-symbol-text-label">/USDT</label>
@@ -164,18 +217,20 @@ onBeforeUnmount(() => {
           <small>The most volume</small>
         </span>
         <table class="tb__table">
-          <tbody>
-            <tr class="card__td-body" v-for="(tick, i) in ticks" :key="i">
+          <tbody v-if="tickVolume">
+            <tr class="card__td-body" v-for="(tick, i) in tickVolume" :key="i">
               <td>
-                <span class="card__td-text-muted">Tick</span>
+                <span class="card__td-text-muted"></span>
                 <span class="card__td-text-dynamic"
                   >{{ tick.symbol }}
                   <label class="card__td-symbol-text-label">/USDT</label>
                 </span>
               </td>
               <td>
-                <span class="card__td-text-muted">Tick</span>
-                <span class="card__td-text-dynamic">{{ tick.count }}</span>
+                <span class="card__td-text-muted">Volume</span>
+                <span class="card__td-text-dynamic">{{
+                  tick.volume.toFixed(2)
+                }}</span>
               </td>
             </tr>
           </tbody>
@@ -308,9 +363,9 @@ onBeforeUnmount(() => {
 
   &__container {
     margin-right: 2rem;
+    height: auto;
   }
   &__container-tb {
-    max-height: 93.2vh;
     overflow: hidden;
   }
   &__additional-items {
