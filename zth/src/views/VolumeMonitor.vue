@@ -2,13 +2,13 @@
 import { io, Socket } from 'socket.io-client';
 import { onBeforeUnmount, onMounted, ref, watch, computed } from 'vue';
 import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
-import { Websocket } from '../Interfaces/Websocket';
+import { IWebsocket } from '../Interfaces/IWebsocket';
 import BaseTableFrame from '../components/BaseTableFrame.vue';
 import DropdownSmall from '@/components/DropDownLongShort.vue';
 
 const baseApiUrl = import.meta.env.VITE_APP_WEBSOCKET;
 const allowsCoins = ['BTC', 'USDT'];
-const transactions = ref<[Websocket]>([
+const transactions = ref<[IWebsocket]>([
   {
     e: 'aggTrade',
     E: 1688288752003,
@@ -60,7 +60,11 @@ const ticks = ref([
 let socket: Socket;
 const firstResponse = ref(false);
 
-const onMountedWS = (dataObject): void => {
+const sortTicksAscending = () => {
+  ticks.value.sort((a, b) => b.count - a.count);
+};
+
+const onMountedWS = (dataObject: IWebsocket): void => {
   ticks.value = Object.entries(
     dataObject.reduce((acc, obj) => {
       const symbol = obj.s.split('USDT')[0];
@@ -83,7 +87,7 @@ function connectToSocket() {
   });
 
   socket.on('message', (responseData) => {
-    const dataObject: [Websocket] = JSON.parse(responseData).reverse();
+    const dataObject: [IWebsocket] = JSON.parse(responseData).reverse();
     if (!firstResponse.value) {
       firstResponse.value = true;
       onMountedWS(dataObject);
@@ -92,7 +96,7 @@ function connectToSocket() {
   });
 }
 
-const getObjectBySymbol = (newTransaction: [Websocket] | undefined) => {
+const getObjectBySymbol = (newTransaction: [IWebsocket] | undefined) => {
   const symbol = newTransaction[0].s.split('USDT')[0];
   console.log(symbol);
 
@@ -108,9 +112,7 @@ const getTickForSymbol = (symbol) => {
   const tick = ticks.value?.find((obj) => obj.symbol === symbol);
   return tick?.count;
 };
-const sortTicksAscending = () => {
-  ticks.value.sort((a, b) => b.count - a.count);
-};
+
 watch(
   () => transactions.value,
   (newTransaction) => {

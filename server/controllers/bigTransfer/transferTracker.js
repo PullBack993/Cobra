@@ -5,7 +5,7 @@ const https = require("https");
 const CronJob = require("cron").CronJob;
 let io;
 let lastMessageTime = 0;
-const maxValues = 50;
+const maxValues = 20;
 let last50Values = [];
 let selectedVolume = 1;
 let btcPrice;
@@ -38,7 +38,7 @@ async function connectToBinanceWS() {
         const test = (msg.p * msg.q) / (btcPrice * selectedVolume);
         console.log(msg.s, "bitcoin equivalent quantity", test, "coin price => ", msg.p);
         msg.beq = test;
-        msg.T = convertTimestamp(msg.T)
+        msg.T = convertTimestamp(msg.T);
         last50Values.push(msg);
         if (last50Values.length > maxValues) {
           last50Values.shift();
@@ -71,7 +71,7 @@ function convertTimestamp(timestamp) {
   const minute = date.getMinutes().toString().padStart(2, "0");
   const second = date.getSeconds().toString().padStart(2, "0");
 
-  return `${day}.${month}.${year} ${hour}:${minute}:${second}`
+  return `${day}.${month}.${year} ${hour}:${minute}:${second}`;
 }
 
 function createWebSocketServer(port) {

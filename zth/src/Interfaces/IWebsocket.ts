@@ -1,4 +1,4 @@
-export type Websocket = {
+export type IWebsocket = {
     e: string,    // Event type
     E: number,    // Event time
     s: string,    // Symbol

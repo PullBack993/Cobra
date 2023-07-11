@@ -5,12 +5,12 @@ import { useRoute } from 'vue-router';
 import { useGlobalStore } from '../store/global';
 import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
 import baseButton from '../components/utils/BaseButton.vue';
-import { Article } from '../Interfaces/Article';
+import { IArticle } from '../Interfaces/IArticle';
 
 const baseApiUrl = import.meta.env.VITE_APP_BASE_URL;
 
 const store = useGlobalStore();
-const newsListData = ref<Array<Article>>([]);
+const newsListData = ref<Array<IArticle>>([]);
 const loading = ref(true);
 const loadingLength = ref(12);
 const page = ref(0);

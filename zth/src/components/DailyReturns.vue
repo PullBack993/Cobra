@@ -202,6 +202,7 @@ function removeLy() {
   flex-wrap: wrap;
   justify-content: flex-end;
   margin-right: 2rem;
+  min-height: 5rem;
 
   &__container {
     display: flex;

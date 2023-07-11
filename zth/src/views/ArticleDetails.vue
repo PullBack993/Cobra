@@ -3,21 +3,8 @@ import { ref, onMounted } from 'vue';
 import axios, { AxiosError } from 'axios';
 import { useGlobalStore } from '../store/global';
 import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
+import { IArticleDetails } from '../Interfaces/IArticleDetails';
 
-interface ArticleDetails {
-  title: string;
-  titleImage: string;
-  sections: [
-    {
-      heading: string;
-      text: [string];
-      paragraph: string;
-      image: [string];
-      listItems: [string];
-    }
-  ];
-  createTime: string;
-}
 interface Props {
   id: string; // URL params
   title: string;
@@ -27,7 +14,7 @@ const store = useGlobalStore();
 const loading = ref(true);
 const props = withDefaults(defineProps<Props>(), {});
 
-const article = ref<ArticleDetails>();
+const article = ref<IArticleDetails>();
 
 onMounted(async () => {
   await axios

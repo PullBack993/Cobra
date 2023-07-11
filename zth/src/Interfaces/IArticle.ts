@@ -1,4 +1,4 @@
-export type Article = {
+export type IArticle = {
     _id: string,
     title: string;
     titleImage: string;
