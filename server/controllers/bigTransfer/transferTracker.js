@@ -43,15 +43,7 @@ async function connectToBinanceWS() {
         if (last50Values.length > maxValues) {
           last50Values.shift();
         }
-        console.log(msg.s, coin.symbol);
-        console.log(msg.q, "qEQBTC", coin.qEqBTC);
         sendToClient(last50Values);
-
-        if (msg.m) {
-          console.log(msg.m, "BUY");
-        } else {
-          console.log("SELL");
-        }
       }
     });
 

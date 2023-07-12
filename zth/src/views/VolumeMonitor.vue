@@ -139,6 +139,9 @@ const getObjectBySymbol = (newTransaction: [IWebsocket]) => {
       matchingSymbol.volume += volumeEqualBtc;
     } else {
       tickVolume.value?.push({ symbol, volume: volumeEqualBtc });
+      if (tickVolume.value?.length > 12) {
+        tickVolume.value?.pop();
+      }
     }
   }
 };
@@ -152,6 +155,9 @@ const getVolumeBySymbol = (newTransaction: [IWebsocket] | undefined) => {
       matchingSymbol.count += 1;
     } else {
       ticks.value.push({ symbol, count: 1 });
+      if (ticks.value?.length > 12) {
+        ticks.value?.pop();
+      }
     }
   }
 };
@@ -164,8 +170,6 @@ const getTickForSymbol = (symbol: string) => {
 watch(
   () => transactions.value,
   (newTransaction) => {
-    // Update object property whenever transactions value changes
-    // sortTicksAscending();
     getObjectBySymbol(newTransaction);
     getVolumeBySymbol(newTransaction);
     sortAscending(ticks.value, 'count');
