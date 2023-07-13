@@ -60,11 +60,15 @@ const ticks = ref<[ITick]>([
 interface ITickVolume {
   symbol: string;
   volume: number;
+  buy: number;
+  sell: number;
 }
 
 interface ITick {
   symbol: string;
   count: number;
+  buy: number;
+  sell: number;
 }
 const tickVolume = ref<[ITickVolume]>();
 let socket: Socket;
@@ -83,10 +87,20 @@ const onMountedWS = (
     dataObject.reduce((acc, obj) => {
       const symbol = obj.s.split('USDT')[0];
       const volumeEqualBtc = obj.beq;
+      const marketMaker = obj.m;
       if (objType === 'count') {
         acc[symbol] = (acc[symbol] || 0) + 1;
       } else {
         acc[symbol] = (acc[symbol] || 0) + volumeEqualBtc;
+      }
+      if (
+        objType === 'volume' &&
+        (marketMaker === true || marketMaker === false)
+      ) {
+        acc[symbol + '_buy'] =
+          (acc[symbol + '_buy'] || 0) + (marketMaker ? 1 : 0);
+        acc[symbol + '_sell'] =
+          (acc[symbol + '_sell'] || 0) + (marketMaker ? 0 : 1);
       }
       return acc;
     }, {} as { [key: string]: number })
@@ -101,6 +115,8 @@ const onMountedWS = (
     tickVolume.value = transformedData.map(([symbol, volume]) => ({
       symbol,
       volume,
+      buy: transformedData[symbol + '_buy'] || 0,
+      sell: transformedData[symbol + '_sell'] || 0,
     })) as [ITickVolume];
   }
   sortAscending(objToAssign, objType);
@@ -132,13 +148,24 @@ const getObjectBySymbol = (newTransaction: [IWebsocket]) => {
   if (newTransaction) {
     const symbol = newTransaction[0].s.split('USDT')[0];
     const volumeEqualBtc = newTransaction[0].beq;
+    const marketMaker = newTransaction[0].m;
     const matchingSymbol = tickVolume.value?.find(
       (obj) => obj.symbol === symbol
     );
     if (matchingSymbol) {
       matchingSymbol.volume += volumeEqualBtc;
+      if (marketMaker) {
+        matchingSymbol.buy += volumeEqualBtc;
+      } else {
+        matchingSymbol.sell += volumeEqualBtc;
+      }
     } else {
-      tickVolume.value?.push({ symbol, volume: volumeEqualBtc });
+      tickVolume.value?.push({
+        symbol,
+        volume: volumeEqualBtc,
+        buy: marketMaker ? volumeEqualBtc : 0,
+        sell: marketMaker ? 0 : volumeEqualBtc,
+      });
       if (tickVolume.value?.length > 12) {
         tickVolume.value?.pop();
       }
@@ -149,12 +176,22 @@ const getObjectBySymbol = (newTransaction: [IWebsocket]) => {
 const getVolumeBySymbol = (newTransaction: [IWebsocket] | undefined) => {
   if (newTransaction) {
     const symbol = newTransaction[0].s.split('USDT')[0];
-
+    const marketMaker = newTransaction[0].m;
     const matchingSymbol = ticks.value.find((obj) => obj.symbol === symbol);
     if (matchingSymbol) {
       matchingSymbol.count += 1;
+      if (marketMaker) {
+        matchingSymbol.buy += 1;
+      } else {
+        matchingSymbol.sell += 1;
+      }
     } else {
-      ticks.value.push({ symbol, count: 1 });
+      ticks.value?.push({
+        symbol,
+        count: 1,
+        buy: marketMaker ? 1 : 0,
+        sell: marketMaker ? 0 : 1,
+      });
       if (ticks.value?.length > 12) {
         ticks.value?.pop();
       }
@@ -211,6 +248,14 @@ onBeforeUnmount(() => {
                 <span class="card__td-text-muted">Tick</span>
                 <span class="card__td-text-dynamic">{{ tick.count }}</span>
               </td>
+              <td>
+                <span class="card__td-text-muted">Buy</span>
+                <span class="card__td-text-dynamic">{{ tick.buy }}</span>
+              </td>
+              <td>
+                <span class="card__td-text-muted">Sell</span>
+                <span class="card__td-text-dynamic">{{ tick.sell }}</span>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -234,6 +279,18 @@ onBeforeUnmount(() => {
                 <span class="card__td-text-muted">Volume</span>
                 <span class="card__td-text-dynamic">{{
                   tick.volume.toFixed(2)
+                }}</span>
+              </td>
+              <td>
+                <span class="card__td-text-muted">Buy</span>
+                <span class="card__td-text-dynamic">{{
+                  tick.buy.toFixed(2)
+                }}</span>
+              </td>
+              <td>
+                <span class="card__td-text-muted">Sell</span>
+                <span class="card__td-text-dynamic">{{
+                  tick.sell.toFixed(2)
                 }}</span>
               </td>
             </tr>
