@@ -430,10 +430,12 @@ onBeforeUnmount(() => {
 
 .volume-monitor {
   display: flex;
+  flex-direction: column-reverse;
 
   &__container {
     margin-right: 2rem;
     height: auto;
+    width: 100%;
   }
   &__container-tb {
     overflow: hidden;
@@ -456,12 +458,11 @@ onBeforeUnmount(() => {
   }
   &__additional-info {
     display: flex;
-    flex: 0 0 auto;
-    width: 33.33%;
+    width: 100%;
     flex-direction: column;
   }
   &__main {
-    width: 66.66%;
+    width: 100%;
     flex: 0 0 auto;
   }
 }
@@ -536,5 +537,33 @@ tr:nth-child(even) {
 }
 .red {
   color: $chart-red;
+}
+
+@media (min-width: $breakpoint_verysmall) {
+  .volume-monitor__additional-info {
+    width: 100%;
+    flex-direction: row;
+  }
+}
+
+@media (min-width: $breakpoint_medium) {
+  .volume-monitor {
+    flex-direction: row;
+
+    &__container {
+      width: auto;
+    }
+
+    &__additional-info {
+      display: flex;
+      flex: 0 0 auto;
+      width: 33.33%;
+      flex-direction: column;
+    }
+    &__main {
+      width: 66.66%;
+      flex: 0 0 auto;
+    }
+  }
 }
 </style>
