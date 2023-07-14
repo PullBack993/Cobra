@@ -157,7 +157,7 @@ async function fetchNews() {
       }
     }
   } catch (error) {
-    browser.close();
+    browser?.close();
     console.error(error);
   }
   console.log("Browser CLOSE =>>> X");

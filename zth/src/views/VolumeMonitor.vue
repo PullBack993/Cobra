@@ -83,42 +83,51 @@ const onMountedWS = (
   objToAssign: [ITickVolume] | [ITick],
   objType: string
 ): void => {
-  const transformedData = Object.entries(
-    dataObject.reduce((acc, obj) => {
-      const symbol = obj.s.split('USDT')[0];
-      const volumeEqualBtc = obj.beq;
-      const marketMaker = obj.m;
-      if (objType === 'count') {
-        acc[symbol] = (acc[symbol] || 0) + 1;
+  const transformedData: {
+    [key: string]: {
+      symbol: string;
+      volume?: number;
+      count?: number;
+      buy: number;
+      sell: number;
+    };
+  } = {};
+  /* eslint-disable no-restricted-syntax */
+  for (const obj of dataObject) {
+    const symbol = obj.s.split('USDT')[0];
+    const volumeEqualBtc = obj.beq;
+    const marketMaker = obj.m;
+
+    if (objType === 'count') {
+      if (!transformedData[symbol]) {
+        transformedData[symbol] = { symbol, count: 0, buy: 0, sell: 0 };
+      }
+      transformedData[symbol].count = (transformedData[symbol].count ?? 0) + 1;
+      if (marketMaker) {
+        transformedData[symbol].buy += 1;
       } else {
-        acc[symbol] = (acc[symbol] || 0) + volumeEqualBtc;
+        transformedData[symbol].sell += 1;
       }
-      if (
-        objType === 'volume' &&
-        (marketMaker === true || marketMaker === false)
-      ) {
-        acc[symbol + '_buy'] =
-          (acc[symbol + '_buy'] || 0) + (marketMaker ? 1 : 0);
-        acc[symbol + '_sell'] =
-          (acc[symbol + '_sell'] || 0) + (marketMaker ? 0 : 1);
+    } else if (objType === 'volume') {
+      if (!transformedData[symbol]) {
+        transformedData[symbol] = { symbol, volume: 0, buy: 0, sell: 0 };
       }
-      return acc;
-    }, {} as { [key: string]: number })
-  );
+      transformedData[symbol].volume =
+        (transformedData[symbol].volume ?? 0) + volumeEqualBtc;
+      if (marketMaker) {
+        transformedData[symbol].buy += volumeEqualBtc;
+      } else {
+        transformedData[symbol].sell += volumeEqualBtc;
+      }
+    }
+  }
 
   if (objType === 'count') {
-    ticks.value = transformedData.map(([symbol, count]) => ({
-      symbol,
-      count,
-    })) as [ITick];
+    ticks.value = Object.values(transformedData) as [ITick];
   } else {
-    tickVolume.value = transformedData.map(([symbol, volume]) => ({
-      symbol,
-      volume,
-      buy: transformedData[symbol + '_buy'] || 0,
-      sell: transformedData[symbol + '_sell'] || 0,
-    })) as [ITickVolume];
+    tickVolume.value = Object.values(transformedData) as [ITickVolume];
   }
+
   sortAscending(objToAssign, objType);
 };
 
@@ -138,7 +147,7 @@ function connectToSocket() {
     if (!firstResponse.value) {
       firstResponse.value = true;
       onMountedWS(dataObject, ticks.value, 'count');
-      onMountedWS(dataObject, tickVolume.value, 'value');
+      onMountedWS(dataObject, tickVolume.value, 'volume');
     }
     transactions.value = dataObject;
   });
@@ -250,11 +259,11 @@ onBeforeUnmount(() => {
               </td>
               <td>
                 <span class="card__td-text-muted">Buy</span>
-                <span class="card__td-text-dynamic">{{ tick.buy }}</span>
+                <span class="card__td-text-dynamic green">{{ tick.buy }}</span>
               </td>
               <td>
                 <span class="card__td-text-muted">Sell</span>
-                <span class="card__td-text-dynamic">{{ tick.sell }}</span>
+                <span class="card__td-text-dynamic red">{{ tick.sell }}</span>
               </td>
             </tr>
           </tbody>
@@ -283,13 +292,13 @@ onBeforeUnmount(() => {
               </td>
               <td>
                 <span class="card__td-text-muted">Buy</span>
-                <span class="card__td-text-dynamic">{{
+                <span class="card__td-text-dynamic green">{{
                   tick.buy.toFixed(2)
                 }}</span>
               </td>
               <td>
                 <span class="card__td-text-muted">Sell</span>
-                <span class="card__td-text-dynamic">{{
+                <span class="card__td-text-dynamic red">{{
                   tick.sell.toFixed(2)
                 }}</span>
               </td>
