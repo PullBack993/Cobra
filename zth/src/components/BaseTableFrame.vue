@@ -33,6 +33,7 @@
   }
   &__responsive {
     overflow-x: auto;
+    @include customHorizontalScrollbar($height: 0.2rem);
     -webkit-overflow-scrolling: touch;
     min-height: 25rem;
     margin-top: 1rem;

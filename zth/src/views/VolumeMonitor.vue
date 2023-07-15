@@ -226,8 +226,7 @@ onBeforeUnmount(() => {
                   <span class="card__td-symbol-label">
                     <img
                       :src="tick?.image"
-                      class="img"
-                      style="border-radius: 50%"
+                      class="card__tb-img"
                       :alt="tick.symbol"
                     />
                   </span>
@@ -269,8 +268,7 @@ onBeforeUnmount(() => {
                   <span class="card__td-symbol-label">
                     <img
                       :src="tick?.image"
-                      class="img"
-                      style="border-radius: 50%"
+                      class="card__tb-img"
                       :alt="tick.symbol"
                     />
                   </span>
@@ -339,8 +337,7 @@ onBeforeUnmount(() => {
                   <span class="card__td-symbol-label">
                     <img
                       :src="transaction?.image"
-                      class="img"
-                      style="border-radius: 50%"
+                      class="card__tb-img"
                       :alt="transaction.s"
                     />
                   </span>
@@ -488,6 +485,9 @@ onBeforeUnmount(() => {
     border-bottom-style: dashed;
     border-bottom-color: white;
   }
+  &-img {
+    border-radius: 50%;
+  }
   &-symbol {
     display: inline-block;
     flex-shrink: 0;
@@ -533,7 +533,7 @@ td {
 }
 
 tr:nth-child(odd) {
-  background-color: #07074a6f;
+  background-color: #07074a26;
 }
 
 tr:nth-child(even) {
