@@ -10,7 +10,7 @@ const CoinGeckoClient = new CoinGecko();
 let io;
 let lastMessageTime = 0;
 const maxValues = 20;
-let last50Values = [];
+let last20Values = [];
 let selectedVolume = 1;
 let btcPrice;
 startCronJobs();
@@ -41,15 +41,15 @@ async function connectToBinanceWS() {
       ) {
         const searchedCoin = findCoin(allCoins, msg.s.split("USDT")[0]);
         const image = await CoinGeckoClient.coins.fetch(searchedCoin.id);
-        msg.image = image.data.image.thumb;
+        msg.image = determineImage(image);
         const test = (msg.p * msg.q) / (btcPrice * selectedVolume);
         msg.beq = test;
         msg.T = convertTimestamp(msg.T);
-        last50Values.push(msg);
-        if (last50Values.length > maxValues) {
-          last50Values.shift();
+        last20Values.push(msg);
+        if (last20Values.length > maxValues) {
+          last20Values.shift();
         }
-        sendToClient(last50Values);
+        sendToClient(last20Values);
       }
     });
 
@@ -57,6 +57,14 @@ async function connectToBinanceWS() {
   });
 
   return sendToClient;
+}
+
+function determineImage(image) {
+  return image.data.image?.thumb
+    ? image.data.image?.thumb
+    : image.data.image?.large
+    ? image.data.image?.large
+    : image.data.image?.small;
 }
 
 function findCoin(allCoins, searchParams) {
@@ -100,8 +108,8 @@ function createWebSocketServer(port) {
 
   io.on("connection", (socket) => {
     console.log("Connected to transfer tracker!");
-    if (last50Values.length > 0) {
-      io.emit("message", JSON.stringify(last50Values));
+    if (last20Values.length > 0) {
+      io.emit("message", JSON.stringify(last20Values));
     }
   });
 

@@ -6,62 +6,12 @@ import { IWebsocket } from '../Interfaces/IWebsocket';
 import BaseTableFrame from '../components/BaseTableFrame.vue';
 import DropdownSmall from '../components/DropDownLongShort.vue';
 
-const baseApiUrl = import.meta.env.VITE_APP_WEBSOCKET;
-const allowsCoins = ['BTC', 'USDT'];
-const transactions = ref<[IWebsocket]>([
-  {
-    e: 'aggTrade',
-    E: 1688288752003,
-    s: 'BNBUSDT',
-    a: 493574274,
-    p: '244.70000000',
-    q: '183.05800000',
-    f: 659799176,
-    l: 659799198,
-    T: 1688288752001,
-    m: true,
-    M: true,
-    beq: 15.4,
-  },
-  {
-    e: 'aggTrade',
-    E: 1688288600201,
-    s: 'BTCUSDT',
-    a: 2665713610,
-    p: '30500.00000000',
-    q: '2.23799000',
-    f: 3161217562,
-    l: 3161217601,
-    T: 1688288600198,
-    m: false,
-    M: true,
-    beq: 12.31,
-  },
-  {
-    e: 'aggTrade',
-    E: 1688288596170,
-    s: 'SOLUSDT',
-    a: 249176099,
-    p: '19.11000000',
-    q: '1790.97000000',
-    f: 367243316,
-    l: 367243327,
-    T: 1688288596168,
-    m: true,
-    M: true,
-    beq: 1,
-  },
-]);
-const ticks = ref<[ITick]>([
-  { symbol: 'BTC', count: 1 },
-  { symbol: 'ETH', count: 5 },
-  { symbol: 'BNB', count: 155 },
-]);
 interface ITickVolume {
   symbol: string;
   volume: number;
   buy: number;
   sell: number;
+  image: string;
 }
 
 interface ITick {
@@ -69,7 +19,14 @@ interface ITick {
   count: number;
   buy: number;
   sell: number;
+  image: string;
 }
+
+const baseApiUrl = import.meta.env.VITE_APP_WEBSOCKET;
+const allowsCoins = ['BTC', 'USDT'];
+const transactions = ref<[IWebsocket]>();
+const ticks = ref<[ITick]>();
+
 const tickVolume = ref<[ITickVolume]>();
 let socket: Socket;
 const firstResponse = ref(false);
@@ -97,10 +54,17 @@ const onMountedWS = (
     const symbol = obj.s.split('USDT')[0];
     const volumeEqualBtc = obj.beq;
     const marketMaker = obj.m;
+    const img = obj.image;
 
     if (objType === 'count') {
       if (!transformedData[symbol]) {
-        transformedData[symbol] = { symbol, count: 0, buy: 0, sell: 0 };
+        transformedData[symbol] = {
+          symbol,
+          count: 0,
+          buy: 0,
+          sell: 0,
+          image: img,
+        };
       }
       transformedData[symbol].count = (transformedData[symbol].count ?? 0) + 1;
       if (marketMaker) {
@@ -110,7 +74,13 @@ const onMountedWS = (
       }
     } else if (objType === 'volume') {
       if (!transformedData[symbol]) {
-        transformedData[symbol] = { symbol, volume: 0, buy: 0, sell: 0 };
+        transformedData[symbol] = {
+          symbol,
+          volume: 0,
+          buy: 0,
+          sell: 0,
+          image: img,
+        };
       }
       transformedData[symbol].volume =
         (transformedData[symbol].volume ?? 0) + volumeEqualBtc;
@@ -158,6 +128,8 @@ const getObjectBySymbol = (newTransaction: [IWebsocket]) => {
     const symbol = newTransaction[0].s.split('USDT')[0];
     const volumeEqualBtc = newTransaction[0].beq;
     const marketMaker = newTransaction[0].m;
+    const img = newTransaction[0].image;
+
     const matchingSymbol = tickVolume.value?.find(
       (obj) => obj.symbol === symbol
     );
@@ -174,6 +146,7 @@ const getObjectBySymbol = (newTransaction: [IWebsocket]) => {
         volume: volumeEqualBtc,
         buy: marketMaker ? volumeEqualBtc : 0,
         sell: marketMaker ? 0 : volumeEqualBtc,
+        image: img,
       });
       if (tickVolume.value?.length > 12) {
         tickVolume.value?.pop();
@@ -186,6 +159,7 @@ const getVolumeBySymbol = (newTransaction: [IWebsocket] | undefined) => {
   if (newTransaction) {
     const symbol = newTransaction[0].s.split('USDT')[0];
     const marketMaker = newTransaction[0].m;
+    const img = newTransaction[0].image;
     const matchingSymbol = ticks.value.find((obj) => obj.symbol === symbol);
     if (matchingSymbol) {
       matchingSymbol.count += 1;
@@ -200,6 +174,7 @@ const getVolumeBySymbol = (newTransaction: [IWebsocket] | undefined) => {
         count: 1,
         buy: marketMaker ? 1 : 0,
         sell: marketMaker ? 0 : 1,
+        image: img,
       });
       if (ticks.value?.length > 12) {
         ticks.value?.pop();
@@ -247,6 +222,18 @@ onBeforeUnmount(() => {
           <tbody>
             <tr class="card__td-body" v-for="(tick, i) in ticks" :key="i">
               <td>
+                <div class="card__td-symbol">
+                  <span class="card__td-symbol-label">
+                    <img
+                      :src="tick?.image"
+                      class="img"
+                      style="border-radius: 50%"
+                      :alt="tick.symbol"
+                    />
+                  </span>
+                </div>
+              </td>
+              <td>
                 <span class="card__td-text-muted"></span>
                 <span class="card__td-text-dynamic"
                   >{{ tick.symbol }}
@@ -277,6 +264,18 @@ onBeforeUnmount(() => {
         <table class="tb__table">
           <tbody v-if="tickVolume">
             <tr class="card__td-body" v-for="(tick, i) in tickVolume" :key="i">
+              <td>
+                <div class="card__td-symbol">
+                  <span class="card__td-symbol-label">
+                    <img
+                      :src="tick?.image"
+                      class="img"
+                      style="border-radius: 50%"
+                      :alt="tick.symbol"
+                    />
+                  </span>
+                </div>
+              </td>
               <td>
                 <span class="card__td-text-muted"></span>
                 <span class="card__td-text-dynamic"
@@ -342,7 +341,7 @@ onBeforeUnmount(() => {
                       :src="transaction?.image"
                       class="img"
                       style="border-radius: 50%"
-                      alt=""
+                      :alt="transaction.s"
                     />
                   </span>
                 </div>
@@ -501,7 +500,6 @@ onBeforeUnmount(() => {
       justify-content: center;
       font-weight: 500;
       color: #cdcdce;
-      background-color: #1b1b29;
       background-repeat: no-repeat;
       background-position: center;
       background-size: cover;
@@ -535,7 +533,6 @@ td {
 }
 
 tr:nth-child(odd) {
-  // background-color: #484747;
   background-color: #07074a6f;
 }
 
