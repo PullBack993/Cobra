@@ -338,7 +338,12 @@ onBeforeUnmount(() => {
               <td>
                 <div class="card__td-symbol">
                   <span class="card__td-symbol-label">
-                    <img src="" class="img" style="border-radius: 50%" alt="" />
+                    <img
+                      :src="transaction?.image"
+                      class="img"
+                      style="border-radius: 50%"
+                      alt=""
+                    />
                   </span>
                 </div>
               </td>
@@ -432,6 +437,10 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column-reverse;
 
+  &__left {
+    margin: 0 1rem;
+  }
+
   &__container {
     margin-right: 2rem;
     height: auto;
@@ -454,6 +463,7 @@ onBeforeUnmount(() => {
   }
   small {
     color: $white-5;
+    margin-right: 7rem;
     font-size: 1.1rem;
   }
   &__additional-info {

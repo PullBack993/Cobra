@@ -200,13 +200,13 @@ function onOpen(value) {
               :src="coins.image.small"
               :alt="coins.name"
             />
-            <div 
-            class="search__container-list-current"
-            :class="
-                  store.themeDark
-                    ? 'search__container-list-current--light'
-                    : 'search__container-list-coin-name--dark'
-                "
+            <div
+              class="search__container-list-current"
+              :class="
+                store.themeDark
+                  ? 'search__container-list-current--light'
+                  : 'search__container-list-coin-name--dark'
+              "
             >
               {{ coins.name }}
             </div>
@@ -415,10 +415,10 @@ function onOpen(value) {
       position: relative;
       animation: topToBottom 0.4s ease-in;
 
-      &--dark{
+      &--dark {
         color: $white;
       }
-      &--light{
+      &--light {
         color: $black;
       }
     }

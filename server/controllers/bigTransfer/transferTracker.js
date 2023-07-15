@@ -3,6 +3,10 @@ const http = require("http");
 const socketIO = require("socket.io");
 const https = require("https");
 const CronJob = require("cron").CronJob;
+const CoinGecko = require("coingecko-api");
+const allCoins = require("./coins.json");
+const CoinGeckoClient = new CoinGecko();
+
 let io;
 let lastMessageTime = 0;
 const maxValues = 20;
@@ -28,15 +32,17 @@ async function connectToBinanceWS() {
   ws.on("message", (data) => {
     const now = Date.now();
     const msg = JSON.parse(data);
-    coins100.forEach((coin, index) => {
+    coins100.forEach(async (coin, index) => {
       if (
         msg.s === coin.symbol &&
         msg.e === "aggTrade" &&
         msg.q > coin.qEqBTC &&
         now - lastMessageTime < 50
       ) {
+        const searchedCoin = findCoin(allCoins, msg.s.split("USDT")[0]);
+        const image = await CoinGeckoClient.coins.fetch(searchedCoin.id);
+        msg.image = image.data.image.thumb;
         const test = (msg.p * msg.q) / (btcPrice * selectedVolume);
-        console.log(msg.s, "bitcoin equivalent quantity", test, "coin price => ", msg.p);
         msg.beq = test;
         msg.T = convertTimestamp(msg.T);
         last50Values.push(msg);
@@ -51,6 +57,19 @@ async function connectToBinanceWS() {
   });
 
   return sendToClient;
+}
+
+function findCoin(allCoins, searchParams) {
+  const searchedCoin = allCoins.find((coin) => {
+    if (
+      coin?.id === searchParams.toLowerCase() ||
+      coin?.symbol === searchParams.toLocaleLowerCase()
+    ) {
+      return coin;
+    }
+    return null;
+  });
+  return searchedCoin;
 }
 
 function convertTimestamp(timestamp) {

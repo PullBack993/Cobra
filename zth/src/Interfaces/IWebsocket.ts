@@ -11,4 +11,5 @@ export type IWebsocket = {
     m: boolean,   // Is the buyer the market maker? BUY/SELL
     M: boolean,   // Ignore
     beq: number,  // Bitcoin equal quantity
+    image: string,
   }
