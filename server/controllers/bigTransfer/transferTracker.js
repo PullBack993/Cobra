@@ -6,8 +6,8 @@ const CronJob = require("cron").CronJob;
 const CoinGecko = require("coingecko-api");
 const allCoins = require("./coins.json");
 const CoinGeckoClient = new CoinGecko();
-let coinImageCache = {};
 
+let coinImageCache = {};
 let io;
 let lastMessageTime = 0;
 const maxValues = 20;

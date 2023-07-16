@@ -89,14 +89,12 @@ function onInput(value: string) {
     }
   } else {
     currentIndexItem.value = savedValue.value;
-    // currentIndexItem.value = savedValue.value;
     data.value = props.data;
     scrollPosition(0);
   }
 }
 
 function onOpen(value: boolean) {
-  // topElement?.value?.scrollIntoView();
   open.value = value;
 }
 
@@ -161,6 +159,9 @@ function selectInput() {
           ? 'long__short-arrow-invisible'
           : 'long__short-icon long__short-changed-icon',
         open ? 'long__short-arrow-rotate' : 'long__short-arrow-icon',
+        store.themeDark
+          ? 'long__short-arrow--light'
+          : 'long__short-arrow--dark',
       ]"
     ></Arrow-Icon>
     <Search-Icon
@@ -253,6 +254,12 @@ function selectInput() {
     transform: rotate(0);
     transition: all 0.3s ease;
   }
+  &-arrow--light {
+    color: $black;
+  }
+  &-arrow--dark {
+    color: $white;
+  }
   &-arrow-rotate {
     transform: rotate(-180deg);
     transition: all 0.3s ease;
@@ -325,7 +332,7 @@ function selectInput() {
     font-weight: 500;
     padding: 0.5rem 1.1rem;
     &--dark {
-      color:$white;
+      color: $white;
       &:hover {
         background-color: $main-purple-dark;
         border-radius: 0.4rem;

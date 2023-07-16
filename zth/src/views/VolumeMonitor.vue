@@ -5,6 +5,7 @@ import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
 import { IWebsocket } from '../Interfaces/IWebsocket';
 import BaseTableFrame from '../components/BaseTableFrame.vue';
 import DropdownSmall from '../components/DropDownLongShort.vue';
+import { useGlobalStore } from '../store/global';
 
 interface ITickVolume {
   symbol: string;
@@ -26,6 +27,11 @@ const baseApiUrl = import.meta.env.VITE_APP_WEBSOCKET;
 const allowsCoins = ['BTC', 'USDT'];
 const transactions = ref<[IWebsocket]>();
 const ticks = ref<[ITick]>();
+const store = useGlobalStore();
+
+const themeClass = computed(() =>
+  store.themeDark ? 'volume-monitor__theme-light' : 'volume-monitor__theme-dark'
+);
 
 const tickVolume = ref<[ITickVolume]>();
 let socket: Socket;
@@ -148,7 +154,7 @@ const getObjectBySymbol = (newTransaction: [IWebsocket]) => {
         sell: marketMaker ? 0 : volumeEqualBtc,
         image: img,
       });
-      if (tickVolume.value?.length > 12) {
+      if (tickVolume.value?.length > 10) {
         tickVolume.value?.pop();
       }
     }
@@ -176,7 +182,7 @@ const getVolumeBySymbol = (newTransaction: [IWebsocket] | undefined) => {
         sell: marketMaker ? 0 : 1,
         image: img,
       });
-      if (ticks.value?.length > 12) {
+      if (ticks.value?.length > 10) {
         ticks.value?.pop();
       }
     }
@@ -215,8 +221,15 @@ onBeforeUnmount(() => {
     <div class="volume-monitor__additional-info">
       <BaseTableFrame class="volume-monitor__container">
         <span class="volume-monitor__left">
-          <h3 class="volume-monitor__title">Tick Board</h3>
-          <small>The most ticked</small>
+          <h3 class="volume-monitor__title" :class="themeClass">Tick Board</h3>
+          <small
+            :class="
+              store.themeDark
+                ? 'volume-monitor__title-small--light'
+                : 'volume-monitor__title-small--dark'
+            "
+            >The most ticked</small
+          >
         </span>
         <table class="tb__table">
           <tbody>
@@ -234,7 +247,7 @@ onBeforeUnmount(() => {
               </td>
               <td>
                 <span class="card__td-text-muted"></span>
-                <span class="card__td-text-dynamic"
+                <span class="card__td-text-dynamic" :class="themeClass"
                   >{{ tick.symbol }}
                   <label class="card__td-symbol-text-label">/USDT</label>
                 </span>
@@ -257,8 +270,17 @@ onBeforeUnmount(() => {
       </BaseTableFrame>
       <BaseTableFrame class="volume-monitor__container">
         <span class="volume-monitor__left">
-          <h3 class="volume-monitor__title">Volume Board</h3>
-          <small>The most volume</small>
+          <h3 class="volume-monitor__title" :class="themeClass">
+            Volume Board
+          </h3>
+          <small
+            :class="
+              store.themeDark
+                ? 'volume-monitor__title-small--light'
+                : 'volume-monitor__title-small--dark'
+            "
+            >The most volume</small
+          >
         </span>
         <table class="tb__table">
           <tbody v-if="tickVolume">
@@ -276,7 +298,7 @@ onBeforeUnmount(() => {
               </td>
               <td>
                 <span class="card__td-text-muted"></span>
-                <span class="card__td-text-dynamic"
+                <span class="card__td-text-dynamic" :class="themeClass"
                   >{{ tick.symbol }}
                   <label class="card__td-symbol-text-label">/USDT</label>
                 </span>
@@ -308,8 +330,17 @@ onBeforeUnmount(() => {
       <BaseTableFrame class="volume-monitor__container-tb">
         <div class="volume-monitor__additional-items">
           <span class="volume-monitor__left">
-            <h3 class="volume-monitor__title">Volume Monitor</h3>
-            <small>Thank you Binance</small>
+            <h3 class="volume-monitor__title" :class="themeClass">
+              Volume Monitor
+            </h3>
+            <small
+              :class="
+                store.themeDark
+                  ? 'volume-monitor__title-small--light'
+                  : 'volume-monitor__title-small--dark'
+              "
+              >Thank you Binance</small
+            >
           </span>
           <div class="volume-monitor__dropdown-container">
             <DropdownSmall
@@ -345,7 +376,7 @@ onBeforeUnmount(() => {
               </td>
               <td>
                 <div href="" class="image">
-                  <label class="card__td-symbol-text">{{
+                  <label class="card__td-symbol-text" :class="themeClass">{{
                     transaction.s.split('USDT')[0]
                   }}</label>
                   <label class="card__td-symbol-text-label">/USDT</label>
@@ -434,7 +465,9 @@ onBeforeUnmount(() => {
   flex-direction: column-reverse;
 
   &__left {
-    margin: 0 1rem;
+    margin: 1rem;
+    display: flex;
+    flex-direction: column;
   }
 
   &__container {
@@ -454,13 +487,27 @@ onBeforeUnmount(() => {
     padding-right: 1rem;
   }
   &__title {
-    color: $white;
     font-weight: bold;
+    &-small--dark {
+      color: $white-5;
+    }
+    &-small--light {
+      color: $grey-black-8;
+    }
   }
+
+  &__theme-light {
+    color: $black;
+  }
+
+  &__theme-dark {
+    color: $white;
+  }
+
   small {
-    color: $white-5;
     margin-right: 7rem;
     font-size: 1.1rem;
+    width: 100%;
   }
   &__additional-info {
     display: flex;
@@ -478,12 +525,14 @@ onBeforeUnmount(() => {
   color: $white;
   caption-side: bottom;
   border-collapse: collapse;
+  border-radius: 1rem;
+  overflow: hidden;
 }
 .card__td {
   &-body:not(:last-child) {
     border-bottom-width: 1px;
     border-bottom-style: dashed;
-    border-bottom-color: white;
+    border-bottom-color: $white;
   }
   &-img {
     border-radius: 50%;
@@ -499,7 +548,6 @@ onBeforeUnmount(() => {
       align-items: center;
       justify-content: center;
       font-weight: 500;
-      color: #cdcdce;
       background-repeat: no-repeat;
       background-position: center;
       background-size: cover;
@@ -507,10 +555,9 @@ onBeforeUnmount(() => {
     }
     &-text {
       display: inline-block;
-      color: $white;
       font-weight: 600;
       &-label {
-        color: #848e9c;
+        color: $white-5;
         font-size: 11px;
         text-decoration: none;
       }
@@ -518,7 +565,7 @@ onBeforeUnmount(() => {
   }
   &-text-muted {
     display: block;
-    color: #565674;
+    color: $white-5;
     font-weight: 600;
     font-size: 1.4rem;
     padding-bottom: 0.5rem;
@@ -533,10 +580,11 @@ td {
 }
 
 tr:nth-child(odd) {
-  background-color: #07074a26;
+  background-color: $input-bg-dark;
 }
 
 tr:nth-child(even) {
+  background-color: $input-bg-dark-8;
 }
 
 .green {
