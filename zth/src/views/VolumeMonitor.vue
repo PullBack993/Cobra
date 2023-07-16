@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { io, Socket } from 'socket.io-client';
-import { onBeforeUnmount, onMounted, ref, watch, computed } from 'vue';
+import { onUnmounted, onMounted, ref, watch, computed } from 'vue';
 import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
 import { IWebsocket } from '../Interfaces/IWebsocket';
 import BaseTableFrame from '../components/BaseTableFrame.vue';
@@ -28,6 +28,8 @@ const allowsCoins = ['BTC', 'USDT'];
 const transactions = ref<[IWebsocket]>();
 const ticks = ref<[ITick]>();
 const store = useGlobalStore();
+const best10Coins = 10;
+const loader = ref(true);
 
 const themeClass = computed(() =>
   store.themeDark ? 'volume-monitor__theme-light' : 'volume-monitor__theme-dark'
@@ -154,7 +156,7 @@ const getObjectBySymbol = (newTransaction: [IWebsocket]) => {
         sell: marketMaker ? 0 : volumeEqualBtc,
         image: img,
       });
-      if (tickVolume.value?.length > 10) {
+      if (tickVolume.value?.length > best10Coins) {
         tickVolume.value?.pop();
       }
     }
@@ -182,7 +184,7 @@ const getVolumeBySymbol = (newTransaction: [IWebsocket] | undefined) => {
         sell: marketMaker ? 0 : 1,
         image: img,
       });
-      if (ticks.value?.length > 10) {
+      if (ticks.value?.length > best10Coins) {
         ticks.value?.pop();
       }
     }
@@ -210,14 +212,14 @@ onMounted(() => {
   connectToSocket();
 });
 
-onBeforeUnmount(() => {
+onUnmounted(() => {
   socket.disconnect();
   console.log('Disconnected from WebSocket server');
 });
 </script>
 
 <template>
-  <div class="volume-monitor">
+  <div class="volume-monitor" v-if="transactions">
     <div class="volume-monitor__additional-info">
       <BaseTableFrame class="volume-monitor__container">
         <span class="volume-monitor__left">
@@ -442,6 +444,30 @@ onBeforeUnmount(() => {
       </BaseTableFrame>
     </div>
   </div>
+  <div v-else>
+    <div class="volume-monitor__placeholder">
+      <div class="volume-monitor__info-container">
+        <placeHolderLoader
+          class="volume-monitor__placeholder-left"
+          :loader-width="100"
+          :width-unit="'%'"
+          :loader-height="50"
+        ></placeHolderLoader>
+        <placeHolderLoader
+          class="volume-monitor__placeholder-left"
+          :loader-width="100"
+          :width-unit="'%'"
+          :loader-height="50"
+        ></placeHolderLoader>
+      </div>
+      <placeHolderLoader
+        class="volume-monitor__placeholder-right"
+        :loader-width="66.66"
+        :width-unit="'%'"
+        :loader-height="102"
+      ></placeHolderLoader>
+    </div>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -618,6 +644,62 @@ tr:nth-child(even) {
     &__main {
       width: 66.66%;
       flex: 0 0 auto;
+    }
+  }
+}
+
+// place loader style
+.volume-monitor {
+  &__placeholder {
+    display: flex;
+    flex-direction: column-reverse;
+    width: 100%;
+  }
+  &__info-container {
+    display: flex;
+    width: 97%;
+    flex-direction: column;
+  }
+  &__placeholder-left {
+    margin: 1rem;
+    width: 100% !important;
+    border-radius: 1rem;
+  }
+  &__placeholder-right {
+    width: 97% !important;
+    height: 102rem;
+    border-radius: 1rem;
+    margin: 1rem;
+  }
+}
+
+@media (min-width: $breakpoint_verysmall) {
+  .volume-monitor__info-container {
+    width: 100%;
+    flex-direction: row;
+  }
+}
+@media (min-width: $breakpoint_medium) {
+  .volume-monitor {
+    &__placeholder {
+      flex-direction: row;
+    }
+    &__info-container {
+      display: flex;
+      flex-direction: column;
+      width: 33.33%;
+    }
+    &__placeholder-left {
+      margin: 1rem;
+      width: 100% !important;
+      border-radius: 1rem;
+    }
+    &__placeholder-right {
+      width: 65.66%;
+      height: 102rem;
+      margin-left: 3rem;
+      margin-top: 1rem;
+      border-radius: 1rem;
     }
   }
 }
