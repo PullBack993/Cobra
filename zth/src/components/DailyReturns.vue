@@ -27,7 +27,7 @@ const months = [
   'November',
   'December',
 ];
-
+const selectedType = ref('Daily');
 const themeClass = computed(() =>
   store.themeDark ? 'light-theme' : 'dark-theme'
 );
@@ -53,7 +53,6 @@ onMounted(() => {
 // test =>
 function reqData(month: number, type: string) {
   data.value = null;
-  // const coinData = { time: currentTime.value, symbol: currentValue.value };
   axios
     .post(`${baseApiUrl}/exchange/daily-return`, {
       month,
@@ -102,6 +101,7 @@ function timeChange(value: string) {
 }
 
 function removeLy() {
+  selectedType.value = currentType.value;
   if (currentType.value === 'Daily') {
     currentType.value = `${currentType.value
       .slice(0, -3)
@@ -110,43 +110,56 @@ function removeLy() {
     currentType.value = currentType.value.slice(0, -2).toLocaleLowerCase();
   }
 }
+
+const capitalizeFirstLetter = computed(() => (
+  selectedType.value.charAt(0).toUpperCase() + selectedType.value.slice(1)
+));
 </script>
 
 <template>
   <div class="returns">
-    <div
-      class="returns__chart-select-item"
-      :class="themeClass"
-      v-if="currentType === 'day'"
-    >
-      <div class="returns__chart-select-item">Month</div>
-      <DropdownSmall
-        :data="months"
-        :readonly="true"
-        :with-arrow-icon="true"
-        @new-value:input="monthChange"
-      />
-    </div>
-    <div class="returns__chart-select-item" :class="themeClass">
-      <div class="returns__chart-select-item">Type</div>
+    <p class="returns__title">
+      Bitcoin {{ capitalizeFirstLetter }} returns(%)
+    </p>
+    <div class="returns__main">
+      <div
+        class="returns__chart-select-item"
+        :class="themeClass"
+        v-if="currentType === 'day'"
+      >
+        <div class="returns__chart-select-item">Month</div>
+        <DropdownSmall
+          :data="months"
+          :readonly="true"
+          :with-arrow-icon="true"
+          @new-value:input="monthChange"
+        />
+      </div>
+      <div class="returns__chart-select-item" :class="themeClass">
+        <div class="returns__chart-select-item">Type</div>
 
-      <DropdownSmall
-        :data="timeStamp"
-        :readonly="true"
-        :with-arrow-icon="true"
-        @new-value:input="timeChange"
-      />
-    </div>
-    <div
-      class="returns__chart-select-item"
-      :class="[
-        themeClass,
-        currentType != 'day' ? 'returns__chart-select-item--non' : '',
-      ]"
-    >
-      <div class="returns__chart-select-item">Symbol</div>
+        <DropdownSmall
+          :data="timeStamp"
+          :readonly="true"
+          :with-arrow-icon="true"
+          @new-value:input="timeChange"
+        />
+      </div>
+      <div
+        class="returns__chart-select-item"
+        :class="[
+          themeClass,
+          currentType != 'day' ? 'returns__chart-select-item--non' : '',
+        ]"
+      >
+        <div class="returns__chart-select-item">Symbol</div>
 
-      <DropdownSmall :data="['BTC']" :readonly="true" :with-arrow-icon="true" />
+        <DropdownSmall
+          :data="['BTC']"
+          :readonly="true"
+          :with-arrow-icon="true"
+        />
+      </div>
     </div>
   </div>
   <div class="returns__container">
@@ -204,6 +217,19 @@ function removeLy() {
   margin-right: 2rem;
   min-height: 5rem;
 
+  &__title {
+    color: $white;
+    display: flex;
+    width: 100%;
+    font-size: 3rem;
+    justify-content: center;
+    margin-bottom: 3.7rem;
+    margin-top: 1rem;
+  }
+  &__main {
+    display: flex;
+  }
+
   &__container {
     display: flex;
     flex-flow: wrap;
@@ -229,6 +255,7 @@ function removeLy() {
   font-family: arial, sans-serif;
   margin-top: 4rem;
   margin-bottom: 1rem;
+  height: 3rem;
 
   &-year-percentage {
     &--ratio {
@@ -256,6 +283,13 @@ function removeLy() {
     text-align: left;
     padding: 0.8rem;
     font-weight: 600;
+    position: fixed;
+    z-index: 9;
+    background-color: $bg-dark-purple;
+    width: 6rem;
+    text-align: center;
+    left: 0;
+    border-right: 0.1rem ridge $main-purple;
   }
 
   &-date {
@@ -289,6 +323,14 @@ function removeLy() {
 
     &__chart-select-item:last-child {
       margin-top: 0;
+    }
+  }
+}
+
+@media (min-width: $breakpoint_small) {
+  .returns__table {
+    &-year--item {
+      left: 8rem;
     }
   }
 }

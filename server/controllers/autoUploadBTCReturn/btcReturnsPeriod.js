@@ -80,8 +80,8 @@ function dailyPercentDifferencePeriod(data, period) {
   for (let i = period; i < data.length; i++) {
     const date = new Date(data[i].createTime);
     const year = date.getFullYear();
-    const month = date.getMonth() + 1; 
-    const day = date.getDate(); 
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
 
     if (!dailyChanges[year]) {
       dailyChanges[year] = {};

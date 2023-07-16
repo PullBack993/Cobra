@@ -94,6 +94,21 @@ setTimeout(() => {
   startBrowser();
 }, 1000);
 
+function test() {
+  const options = {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      coinglassSecret: "233f9d28b54f4a5e8f86c849035aef1a",
+    },
+  };
+
+  fetch("https://open-api.coinglass.com/public/v2/long_short?time_type=h1&symbol=BTC", options)
+    .then((response) => response.json())
+    .then((response) => console.log(response))
+    .catch((err) => console.error(err));
+}
+
 //TODO remove console logs after all tests
 router.post("/long-short", async (req, res) => {
   try {
