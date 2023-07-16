@@ -226,7 +226,7 @@ onBeforeUnmount(() => {
                   <span class="card__td-symbol-label">
                     <img
                       :src="tick?.image"
-                      class="card__tb-img"
+                      class="card__td-img"
                       :alt="tick.symbol"
                     />
                   </span>
@@ -268,7 +268,7 @@ onBeforeUnmount(() => {
                   <span class="card__td-symbol-label">
                     <img
                       :src="tick?.image"
-                      class="card__tb-img"
+                      class="card__td-img"
                       :alt="tick.symbol"
                     />
                   </span>
@@ -282,19 +282,19 @@ onBeforeUnmount(() => {
                 </span>
               </td>
               <td>
-                <span class="card__td-text-muted">Volume</span>
+                <span class="card__td-text-muted">Volume (₿)</span>
                 <span class="card__td-text-dynamic">{{
                   tick.volume.toFixed(2)
                 }}</span>
               </td>
               <td>
-                <span class="card__td-text-muted">Buy</span>
+                <span class="card__td-text-muted">Buy (₿)</span>
                 <span class="card__td-text-dynamic green">{{
                   tick.buy.toFixed(2)
                 }}</span>
               </td>
               <td>
-                <span class="card__td-text-muted">Sell</span>
+                <span class="card__td-text-muted">Sell (₿)</span>
                 <span class="card__td-text-dynamic red">{{
                   tick.sell.toFixed(2)
                 }}</span>
@@ -337,8 +337,8 @@ onBeforeUnmount(() => {
                   <span class="card__td-symbol-label">
                     <img
                       :src="transaction?.image"
-                      class="card__tb-img"
-                      :alt="transaction.s"
+                      class="card__td-img"
+                      :alt="transaction.s.split('USDT')[0]"
                     />
                   </span>
                 </div>

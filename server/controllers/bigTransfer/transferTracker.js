@@ -6,6 +6,7 @@ const CronJob = require("cron").CronJob;
 const CoinGecko = require("coingecko-api");
 const allCoins = require("./coins.json");
 const CoinGeckoClient = new CoinGecko();
+let coinImageCache = {};
 
 let io;
 let lastMessageTime = 0;
@@ -40,8 +41,7 @@ async function connectToBinanceWS() {
         now - lastMessageTime < 50
       ) {
         const searchedCoin = findCoin(allCoins, msg.s.split("USDT")[0]);
-        const image = await CoinGeckoClient.coins.fetch(searchedCoin.id);
-        msg.image = determineImage(image);
+        msg.image = await fetchCoinImage(searchedCoin);
         const test = (msg.p * msg.q) / (btcPrice * selectedVolume);
         msg.beq = test;
         msg.T = convertTimestamp(msg.T);
@@ -57,6 +57,17 @@ async function connectToBinanceWS() {
   });
 
   return sendToClient;
+}
+
+async function fetchCoinImage(coin) {
+  if (coinImageCache[coin.id]) {
+    return coinImageCache[coin.id];
+  } else {
+    const image = await CoinGeckoClient.coins.fetch(coin.id);
+    const imageUrl = determineImage(image);
+    coinImageCache[coin.id] = imageUrl;
+    return imageUrl;
+  }
 }
 
 function determineImage(image) {
