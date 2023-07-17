@@ -33,13 +33,18 @@ const themeClass = computed(() =>
 );
 
 const colorPriceAction = computed(() => (difference: number) => {
+  console.log(difference);
+  const colorLevel = Math.round(Math.abs(difference / 50) * 255);
   if (difference > 0) {
-    return store.themeDark
-      ? 'returns__table-year-percentage--positive-light'
-      : 'returns__table-year-percentage--positive';
+    return `background-color: rgba(0, ${colorLevel}, 0);`;
+    // return store.themeDark
+    //   ? 'returns__table-year-percentage--positive-light'
+    //   : 'returns__table-year-percentage--positive';
   }
   if (difference < 0) {
-    return 'returns__table-year-percentage--negative';
+    return `background-color: rgba( ${colorLevel},0, 0);`;
+
+    // return 'returns__table-year-percentage--negative';
   }
   return '';
 });
@@ -111,16 +116,14 @@ function removeLy() {
   }
 }
 
-const capitalizeFirstLetter = computed(() => (
-  selectedType.value.charAt(0).toUpperCase() + selectedType.value.slice(1)
-));
+const capitalizeFirstLetter = computed(
+  () => selectedType.value.charAt(0).toUpperCase() + selectedType.value.slice(1)
+);
 </script>
 
 <template>
   <div class="returns">
-    <p class="returns__title">
-      Bitcoin {{ capitalizeFirstLetter }} returns(%)
-    </p>
+    <p class="returns__title">Bitcoin {{ capitalizeFirstLetter }} returns(%)</p>
     <div class="returns__main">
       <div
         class="returns__chart-select-item"
@@ -180,11 +183,11 @@ const capitalizeFirstLetter = computed(() => (
           <td class="returns__table-year--item">{{ year[0] }}</td>
           <td
             class="returns__table-year-percentage--ratio"
-            :class="colorPriceAction(year[1][d]?.difference?.toFixed(2))"
-            v-for="(d, i) in Object.values(year[1])?.length"
+            :style="colorPriceAction(year[1][y]?.difference?.toFixed(2))"
+            v-for="(y, i) in Object.values(year[1])?.length"
             :key="i"
           >
-            {{ year[1][d]?.difference?.toFixed(2) }}
+            {{ year[1][y]?.difference?.toFixed(2) }}%
           </td>
         </tr>
       </tbody>
@@ -197,11 +200,11 @@ const capitalizeFirstLetter = computed(() => (
           <td class="returns__table-year--item">{{ year[0] }}</td>
           <td
             class="returns__table-year-percentage--ratio"
-            :class="colorPriceAction(year[1][`${currentMonth}`][d]?.difference)"
+            :style="colorPriceAction(year[1][`${currentMonth}`][d]?.difference)"
             v-for="(d, i) in time"
             :key="i"
           >
-            {{ year[1][`${currentMonth}`][d]?.difference?.toFixed(2) }}
+            {{ year[1][`${currentMonth}`][d]?.difference?.toFixed(2) }}%
           </td>
         </tr>
       </tbody>
@@ -228,6 +231,7 @@ const capitalizeFirstLetter = computed(() => (
   }
   &__main {
     display: flex;
+    min-height: 5rem;
   }
 
   &__container {

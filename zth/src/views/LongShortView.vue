@@ -15,7 +15,6 @@ const loading = ref(false);
 const store = useGlobalStore();
 const baseApiUrl = import.meta.env.VITE_APP_BASE_URL;
 
-
 interface Props {
   coins?: any;
   loading: boolean;
@@ -125,10 +124,10 @@ intervalId.value = Number(setInterval(reqData, 13000));
     flex-flow: row wrap;
   }
   &-title {
-    font-size: 2rem;
+    margin: 1rem auto;
+    font-size: 3rem;
     font-weight: 500;
     padding-bottom: 1rem;
-    margin: auto;
   }
   &-theme--dark {
     color: $white;

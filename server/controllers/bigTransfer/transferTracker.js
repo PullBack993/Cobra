@@ -60,13 +60,17 @@ async function connectToBinanceWS() {
 }
 
 async function fetchCoinImage(coin) {
-  if (coinImageCache[coin.id]) {
-    return coinImageCache[coin.id];
-  } else {
-    const image = await CoinGeckoClient.coins.fetch(coin.id);
-    const imageUrl = determineImage(image);
-    coinImageCache[coin.id] = imageUrl;
-    return imageUrl;
+  try {
+    if (coinImageCache[coin.id]) {
+      return coinImageCache[coin.id];
+    } else {
+      const image = await CoinGeckoClient.coins.fetch(coin.id);
+      const imageUrl = determineImage(image);
+      coinImageCache[coin.id] = imageUrl;
+      return imageUrl;
+    }
+  } catch (error) {
+    console.error("fetchCoinImage", error);
   }
 }
 
