@@ -34,9 +34,12 @@ const themeClass = computed(() =>
 
 const colorPriceAction = computed(() => (difference: number) => {
   console.log(difference);
-  const colorLevel = Math.round(Math.abs(difference / 50) * 255);
+  const colorLevel = Math.abs(difference * 10 + 70);
   if (difference > 0) {
-    return `background-color: rgba(0, ${colorLevel}, 0);`;
+    return `background-color: rgba(${
+      colorLevel / 2
+    }, ${colorLevel}, 50, ${colorLevel});`;
+
     // return store.themeDark
     //   ? 'returns__table-year-percentage--positive-light'
     //   : 'returns__table-year-percentage--positive';
