@@ -118,9 +118,9 @@ const job = new CronJob(" */3 * * * *", () => {
 job.start();
 
 async function fetchNews() {
+  let browser;
   try {
-    const browser = await puppeteer.launch({
-      headless: true,
+    browser = await puppeteer.launch({
       args: ["--disable-setuid-sandbox", "--no-sandbox", "--single-process", "--no-zygote"],
       protocolTimeout: 240000,
     });
@@ -157,7 +157,9 @@ async function fetchNews() {
       }
     }
   } catch (error) {
-    browser?.close();
+    if (browser) {
+      browser?.close();
+    }
     console.error(error);
   }
   console.log("Browser CLOSE =>>> X");

@@ -66,7 +66,7 @@ async function startBrowser() {
   counter = 0;
   try {
     browser = await puppeteer.launch({
-      headless: true,
+      // headless: 'new'
       args: ["--disable-setuid-sandbox", "--no-sandbox", "--single-process", "--no-zygote"],
       protocolTimeout: 240000,
     });
