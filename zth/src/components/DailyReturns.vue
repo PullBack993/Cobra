@@ -34,20 +34,16 @@ const themeClass = computed(() =>
 
 const colorPriceAction = computed(() => (difference: number) => {
   console.log(difference);
-  const colorLevel = Math.abs(difference * 10 + 70);
+  const colorLevel = Math.abs(difference * 10 + 50);
   if (difference > 0) {
     return `background-color: rgba(${
       colorLevel / 2
     }, ${colorLevel}, 50, ${colorLevel});`;
-
-    // return store.themeDark
-    //   ? 'returns__table-year-percentage--positive-light'
-    //   : 'returns__table-year-percentage--positive';
   }
   if (difference < 0) {
-    return `background-color: rgba( ${colorLevel},0, 0);`;
-
-    // return 'returns__table-year-percentage--negative';
+    return `background-color: rgba(${colorLevel + 60}, ${
+      colorLevel / 2
+    }, 50, ${colorLevel});`;
   }
   return '';
 });
