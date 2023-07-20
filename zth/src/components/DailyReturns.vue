@@ -33,7 +33,6 @@ const themeClass = computed(() =>
 );
 
 const colorPriceAction = computed(() => (difference: number) => {
-  console.log(difference);
   const colorLevel = Math.abs(difference * 10 + 50);
   if (difference > 0) {
     return `background-color: rgba(${

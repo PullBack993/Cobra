@@ -18,11 +18,7 @@ https.get(options, (response) => {
     data += chung;
   });
   response.on("end", () => {
-    // console.log(JSON.parse(data))
     const parseData = JSON.parse(data);
-    // const generatedData = calculateQuarterly(parseData.data, 1, "daily");
-    console.log(parseData);
-    // res.json(generatedData);
   });
 });
 
@@ -250,17 +246,6 @@ function calculatePercentDifferenceDaily(data, month, type) {
   };
 }
 
-// const CoinGeckoClient = new CoinGecko();
-// let max = 10;
-
-// async function test() {
-//   for (let i = 1; i <= max; i++) {
-//     try {
-//       let data = await CoinGeckoClient.coins.all({ page: i });
-//       if (!data.data) {
-//         await wait(6000);
-//       }
-
 //       data.data.forEach((element) => {
 //         console.log(element.image);
 //         const current = { id: element.id, symbol: element.symbol, image: element.image.small };
@@ -338,4 +323,3 @@ function calculatePercentDifferenceDaily(data, month, type) {
 {
   /* <li class="MuiAutocomplete-option cg-style-zixclz" tabindex="-1" role="option" id=":R1l9mdqlq6:-option-0" data-option-index="0" aria-disabled="false" aria-selected="false">ETH</li> */
 }
-
