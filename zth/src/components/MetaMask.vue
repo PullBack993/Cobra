@@ -3,6 +3,8 @@ import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import { useGlobalStore } from '../store/global';
 
+const baseApiUrl = import.meta.env.VITE_APP_BASE_URL;
+
 const emit = defineEmits(['metamask-data']);
 const store = useGlobalStore();
 const address = ref('');
@@ -19,7 +21,6 @@ onMounted(() => {
 //   Cookies.remove('auth_token');
 //   store.login = false;
 // });
-
 
 async function connectWallet() {
   if (!isMetamaskSupported.value) {
@@ -52,7 +53,7 @@ async function connectWallet() {
   [address.value] = accounts;
   try {
     const response = await axios.post(
-      'http://localhost:3000/auth/meta-mask',
+      `${baseApiUrl}/auth/meta-mask`,
       { address: address.value },
       { withCredentials: true }
     );
@@ -74,7 +75,8 @@ async function connectWallet() {
           <img
             class="meta__mask-login-container-icon"
             src="../assets/BaseIcons/metamask.png"
-            alt="icon"
+            alt="Metamask"
+            loading="lazy"
           />
         </span>
         <span class="meta__mask-login-text">Sign in with Metamask</span>

@@ -5,6 +5,8 @@ import { useGlobalStore } from '../store/global';
 import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
 import { IArticleDetails } from '../Interfaces/IArticleDetails';
 
+const baseApiUrl = import.meta.env.VITE_APP_BASE_URL;
+
 interface Props {
   id: string; // URL params
   title: string;
@@ -18,7 +20,7 @@ const article = ref<IArticleDetails>();
 
 onMounted(async () => {
   await axios
-    .get(`http://localhost:3000/news/article/${props.id}`)
+    .get(`${baseApiUrl}/news/article/${props.id}`)
     .then((res) => {
       article.value = res.data;
       loading.value = false;
