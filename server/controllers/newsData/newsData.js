@@ -5,6 +5,8 @@ const CronJob = require("cron").CronJob;
 const Article = require("../../models/NewsCoins");
 const https = require("https");
 
+const imageCache = new Map();
+
 puppeteer.use(StealthPlugin());
 // const mainUrl = "https://cryptopotato.com/crypto-news/";
 const mainUrl = "https://cryptopotato.com/category/crypto-news/";
@@ -17,21 +19,25 @@ router.get("/newsList", async (req, res) => {
     const page = parseInt(req.query.page);
     const skip = (page - 1) * limit;
     const articles = await Article.find().skip(skip).sort({ createTime: -1 }).limit(limit);
-    const updatedArticle = JSON.parse(JSON.stringify(articles));
 
-    await Promise.all(
+    const updatedArticle = await Promise.all(
       articles.map(async (section, i) => {
-        updatedArticle[i].titleImage = await getImageProxyUrl(section.titleImage);
+        try {
+          const image = await getImageProxyUrl(section.titleImage);
+          return { ...JSON.parse(JSON.stringify(section)), titleImage: image };
+        } catch (error) {
+          console.error(error);
+          return section; // Return the original section object if an error occurs
+        }
       })
     );
 
     res.json(updatedArticle);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error?.message });
   }
 });
-
-const imageCache = new Map();
 
 router.get("/article/:id", async (req, res) => {
   try {
@@ -60,59 +66,79 @@ router.get("/article/:id", async (req, res) => {
 });
 
 async function getImageProxyUrl(imageUrl) {
-  if (imageCache.has(imageUrl)) {
-    return imageCache.get(imageUrl);
-  }
   try {
-    return new Promise((resolve, reject) => {
-      const request = https
-        .get(imageUrl, (response) => {
-          if (response.statusCode !== 200) {
-            // Check for valid response
-            reject();
-            getImageProxyUrl(imageUrl); /// TEST it !!!!
-          }
+    if (imageCache.has(imageUrl)) {
+      return imageCache.get(imageUrl);
+    }
 
-          const contentType = response.headers["content-type"];
-
-          if (!/^image\//.test(contentType)) {
-            // Verify MIME type
-            reject();
-            return;
-          }
-
-          const chunks = [];
-
-          response.on("data", (chunk) => {
-            chunks.push(chunk);
-          });
-
-          response.on("end", () => {
-            const imageContent = Buffer.concat(chunks);
-            const base64Image = imageContent.toString("base64");
-            const dataUri = `data:${contentType};base64,${base64Image}`;
-            imageCache.set(imageUrl, dataUri);
-            resolve(dataUri);
-          });
-        })
-        .on("error", (error) => {
-          reject(error);
-        });
+    const response = await new Promise((resolve, reject) => {
+      const request = https.get(imageUrl, (response) => {
+        if (
+          (response.statusCode >= 300 && response.statusCode <= 399) ||
+          response.statusCode === undefined
+        ) {
+          const redirectUrl = new URL(response.headers.location);
+          resolve(getImageProxyUrl(redirectUrl.href));
+        } else {
+          resolve(response);
+        }
+      });
 
       request.setTimeout(5000, () => {
-        // Set timeout for request
-        request.destroy();
-        reject(new Error("Request timed out"));
+        request.destroy(new Error("Request timed out"));
+      });
+
+      request.on("error", (error) => {
+        reject(error);
       });
     });
-  } catch (err) {
-    console.log(err);
+
+    if (response.statusCode !== 200) {
+      throw new Error(
+        `Failed to fetch image from ${imageUrl}. Status code: ${response.statusCode}`
+      );
+    }
+
+    const contentType = response.headers["content-type"];
+    if (!/^image\//.test(contentType)) {
+      throw new Error(`Invalid image content type: ${contentType}`);
+    }
+
+    const chunks = [];
+
+    await new Promise((resolve, reject) => {
+      response.on("data", (chunk) => {
+        chunks.push(chunk);
+      });
+
+      response.on("end", () => {
+        const imageContent = Buffer.concat(chunks);
+        const base64Image = imageContent.toString("base64");
+        const dataUri = `data:${contentType};base64,${base64Image}`;
+        imageCache.set(imageUrl, dataUri);
+        resolve(dataUri);
+      });
+
+      response.on("error", (error) => {
+        reject(error);
+      });
+    });
+
+    return imageCache.get(imageUrl);
+  } catch (error) {
+    console.error(error);
+    // Handle the error, you can throw the error or return a default value
+    // throw error;
     return [];
   }
 }
 
 const job = new CronJob(" */3 * * * *", () => {
-  fetchNews();
+  try {
+    fetchNews();
+  } catch (err) {
+    console.error(err);
+  }
 });
 
 job.start();
@@ -166,80 +192,109 @@ async function fetchNews() {
 }
 
 async function checkIfTitleExistsInDatabase(title) {
-  const article = await Article.findOne({ title: title });
-  return article !== null;
+  try {
+    const article = await Article.findOne({ title: title });
+    return article !== null;
+  } catch (err) {
+    console.log(err);
+    console.error(err);
+  }
 }
 
 async function extractArticleData(page, imageUrl) {
-  const articleData = {
-    title: "",
-    titleImage: "",
-    sections: [],
-    createTime: new Date().toISOString(),
-  };
+  try {
+    const articleData = {
+      title: "",
+      titleImage: "",
+      sections: [],
+      createTime: new Date().toISOString(),
+    };
 
-  let title = await page.$eval(".page-title", (element) => element.innerText);
-  const existingArticle = await Article.findOne({ title });
-  if (existingArticle) {
-    console.log("Article already exists in the database. Skipping...");
-    return;
-  }
-  title = title.replace(/cryptopotato/gi, "ZTH");
-  articleData.title = title;
-  articleData.titleImage = imageUrl;
-
-  const sections = await page.$$("div.coincodex-content > *");
-
-  let lastSection = null;
-  let currentList = null;
-
-  for (const section of sections) {
-    const tagName = await section.evaluate((node) => node.tagName.toLowerCase());
-
-    if (!lastSection) {
-      lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };
+    let title = await page.$eval(".page-title", (element) => element.innerText);
+    const existingArticle = await Article.findOne({ title });
+    if (existingArticle) {
+      console.log("Article already exists in the database. Skipping...");
+      return;
     }
-    //Title
-    if (tagName === "h2") {
-      if (
-        lastSection.heading !== "" ||
-        lastSection.text.length >= 0 ||
-        lastSection.image.length >= 0 ||
-        lastSection.paragraph !== ""
-      ) {
-        articleData.sections.push(lastSection);
+    title = title.replace(/cryptopotato/gi, "ZTH");
+    articleData.title = title;
+    articleData.titleImage = imageUrl;
+
+    const sections = await page.$$("div.coincodex-content > *");
+
+    let lastSection = null;
+    let currentList = null;
+
+    for (const section of sections) {
+      const tagName = await section.evaluate((node) => node.tagName.toLowerCase());
+
+      if (!lastSection) {
+        lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };
       }
-      let heading = await section.evaluate((node) => node.textContent.trim());
-      heading = heading.replace(/cryptopotato/gi, "ZTH");
-      lastSection = { heading, text: [], paragraph: "", image: [], listItems: [] };
-      //Under title
-    } else if (tagName === "h3") {
-      let paragraph = await section.evaluate((node) => node.textContent.trim());
-      if (!paragraph) {
-        const image = await section.$eval("img", (element) => element.src);
-        if (lastSection && image) {
-          lastSection.image.push(image);
+      //Title
+      if (tagName === "h2") {
+        if (
+          lastSection.heading !== "" ||
+          lastSection.text.length >= 0 ||
+          lastSection.image.length >= 0 ||
+          lastSection.paragraph !== ""
+        ) {
+          articleData.sections.push(lastSection);
+        }
+        let heading = await section.evaluate((node) => node.textContent.trim());
+        heading = heading.replace(/cryptopotato/gi, "ZTH");
+        lastSection = { heading, text: [], paragraph: "", image: [], listItems: [] };
+        //Under title
+      } else if (tagName === "h3") {
+        let paragraph = await section.evaluate((node) => node.textContent.trim());
+        if (!paragraph) {
+          const image = await section.$eval("img", (element) => element.src);
+          if (lastSection && image) {
+            lastSection.image.push(image);
+            articleData.sections.push(lastSection);
+            lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };
+          }
+        } else if (paragraph) {
+          paragraph = paragraph.replace(/cryptopotato/gi, "ZTH");
+          lastSection.paragraph = paragraph;
           articleData.sections.push(lastSection);
           lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };
         }
-      } else if (paragraph) {
-        paragraph = paragraph.replace(/cryptopotato/gi, "ZTH");
-        lastSection.paragraph = paragraph;
+      } else if (tagName === "blockquote") {
+        const paragraphElements = await section.$$("p");
+        for (const paragraphElement of paragraphElements) {
+          let paragraphText = await paragraphElement.evaluate((node) => node.textContent.trim());
+          paragraphText = paragraphText.replace(/cryptopotato/gi, "ZTH");
+          paragraphText = paragraphText.replace(/By:\sEdris|By:\sShayan/gi, "");
+          if (lastSection && paragraphText) {
+            lastSection.paragraph += paragraphText + "\n";
+          } else {
+            try {
+              const image = await section.$eval("img", (element) => element.src);
+              if (lastSection && image) {
+                lastSection.image.push(image);
+                articleData.sections.push(lastSection);
+                lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };
+              }
+            } catch (error) {
+              console.error(error);
+              continue;
+            }
+          }
+        }
         articleData.sections.push(lastSection);
         lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };
-      }
-    } else if (tagName === "blockquote") {
-      const paragraphElements = await section.$$("p");
-      for (const paragraphElement of paragraphElements) {
-        let paragraphText = await paragraphElement.evaluate((node) => node.textContent.trim());
-        paragraphText = paragraphText.replace(/cryptopotato/gi, "ZTH");
-        paragraphText = paragraphText.replace(/By:\sEdris|By:\sShayan/gi, "");
-        if (lastSection && paragraphText) {
-          lastSection.paragraph += paragraphText + "\n";
+      } else if (tagName === "p") {
+        let text = await section.evaluate((node) => node?.textContent.trim());
+        text = text.replace(/cryptopotato/gi, "ZTH");
+        text = text.replace(/By:\sEdris|By:\sShayan/gi, "");
+        if (lastSection && text) {
+          lastSection.text.push(text);
         } else {
           try {
             const image = await section.$eval("img", (element) => element.src);
             if (lastSection && image) {
+              console.log("eeee=>>", image);
               lastSection.image.push(image);
               articleData.sections.push(lastSection);
               lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };
@@ -249,66 +304,50 @@ async function extractArticleData(page, imageUrl) {
             continue;
           }
         }
-      }
-      articleData.sections.push(lastSection);
-      lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };
-    } else if (tagName === "p") {
-      let text = await section.evaluate((node) => node?.textContent.trim());
-      text = text.replace(/cryptopotato/gi, "ZTH");
-      text = text.replace(/By:\sEdris|By:\sShayan/gi, "");
-      if (lastSection && text) {
-        lastSection.text.push(text);
-      } else {
-        try {
-          const image = await section.$eval("img", (element) => element.src);
-          if (lastSection && image) {
-            console.log("eeee=>>", image);
-            lastSection.image.push(image);
-            articleData.sections.push(lastSection);
-            lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };
-          }
-        } catch (error) {
-          console.error(error);
-          continue;
+      } else if (tagName === "figure") {
+        const image = await section.$eval("img", (element) => element.src);
+        if (lastSection && image) {
+          lastSection.image.push(image);
+          articleData.sections.push(lastSection);
+          lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };
+        }
+      } else if (tagName === "ul") {
+        currentList = [];
+        const listItems = await section.$$("li");
+        for (const listItemElement of listItems) {
+          let listItem = await listItemElement.evaluate((node) => node.textContent.trim());
+          listItem = listItem.replace(/cryptopotato/gi, "ZTH");
+          currentList.push(listItem);
+        }
+        lastSection.listItems = currentList;
+        articleData.sections.push(lastSection);
+        if (sections.length > sections.indexOf(section)) {
+          lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };
         }
       }
-    } else if (tagName === "figure") {
-      const image = await section.$eval("img", (element) => element.src);
-      if (lastSection && image) {
-        lastSection.image.push(image);
-        articleData.sections.push(lastSection);
-        lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };
-      }
-    } else if (tagName === "ul") {
-      currentList = [];
-      const listItems = await section.$$("li");
-      for (const listItemElement of listItems) {
-        let listItem = await listItemElement.evaluate((node) => node.textContent.trim());
-        listItem = listItem.replace(/cryptopotato/gi, "ZTH");
-        currentList.push(listItem);
-      }
-      lastSection.listItems = currentList;
-      articleData.sections.push(lastSection);
-      if (sections.length > sections.indexOf(section)) {
-        lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };
-      }
     }
-  }
-  if (lastSection) {
-    articleData.sections.push(lastSection);
-  }
+    if (lastSection) {
+      articleData.sections.push(lastSection);
+    }
 
-  return articleData;
+    return articleData;
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 async function saveArticleToDatabase(data) {
-  const article = new Article({
-    title: data.title,
-    titleImage: data.titleImage,
-    sections: data.sections,
-    createTime: new Date().toISOString(),
-  });
+  try {
+    const article = new Article({
+      title: data.title,
+      titleImage: data.titleImage,
+      sections: data.sections,
+      createTime: new Date().toISOString(),
+    });
 
-  await article.save();
+    await article.save();
+  } catch (err) {
+    console.log(err);
+  }
 }
 module.exports = router;

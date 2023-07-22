@@ -14,4 +14,10 @@ module.exports = (app) => {
   app.use(cookieParser());
   // Apply rate limiter to all requests
   app.use(limiter);
+
+  // Global error handler
+  app.use((err, req, res, next) => {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  });
 };

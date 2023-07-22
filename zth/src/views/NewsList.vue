@@ -44,7 +44,7 @@ const loadNews = () => {
   }
 };
 
-onMounted(async () => {
+onMounted(() => {
   loadingLength.value = Math.ceil(window.innerHeight / 10 / 17);
   loadNews();
 });
@@ -121,7 +121,7 @@ onMounted(async () => {
     <div class="button-container">
       <baseButton
         @onClick="loadNews"
-        :disabled="disabledBtn"
+        :disabled="disabledBtn || loading"
         :theme="''"
         :type="undefined"
         >{{ buttonText }}</baseButton
