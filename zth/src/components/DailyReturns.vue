@@ -33,15 +33,33 @@ const themeClass = computed(() =>
 );
 
 const colorPriceAction = computed(() => (difference: number) => {
-  const colorLevel = Math.abs(difference * 10 + 50);
-  if (difference > 0) {
-    return `background-color: rgba(${
-      colorLevel / 2
-    }, ${colorLevel}, 50, ${colorLevel});`;
+  const test = Math.abs(difference);
+  let colorLevel;
+  if (test < 1) {
+    colorLevel = Math.abs(difference * 100);
+  } else if (test < 3) {
+    colorLevel = Math.abs(difference * 30);
+  } else if (test < 20) {
+    colorLevel = Math.abs(difference * 12);
+  } else {
+    colorLevel = Math.abs(difference * 10);
   }
+
+  if (difference > 0) {
+    if (colorLevel > 255) {
+      console.log(colorLevel);
+      return `background-color: rgba( ${
+        colorLevel % 7
+      }, ${colorLevel}, 70, ${colorLevel});`;
+    }
+    return `background-color: rgba( ${
+      colorLevel % 2
+    }, ${colorLevel}, 70, ${colorLevel});`;
+  }
+
   if (difference < 0) {
-    return `background-color: rgba(${colorLevel + 60}, ${
-      colorLevel / 2
+    return `background-color: rgba(${colorLevel + 70}, ${
+      colorLevel / 7
     }, 50, ${colorLevel});`;
   }
   return '';
@@ -185,7 +203,8 @@ const capitalizeFirstLetter = computed(
             v-for="(y, i) in Object.values(year[1])?.length"
             :key="i"
           >
-            {{ year[1][y]?.difference?.toFixed(2) }}%
+            {{ year[1][y]?.difference?.toFixed(2) }}
+            <span v-if="year[1][y]?.difference">%</span>
           </td>
         </tr>
       </tbody>
@@ -202,7 +221,8 @@ const capitalizeFirstLetter = computed(
             v-for="(d, i) in time"
             :key="i"
           >
-            {{ year[1][`${currentMonth}`][d]?.difference?.toFixed(2) }}%
+            {{ year[1][`${currentMonth}`][d]?.difference?.toFixed(2) }}
+            <span v-if="year[1][`${currentMonth}`][d]?.difference">%</span>
           </td>
         </tr>
       </tbody>

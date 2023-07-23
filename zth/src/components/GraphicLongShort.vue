@@ -39,11 +39,7 @@ watch(
 </script>
 <template>
   <div v-if="coinsData">
-    <div
-      class="graphic__ratio"
-      v-for="(data, index) in coinsData"
-      :key="index"
-    >
+    <div class="graphic__ratio" v-for="(data, index) in coinsData" :key="index">
       <div class="graphic__ratio-container">
         <div class="graphic__ratio-exchange">
           <div class="graphic__ratio-exchange--logo">
@@ -81,7 +77,7 @@ watch(
       </div>
     </div>
   </div>
-  
+
   <div v-if="!coinsData || loading">
     <div v-for="(_, index) in loadingLength" :key="index">
       <div class="loader">
@@ -108,7 +104,7 @@ watch(
   display: flex;
 
   &-spliter {
-    box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2); 
+    box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
     margin: 1rem;
     border-radius: 1rem;
     &::before {
@@ -180,10 +176,22 @@ watch(
     display: flex;
     border-radius: 1rem;
     &--light {
-      background-color: $chart-red;
+      // background-color: $chart-red;
+      background: linear-gradient(
+        to right,
+        #ff000022,
+        #d32f2f80 90%,
+        #d32f2f80
+      );
     }
     &--dark {
-      background-color: $chart-dark-red;
+      // background-color: $chart-dark-red;
+      background: linear-gradient(
+        to right,
+        #ff000000,
+        #d32f2f80 90%,
+        #d32f2f80
+      );
     }
   }
 
@@ -194,13 +202,13 @@ watch(
     transition: all 0.3s linear;
     width: 50%;
     border-radius: 1rem 0rem 0 1rem;
-    border-style: none outset none none;
-    border-right-color: $black;
+    border-right-color: inherit;
     &--light {
-      background-color: $chart-green;
+      // background-color: $chart-green;
+      background: linear-gradient(to left, #449c671d, #5dc7878c 50%, #5dc787);
     }
     &--dark {
-      background-color: $chart-dark-green;
+      background: linear-gradient(to left, #449c6739, #5dc7878c 50%, #5dc787);
     }
   }
 
