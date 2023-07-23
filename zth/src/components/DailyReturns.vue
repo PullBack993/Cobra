@@ -282,6 +282,7 @@ const capitalizeFirstLetter = computed(
   &-year-percentage {
     &--ratio {
       text-align: center;
+      font-weight: bold;
     }
     &--positive {
       background: $chart-dark-green;
