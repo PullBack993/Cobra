@@ -67,6 +67,7 @@ async function startBrowser() {
   try {
     browser = await puppeteer.launch({
       headless: "new",
+      // { headless: false }
       args: ["--disable-setuid-sandbox", "--no-sandbox", "--single-process", "--no-zygote"],
       protocolTimeout: 240000,
     });
@@ -76,8 +77,8 @@ async function startBrowser() {
       page = await browser.newPage();
       const navigationPromise = page?.waitForNavigation({ signal });
 
-      console.log("Go to coinglass...");
-      await page.goto("https://www.coinglass.com/LongShortRatio", { timeout: 240000 }, { signal });
+      console.log("Go to LONG SHORT...");
+      await page.goto(process.env.LONG_SHORT_URL, { timeout: 240000 }, { signal });
       await navigationPromise;
     }
   } catch (error) {
@@ -93,21 +94,6 @@ async function startBrowser() {
 setTimeout(() => {
   startBrowser();
 }, 1000);
-
-function test() {
-  const options = {
-    method: "GET",
-    headers: {
-      accept: "application/json",
-      coinglassSecret: "233f9d28b54f4a5e8f86c849035aef1a",
-    },
-  };
-
-  fetch("https://open-api.coinglass.com/public/v2/long_short?time_type=h1&symbol=BTC", options)
-    .then((response) => response.json())
-    .then((response) => console.log(response))
-    .catch((err) => console.error(err));
-}
 
 //TODO remove console logs after all tests
 router.post("/long-short", async (req, res) => {
@@ -142,11 +128,18 @@ router.post("/long-short", async (req, res) => {
           await page?.waitForSelector(inputSelector);
           const dropDownSymbol = await page?.$$(inputSelector);
           await dropDownSymbol[1]?.evaluate((b) => b.click());
+          await page.keyboard.press("Backspace");
+          await page.keyboard.press("Backspace");
+          await page.keyboard.press("Backspace");
+          await page.keyboard.press("Backspace");
+          await page.keyboard.press("Backspace");
+          await page.keyboard.press("Backspace");
+
           await dropDownSymbol[1].type(`${symbol}`);
 
           await new Promise((resolve) => setTimeout(resolve, 500));
 
-          const liElements = await page.$$("ul#\\:R1l9mdqlq6\\:-listbox li");
+          const liElements = await page.$$("ul#\\:Rqkpt6aqm\\:-listbox li");
           let matchingLiElement = null;
 
           for (const liElement of liElements) {
@@ -180,7 +173,7 @@ router.post("/long-short", async (req, res) => {
             const optionTitle = await options[i].evaluate((el) => el.textContent);
             if (optionTitle === time) {
               await options[i].evaluate((b) => b.click());
-              await new Promise((resolve) => setTimeout(resolve, 1000));
+              await new Promise((resolve) => setTimeout(resolve, 500));
             }
           }
         } else {
@@ -191,7 +184,7 @@ router.post("/long-short", async (req, res) => {
             await dropDownTime[2].evaluate((b) => b.click());
           }
         }
-
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         let nameWithLogo = await getNameWithLogo(page, symbol);
 
         if (nameWithLogo[0].length <= 0) {
@@ -220,7 +213,6 @@ router.post("/long-short", async (req, res) => {
         );
 
         isRequestDone = true;
-        // console.log("result =>>>", result);
         res.status(200).json(result);
         result = [];
       } catch (err) {
@@ -249,7 +241,6 @@ async function getNameWithLogo(page, symbol) {
       const xName = [];
       let beginPush = false;
       for (let i = 0; i < symbolName.length; i++) {
-        console.log(symbolName[i]);
         if (symbolName[i].textContent.trim() === symbol && !beginPush) {
           beginPush = true;
         }
