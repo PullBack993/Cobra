@@ -8,8 +8,7 @@ const https = require("https");
 const imageCache = new Map();
 
 puppeteer.use(StealthPlugin());
-// const mainUrl = "https://cryptopotato.com/crypto-news/";
-const mainUrl = "https://cryptopotato.com/category/crypto-news/";
+const mainUrl = process.env.NEWS_URL;
 
 fetchNews();
 
@@ -171,14 +170,16 @@ async function fetchNews() {
     for (let i = 0; i < newsAllTitles.length; i++) {
       const title = newsAllTitles[i].title;
       const src = newsAllTitles[i].src;
-      const isInDatabase = await checkIfTitleExistsInDatabase(title); //Enable after some article
+      if (title) {
+        const isInDatabase = await checkIfTitleExistsInDatabase(title); //Enable after some article
 
-      if (!isInDatabase) {
-        const articlePage = await browser.newPage();
-        await articlePage.goto(`${newsAllTitles[i]?.href}`);
-        const articleData = await extractArticleData(articlePage, src);
-        if (articleData) {
-          await saveArticleToDatabase(articleData); // Save to DB
+        if (!isInDatabase) {
+          const articlePage = await browser.newPage();
+          await articlePage.goto(`${newsAllTitles[i]?.href}`);
+          const articleData = await extractArticleData(articlePage, src);
+          if (articleData) {
+            await saveArticleToDatabase(articleData); // Save to DB
+          }
         }
       }
     }

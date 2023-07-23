@@ -64,7 +64,20 @@ async function fetchCoinImage(coin) {
     if (coinImageCache[coin.id]) {
       return coinImageCache[coin.id];
     } else {
-      const image = await CoinGeckoClient.coins.fetch(coin.id);
+      let image;
+
+      // Retry logic
+      let retries = 3;
+      while (retries > 0) {
+        try {
+          image = await CoinGeckoClient.coins.fetch(coin.id);
+          break; // Break out of the loop if fetch succeeds
+        } catch (error) {
+          console.error("fetchCoinImage", error);
+          retries--;
+        }
+      }
+
       const imageUrl = determineImage(image);
       coinImageCache[coin.id] = imageUrl;
       return imageUrl;
@@ -73,6 +86,16 @@ async function fetchCoinImage(coin) {
     console.error("fetchCoinImage", error);
   }
 }
+
+//       const image = await CoinGeckoClient.coins.fetch(coin.id);
+//       const imageUrl = determineImage(image);
+//       coinImageCache[coin.id] = imageUrl;
+//       return imageUrl;
+//     }
+//   } catch (error) {
+//     console.error("fetchCoinImage", error);
+//   }
+// }
 
 function determineImage(image) {
   return image.data.image?.thumb
