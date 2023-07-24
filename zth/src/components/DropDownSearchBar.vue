@@ -3,7 +3,7 @@ import { onMounted, ref, nextTick } from 'vue';
 import axios from 'axios';
 import HorizontalEllipsisSpinner from './utils/HorizontalEllipsisSpinner.vue';
 import InputField from './InputField.vue';
-import ctrlKey from '../assets/BaseIcons/ctrl+f.svg';
+import sKeyIcon from '../assets/BaseIcons/key.svg';
 import { useGlobalStore } from '../store/global';
 
 const store = useGlobalStore();
@@ -177,7 +177,7 @@ function onOpen(value) {
       @clear-values="handelClearValue"
       @scroll-direction="scrollPosition"
     />
-    <ctrlKey alt="key-f" class="search__container-key"></ctrlKey>
+    <sKeyIcon alt="key-s" class="search__container-key"></sKeyIcon>
     <!-- @click="selectInput($event)" -->
     <div
       :class="[
@@ -316,14 +316,14 @@ function onOpen(value) {
   align-items: center;
 
   &-key {
-    width: 5rem;
+    width: 1.7rem;
     position: absolute;
     right: 0;
     margin-right: 1rem;
     background-color: transparent;
     border-radius: 0.5rem;
     transform: scale(2.2);
-    right: 1.6rem;
+    right: 0.6rem;
     fill: $main-purple;
   }
   &-dropdown {

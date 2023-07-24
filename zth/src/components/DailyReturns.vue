@@ -246,10 +246,12 @@ const capitalizeFirstLetter = computed(
     justify-content: center;
     margin-bottom: 3.7rem;
     margin-top: 1rem;
+    line-height: 3rem;
   }
   &__main {
     display: flex;
     min-height: 5rem;
+    flex-wrap: wrap;
   }
 
   &__container {
@@ -307,7 +309,7 @@ const capitalizeFirstLetter = computed(
     padding: 0.8rem;
     font-weight: 600;
     position: fixed;
-    z-index: 9;
+    z-index: 1;
     background-color: $bg-dark-purple;
     width: 6rem;
     text-align: center;

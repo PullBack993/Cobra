@@ -126,7 +126,6 @@ function addClickEvent() {
 function documentKey(event: KeyboardEvent) {
   const { key } = event as KeyboardEvent;
   if (
-    event.ctrlKey &&
     (key === 'f' || key === 'F') &&
     dropDownOpen.value === false &&
     !props.prevent
