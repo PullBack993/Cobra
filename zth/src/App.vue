@@ -1,13 +1,21 @@
 <script setup>
 import { RouterView } from 'vue-router';
+import { ref } from 'vue';
 import AsideComponent from './pages/AsideComponent.vue';
 import HeaderComponent from './pages/HeaderConponent.vue';
+
+const test = ref(false);
+
+const toggle = () => {
+  test.value = !test.value;
+  console.log(test.value);
+};
 </script>
 
 <template>
-  <AsideComponent />
+  <AsideComponent :toggle1="test" />
   <main>
-    <HeaderComponent />
+    <HeaderComponent @openSidebar="toggle()" />
     <div class="main">
       <router-view v-slot="{ Component }">
         <transition name="slide" mode="out-in">

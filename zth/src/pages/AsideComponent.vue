@@ -1,11 +1,22 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router';
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, watch } from 'vue';
 import Cookies from 'js-cookie';
 import bgp from '../assets/BaseIcons/bgp.jpeg';
 import hamburger from '../assets/BaseIcons/hamburger.svg';
 import { useGlobalStore } from '../store/global';
+// import MobileHeaderHamburger from '@/pages/HeaderConponent.vue';
 
+const props = defineProps({
+  toggle1: Boolean,
+});
+
+watch(
+  () => props.toggle1,
+  () => {
+    toggle();
+  }
+);
 const isToggle = ref(false);
 const dark = ref(true);
 const opacity = ref('');
@@ -23,6 +34,7 @@ let lastScrollPosition = 0;
 
 const toggle = () => {
   isToggle.value = !isToggle.value;
+  console.log(isToggle.value);
 
   if (isToggle.value === true) {
     if (screenSize.value < 768) {
@@ -60,15 +72,20 @@ const HTMLElementsNotClickable = [
   'theme dark-icon',
   'theme light-icon',
   'sidebar darkUnActive is-expand',
+  'test',
   '',
 ];
 
 const checkElements = (
-  clickedElement: string,
+  clickedElement: string | '',
   clickedElementClass: string | '',
   isMobile: boolean
 ): boolean => {
   let found = false;
+  console.log('clickedElement', clickedElement);
+  console.log('clickedElementClass', clickedElementClass);
+  console.log('isMobile', isMobile);
+
   HTMLElementsNotClickable.some((htmlElement) => {
     if (!isMobile) {
       HTMLElementsNotClickable.push('search__lines', 'search__lines-icon');
@@ -91,11 +108,15 @@ const checkElements = (
       }
     }
   });
+  console.log(found, 'found');
   return found;
 };
-function documentClick(e: Event) {
-  const HTMLElement = (e.target as HTMLButtonElement).className?.baseVal;
-  const HTMLElementClass = (e.target as HTMLButtonElement).className;
+function documentClick() {
+  console.log('documentClick function');
+  // const HTMLElement = (e.target as HTMLButtonElement).className?.baseVal;
+  const HTMLElementClass = 'test';
+  console.log(HTMLElement);
+  console.log(HTMLElementClass);
 
   if (
     screenSize.value < 768 &&
@@ -128,16 +149,13 @@ function onScreenResize() {
 }
 
 const scrollHandler = () => {
-  const currentScrollPosition = window.pageYOffset;
+  const currentScrollPosition = window.scrollY;
   console.log(currentScrollPosition);
 
   if (hamburgerRefs.value) {
-    if (
-      currentScrollPosition < lastScrollPosition
-    ) {
+    if (currentScrollPosition < lastScrollPosition) {
       (hamburgerRefs.value as HTMLElement).style.top = '3.4rem';
       (hamburgerRefs.value as HTMLElement).style.opacity = '1';
-
     } else {
       (hamburgerRefs.value as HTMLElement).style.opacity = '0';
     }
@@ -169,6 +187,7 @@ function handelEscape(event: KeyboardEvent) {
 
 onMounted(() => {
   dark.value = store.themeDark;
+
   document.addEventListener('keydown', handelEscape);
   updateScreenWidth();
   onScreenResize();
@@ -180,105 +199,97 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div
-    v-if="screenSize < 768"
-    class="search__lines"
-    ref="hamburgerRefs"
-    @click="toggle()"
-  >
-    <hamburger
-      class="search__lines-icon"
-      :class="`${
-        store.themeDark
-          ? 'search__lines-icon--light'
-          : 'search__lines-icon--dark'
-      }`"
-      alt="hamburger"
-    ></hamburger>
-  </div>
-
-  <aside
-    :style="{ opacity: opacity, width: width }"
-    class="sidebar"
-    :class="[
-      { darkUnActive: dark },
-      `${isToggle ? 'is-expand' : 'shrink'}`,
-
-      { isOpenAside: isToggle },
-    ]"
-  >
-    <RouterLink to="/" class="image">
-      <div>
-        <img :src="`${bgp}`" alt="logo" class="hero-image" />
-      </div>
-    </RouterLink>
-    <label for="sidebar-toggle" @click="toggle()" class="sidebar-btn">
-      <span
-        :class="[
-          `${isToggle ? 'active' : ''}`,
-          `${dark ? 'sidebar-icon-active' : ''}`,
-        ]"
-        class="sidebar-icon"
-        >&nbsp;</span
-      >
-    </label>
-    <div class="sidebar-container">
-      <RouterLink to="/" class="sidebar-home">
-        <span class="material-symbols-outlined sidebar-home-icon">home</span>
-        <p :class="`${isToggle ? 'visible' : 'notVisible'}`">Home</p>
-      </RouterLink>
-      <RouterLink to="/volume-monitor" class="sidebar-home">
-        <span class="material-symbols-outlined sidebar-home-icon">
-          data_usage
-        </span>
-        <p :class="`${isToggle ? 'visible' : 'notVisible'}`">Global Metrics</p>
-      </RouterLink>
-
-      <RouterLink to="/news" class="sidebar-home">
-        <span class="material-symbols-outlined sidebar-home-icon">
-          monitoring
-        </span>
-        <p :class="`${isToggle ? 'visible' : 'notVisible'}`">Volume Metrics</p>
-      </RouterLink>
-
-      <RouterLink to="/long-short" class="sidebar-home">
-        <span class="material-symbols-outlined sidebar-home-icon">
-          equalizer
-        </span>
-        <p :class="`${isToggle ? 'visible' : 'notVisible'}`">
-          Long/Short Ratio
-        </p>
-      </RouterLink>
+  <div>
+    <div>
+      <!-- <MobileHeaderHamburger @openSidebar="toggle()"></MobileHeaderHamburger> -->
     </div>
-
-    <div
-      class="theme"
-      @click="switchTheme"
+    <aside
+      :style="{ opacity: opacity, width: width }"
+      class="sidebar"
       :class="[
-        `${dark ? 'light-icon' : 'dark-icon'}`,
-        `${isToggle ? '' : 'toggle'}`,
+        { darkUnActive: dark },
+        `${isToggle ? 'is-expand' : 'shrink'}`,
+
+        { isOpenAside: isToggle },
       ]"
     >
-      <div class="theme-light">
-        <button
-          tabindex="-1"
-          class="material-symbols-outlined light"
-          :class="`${isToggle ? '' : 'toggle-light'}`"
+      <RouterLink to="/" class="image">
+        <div>
+          <img :src="`${bgp}`" alt="logo" class="hero-image" />
+        </div>
+      </RouterLink>
+      <label for="sidebar-toggle" @click="toggle()" class="sidebar-btn">
+        <span
+          :class="[
+            `${isToggle ? 'active' : ''}`,
+            `${dark ? 'sidebar-icon-active' : ''}`,
+          ]"
+          class="sidebar-icon"
+          >&nbsp;</span
         >
-          light_mode
-        </button>
+      </label>
+      <div class="sidebar-container">
+        <RouterLink to="/" class="sidebar-home">
+          <span class="material-symbols-outlined sidebar-home-icon">home</span>
+          <p :class="`${isToggle ? 'visible' : 'notVisible'}`">Home</p>
+        </RouterLink>
+        <RouterLink to="/volume-monitor" class="sidebar-home">
+          <span class="material-symbols-outlined sidebar-home-icon">
+            data_usage
+          </span>
+          <p :class="`${isToggle ? 'visible' : 'notVisible'}`">
+            Global Metrics
+          </p>
+        </RouterLink>
+
+        <RouterLink to="/news" class="sidebar-home">
+          <span class="material-symbols-outlined sidebar-home-icon">
+            monitoring
+          </span>
+          <p :class="`${isToggle ? 'visible' : 'notVisible'}`">
+            Volume Metrics
+          </p>
+        </RouterLink>
+
+        <RouterLink to="/long-short" class="sidebar-home">
+          <span class="material-symbols-outlined sidebar-home-icon">
+            equalizer
+          </span>
+          <p :class="`${isToggle ? 'visible' : 'notVisible'}`">
+            Long/Short Ratio
+          </p>
+        </RouterLink>
       </div>
-      <div class="theme-dark">
-        <button
-          tabindex="-1"
-          class="material-symbols-outlined dark"
-          :class="`${isToggle ? '' : 'toggle-dark'}`"
-        >
-          dark_mode
-        </button>
+
+      <div
+        class="theme"
+        @click="switchTheme"
+        :class="[
+          `${dark ? 'light-icon' : 'dark-icon'}`,
+          `${isToggle ? '' : 'toggle'}`,
+        ]"
+      >
+        <div class="theme-light">
+          <button
+            tabindex="-1"
+            class="material-symbols-outlined light"
+            :class="`${isToggle ? '' : 'toggle-light'}`"
+          >
+            light_mode
+          </button>
+        </div>
+        <div class="theme-dark">
+          <button
+            tabindex="-1"
+            class="material-symbols-outlined dark"
+            :class="`${isToggle ? '' : 'toggle-dark'}`"
+          >
+            dark_mode
+          </button>
+        </div>
       </div>
-    </div>
-  </aside>
+    </aside>
+  </div>
 </template>
 
 <style scoped lang="scss">
@@ -304,6 +315,20 @@ onUnmounted(() => {
     border-right: 0.1rem solid $grey-black-5 !important;
   }
 }
+.test::after {
+  content: '';
+  // content: '\a';
+  // white-space: pre;
+  position: absolute;
+  left: 14px;
+  top: 27px;
+  height: 4rem;
+  width: 4rem;
+  z-index: 99;
+}
+// .search__hamburger {
+//   position: relative;
+// }
 .search__lines {
   position: sticky;
   top: 3.4rem;
@@ -311,7 +336,7 @@ onUnmounted(() => {
   margin-left: 1rem;
   cursor: pointer;
   width: 3.7rem;
-  z-index: 99;
+  z-index: 98;
   height: 0;
   fill: white;
   // padding: 2.4rem;
