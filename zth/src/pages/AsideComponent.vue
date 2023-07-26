@@ -111,12 +111,9 @@ const checkElements = (
   console.log(found, 'found');
   return found;
 };
-function documentClick() {
-  console.log('documentClick function');
-  // const HTMLElement = (e.target as HTMLButtonElement).className?.baseVal;
-  const HTMLElementClass = 'test';
-  console.log(HTMLElement);
-  console.log(HTMLElementClass);
+function documentClick(e: Event) {
+  const HTMLElement = (e.target as HTMLButtonElement).className?.baseVal;
+  const HTMLElementClass = (e.target as HTMLButtonElement).className;
 
   if (
     screenSize.value < 768 &&
