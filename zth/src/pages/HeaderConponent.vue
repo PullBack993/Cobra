@@ -17,6 +17,7 @@ const header = ref(null);
 let lastScrollPosition = 0;
 
 const emit = defineEmits(['openSidebar']);
+screenSize.value = window.innerWidth;
 
 const scrollHandler = () => {
   const currentScrollPosition = window.pageYOffset;
@@ -27,10 +28,20 @@ const scrollHandler = () => {
   }
   lastScrollPosition = currentScrollPosition;
 };
-
+function updateScreenWidth() {
+  screenSize.value = window.innerWidth;
+}
 onMounted(() => {
   window.addEventListener('scroll', scrollHandler);
+  updateScreenWidth();
+  onScreenResize();
 });
+
+function onScreenResize() {
+  window.addEventListener('resize', () => {
+    updateScreenWidth();
+  });
+}
 
 onUnmounted(() => {
   window.removeEventListener('scroll', scrollHandler);
