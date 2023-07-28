@@ -109,6 +109,7 @@ onMounted(() => {
   updateScreenWidth();
   onScreenResize();
 });
+
 function onScreenResize() {
   window.addEventListener('resize', () => {
     updateScreenWidth();
@@ -117,16 +118,6 @@ function onScreenResize() {
 
 function updateScreenWidth() {
   screenSize.value = window.innerWidth;
-  if (screenSize.value < 768) {
-    opacity.value = '0';
-    width.value = '0rem';
-    isToggle.value = false;
-  } else {
-    width.value = '8rem';
-    opacity.value = '100';
-    isToggle.value = false;
-    document.dispatchEvent(new Event(''));
-  }
 }
 </script>
 

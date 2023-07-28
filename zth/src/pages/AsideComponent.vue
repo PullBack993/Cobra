@@ -119,48 +119,6 @@ function documentClick(e: Event) {
   }
 }
 
-// function destroyClickEvent() {
-//   document.removeEventListener('click', documentClick);
-// }
-
-// change to store
-// function onScreenResize() {
-//   window.addEventListener('resize', () => {
-//     updateScreenWidth();
-//   });
-// }
-
-// const scrollHandler = () => {
-//   const currentScrollPosition = window.scrollY;
-//   console.log(currentScrollPosition);
-
-//   if (hamburgerRefs.value) {
-//     if (currentScrollPosition < lastScrollPosition) {
-//       (hamburgerRefs.value as HTMLElement).style.top = '3.4rem';
-//       (hamburgerRefs.value as HTMLElement).style.opacity = '1';
-//     } else {
-//       (hamburgerRefs.value as HTMLElement).style.opacity = '0';
-//     }
-//     lastScrollPosition = currentScrollPosition;
-//   }
-// };
-
-// function updateScreenWidth() {
-//   screenSize.value = window.innerWidth;
-//   if (screenSize.value < 768) {
-//     window.addEventListener('scroll', scrollHandler);
-//     opacity.value = '0';
-//     width.value = '0rem';
-//     isToggle.value = false;
-//   } else {
-//     width.value = '8rem';
-//     opacity.value = '100';
-//     isToggle.value = false;
-//     document.dispatchEvent(new Event(''));
-//     window.removeEventListener('scroll', scrollHandler);
-//   }
-// }
-
 function handelEscape(event: KeyboardEvent) {
   if (isToggle.value && event.key === 'Escape') {
     isToggle.value = false;
@@ -171,12 +129,6 @@ onMounted(() => {
   dark.value = store.themeDark;
 
   document.addEventListener('keydown', handelEscape);
-  // updateScreenWidth();
-  // onScreenResize();
-});
-
-onUnmounted(() => {
-  // window.removeEventListener('scroll', scrollHandler);
 });
 </script>
 
