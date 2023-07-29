@@ -14,19 +14,12 @@ const toggle = () => {
   console.log(isToggle.value);
 
   if (isToggle.value === true) {
-    if (screenSize.value < 768) {
-      width.value = '8rem';
-      opacity.value = '100';
-      document.dispatchEvent(new Event(''));
-    }
     document.addEventListener('click', documentClick);
-  } else {
     if (screenSize.value < 768) {
       width.value = '0rem';
       opacity.value = '0';
     }
     destroyClickEvent();
-  }
 };
 function destroyClickEvent() {
   document.removeEventListener('click', documentClick);
@@ -78,7 +71,6 @@ const checkElements = (
       }
     }
   });
-  console.log(found, 'found');
   return found;
 };
 

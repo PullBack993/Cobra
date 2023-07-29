@@ -93,31 +93,30 @@ const checkElements = (
       }
     }
   });
-  console.log(found, 'found');
   return found;
 };
-function documentClick(e: Event) {
-  const HTMLElement = (e.target as HTMLButtonElement).className?.baseVal;
-  const HTMLElementClass = (e.target as HTMLButtonElement).className;
+// function documentClick(e: Event) {
+//   const HTMLElement = (e.target as HTMLButtonElement).className?.baseVal;
+//   const HTMLElementClass = (e.target as HTMLButtonElement).className;
 
-  if (
-    screenSize.value < 768 &&
-    !checkElements(HTMLElement, HTMLElementClass, true)
-  ) {
-    isToggle.value = false;
-    opacity.value = '0';
-    width.value = '0rem';
-    document.removeEventListener('click', documentClick);
-  }
+//   if (
+//     screenSize.value < 768 &&
+//     !checkElements(HTMLElement, HTMLElementClass, true)
+//   ) {
+//     isToggle.value = false;
+//     opacity.value = '0';
+//     width.value = '0rem';
+//     document.removeEventListener('click', documentClick);
+//   }
 
-  if (
-    (screenSize.value > 768 && !checkElements(HTMLElementClass, '', false)) ||
-    HTMLElementClass === ''
-  ) {
-    isToggle.value = false;
-    document.removeEventListener('click', documentClick);
-  }
-}
+//   if (
+//     (screenSize.value > 768 && !checkElements(HTMLElementClass, '', false)) ||
+//     HTMLElementClass === ''
+//   ) {
+//     isToggle.value = false;
+//     document.removeEventListener('click', documentClick);
+//   }
+// }
 
 function handelEscape(event: KeyboardEvent) {
   if (isToggle.value && event.key === 'Escape') {
