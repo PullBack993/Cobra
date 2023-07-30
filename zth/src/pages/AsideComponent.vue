@@ -18,17 +18,13 @@ const store = useGlobalStore();
 const screenSize = ref(0);
 const width = ref('');
 const hamburgerRefs = ref(null);
-let lastScrollPosition = 0;
+const lastScrollPosition = 0;
 
 (window as any).ethereum?.on('accountsChanged', () => {
   Cookies.remove('zth_rLt_K6u3hTf');
   Cookies.remove('zth_aSt_1xRg9Jd');
   store.login = false;
 });
-
-const toggle = () => {
-  isToggle.value = !isToggle.value;
-};
 
 const switchTheme = () => {
   store.themeDark = !store.themeDark;
@@ -41,10 +37,27 @@ const switchTheme = () => {
   }
 };
 
+function destroyClickEvent() {
+  document.removeEventListener('click', documentClick);
+}
+
+const toggle = () => {
+  isToggle.value = !isToggle.value;
+  console.log('isToggle', isToggle.value);
+
+  if (isToggle.value === true) {
+    console.log('addEvent');
+    document.addEventListener('click', documentClick);
+  } else destroyClickEvent();
+};
+
 watch(
   () => props.toggle1,
   () => {
-    isToggle.value = props.toggle1;
+    if (screenSize.value <= 768) {
+      console.log('props.toggle1');
+      isToggle.value = props.toggle1;
+    }
   }
 );
 const HTMLElementsNotClickable = [
@@ -57,66 +70,31 @@ const HTMLElementsNotClickable = [
   'theme dark-icon',
   'theme light-icon',
   'sidebar darkUnActive is-expand',
-  'test',
   '',
 ];
 
-const checkElements = (
-  clickedElement: string | '',
-  clickedElementClass: string | '',
-  isMobile: boolean
-): boolean => {
+const checkElements = (clickedElement: string, clickedElementClass: string | '', isMobile: boolean): boolean => {
   let found = false;
-  console.log('clickedElement', clickedElement);
-  console.log('clickedElementClass', clickedElementClass);
-  console.log('isMobile', isMobile);
 
   HTMLElementsNotClickable.some((htmlElement) => {
-    if (!isMobile) {
-      HTMLElementsNotClickable.push('search__lines', 'search__lines-icon');
-      if (clickedElement === htmlElement) {
-        found = true;
-        return true;
-      }
-    } else if (
-      new RegExp(htmlElement, 'i').test(clickedElement) ||
-      clickedElement === undefined
-    ) {
-      if (clickedElement === undefined) {
-        if (clickedElementClass === htmlElement) {
-          found = true;
-          return true;
-        }
-      } else {
-        found = true;
-        return true;
-      }
+    if (htmlElement === clickedElement) {
+      found = true;
     }
   });
   return found;
 };
-// function documentClick(e: Event) {
-//   const HTMLElement = (e.target as HTMLButtonElement).className?.baseVal;
-//   const HTMLElementClass = (e.target as HTMLButtonElement).className;
 
-//   if (
-//     screenSize.value < 768 &&
-//     !checkElements(HTMLElement, HTMLElementClass, true)
-//   ) {
-//     isToggle.value = false;
-//     opacity.value = '0';
-//     width.value = '0rem';
-//     document.removeEventListener('click', documentClick);
-//   }
-
-//   if (
-//     (screenSize.value > 768 && !checkElements(HTMLElementClass, '', false)) ||
-//     HTMLElementClass === ''
-//   ) {
-//     isToggle.value = false;
-//     document.removeEventListener('click', documentClick);
-//   }
-// }
+function documentClick(e: Event) {
+  const HTMLElementClass = (e.target as HTMLButtonElement).className;
+  console.log('HTMLElementClass', HTMLElementClass);
+  // console.log('checkElements', !checkElements(HTMLElementClass, '', false));
+  // console.log('screensize', screenSize.value > 768);
+  if ((screenSize.value > 768 && !checkElements(HTMLElementClass, '', false)) || HTMLElementClass === '') {
+    console.log('document click yes');
+    isToggle.value = false;
+    document.removeEventListener('click', documentClick);
+  }
+}
 
 function handelEscape(event: KeyboardEvent) {
   if (isToggle.value && event.key === 'Escape') {
@@ -126,6 +104,7 @@ function handelEscape(event: KeyboardEvent) {
 
 onMounted(() => {
   dark.value = store.themeDark;
+  screenSize.value = window.innerWidth;
 
   document.addEventListener('keydown', handelEscape);
 });
@@ -139,12 +118,7 @@ onMounted(() => {
     <aside
       :style="{ opacity: opacity, width: width }"
       class="sidebar"
-      :class="[
-        { darkUnActive: dark },
-        `${isToggle ? 'is-expand' : 'shrink'}`,
-
-        { isOpenAside: isToggle },
-      ]"
+      :class="[{ darkUnActive: dark }, `${isToggle ? 'is-expand' : 'shrink'}`, { isOpenAside: isToggle }]"
     >
       <RouterLink to="/" class="image">
         <div>
@@ -152,12 +126,7 @@ onMounted(() => {
         </div>
       </RouterLink>
       <label for="sidebar-toggle" @click="toggle()" class="sidebar-btn">
-        <span
-          :class="[
-            `${isToggle ? 'active' : ''}`,
-            `${dark ? 'sidebar-icon-active' : ''}`,
-          ]"
-          class="sidebar-icon"
+        <span :class="[`${isToggle ? 'active' : ''}`, `${dark ? 'sidebar-icon-active' : ''}`]" class="sidebar-icon"
           >&nbsp;</span
         >
       </label>
@@ -167,56 +136,33 @@ onMounted(() => {
           <p :class="`${isToggle ? 'visible' : 'notVisible'}`">Home</p>
         </RouterLink>
         <RouterLink to="/volume-monitor" class="sidebar-home">
-          <span class="material-symbols-outlined sidebar-home-icon">
-            data_usage
-          </span>
-          <p :class="`${isToggle ? 'visible' : 'notVisible'}`">
-            Global Metrics
-          </p>
+          <span class="material-symbols-outlined sidebar-home-icon"> data_usage </span>
+          <p :class="`${isToggle ? 'visible' : 'notVisible'}`">Global Metrics</p>
         </RouterLink>
 
         <RouterLink to="/news" class="sidebar-home">
-          <span class="material-symbols-outlined sidebar-home-icon">
-            monitoring
-          </span>
-          <p :class="`${isToggle ? 'visible' : 'notVisible'}`">
-            Volume Metrics
-          </p>
+          <span class="material-symbols-outlined sidebar-home-icon"> monitoring </span>
+          <p :class="`${isToggle ? 'visible' : 'notVisible'}`">Volume Metrics</p>
         </RouterLink>
 
         <RouterLink to="/long-short" class="sidebar-home">
-          <span class="material-symbols-outlined sidebar-home-icon">
-            equalizer
-          </span>
-          <p :class="`${isToggle ? 'visible' : 'notVisible'}`">
-            Long/Short Ratio
-          </p>
+          <span class="material-symbols-outlined sidebar-home-icon"> equalizer </span>
+          <p :class="`${isToggle ? 'visible' : 'notVisible'}`">Long/Short Ratio</p>
         </RouterLink>
       </div>
 
       <div
         class="theme"
         @click="switchTheme"
-        :class="[
-          `${dark ? 'light-icon' : 'dark-icon'}`,
-          `${isToggle ? '' : 'toggle'}`,
-        ]"
+        :class="[`${dark ? 'light-icon' : 'dark-icon'}`, `${isToggle ? '' : 'toggle'}`]"
       >
         <div class="theme-light">
-          <button
-            tabindex="-1"
-            class="material-symbols-outlined light"
-            :class="`${isToggle ? '' : 'toggle-light'}`"
-          >
+          <button tabindex="-1" class="material-symbols-outlined light" :class="`${isToggle ? '' : 'toggle-light'}`">
             light_mode
           </button>
         </div>
         <div class="theme-dark">
-          <button
-            tabindex="-1"
-            class="material-symbols-outlined dark"
-            :class="`${isToggle ? '' : 'toggle-dark'}`"
-          >
+          <button tabindex="-1" class="material-symbols-outlined dark" :class="`${isToggle ? '' : 'toggle-dark'}`">
             dark_mode
           </button>
         </div>
@@ -471,8 +417,7 @@ onMounted(() => {
       content: '';
       transition: background-color 0.15s ease, -webkit-transform 0.3s ease;
       transition: transform 0.3s ease, background-color 0.15s ease;
-      transition: transform 0.3s ease, background-color 0.15s ease,
-        -webkit-transform 0.3s ease;
+      transition: transform 0.3s ease, background-color 0.15s ease, -webkit-transform 0.3s ease;
     }
 
     &-light {

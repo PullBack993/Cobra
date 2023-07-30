@@ -20,6 +20,7 @@ const toggle = () => {
       opacity.value = '0';
     }
     destroyClickEvent();
+  };
 };
 function destroyClickEvent() {
   document.removeEventListener('click', documentClick);
