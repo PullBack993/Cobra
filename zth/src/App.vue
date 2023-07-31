@@ -6,19 +6,14 @@ import HeaderComponent from './pages/HeaderConponent.vue';
 
 const isToggle = ref(false);
 const screenSize = ref();
-const width = ref('');
-const opacity = ref('');
 
 const toggle = () => {
   isToggle.value = !isToggle.value;
-  console.log(isToggle.value);
+  console.log('istoggle =>', isToggle.value);
 
   if (isToggle.value === true) {
     document.addEventListener('click', documentClick);
-    if (screenSize.value < 768) {
-      width.value = '0rem';
-      opacity.value = '0';
-    }
+  } else {
     destroyClickEvent();
   }
 };
@@ -30,14 +25,14 @@ const HTMLElementsNotClickable = [
   'sidebar-btn',
   'sidebar is-expand',
   'active sidebar-icon',
-  'search__lines',
-  'search__lines-icon',
   'theme',
   'material-symbols-outlined light',
   'material-symbols-outlined dark',
   'theme dark-icon',
   'theme light-icon',
   'sidebar darkUnActive is-expand',
+  'search__lines-icon search__lines-icon--dark',
+  'search__lines-icon search__lines-icon--light',
   'test',
   '',
 ];
@@ -54,12 +49,16 @@ const checkElements = (clickedElement: string): boolean => {
 };
 
 function documentClick(e: Event) {
-  const HTMLElementClass = (e.target as HTMLButtonElement).className;
-
-  if (screenSize.value < 768 && !checkElements(HTMLElementClass)) {
+  let HTMLElementClass = (e.target as HTMLButtonElement).className?.baseVal;
+  if (!HTMLElementClass) {
+    HTMLElementClass = (e.target as HTMLButtonElement).className;
+  }
+  console.log('html element', HTMLElementClass);
+  if (
+    (screenSize.value < 768 && !checkElements(HTMLElementClass) && !(HTMLElementClass instanceof SVGAnimatedString)) ||
+    HTMLElementClass === ''
+  ) {
     isToggle.value = false;
-    opacity.value = '0';
-    width.value = '0rem';
     document.removeEventListener('click', documentClick);
   }
 }
