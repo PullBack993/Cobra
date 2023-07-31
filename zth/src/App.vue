@@ -20,7 +20,7 @@ const toggle = () => {
       opacity.value = '0';
     }
     destroyClickEvent();
-  };
+  }
 };
 function destroyClickEvent() {
   document.removeEventListener('click', documentClick);
@@ -30,6 +30,8 @@ const HTMLElementsNotClickable = [
   'sidebar-btn',
   'sidebar is-expand',
   'active sidebar-icon',
+  'search__lines',
+  'search__lines-icon',
   'theme',
   'material-symbols-outlined light',
   'material-symbols-outlined dark',
@@ -40,60 +42,24 @@ const HTMLElementsNotClickable = [
   '',
 ];
 
-const checkElements = (
-  clickedElement: string | '',
-  clickedElementClass: string | '',
-  isMobile: boolean
-): boolean => {
+const checkElements = (clickedElement: string): boolean => {
   let found = false;
-  console.log('clickedElement', clickedElement);
-  console.log('clickedElementClass', clickedElementClass);
-  console.log('isMobile', isMobile);
 
-  HTMLElementsNotClickable.some((htmlElement) => {
-    if (!isMobile) {
-      HTMLElementsNotClickable.push('search__lines', 'search__lines-icon');
-      if (clickedElement === htmlElement) {
-        found = true;
-        return true;
-      }
-    } else if (
-      new RegExp(htmlElement, 'i').test(clickedElement) ||
-      clickedElement === undefined
-    ) {
-      if (clickedElement === undefined) {
-        if (clickedElementClass === htmlElement) {
-          found = true;
-          return true;
-        }
-      } else {
-        found = true;
-        return true;
-      }
+  HTMLElementsNotClickable.forEach((htmlElement) => {
+    if (htmlElement === clickedElement) {
+      found = true;
     }
   });
   return found;
 };
 
 function documentClick(e: Event) {
-  const HTMLElement = (e.target as HTMLButtonElement).className?.baseVal;
   const HTMLElementClass = (e.target as HTMLButtonElement).className;
 
-  if (
-    screenSize.value < 768 &&
-    !checkElements(HTMLElement, HTMLElementClass, true)
-  ) {
+  if (screenSize.value < 768 && !checkElements(HTMLElementClass)) {
     isToggle.value = false;
     opacity.value = '0';
     width.value = '0rem';
-    document.removeEventListener('click', documentClick);
-  }
-
-  if (
-    (screenSize.value > 768 && !checkElements(HTMLElementClass, '', false)) ||
-    HTMLElementClass === ''
-  ) {
-    isToggle.value = false;
     document.removeEventListener('click', documentClick);
   }
 }
@@ -115,7 +81,7 @@ function updateScreenWidth() {
 </script>
 
 <template>
-  <AsideComponent :toggle1="isToggle" />
+  <AsideComponent :toggle-mobile="isToggle" />
   <main>
     <HeaderComponent @openSidebar="toggle()" />
     <div class="main">

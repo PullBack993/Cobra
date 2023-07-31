@@ -1,14 +1,25 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router';
-import { ref, onMounted, onUnmounted, watch } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import Cookies from 'js-cookie';
 import bgp from '../assets/BaseIcons/bgp.jpeg';
-import hamburger from '../assets/BaseIcons/hamburger.svg';
 import { useGlobalStore } from '../store/global';
-// import MobileHeaderHamburger from '@/pages/HeaderConponent.vue';
+
+const HTMLElementsNotClickable = [
+  'sidebar-btn',
+  'sidebar is-expand',
+  'active sidebar-icon',
+  'theme',
+  'material-symbols-outlined light',
+  'material-symbols-outlined dark',
+  'theme dark-icon',
+  'theme light-icon',
+  'sidebar darkUnActive is-expand',
+  '',
+];
 
 const props = defineProps({
-  toggle1: Boolean,
+  toggleMobile: Boolean,
 });
 
 const isToggle = ref(false);
@@ -17,8 +28,6 @@ const opacity = ref('');
 const store = useGlobalStore();
 const screenSize = ref(0);
 const width = ref('');
-const hamburgerRefs = ref(null);
-const lastScrollPosition = 0;
 
 (window as any).ethereum?.on('accountsChanged', () => {
   Cookies.remove('zth_rLt_K6u3hTf');
@@ -37,9 +46,29 @@ const switchTheme = () => {
   }
 };
 
-function destroyClickEvent() {
+const checkElements = (clickedElement: string): boolean => {
+  let found = false;
+
+  HTMLElementsNotClickable.forEach((htmlElement) => {
+    if (htmlElement === clickedElement) {
+      found = true;
+    }
+  });
+  return found;
+};
+
+const documentClick = (e: Event) => {
+  const HTMLElementClass = (e.target as HTMLButtonElement).className;
+
+  if ((screenSize.value > 768 && !checkElements(HTMLElementClass)) || HTMLElementClass === '') {
+    isToggle.value = false;
+    document.removeEventListener('click', documentClick);
+  }
+};
+
+const destroyClickEvent = () => {
   document.removeEventListener('click', documentClick);
-}
+};
 
 const toggle = () => {
   isToggle.value = !isToggle.value;
@@ -52,60 +81,36 @@ const toggle = () => {
 };
 
 watch(
-  () => props.toggle1,
+  () => props.toggleMobile,
   () => {
     if (screenSize.value <= 768) {
-      console.log('props.toggle1');
-      isToggle.value = props.toggle1;
+      console.log('props.toggle1', isToggle.value, props.toggleMobile);
+      isToggle.value = props.toggleMobile;
     }
   }
 );
-const HTMLElementsNotClickable = [
-  'sidebar-btn',
-  'sidebar is-expand',
-  'active sidebar-icon',
-  'theme',
-  'material-symbols-outlined light',
-  'material-symbols-outlined dark',
-  'theme dark-icon',
-  'theme light-icon',
-  'sidebar darkUnActive is-expand',
-  '',
-];
 
-const checkElements = (clickedElement: string, clickedElementClass: string | '', isMobile: boolean): boolean => {
-  let found = false;
-
-  HTMLElementsNotClickable.some((htmlElement) => {
-    if (htmlElement === clickedElement) {
-      found = true;
-    }
-  });
-  return found;
-};
-
-function documentClick(e: Event) {
-  const HTMLElementClass = (e.target as HTMLButtonElement).className;
-  console.log('HTMLElementClass', HTMLElementClass);
-  // console.log('checkElements', !checkElements(HTMLElementClass, '', false));
-  // console.log('screensize', screenSize.value > 768);
-  if ((screenSize.value > 768 && !checkElements(HTMLElementClass, '', false)) || HTMLElementClass === '') {
-    console.log('document click yes');
-    isToggle.value = false;
-    document.removeEventListener('click', documentClick);
-  }
-}
-
-function handelEscape(event: KeyboardEvent) {
+const handelEscape = (event: KeyboardEvent) => {
   if (isToggle.value && event.key === 'Escape') {
     isToggle.value = false;
   }
-}
+};
+
+const updateScreenWidth = () => {
+  screenSize.value = window.innerWidth;
+};
+
+// TODO change to store
+const onScreenResize = () => {
+  window.addEventListener('resize', () => {
+    updateScreenWidth();
+  });
+};
 
 onMounted(() => {
   dark.value = store.themeDark;
   screenSize.value = window.innerWidth;
-
+  onScreenResize();
   document.addEventListener('keydown', handelEscape);
 });
 </script>
