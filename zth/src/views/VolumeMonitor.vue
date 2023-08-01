@@ -116,8 +116,7 @@ const connectToSocket = () => {
 
     socket.on('connect', () => {
       console.log('Connected to WebSocket server');
-      connectionAttempts = 0; // Reset the connection attempts counter on successful connection
-      overlay.value.style.display = 'none';
+      connectionAttempts = 0;
     });
 
     socket.on('message', (responseData) => {
@@ -145,7 +144,7 @@ const connectToSocket = () => {
     });
   };
 
-  attemptConnection(); // Start the initial connection attempt
+  attemptConnection();
 };
 
 const getObjectBySymbol = (newTransaction: [IWebsocket]) => {
