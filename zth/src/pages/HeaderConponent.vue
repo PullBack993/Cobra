@@ -52,18 +52,10 @@ onUnmounted(() => {
   <header class="header" ref="header">
     <div class="main">
       <div class="search">
-        <div
-          v-if="screenSize < 768"
-          class="search__lines"
-          @click="emit('openSidebar')"
-        >
+        <div v-if="screenSize < 768" class="search__lines" @click="emit('openSidebar')">
           <hamburger
             class="search__lines-icon"
-            :class="`${
-              store.themeDark
-                ? 'search__lines-icon--light'
-                : 'search__lines-icon--dark'
-            }`"
+            :class="`${store.themeDark ? 'search__lines-icon--light' : 'search__lines-icon--dark'}`"
             alt="hamburger"
           ></hamburger>
         </div>
@@ -77,21 +69,14 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 .search__lines {
-  position: sticky;
-  top: 3.4rem;
-  left: 2rem;
-  margin-left: 1rem;
-  cursor: pointer;
-  width: 3.7rem;
-  z-index: 98;
-  height: 0;
-  fill: white;
-  // padding: 2.4rem;
-  // padding-bottom: 2rem;
+  position: absolute;
+  left: 0;
+  top: 1.8rem;
 
   &-icon {
     display: block;
     cursor: pointer;
+    z-index: 98;
 
     &--light {
       fill: $main_purple;
@@ -114,6 +99,7 @@ onUnmounted(() => {
   display: flex;
   justify-content: space-between;
   .search {
+    position: relative;
     margin: auto;
     border-radius: 0.6rem;
     width: 100%;

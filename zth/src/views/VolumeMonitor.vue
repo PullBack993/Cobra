@@ -28,12 +28,11 @@ const allowsCoins = ['BTC', 'USDT'];
 const transactions = ref<[IWebsocket]>();
 const ticks = ref<[ITick]>();
 const store = useGlobalStore();
+const overlayByWSDisconnect = ref(false);
 const best10Coins = 10;
-const loader = ref(true);
+const loading = ref(true);
 
-const themeClass = computed(() =>
-  store.themeDark ? 'volume-monitor__theme-light' : 'volume-monitor__theme-dark'
-);
+const themeClass = computed(() => (store.themeDark ? 'volume-monitor__theme-light' : 'volume-monitor__theme-dark'));
 
 const tickVolume = ref<[ITickVolume]>();
 let socket: Socket;
@@ -43,11 +42,7 @@ const sortAscending = (data: [ITickVolume] | [ITick], objProperty: string) => {
   data?.sort((a, b) => (b as any)[objProperty] - (a as any)[objProperty]);
 };
 
-const onMountedWS = (
-  dataObject: [IWebsocket],
-  objToAssign: [ITickVolume] | [ITick],
-  objType: string
-): void => {
+const onMountedWS = (dataObject: [IWebsocket], objToAssign: [ITickVolume] | [ITick], objType: string): void => {
   const transformedData: {
     [key: string]: {
       symbol: string;
@@ -90,8 +85,7 @@ const onMountedWS = (
           image: img,
         };
       }
-      transformedData[symbol].volume =
-        (transformedData[symbol].volume ?? 0) + volumeEqualBtc;
+      transformedData[symbol].volume = (transformedData[symbol].volume ?? 0) + volumeEqualBtc;
       if (marketMaker) {
         transformedData[symbol].buy += volumeEqualBtc;
       } else {
@@ -109,27 +103,50 @@ const onMountedWS = (
   sortAscending(objToAssign, objType);
 };
 
-function connectToSocket() {
-  socket = io(baseApiUrl, {
-    extraHeaders: {
-      'my-custom-header': 'test', // Replace with your authentication token value
-    },
-  });
+const connectToSocket = () => {
+  let connectionAttempts = 0;
+  const maxConnectionAttempts = 5;
 
-  socket.on('connect', () => {
-    console.log('Connected to WebSocket server');
-  });
+  const attemptConnection = () => {
+    socket = io(baseApiUrl, {
+      extraHeaders: {
+        'my-custom-header': 'test', // TODO Replace with your authentication token value
+      },
+    });
 
-  socket.on('message', (responseData) => {
-    const dataObject: [IWebsocket] = JSON.parse(responseData).reverse();
-    if (!firstResponse.value) {
-      firstResponse.value = true;
-      onMountedWS(dataObject, ticks.value, 'count');
-      onMountedWS(dataObject, tickVolume.value, 'volume');
-    }
-    transactions.value = dataObject;
-  });
-}
+    socket.on('connect', () => {
+      console.log('Connected to WebSocket server');
+      connectionAttempts = 0; // Reset the connection attempts counter on successful connection
+      overlay.value.style.display = 'none';
+    });
+
+    socket.on('message', (responseData) => {
+      console.log(responseData);
+      const dataObject: [IWebsocket] = JSON.parse(responseData).reverse();
+      if (!firstResponse.value) {
+        firstResponse.value = true;
+        onMountedWS(dataObject, ticks.value, 'count');
+        onMountedWS(dataObject, tickVolume.value, 'volume');
+      }
+      loading.value = false;
+      transactions.value = dataObject;
+    });
+
+    socket.on('connect_error', (err) => {
+      console.error(err.message);
+      if (connectionAttempts < maxConnectionAttempts) {
+        connectionAttempts++;
+      } else {
+        overlayByWSDisconnect.value = true;
+        loading.value = false;
+        console.log('true');
+        socket.disconnect();
+      }
+    });
+  };
+
+  attemptConnection(); // Start the initial connection attempt
+};
 
 const getObjectBySymbol = (newTransaction: [IWebsocket]) => {
   if (newTransaction) {
@@ -138,9 +155,7 @@ const getObjectBySymbol = (newTransaction: [IWebsocket]) => {
     const marketMaker = newTransaction[0].m;
     const img = newTransaction[0].image;
 
-    const matchingSymbol = tickVolume.value?.find(
-      (obj) => obj.symbol === symbol
-    );
+    const matchingSymbol = tickVolume.value?.find((obj) => obj.symbol === symbol);
     if (matchingSymbol) {
       matchingSymbol.volume += volumeEqualBtc;
       if (marketMaker) {
@@ -219,253 +234,207 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="volume-monitor" v-if="transactions">
-    <div class="volume-monitor__additional-info">
-      <BaseTableFrame class="volume-monitor__container">
-        <span class="volume-monitor__left">
-          <h3 class="volume-monitor__title" :class="themeClass">Tick Board</h3>
-          <small
-            :class="
-              store.themeDark
-                ? 'volume-monitor__title-small--light'
-                : 'volume-monitor__title-small--dark'
-            "
-            >The most ticked</small
-          >
-        </span>
-        <table class="tb__table">
-          <tbody>
-            <tr class="card__td-body" v-for="(tick, i) in ticks" :key="i">
-              <td>
-                <div class="card__td-symbol">
-                  <span class="card__td-symbol-label">
-                    <img
-                      :src="tick?.image"
-                      class="card__td-img"
-                      :alt="tick.symbol"
-                    />
-                  </span>
-                </div>
-              </td>
-              <td>
-                <span class="card__td-text-muted"></span>
-                <span class="card__td-text-dynamic" :class="themeClass"
-                  >{{ tick.symbol }}
-                  <label class="card__td-symbol-text-label">/USDT</label>
-                </span>
-              </td>
-              <td>
-                <span class="card__td-text-muted">Tick</span>
-                <span class="card__td-text-dynamic">{{ tick.count }}</span>
-              </td>
-              <td>
-                <span class="card__td-text-muted">Buy</span>
-                <span class="card__td-text-dynamic green">{{ tick.buy }}</span>
-              </td>
-              <td>
-                <span class="card__td-text-muted">Sell</span>
-                <span class="card__td-text-dynamic red">{{ tick.sell }}</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </BaseTableFrame>
-      <BaseTableFrame class="volume-monitor__container">
-        <span class="volume-monitor__left">
-          <h3 class="volume-monitor__title" :class="themeClass">
-            Volume Board
-          </h3>
-          <small
-            :class="
-              store.themeDark
-                ? 'volume-monitor__title-small--light'
-                : 'volume-monitor__title-small--dark'
-            "
-            >The most volume</small
-          >
-        </span>
-        <table class="tb__table">
-          <tbody v-if="tickVolume">
-            <tr class="card__td-body" v-for="(tick, i) in tickVolume" :key="i">
-              <td>
-                <div class="card__td-symbol">
-                  <span class="card__td-symbol-label">
-                    <img
-                      :src="tick?.image"
-                      class="card__td-img"
-                      :alt="tick.symbol"
-                    />
-                  </span>
-                </div>
-              </td>
-              <td>
-                <span class="card__td-text-muted"></span>
-                <span class="card__td-text-dynamic" :class="themeClass"
-                  >{{ tick.symbol }}
-                  <label class="card__td-symbol-text-label">/USDT</label>
-                </span>
-              </td>
-              <td>
-                <span class="card__td-text-muted">Volume (₿)</span>
-                <span class="card__td-text-dynamic">{{
-                  tick.volume.toFixed(2)
-                }}</span>
-              </td>
-              <td>
-                <span class="card__td-text-muted">Buy (₿)</span>
-                <span class="card__td-text-dynamic green">{{
-                  tick.buy.toFixed(2)
-                }}</span>
-              </td>
-              <td>
-                <span class="card__td-text-muted">Sell (₿)</span>
-                <span class="card__td-text-dynamic red">{{
-                  tick.sell.toFixed(2)
-                }}</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </BaseTableFrame>
-    </div>
-    <div class="volume-monitor__main">
-      <BaseTableFrame class="volume-monitor__container-tb">
-        <div class="volume-monitor__additional-items">
+  <div>
+    <div class="volume-monitor" v-if="!loading">
+      <div class="volume-monitor__additional-info">
+        <BaseTableFrame class="volume-monitor__container">
           <span class="volume-monitor__left">
-            <h3 class="volume-monitor__title" :class="themeClass">
-              Volume Monitor
-            </h3>
-            <small
-              :class="
-                store.themeDark
-                  ? 'volume-monitor__title-small--light'
-                  : 'volume-monitor__title-small--dark'
-              "
-              >Thank you Binance</small
+            <h3 class="volume-monitor__title" :class="themeClass">Tick Board</h3>
+            <small :class="store.themeDark ? 'volume-monitor__title-small--light' : 'volume-monitor__title-small--dark'"
+              >The most ticked</small
             >
           </span>
-          <div class="volume-monitor__dropdown-container">
-            <DropdownSmall
-              :data="allowsCoins"
-              :with-arrow-icon="true"
-              :readonly="true"
-            />
-            <DropdownSmall
-              :data="['1 BTC', '2 BTC', '3 BTC', '4 BTC', '5 BTC']"
-              :with-arrow-icon="true"
-              :readonly="true"
-            />
-          </div>
-        </div>
-        <table class="tb__table">
-          <thead></thead>
-          <tbody>
-            <tr
-              class="card__td-body"
-              v-for="(transaction, i) in transactions"
-              :key="i"
+          <table class="tb__table">
+            <tbody>
+              <tr class="card__td-body" v-for="(tick, i) in ticks" :key="i">
+                <td>
+                  <div class="card__td-symbol">
+                    <span class="card__td-symbol-label">
+                      <img :src="tick?.image" class="card__td-img" :alt="tick.symbol" />
+                    </span>
+                  </div>
+                </td>
+                <td>
+                  <span class="card__td-text-muted"></span>
+                  <span class="card__td-text-dynamic" :class="themeClass"
+                    >{{ tick.symbol }}
+                    <label class="card__td-symbol-text-label">/USDT</label>
+                  </span>
+                </td>
+                <td>
+                  <span class="card__td-text-muted">Tick</span>
+                  <span class="card__td-text-dynamic">{{ tick.count }}</span>
+                </td>
+                <td>
+                  <span class="card__td-text-muted">Buy</span>
+                  <span class="card__td-text-dynamic green">{{ tick.buy }}</span>
+                </td>
+                <td>
+                  <span class="card__td-text-muted">Sell</span>
+                  <span class="card__td-text-dynamic red">{{ tick.sell }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </BaseTableFrame>
+        <BaseTableFrame class="volume-monitor__container">
+          <span class="volume-monitor__left">
+            <h3 class="volume-monitor__title" :class="themeClass">Volume Board</h3>
+            <small :class="store.themeDark ? 'volume-monitor__title-small--light' : 'volume-monitor__title-small--dark'"
+              >The most volume</small
             >
-              <td>
-                <div class="card__td-symbol">
-                  <span class="card__td-symbol-label">
-                    <img
-                      :src="transaction?.image"
-                      class="card__td-img"
-                      :alt="transaction.s.split('USDT')[0]"
-                    />
+          </span>
+          <table class="tb__table">
+            <tbody v-if="tickVolume">
+              <tr class="card__td-body" v-for="(tick, i) in tickVolume" :key="i">
+                <td>
+                  <div class="card__td-symbol">
+                    <span class="card__td-symbol-label">
+                      <img :src="tick?.image" class="card__td-img" :alt="tick.symbol" />
+                    </span>
+                  </div>
+                </td>
+                <td>
+                  <span class="card__td-text-muted"></span>
+                  <span class="card__td-text-dynamic" :class="themeClass"
+                    >{{ tick.symbol }}
+                    <label class="card__td-symbol-text-label">/USDT</label>
                   </span>
-                </div>
-              </td>
-              <td>
-                <div href="" class="image">
-                  <label class="card__td-symbol-text" :class="themeClass">{{
-                    transaction.s.split('USDT')[0]
-                  }}</label>
-                  <label class="card__td-symbol-text-label">/USDT</label>
-                </div>
-              </td>
-              <td>
-                <span class="card__td-text-muted">Tick</span>
-                <span class="card__td-text-dynamic">
-                  <span>{{
-                    getTickForSymbol(transaction.s.split('USDT')[0])
-                  }}</span>
-                </span>
-              </td>
-              <td>
-                <span>
+                </td>
+                <td>
                   <span class="card__td-text-muted">Volume (₿)</span>
-                  <span
-                    class="card__td-text-dynamic"
-                    :class="transaction.m ? 'green' : 'red'"
-                  >
-                    {{ Number(transaction.beq).toFixed(2) }}
-                  </span>
-                </span>
-              </td>
-              <td>
-                <span>
-                  <span class="card__td-text-muted">Market Maker</span>
-                  <span
-                    class="card__td-text-dynamic"
-                    :class="transaction.m ? 'green' : 'red'"
-                  >
-                    {{ transaction.m ? 'BUY' : 'SELL' }}
-                  </span>
-                </span>
-              </td>
-              <td>
-                <span>
-                  <span class="card__td-text-muted">Current Price</span>
+                  <span class="card__td-text-dynamic">{{ tick.volume.toFixed(2) }}</span>
+                </td>
+                <td>
+                  <span class="card__td-text-muted">Buy (₿)</span>
+                  <span class="card__td-text-dynamic green">{{ tick.buy.toFixed(2) }}</span>
+                </td>
+                <td>
+                  <span class="card__td-text-muted">Sell (₿)</span>
+                  <span class="card__td-text-dynamic red">{{ tick.sell.toFixed(2) }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </BaseTableFrame>
+      </div>
+      <div class="volume-monitor__main">
+        <BaseTableFrame class="volume-monitor__container-tb">
+          <div class="volume-monitor__additional-items">
+            <span class="volume-monitor__left">
+              <h3 class="volume-monitor__title" :class="themeClass">Volume Monitor</h3>
+              <small
+                :class="store.themeDark ? 'volume-monitor__title-small--light' : 'volume-monitor__title-small--dark'"
+                >Thank you Binance</small
+              >
+            </span>
+            <div class="volume-monitor__dropdown-container">
+              <DropdownSmall :data="allowsCoins" :with-arrow-icon="true" :readonly="true" />
+              <DropdownSmall
+                :data="['1 BTC', '2 BTC', '3 BTC', '4 BTC', '5 BTC']"
+                :with-arrow-icon="true"
+                :readonly="true"
+              />
+            </div>
+          </div>
+          <table class="tb__table">
+            <thead></thead>
+            <tbody>
+              <tr class="card__td-body" v-for="(transaction, i) in transactions" :key="i">
+                <td>
+                  <div class="card__td-symbol">
+                    <span class="card__td-symbol-label">
+                      <img :src="transaction?.image" class="card__td-img" :alt="transaction.s.split('USDT')[0]" />
+                    </span>
+                  </div>
+                </td>
+                <td>
+                  <div href="" class="image">
+                    <label class="card__td-symbol-text" :class="themeClass">{{ transaction.s.split('USDT')[0] }}</label>
+                    <label class="card__td-symbol-text-label">/USDT</label>
+                  </div>
+                </td>
+                <td>
+                  <span class="card__td-text-muted">Tick</span>
                   <span class="card__td-text-dynamic">
-                    {{ Number(transaction.p).toFixed(2) }}
+                    <span>{{ getTickForSymbol(transaction.s.split('USDT')[0]) }}</span>
                   </span>
-                </span>
-              </td>
-              <td>
-                <span>
-                  <span class="card__td-text-muted">Quantity</span>
-                  <span class="card__td-text-dynamic">
-                    {{ Number(transaction.q).toFixed(2) }}
+                </td>
+                <td>
+                  <span>
+                    <span class="card__td-text-muted">Volume (₿)</span>
+                    <span class="card__td-text-dynamic" :class="transaction.m ? 'green' : 'red'">
+                      {{ Number(transaction.beq).toFixed(2) }}
+                    </span>
                   </span>
-                </span>
-              </td>
-              <td>
-                <span class="text-primary">
-                  <span class="card__td-text-muted">Date</span>
-                  <span class="card__td-text-dynamic">
-                    {{ transaction.T }}
+                </td>
+                <td>
+                  <span>
+                    <span class="card__td-text-muted">Market Maker</span>
+                    <span class="card__td-text-dynamic" :class="transaction.m ? 'green' : 'red'">
+                      {{ transaction.m ? 'BUY' : 'SELL' }}
+                    </span>
                   </span>
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </BaseTableFrame>
+                </td>
+                <td>
+                  <span>
+                    <span class="card__td-text-muted">Current Price</span>
+                    <span class="card__td-text-dynamic">
+                      {{ Number(transaction.p).toFixed(2) }}
+                    </span>
+                  </span>
+                </td>
+                <td>
+                  <span>
+                    <span class="card__td-text-muted">Quantity</span>
+                    <span class="card__td-text-dynamic">
+                      {{ Number(transaction.q).toFixed(2) }}
+                    </span>
+                  </span>
+                </td>
+                <td>
+                  <span class="text-primary">
+                    <span class="card__td-text-muted">Date</span>
+                    <span class="card__td-text-dynamic">
+                      {{ transaction.T }}
+                    </span>
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </BaseTableFrame>
+      </div>
     </div>
-  </div>
-  <div v-else>
-    <div class="volume-monitor__placeholder">
-      <div class="volume-monitor__info-container">
+    <div v-else>
+      <div class="volume-monitor__placeholder">
+        <div class="volume-monitor__info-container">
+          <placeHolderLoader
+            class="volume-monitor__placeholder-left"
+            :loader-width="100"
+            :width-unit="'%'"
+            :loader-height="50"
+          ></placeHolderLoader>
+          <placeHolderLoader
+            class="volume-monitor__placeholder-left"
+            :loader-width="100"
+            :width-unit="'%'"
+            :loader-height="50"
+          ></placeHolderLoader>
+        </div>
         <placeHolderLoader
-          class="volume-monitor__placeholder-left"
-          :loader-width="100"
+          class="volume-monitor__placeholder-right"
+          :loader-width="66.66"
           :width-unit="'%'"
-          :loader-height="50"
-        ></placeHolderLoader>
-        <placeHolderLoader
-          class="volume-monitor__placeholder-left"
-          :loader-width="100"
-          :width-unit="'%'"
-          :loader-height="50"
+          :loader-height="102"
         ></placeHolderLoader>
       </div>
-      <placeHolderLoader
-        class="volume-monitor__placeholder-right"
-        :loader-width="66.66"
-        :width-unit="'%'"
-        :loader-height="102"
-      ></placeHolderLoader>
+    </div>
+    <div v-if="overlayByWSDisconnect" :class="{ overlay: overlayByWSDisconnect }">
+      <div class="overlay-content">
+        <h2 class="overlay-title">Disconnected from WebSocket</h2>
+        <p>Sorry, the WebSocket connection has been disconnected.</p>
+      </div>
     </div>
   </div>
 </template>
@@ -484,6 +453,28 @@ onUnmounted(() => {
     margin-right: 2rem;
     margin-bottom: 6rem;
   }
+}
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  backdrop-filter: blur(5px); /* Apply blur effect */
+  display: block; /* Initially hidden */
+  &-title {
+    margin-bottom: 2rem;
+  }
+}
+
+.overlay-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: white;
 }
 
 .volume-monitor {

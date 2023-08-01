@@ -33,10 +33,7 @@ function scrollPosition(direction) {
     }
 
     const items = Array.from(itemList.value);
-    activeScrollItem = Math.min(
-      Math.max(0, activeScrollItem + direction),
-      items.length - 1
-    );
+    activeScrollItem = Math.min(Math.max(0, activeScrollItem + direction), items.length - 1);
     let top = items[activeScrollItem]?.offsetTop;
     console.log('top dropdown', top);
     if (top === 71) {
@@ -70,10 +67,7 @@ const selectedItem = () => {
 
 function findCoin(allCoins) {
   const searchedCoin = allCoins.find((coin) => {
-    if (
-      coin?.id === searchParams.value.toLowerCase() ||
-      coin?.symbol === searchParams.value.toLocaleLowerCase()
-    ) {
+    if (coin?.id === searchParams.value.toLowerCase() || coin?.symbol === searchParams.value.toLocaleLowerCase()) {
       return coin;
     }
     return null;
@@ -181,31 +175,18 @@ function onOpen(value) {
     <!-- @click="selectInput($event)" -->
     <div
       :class="[
-        open
-          ? 'search__container-dropdown'
-          : 'search__container-dropdown--is-open',
-        `${
-          store.themeDark
-            ? 'search__container-dropdown--light'
-            : 'search__container-dropdown--dark'
-        }`,
+        open ? 'search__container-dropdown' : 'search__container-dropdown--is-open',
+        `${store.themeDark ? 'search__container-dropdown--light' : 'search__container-dropdown--dark'}`,
       ]"
     >
       <div ref="list" class="search__container-list" v-if="coins && !loading">
         <ul class="search__container-list-items">
           <div ref="topElement" class="search__container-list-container">
-            <img
-              class="search__container-list-image"
-              loading="lazy"
-              :src="coins.image.small"
-              :alt="coins.name"
-            />
+            <img class="search__container-list-image" loading="lazy" :src="coins.image.small" :alt="coins.name" />
             <div
               class="search__container-list-current"
               :class="
-                store.themeDark
-                  ? 'search__container-list-current--light'
-                  : 'search__container-list-coin-name--dark'
+                store.themeDark ? 'search__container-list-current--light' : 'search__container-list-coin-name--dark'
               "
             >
               {{ coins.name }}
@@ -226,18 +207,12 @@ function onOpen(value) {
           >
             <div
               class="search__container-list-item-container"
-              :class="
-                index == currentItem
-                  ? 'search__container-list-current-active'
-                  : ''
-              "
+              :class="index == currentItem ? 'search__container-list-current-active' : ''"
             >
               <div
                 class="search__container-list-current--base"
                 :class="
-                  store.themeDark
-                    ? 'search__container-list-current--light'
-                    : 'search__container-list-current--dark'
+                  store.themeDark ? 'search__container-list-current--light' : 'search__container-list-current--dark'
                 "
               >
                 <img
@@ -254,13 +229,7 @@ function onOpen(value) {
               </div>
               <div class="search__container-list-current--container">
                 <div
-                  :class="
-                    Number(coin?.percentage) > 0
-                      ? 'positive'
-                      : Number(coin?.percentage) < 0
-                      ? 'negative'
-                      : ''
-                  "
+                  :class="Number(coin?.percentage) > 0 ? 'positive' : Number(coin?.percentage) < 0 ? 'negative' : ''"
                   class="search__container-list-current--price"
                 >
                   {{ coin?.price }}
@@ -268,13 +237,7 @@ function onOpen(value) {
               </div>
               <div class="search__container-list-current--container">
                 <div
-                  :class="
-                    Number(coin?.percentage) > 0
-                      ? 'positive'
-                      : Number(coin?.percentage) < 0
-                      ? 'negative'
-                      : ''
-                  "
+                  :class="Number(coin?.percentage) > 0 ? 'positive' : Number(coin?.percentage) < 0 ? 'negative' : ''"
                   class="search__container-list-current--percentage"
                 >
                   {{ coin?.percentage }}
@@ -289,10 +252,7 @@ function onOpen(value) {
         <HorizontalEllipsisSpinner />
       </div>
       <!-- TODO set class/style -->
-      <div
-        v-if="!coins && !loading && searchParams.length && !error > 0"
-        class="search__container-no-results"
-      >
+      <div v-if="!coins && !loading && searchParams.length && !error > 0" class="search__container-no-results">
         No results for "{{ searchParams }}"
       </div>
       <div class="search__container-error" v-if="error && !loading">Error</div>
