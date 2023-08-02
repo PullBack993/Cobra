@@ -115,12 +115,10 @@ const connectToSocket = () => {
     });
 
     socket.on('connect', () => {
-      console.log('Connected to WebSocket server');
       connectionAttempts = 0;
     });
 
     socket.on('message', (responseData) => {
-      console.log(responseData);
       const dataObject: [IWebsocket] = JSON.parse(responseData).reverse();
       if (!firstResponse.value) {
         firstResponse.value = true;
@@ -138,7 +136,6 @@ const connectToSocket = () => {
       } else {
         overlayByWSDisconnect.value = true;
         loading.value = false;
-        console.log('true');
         socket.disconnect();
       }
     });
