@@ -3,6 +3,11 @@ import { RouterLink } from 'vue-router';
 import { ref, onMounted, watch } from 'vue';
 import Cookies from 'js-cookie';
 import bgp from '../assets/BaseIcons/bgp.jpeg';
+import newsSVG from '../assets/BaseIcons/news.svg';
+import longShortSVG from '../assets/BaseIcons/cryptocurrency.svg';
+import homeSVG from '../assets/BaseIcons/home.svg';
+import ratioSVG from '../assets/BaseIcons/ratio.svg';
+import returnSVG from './..assets/BaseIcons/return.svg';
 import { useGlobalStore } from '../store/global';
 
 const HTMLElementsNotClickable = [
@@ -137,22 +142,24 @@ onMounted(() => {
       </label>
       <div class="sidebar-container">
         <RouterLink to="/" class="sidebar-home">
-          <span class="material-symbols-outlined sidebar-home-icon">home</span>
-          <p :class="`${isToggle ? 'visible' : 'notVisible'}`">Home</p>
+          <homeSVG class="sidebar-home-icon" />
+          <p :class="`${isToggle ? 'visible' : 'invisible'}`">Home</p>
         </RouterLink>
         <RouterLink to="/volume-monitor" class="sidebar-home">
-          <span class="material-symbols-outlined sidebar-home-icon"> data_usage </span>
-          <p :class="`${isToggle ? 'visible' : 'notVisible'}`">Global Metrics</p>
+          <ratioSVG class="sidebar-home-icon sidebar-home-icon--scale" />
+
+          <p :class="`${isToggle ? 'visible' : 'invisible'}`">Global Metrics</p>
         </RouterLink>
 
         <RouterLink to="/news" class="sidebar-home">
-          <span class="material-symbols-outlined sidebar-home-icon"> monitoring </span>
-          <p :class="`${isToggle ? 'visible' : 'notVisible'}`">Volume Metrics</p>
+          <news-s-v-g class="material-symbols-outlined sidebar-home-icon"></news-s-v-g>
+          <!-- <span class="material-symbols-outlined sidebar-home-icon"> monitoring </span> -->
+          <p :class="`${isToggle ? 'visible' : 'invisible'}`">Volume Metrics</p>
         </RouterLink>
 
         <RouterLink to="/long-short" class="sidebar-home">
-          <span class="material-symbols-outlined sidebar-home-icon"> equalizer </span>
-          <p :class="`${isToggle ? 'visible' : 'notVisible'}`">Long/Short Ratio</p>
+          <longShortSVG class="sidebar-home-icon" />
+          <p :class="`${isToggle ? 'visible' : 'invisible'}`">Long/Short Ratio</p>
         </RouterLink>
       </div>
 
@@ -349,12 +356,9 @@ onMounted(() => {
     &:hover {
       transition: 0.1s all ease-in-out;
 
-      .material-symbols-outlined {
-        font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
-      }
-
       .visible {
         font-weight: 500;
+        // animation: topToBottom 3s ease-out;
       }
 
       &::after {
@@ -365,7 +369,14 @@ onMounted(() => {
     }
 
     &-icon {
-      color: $main_purple;
+      fill: $main_purple;
+      stroke-width: 10;
+      stroke: $main_purple;
+      height: 3rem;
+      width: 3rem;
+      &--scale {
+        transform: scale(1.3);
+      }
 
       &:hover {
         color: $main-purple-dark;
@@ -373,11 +384,13 @@ onMounted(() => {
     }
   }
 
-  .notVisible {
-    display: none;
+  .invisible {
+    opacity: 0;
   }
 
   .visible {
+    display: block;
+    opacity: 1;
     padding-left: 1rem;
     font-size: 2rem;
     font-weight: 300;
