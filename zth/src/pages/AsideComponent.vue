@@ -206,20 +206,7 @@ onMounted(() => {
     border-right: 0.1rem solid $grey-black-5 !important;
   }
 }
-.test::after {
-  content: '';
-  // content: '\a';
-  // white-space: pre;
-  position: absolute;
-  left: 14px;
-  top: 27px;
-  height: 4rem;
-  width: 4rem;
-  z-index: 99;
-}
-// .search__hamburger {
-//   position: relative;
-// }
+
 .search__lines {
   position: sticky;
   top: 3.4rem;
@@ -229,9 +216,7 @@ onMounted(() => {
   width: 3.7rem;
   z-index: 98;
   height: 0;
-  fill: white;
-  // padding: 2.4rem;
-  // padding-bottom: 2rem;
+  fill: $white;
 
   &-icon {
     display: block;
@@ -389,7 +374,6 @@ onMounted(() => {
   }
 
   .visible {
-    display: block;
     opacity: 1;
     padding-left: 1rem;
     font-size: 2rem;
