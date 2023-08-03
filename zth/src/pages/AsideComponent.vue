@@ -122,9 +122,7 @@ onMounted(() => {
 
 <template>
   <div>
-    <div>
-      <!-- <MobileHeaderHamburger @openSidebar="toggle()"></MobileHeaderHamburger> -->
-    </div>
+    <div></div>
     <aside
       :style="{ opacity: opacity, width: width }"
       class="sidebar"
@@ -153,7 +151,6 @@ onMounted(() => {
 
         <RouterLink to="/news" class="sidebar-home">
           <news-s-v-g class="material-symbols-outlined sidebar-home-icon"></news-s-v-g>
-          <!-- <span class="material-symbols-outlined sidebar-home-icon"> monitoring </span> -->
           <p :class="`${isToggle ? 'visible' : 'invisible'}`">Volume Metrics</p>
         </RouterLink>
 
@@ -343,7 +340,6 @@ onMounted(() => {
 
       .visible {
         font-weight: 500;
-        // animation: topToBottom 3s ease-out;
       }
 
       &::after {
