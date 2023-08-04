@@ -203,7 +203,6 @@ async function get100CoinsByPrice(volumeInBitcoinEq = 1) {
             const usdtPairs = results.filter((pair) => pair.symbol.endsWith("USDT"));
 
             const sortedPairs = usdtPairs.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
-            console.log(sortedPairs.slice(0, 250));
 
             const pairs = sortedPairs.slice(0, 250).map((result) => ({
               symbol: result.symbol,
@@ -229,12 +228,10 @@ async function get100CoinsByPrice(volumeInBitcoinEq = 1) {
 
 function startCronJobs() {
   const job = new CronJob("0 */2 * * * ", () => {
-    console.log("connect to binance websocket =>", new Date().toLocaleTimeString());
     connectToBinanceWS();
   });
 
   const jobGetCurrentPriceBTC = new CronJob(" */1 * * * *", async () => {
-    console.log("get bitcoin price =>", new Date().toLocaleTimeString());
     btcPrice = await getBtcPrice();
   });
 

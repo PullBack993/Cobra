@@ -66,8 +66,8 @@ async function startBrowser() {
   counter = 0;
   try {
     browser = await puppeteer.launch({
-      headless: "new",
-      // { headless: false }
+      // headless: "new",
+      headless: false,
       args: ["--disable-setuid-sandbox", "--no-sandbox", "--single-process", "--no-zygote"],
       protocolTimeout: 240000,
     });
@@ -122,6 +122,13 @@ router.post("/long-short", async (req, res) => {
     (async () => {
       try {
         const inputSelector = ".cg-style-by6qva";
+        const dialogElement = await page.$(".fc-dialog");
+        if (dialogElement) {
+          // Click on the "Manage options" button.
+          const manage = await dialogElement.$$(".fc-button-label");
+          console.log("manage", manage[0], manage);
+          manage[0].evaluate((el) => el?.click());
+        }
 
         if (shouldChangeSymbol) {
           previousSymbol = symbol;
@@ -139,7 +146,7 @@ router.post("/long-short", async (req, res) => {
 
           await new Promise((resolve) => setTimeout(resolve, 500));
 
-          const liElements = await page.$$("ul#\\:Rqkpt6aqm\\:-listbox li");
+          const liElements = await page.$$("ul#\\:Rqkptaaqm li");
           let matchingLiElement = null;
 
           for (const liElement of liElements) {
@@ -149,11 +156,11 @@ router.post("/long-short", async (req, res) => {
               break;
             }
           }
-
+          console.log(matchingLiElement);
           if (matchingLiElement) {
             await matchingLiElement.evaluate((b) => b.click());
           } else {
-            const firstLiElement = await page?.$("ul#\\:R1l9mdqlq6\\:-listbox li:first-child");
+            const firstLiElement = await page?.$("ul#\\:Rqkptaaqm\\:-listbox li:first-child");
             await firstLiElement?.evaluate((b) => b?.click());
           }
         }
