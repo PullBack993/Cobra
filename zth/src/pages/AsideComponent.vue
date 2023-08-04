@@ -7,7 +7,6 @@ import newsSVG from '../assets/BaseIcons/news.svg';
 import longShortSVG from '../assets/BaseIcons/cryptocurrency.svg';
 import homeSVG from '../assets/BaseIcons/home.svg';
 import ratioSVG from '../assets/BaseIcons/ratio.svg';
-import returnSVG from './..assets/BaseIcons/return.svg';
 import { useGlobalStore } from '../store/global';
 
 const HTMLElementsNotClickable = [
@@ -324,7 +323,6 @@ onMounted(() => {
     flex-direction: column;
     position: fixed;
     top: 12rem;
-    width: 100%;
     margin-top: 2rem;
   }
 
