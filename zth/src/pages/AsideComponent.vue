@@ -337,7 +337,7 @@ onMounted(() => {
       transition: 0.1s all ease-in-out;
 
       .visible {
-        font-weight: 500;
+        font-weight: 400;
       }
 
       &::after {

@@ -644,7 +644,7 @@ tr:nth-child(even) {
   }
   &__info-container {
     display: flex;
-    width: 97%;
+    width: 95%;
     flex-direction: column;
   }
   &__placeholder-left {
@@ -653,7 +653,7 @@ tr:nth-child(even) {
     border-radius: 1rem;
   }
   &__placeholder-right {
-    width: 97% !important;
+    width: 95% !important;
     height: 102rem;
     border-radius: 1rem;
     margin: 1rem;

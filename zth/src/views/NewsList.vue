@@ -52,11 +52,7 @@ onMounted(() => {
 
 <template>
   <div class="news" v-if="newsListData">
-    <ul
-      v-for="(section, index) in newsListData"
-      :key="index"
-      class="news__list-items"
-    >
+    <ul v-for="(section, index) in newsListData" :key="index" class="news__list-items">
       <router-link
         class="news__list-link"
         :to="{
@@ -65,25 +61,15 @@ onMounted(() => {
         }"
       >
         <li class="news__list-content">
-          <div class="news__container-image">
-            <img
-              :src="section.titleImage"
-              :alt="section.title"
-              class="news__image"
-              loading="lazy"
-            />
-          </div>
+          <div class="news__container-image"></div>
           <div class="news__content">
+            <img :src="section.titleImage" :alt="section.title" class="news__image" loading="lazy" />
             <h3 class="news__title">
               {{ section.title }}
             </h3>
             <p
               class="news__list-text"
-              :class="`${
-                store.themeDark
-                  ? 'news__list-text--light'
-                  : 'news__list-text--dark'
-              }`"
+              :class="`${store.themeDark ? 'news__list-text--light' : 'news__list-text--dark'}`"
             >
               {{ section.sections[0]?.text[0] }}
             </p>
@@ -119,13 +105,9 @@ onMounted(() => {
       </div>
     </div>
     <div class="button-container">
-      <baseButton
-        @onClick="loadNews"
-        :disabled="disabledBtn || loading"
-        :theme="''"
-        :type="undefined"
-        >{{ buttonText }}</baseButton
-      >
+      <baseButton @onClick="loadNews" :disabled="disabledBtn || loading" :theme="''" :type="undefined">{{
+        buttonText
+      }}</baseButton>
     </div>
   </div>
 </template>
@@ -183,18 +165,15 @@ onMounted(() => {
   }
 
   &__list-content {
-    display: flex;
-    text-align: center;
-    align-items: center;
-    font-size: 2rem;
+    // text-align: left;
+    // align-items: left;
     color: $main-purple;
     line-height: 2.7rem;
-    flex-direction: column;
+    // flex-direction: column;
     border-bottom: 1px solid black;
     padding-bottom: 6rem;
 
     @media (min-width: $breakpoint_verysmall) {
-      flex-direction: row;
       padding-bottom: 3rem;
     }
   }
@@ -218,13 +197,18 @@ onMounted(() => {
   }
 
   &__image {
-    min-width: 12rem;
-    min-height: 12rem;
+    min-width: 10rem;
+    min-height: 10rem;
+    height: 10rem;
     margin-right: 1rem;
-    height: 12rem;
-    min-height: 12rem;
     border-radius: 1rem;
-    object-fit: cover;
+    float: left;
+
+    @media (min-width: $breakpoint_small) {
+      min-width: 12rem;
+      min-height: 12rem;
+      height: 12rem;
+    }
   }
 
   &__content {
@@ -233,17 +217,25 @@ onMounted(() => {
     }
   }
   &__title {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 600;
+    // text-align: justify;
+    text-align: left;
+    font-weight: 500;
+    font-size: 2rem;
+    margin-bottom: 1rem;
     line-height: 1.2;
   }
   &__list-text {
-    overflow: hidden;
+    text-align: justify;
+    overflow: clip;
     text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2; /* Number of lines to show */
+    -webkit-line-clamp: 6;
     -webkit-box-orient: vertical;
+    // overflow: hidden;
+    // text-overflow: ellipsis;
+    // display: -webkit-box;
+    // -webkit-line-clamp: 2; /* Number of lines to show */
+    // -webkit-box-orient: vertical;
+    // width: 95%;
     &--light {
       color: $black;
     }

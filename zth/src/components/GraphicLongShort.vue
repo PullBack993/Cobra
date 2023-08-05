@@ -15,20 +15,14 @@ const coinsData = ref();
 const loadingLength = ref(12);
 
 const themeClass = computed(() =>
-  store.themeDark
-    ? 'graphic__ratio-exchange-name--light'
-    : 'graphic__ratio-exchange-name--dark'
+  store.themeDark ? 'graphic__ratio-exchange-name--light' : 'graphic__ratio-exchange-name--dark'
 );
 
 const progressClass = computed(() =>
-  store.themeDark
-    ? 'graphic__ratio-progress--light'
-    : 'graphic__ratio-progress--dark'
+  store.themeDark ? 'graphic__ratio-progress--light' : 'graphic__ratio-progress--dark'
 );
 
-const longProgress = computed(() =>
-  store.themeDark ? 'graphic__ratio-long--light' : 'graphic__ratio-long--dark'
-);
+const longProgress = computed(() => (store.themeDark ? 'graphic__ratio-long--light' : 'graphic__ratio-long--dark'));
 
 watch(
   () => props.coins,
@@ -43,12 +37,7 @@ watch(
       <div class="graphic__ratio-container">
         <div class="graphic__ratio-exchange">
           <div class="graphic__ratio-exchange--logo">
-            <img
-              class="graphic__ratio-exchange--image"
-              alt="btc"
-              loading="lazy"
-              :src="data.exchangeLogo"
-            />
+            <img class="graphic__ratio-exchange--image" alt="btc" loading="lazy" :src="data.exchangeLogo" />
             <div :class="themeClass">
               {{ data.exchangeName }}
             </div>
@@ -64,12 +53,8 @@ watch(
                 :style="{ width: Number(data.longRate) + '%' }"
               ></div>
               <div class="graphic__ratio-values-container">
-                <div class="graphic__ratio-long-value">
-                  {{ data.longRate }}%
-                </div>
-                <div class="graphic__ratio-short-value">
-                  {{ data.shortRate }}%
-                </div>
+                <div class="graphic__ratio-long-value">{{ data.longRate }}%</div>
+                <div class="graphic__ratio-short-value">{{ data.shortRate }}%</div>
               </div>
             </div>
           </div>
@@ -84,15 +69,15 @@ watch(
         <placeHolderLoader
           class="loader-spliter"
           :loader-width="15"
-          width-unit="%"
-          :loader-height="2.5"
+          width-unit="rem"
+          :loader-height="3.5"
         ></placeHolderLoader>
 
         <placeHolderLoader
           class="loader-spliter"
           :loader-width="82"
           width-unit="%"
-          :loader-height="2.5"
+          :loader-height="3.5"
         ></placeHolderLoader>
       </div>
     </div>
@@ -102,6 +87,8 @@ watch(
 <style scoped lang="scss">
 .loader {
   display: flex;
+  -webkit-flex-flow: row wrap;
+  flex-flow: row wrap;
 
   &-spliter {
     box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
@@ -177,21 +164,11 @@ watch(
     border-radius: 1rem;
     &--light {
       // background-color: $chart-red;
-      background: linear-gradient(
-        to right,
-        #ff000022,
-        #d32f2f80 90%,
-        #d32f2f80
-      );
+      background: linear-gradient(to right, #ff000022, #d32f2f80 90%, #d32f2f80);
     }
     &--dark {
       // background-color: $chart-dark-red;
-      background: linear-gradient(
-        to right,
-        #ff000000,
-        #d32f2f80 90%,
-        #d32f2f80
-      );
+      background: linear-gradient(to right, #ff000000, #d32f2f80 90%, #d32f2f80);
     }
   }
 
@@ -204,7 +181,6 @@ watch(
     border-radius: 1rem 0rem 0 1rem;
     border-right-color: inherit;
     &--light {
-      // background-color: $chart-green;
       background: linear-gradient(to left, #449c671d, #5dc7878c 50%, #5dc787);
     }
     &--dark {
