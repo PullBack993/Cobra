@@ -171,10 +171,10 @@ onMounted(() => {
     line-height: 2.7rem;
     // flex-direction: column;
     border-bottom: 1px solid black;
-    padding-bottom: 6rem;
+    padding-bottom: 3rem;
 
     @media (min-width: $breakpoint_verysmall) {
-      padding-bottom: 3rem;
+      padding-bottom: 6rem;
     }
   }
 
@@ -230,12 +230,6 @@ onMounted(() => {
     text-overflow: ellipsis;
     -webkit-line-clamp: 6;
     -webkit-box-orient: vertical;
-    // overflow: hidden;
-    // text-overflow: ellipsis;
-    // display: -webkit-box;
-    // -webkit-line-clamp: 2; /* Number of lines to show */
-    // -webkit-box-orient: vertical;
-    // width: 95%;
     &--light {
       color: $black;
     }

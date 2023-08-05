@@ -7,6 +7,8 @@ import newsSVG from '../assets/BaseIcons/news.svg';
 import longShortSVG from '../assets/BaseIcons/cryptocurrency.svg';
 import homeSVG from '../assets/BaseIcons/home.svg';
 import ratioSVG from '../assets/BaseIcons/ratio.svg';
+import brightness from '../assets/BaseIcons/brightness.svg';
+import nightmode from '../assets/BaseIcons/night-mode.svg';
 import { useGlobalStore } from '../store/global';
 
 const HTMLElementsNotClickable = [
@@ -166,12 +168,12 @@ onMounted(() => {
       >
         <div class="theme-light">
           <button tabindex="-1" class="material-symbols-outlined light" :class="`${isToggle ? '' : 'toggle-light'}`">
-            light_mode
+            <brightness class="light" :class="`${isToggle ? '' : 'toggle-light'}`" />
           </button>
         </div>
         <div class="theme-dark">
-          <button tabindex="-1" class="material-symbols-outlined dark" :class="`${isToggle ? '' : 'toggle-dark'}`">
-            dark_mode
+          <button tabindex="-1" class="dark">
+            <nightmode class="dark" :class="`${isToggle ? '' : 'toggle-dark'}`" />
           </button>
         </div>
       </div>
@@ -389,7 +391,9 @@ onMounted(() => {
     top: 0;
     transform: rotate(-135deg);
   }
-
+  .dark {
+    width: 2.5rem;
+  }
   .theme {
     display: flex;
     border: solid 0.1rem rgb(76, 73, 73);
@@ -421,6 +425,7 @@ onMounted(() => {
 
       .light {
         color: $white;
+        width: 2.5rem;
       }
     }
 
@@ -465,10 +470,12 @@ onMounted(() => {
 
     .toggle-light {
       transform: translateX(40rem);
+      width: 2.5rem;
     }
 
     .toggle-dark {
       transform: translateX(-4.5rem);
+      width: 2.5rem;
     }
   }
 
