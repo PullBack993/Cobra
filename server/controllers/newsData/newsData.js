@@ -71,15 +71,13 @@ async function getImageProxyUrl(imageUrl) {
     }
 
     const response = await new Promise((resolve, reject) => {
-      const request = https.get(imageUrl, async (response) => {
+      const request = https.get(imageUrl, (response) => {
         if (
           (response.statusCode >= 300 && response.statusCode <= 399) ||
           response.statusCode === undefined
         ) {
           const redirectUrl = new URL(response.headers.location);
           resolve(getImageProxyUrl(redirectUrl.href));
-          const imageData = await fetch(imageUrl);
-          imageCache.set(imageUrl, imageData);
         } else {
           const fileSize = response.headers["content-length"];
           if (fileSize && fileSize > 1000000) {
