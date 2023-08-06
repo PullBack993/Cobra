@@ -82,17 +82,21 @@ async function startBrowser() {
       await navigationPromise;
     }
   } catch (error) {
-    console.error(error);
+    console.error("daily-returns", error);
     if (counter >= 7) {
       throw new Error(error);
     }
-    startBrowser();
+    await startBrowser();
     counter++;
   }
 }
 
 setTimeout(() => {
-  startBrowser();
+  try {
+    startBrowser();
+  } catch (error) {
+    console.log("daily-return settimeout =>", error);
+  }
 }, 1000);
 
 //TODO remove console logs after all tests
@@ -119,7 +123,7 @@ router.post("/long-short", async (req, res) => {
     // Check if the current time is the same as the previous one
     const shouldChangeTime = previousTime !== time || previousTime === null;
 
-    (async () => {
+    const test = async () => {
       try {
         const inputSelector = ".cg-style-by6qva";
         const dialogElement = await page.$(".fc-dialog");
@@ -160,7 +164,7 @@ router.post("/long-short", async (req, res) => {
           if (matchingLiElement) {
             await matchingLiElement.evaluate((b) => b.click());
           } else {
-            const firstLiElement = await page?.$("ul#\\:Rqkptaaqm\\:-listbox li:first-child");
+            const firstLiElement = await page.$("ul#\\:Rqkptaaqm\\:-listbox li:first-child");
             await firstLiElement?.evaluate((b) => b?.click());
           }
         }
@@ -228,13 +232,15 @@ router.post("/long-short", async (req, res) => {
         res.status(500).send("Something went wrong");
         result = [];
       }
-    })();
+    };
+    await test();
   } catch (err) {
     if (err.name === "AbortError") {
       console.log("Operation aborted by user");
     }
     isRequestDone = true;
     console.error("exchange long short main ==>", err);
+    res.status(500).send("Something went wrong");
   }
 });
 
