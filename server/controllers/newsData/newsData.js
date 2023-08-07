@@ -90,7 +90,7 @@ async function getImageProxyUrl(imageUrl) {
         }
       });
 
-      request.setTimeout(30000, () => {
+      request.setTimeout(99990000, () => {
         request.destroy(new Error("Request timed out"));
       });
 

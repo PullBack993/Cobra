@@ -31,6 +31,7 @@ const store = useGlobalStore();
 const overlayByWSDisconnect = ref(false);
 const best10Coins = 10;
 const loading = ref(true);
+const btcSelectedVolume = ref(1);
 
 const themeClass = computed(() => (store.themeDark ? 'volume-monitor__theme-light' : 'volume-monitor__theme-dark'));
 
@@ -118,8 +119,15 @@ const connectToSocket = () => {
       connectionAttempts = 0;
     });
 
+    socket.on('disconnect', () => {
+      console.log('Disconnected from websocket');
+    });
+
     socket.on('message', (responseData) => {
-      const dataObject: [IWebsocket] = JSON.parse(responseData).reverse();
+      const dataObject: [IWebsocket] = JSON.parse(responseData)
+        .reverse()
+        .filter((item: IWebsocket) => item.beq >= btcSelectedVolume.value);
+      console.log(dataObject);
       if (!firstResponse.value) {
         firstResponse.value = true;
         onMountedWS(dataObject, ticks.value, 'count');
@@ -150,7 +158,6 @@ const getObjectBySymbol = (newTransaction: [IWebsocket]) => {
     const volumeEqualBtc = newTransaction[0].beq;
     const marketMaker = newTransaction[0].m;
     const img = newTransaction[0].image;
-
     const matchingSymbol = tickVolume.value?.find((obj) => obj.symbol === symbol);
     if (matchingSymbol) {
       matchingSymbol.volume += volumeEqualBtc;
@@ -210,11 +217,13 @@ const getTickForSymbol = (symbol: string) => {
 watch(
   () => transactions.value,
   (newTransaction) => {
-    getObjectBySymbol(newTransaction);
-    getVolumeBySymbol(newTransaction);
-    sortAscending(ticks.value, 'count');
-    if (tickVolume.value) {
-      sortAscending(tickVolume.value, 'volume');
+    if (newTransaction && newTransaction.length > 0) {
+      getObjectBySymbol(newTransaction);
+      getVolumeBySymbol(newTransaction);
+      sortAscending(ticks.value, 'count');
+      if (tickVolume.value) {
+        sortAscending(tickVolume.value, 'volume');
+      }
     }
   }
 );
@@ -227,6 +236,10 @@ onUnmounted(() => {
   socket.disconnect();
   console.log('Disconnected from WebSocket server');
 });
+
+const btcCountChanged = (value: string) => {
+  btcSelectedVolume.value = Number(value.split(' ')[0]);
+};
 </script>
 
 <template>
@@ -330,6 +343,7 @@ onUnmounted(() => {
                 :data="['1 BTC', '2 BTC', '3 BTC', '4 BTC', '5 BTC']"
                 :with-arrow-icon="true"
                 :readonly="true"
+                @new-value:input="btcCountChanged"
               />
             </div>
           </div>
@@ -488,22 +502,28 @@ onUnmounted(() => {
     height: auto;
     width: 100%;
   }
+
   &__container-tb {
     overflow: hidden;
   }
+
   &__additional-items {
     display: flex;
     justify-content: space-between;
   }
+
   &__dropdown-container {
     display: flex;
     padding-right: 1rem;
   }
+
   &__title {
-    font-weight: bold;
+    font-weight: 500;
+    margin-bottom: 1rem;
     &-small--dark {
       color: $white-5;
     }
+
     &-small--light {
       color: $grey-black-8;
     }
