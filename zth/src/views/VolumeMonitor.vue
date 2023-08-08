@@ -25,12 +25,13 @@ interface ITick {
 
 const baseApiUrl = import.meta.env.VITE_APP_WEBSOCKET;
 const allowsCoins = ['BTC', 'USDT'];
-const transactions = ref<[IWebsocket]>();
+const transactions = ref<[IWebsocket]>([]);
 const ticks = ref<[ITick]>();
 const store = useGlobalStore();
 const overlayByWSDisconnect = ref(false);
 const best10Coins = 10;
 const loading = ref(true);
+const last100Coins: IWebsocket[] = [];
 const btcSelectedVolume = ref(1);
 
 const themeClass = computed(() => (store.themeDark ? 'volume-monitor__theme-light' : 'volume-monitor__theme-dark'));
@@ -56,10 +57,11 @@ const onMountedWS = (dataObject: [IWebsocket], objToAssign: [ITickVolume] | [ITi
   /* eslint-disable no-restricted-syntax */
   for (const obj of dataObject) {
     const symbol = obj.s.split('USDT')[0];
+
     const volumeEqualBtc = obj.beq;
     const marketMaker = obj.m;
     const img = obj.image;
-
+    console.log('obj.beq', obj.beq);
     if (objType === 'count') {
       if (!transformedData[symbol]) {
         transformedData[symbol] = {
@@ -100,8 +102,13 @@ const onMountedWS = (dataObject: [IWebsocket], objToAssign: [ITickVolume] | [ITi
   } else {
     tickVolume.value = Object.values(transformedData) as [ITickVolume];
   }
+};
 
-  sortAscending(objToAssign, objType);
+const updateTableBoard = (): void => {
+  onMountedWS(transactions.value, ticks.value, 'count');
+  onMountedWS(transactions.value, tickVolume.value, 'volume');
+  sortAscending(ticks.value, 'count');
+  sortAscending(tickVolume.value, 'volume');
 };
 
 const connectToSocket = () => {
@@ -124,17 +131,22 @@ const connectToSocket = () => {
     });
 
     socket.on('message', (responseData) => {
-      const dataObject: [IWebsocket] = JSON.parse(responseData)
-        .reverse()
-        .filter((item: IWebsocket) => item.beq >= btcSelectedVolume.value);
-      console.log(dataObject);
+      const dataObject: [IWebsocket] = JSON.parse(responseData).reverse();
+      transactions.value = dataObject.filter((item: IWebsocket) => {
+        last100Coins.unshift(item);
+        if (last100Coins.length > 100) {
+          last100Coins.pop();
+        }
+        return item.beq >= btcSelectedVolume.value;
+      });
+
       if (!firstResponse.value) {
         firstResponse.value = true;
-        onMountedWS(dataObject, ticks.value, 'count');
-        onMountedWS(dataObject, tickVolume.value, 'volume');
+        updateTableBoard();
+      } else {
+        updateTableBoard();
       }
       loading.value = false;
-      transactions.value = dataObject;
     });
 
     socket.on('connect_error', (err) => {
@@ -152,81 +164,10 @@ const connectToSocket = () => {
   attemptConnection();
 };
 
-const getObjectBySymbol = (newTransaction: [IWebsocket]) => {
-  if (newTransaction) {
-    const symbol = newTransaction[0].s.split('USDT')[0];
-    const volumeEqualBtc = newTransaction[0].beq;
-    const marketMaker = newTransaction[0].m;
-    const img = newTransaction[0].image;
-    const matchingSymbol = tickVolume.value?.find((obj) => obj.symbol === symbol);
-    if (matchingSymbol) {
-      matchingSymbol.volume += volumeEqualBtc;
-      if (marketMaker) {
-        matchingSymbol.buy += volumeEqualBtc;
-      } else {
-        matchingSymbol.sell += volumeEqualBtc;
-      }
-    } else {
-      tickVolume.value?.push({
-        symbol,
-        volume: volumeEqualBtc,
-        buy: marketMaker ? volumeEqualBtc : 0,
-        sell: marketMaker ? 0 : volumeEqualBtc,
-        image: img,
-      });
-      if (tickVolume.value?.length > best10Coins) {
-        tickVolume.value?.pop();
-      }
-    }
-  }
-};
-
-const getVolumeBySymbol = (newTransaction: [IWebsocket] | undefined) => {
-  if (newTransaction) {
-    const symbol = newTransaction[0].s.split('USDT')[0];
-    const marketMaker = newTransaction[0].m;
-    const img = newTransaction[0].image;
-    const matchingSymbol = ticks.value.find((obj) => obj.symbol === symbol);
-    if (matchingSymbol) {
-      matchingSymbol.count += 1;
-      if (marketMaker) {
-        matchingSymbol.buy += 1;
-      } else {
-        matchingSymbol.sell += 1;
-      }
-    } else {
-      ticks.value?.push({
-        symbol,
-        count: 1,
-        buy: marketMaker ? 1 : 0,
-        sell: marketMaker ? 0 : 1,
-        image: img,
-      });
-      if (ticks.value?.length > best10Coins) {
-        ticks.value?.pop();
-      }
-    }
-  }
-};
-
 const getTickForSymbol = (symbol: string) => {
   const tick = ticks.value?.find((obj) => obj.symbol === symbol);
   return tick?.count;
 };
-
-watch(
-  () => transactions.value,
-  (newTransaction) => {
-    if (newTransaction && newTransaction.length > 0) {
-      getObjectBySymbol(newTransaction);
-      getVolumeBySymbol(newTransaction);
-      sortAscending(ticks.value, 'count');
-      if (tickVolume.value) {
-        sortAscending(tickVolume.value, 'volume');
-      }
-    }
-  }
-);
 
 onMounted(() => {
   connectToSocket();
@@ -239,6 +180,8 @@ onUnmounted(() => {
 
 const btcCountChanged = (value: string) => {
   btcSelectedVolume.value = Number(value.split(' ')[0]);
+  transactions.value = last100Coins.reverse().filter((item: IWebsocket) => item.beq >= btcSelectedVolume.value);
+  updateTableBoard();
 };
 </script>
 

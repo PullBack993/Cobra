@@ -61,8 +61,8 @@ async function connectToBinanceWS() {
 
 async function fetchCoinImage(coin) {
   try {
-    if (coinImageCache[coin.id]) {
-      return coinImageCache[coin.id];
+    if (coinImageCache[coin?.id]) {
+      return coinImageCache[coin?.id];
     } else {
       let image;
 
