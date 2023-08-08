@@ -31,7 +31,7 @@ const store = useGlobalStore();
 const overlayByWSDisconnect = ref(false);
 const best10Coins = 10;
 const loading = ref(true);
-const last100Coins: IWebsocket[] = [];
+const last20Coins: IWebsocket[] = [];
 const btcSelectedVolume = ref(1);
 
 const themeClass = computed(() => (store.themeDark ? 'volume-monitor__theme-light' : 'volume-monitor__theme-dark'));
@@ -104,6 +104,62 @@ const onMountedWS = (dataObject: [IWebsocket], objToAssign: [ITickVolume] | [ITi
   }
 };
 
+const getObjectBySymbol = (newTransaction: IWebsocket) => {
+  if (newTransaction) {
+    const symbol = newTransaction.s.split('USDT')[0];
+    const volumeEqualBtc = newTransaction.beq;
+    const marketMaker = newTransaction.m;
+    const img = newTransaction.image;
+    const matchingSymbol = tickVolume.value?.find((obj) => obj.symbol === symbol);
+    if (matchingSymbol) {
+      matchingSymbol.volume += volumeEqualBtc;
+      if (marketMaker) {
+        matchingSymbol.buy += volumeEqualBtc;
+      } else {
+        matchingSymbol.sell += volumeEqualBtc;
+      }
+    } else {
+      tickVolume.value?.push({
+        symbol,
+        volume: volumeEqualBtc,
+        buy: marketMaker ? volumeEqualBtc : 0,
+        sell: marketMaker ? 0 : volumeEqualBtc,
+        image: img,
+      });
+      if (tickVolume.value?.length > best10Coins) {
+        tickVolume.value?.pop();
+      }
+    }
+  }
+};
+
+const getVolumeBySymbol = (newTransaction: IWebsocket | undefined) => {
+  if (newTransaction) {
+    const symbol = newTransaction.s.split('USDT')[0];
+    const marketMaker = newTransaction.m;
+    const img = newTransaction.image;
+    const matchingSymbol = ticks.value.find((obj) => obj.symbol === symbol);
+    if (matchingSymbol) {
+      matchingSymbol.count += 1;
+      if (marketMaker) {
+        matchingSymbol.buy += 1;
+      } else {
+        matchingSymbol.sell += 1;
+      }
+    } else {
+      ticks.value?.push({
+        symbol,
+        count: 1,
+        buy: marketMaker ? 1 : 0,
+        sell: marketMaker ? 0 : 1,
+        image: img,
+      });
+      if (ticks.value?.length > best10Coins) {
+        ticks.value?.pop();
+      }
+    }
+  }
+};
 const updateTableBoard = (): void => {
   onMountedWS(transactions.value, ticks.value, 'count');
   onMountedWS(transactions.value, tickVolume.value, 'volume');
@@ -131,12 +187,14 @@ const connectToSocket = () => {
     });
 
     socket.on('message', (responseData) => {
+      let lastItem: IWebsocket;
       const dataObject: [IWebsocket] = JSON.parse(responseData).reverse();
       transactions.value = dataObject.filter((item: IWebsocket) => {
-        last100Coins.unshift(item);
-        if (last100Coins.length > 100) {
-          last100Coins.pop();
+        last20Coins.unshift(item);
+        if (last20Coins.length > 20) {
+          last20Coins.pop();
         }
+        lastItem = item;
         return item.beq >= btcSelectedVolume.value;
       });
 
@@ -144,7 +202,12 @@ const connectToSocket = () => {
         firstResponse.value = true;
         updateTableBoard();
       } else {
-        updateTableBoard();
+        getObjectBySymbol(transactions.value[0]);
+        getVolumeBySymbol(transactions.value[0]);
+        sortAscending(ticks.value, 'count');
+        if (tickVolume.value) {
+          sortAscending(tickVolume.value, 'volume');
+        }
       }
       loading.value = false;
     });
@@ -180,7 +243,7 @@ onUnmounted(() => {
 
 const btcCountChanged = (value: string) => {
   btcSelectedVolume.value = Number(value.split(' ')[0]);
-  transactions.value = last100Coins.reverse().filter((item: IWebsocket) => item.beq >= btcSelectedVolume.value);
+  transactions.value = last20Coins.filter((item: IWebsocket) => item.beq >= btcSelectedVolume.value).reverse();
   updateTableBoard();
 };
 </script>
