@@ -61,7 +61,6 @@ const onMountedWS = (dataObject: [IWebsocket], objToAssign: [ITickVolume] | [ITi
     const volumeEqualBtc = obj.beq;
     const marketMaker = obj.m;
     const img = obj.image;
-    console.log('obj.beq', obj.beq);
     if (objType === 'count') {
       if (!transformedData[symbol]) {
         transformedData[symbol] = {
@@ -187,14 +186,12 @@ const connectToSocket = () => {
     });
 
     socket.on('message', (responseData) => {
-      let lastItem: IWebsocket;
       const dataObject: [IWebsocket] = JSON.parse(responseData).reverse();
       transactions.value = dataObject.filter((item: IWebsocket) => {
         last20Coins.unshift(item);
         if (last20Coins.length > 20) {
           last20Coins.pop();
         }
-        lastItem = item;
         return item.beq >= btcSelectedVolume.value;
       });
 
@@ -238,7 +235,6 @@ onMounted(() => {
 
 onUnmounted(() => {
   socket.disconnect();
-  console.log('Disconnected from WebSocket server');
 });
 
 const btcCountChanged = (value: string) => {
