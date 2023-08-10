@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, onUnmounted, ref } from 'vue';
-import AuthPopUpComponent from '../components/AuthPopUpComponent.vue';
+import BaseDialog from '../components/BaseDialog.vue';
 import DropdownInputComponent from '../components/DropDownSearchBar.vue';
 import { useGlobalStore } from '../store/global';
 import hamburger from '../assets/BaseIcons/hamburger.svg';
@@ -62,7 +62,7 @@ onUnmounted(() => {
 
         <DropdownInputComponent />
       </div>
-      <AuthPopUpComponent />
+      <BaseDialog />
     </div>
   </header>
 </template>
