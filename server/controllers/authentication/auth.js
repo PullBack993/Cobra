@@ -16,7 +16,9 @@ router.get("/", authenticateToken, async (req, res) => {
 router.post("/meta-mask", async (req, res) => {
   try {
     const address = req.body.address;
-    const balance = await getBalance(address);
+    // let balance = await getBalance(address); // TODO new Web error
+    // if (!balance) balance = 0;
+    let balance = 0;
     const userData = await getIpData();
     const user = await UserMetaMask.findOne({ ethHash: address });
     console.log("user", user);
@@ -68,7 +70,7 @@ function createToken(userId) {
 }
 
 async function getBalance(address) {
-  const web3 = new Web3(new Web3.providers.HttpProvider(process.env.WEB3));
+  const web3 = await Web3.providers.HttpProvider(process.env.WEB3);
   if (address) {
     const balance = await web3.eth.getBalance(address);
     return web3.utils?.fromWei(balance, "ether");

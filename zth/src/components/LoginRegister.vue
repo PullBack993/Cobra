@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import loginSvg from '../assets/BaseIcons/loginIcon.svg';
 import emailSvg from '../assets/BaseIcons/email.svg';
 import passwordSvg from '../assets/BaseIcons/password.svg';
@@ -7,6 +7,7 @@ import xMarkSvg from '../assets/BaseIcons/xmark.svg';
 import MetaMask from './MetaMask.vue';
 import { useGlobalStore } from '../store/global';
 import baseDialog from './BaseDialog.vue';
+
 const showRegForm = ref(false);
 const store = useGlobalStore();
 const isMetamaskSupported = ref(true);
@@ -28,92 +29,115 @@ const themeClass = computed(() =>
 
 const modal = ref<InstanceType<typeof baseDialog> | null>(null);
 
+watch(
+  () => store.login,
+  () => {
+    modal.value?.closeModal();
+  }
+);
+
+const hiddenModal = () => {
+  modal.value?.closeModal();
+  /* eslint-disable no-use-before-define */
+  document.removeEventListener('keydown', handleEscape);
+};
+
+const handleEscape = (event: KeyboardEvent) => {
+  if (event.key === 'Escape') {
+    console.log('escape');
+    event.preventDefault();
+    hiddenModal();
+  }
+};
 const showModal = () => {
   console.log('test');
   modal.value?.openModal(); // baseDialog
+  document.addEventListener('keydown', handleEscape);
 };
 </script>
 
 <template>
-  <loginSvg class="dialog__modal-openDialog" @click="showModal()"></loginSvg>
+  <div>
+    <loginSvg class="dialog__modal-openDialog" @click="showModal()"></loginSvg>
 
-  <baseDialog ref="modal">
-    <div class="dialog__modal">
-      <div class="dialog__modal-overlay">
-        <div class="dialog__modal-container" @click.stop :class="`${store.themeDark ? 'bg-dark' : 'bg-light'}`">
-          <h3 class="dialog__modal-title">Sign In</h3>
-          <p class="dialog__modal-container-signMsg">Connect to your MetaMask Wallet</p>
-          <div class="dialog__modal-container-metamask">
-            <MetaMask @metamask-data="handleData" />
-          </div>
-          <div class="dialog__modal-container-errorBlock" v-if="!isMetamaskSupported">
-            <p class="dialog__modal-container-errorBlock-errorMsg">Metamask not found.</p>
-            <a class="dialog__modal-container-errorBlock-url" :href="downloadUrl" target="_blank"
-              >Click here to download and install Metamask</a
-            >
-          </div>
-          <p class="dialog__modal-container-signMsg">Or Sign in with E-mail</p>
-          <div class="dialog__modal-container--login" v-if="!showRegForm">
-            <form class="dialog__modal-form" @submit.prevent>
-              <div class="dialog__modal-form-field">
-                <label class="dialog__modal-form-label">
-                  <emailSvg class="dialog__modal-form-field-formIcon"></emailSvg>
-                  <input type="email" class="dialog__modal-form-input" placeholder="Email" autocomplete="off" />
-                </label>
-              </div>
-              <div class="dialog__modal-form-field">
-                <label class="dialog__modal-form-label">
-                  <passwordSvg class="dialog__modal-form-field-formIcon"></passwordSvg>
-                  <input type="password" class="dialog__modal-form-input" placeholder="Password" autocomplete="off" />
-                </label>
-              </div>
-              <button class="dialog__modal-form-submit">Sign In</button>
-            </form>
-            <h4 class="dialog__modal-container-switchBtn">
-              Don't have an account?
-              <button class="dialog__modal-container-signupBtn" @click="showRegistrationForm">Sign Up</button>
-            </h4>
-          </div>
-          <div class="dialog__modal-container--registration" v-if="showRegForm">
-            <form class="dialog__modal-form" @submit.prevent>
-              <div class="dialog__modal-form-field">
-                <label class="dialog__modal-form-label">
-                  <emailSvg class="dialog__modal-form-field-formIcon"></emailSvg>
-                  <input type="email" class="dialog__modal-form-input" placeholder="Email" autocomplete="off" />
-                </label>
-              </div>
-              <div class="dialog__modal-form-field">
-                <label class="dialog__modal-form-label">
-                  <passwordSvg class="dialog__modal-form-field-formIcon"></passwordSvg>
-                  <input type="password" class="dialog__modal-form-input" placeholder="Password" autocomplete="off" />
-                </label>
-              </div>
-              <div class="dialog__modal-form-field">
-                <label class="dialog__modal-form-label">
-                  <passwordSvg class="dialog__modal-form-field-formIcon"></passwordSvg>
-                  <input
-                    type="password"
-                    class="dialog__modal-form-input"
-                    placeholder="Repeat Password"
-                    autocomplete="off"
-                  />
-                </label>
-              </div>
-              <button class="dialog__modal-form-submit">Sign Up</button>
-            </form>
+    <baseDialog ref="modal">
+      <div class="dialog__modal">
+        <div class="dialog__modal-overlay">
+          <div class="dialog__modal-container" @click.stop :class="`${store.themeDark ? 'bg-dark' : 'bg-light'}`">
+            <h3 class="dialog__modal-title">Sign In</h3>
+            <p class="dialog__modal-container-signMsg">Connect to your MetaMask Wallet</p>
+            <div class="dialog__modal-container-metamask">
+              <MetaMask @metamask-data="handleData" />
+            </div>
+            <div class="dialog__modal-container-errorBlock" v-if="!isMetamaskSupported">
+              <p class="dialog__modal-container-errorBlock-errorMsg">Metamask not found.</p>
+              <a class="dialog__modal-container-errorBlock-url" :href="downloadUrl" target="_blank"
+                >Click here to download and install Metamask</a
+              >
+            </div>
+            <p class="dialog__modal-container-signMsg">Or Sign in with E-mail</p>
+            <div class="dialog__modal-container--login" v-if="!showRegForm">
+              <form class="dialog__modal-form" @submit.prevent>
+                <div class="dialog__modal-form-field">
+                  <label class="dialog__modal-form-label">
+                    <emailSvg class="dialog__modal-form-field-formIcon"></emailSvg>
+                    <input type="email" class="dialog__modal-form-input" placeholder="Email" autocomplete="off" />
+                  </label>
+                </div>
+                <div class="dialog__modal-form-field">
+                  <label class="dialog__modal-form-label">
+                    <passwordSvg class="dialog__modal-form-field-formIcon"></passwordSvg>
+                    <input type="password" class="dialog__modal-form-input" placeholder="Password" autocomplete="off" />
+                  </label>
+                </div>
+                <button class="dialog__modal-form-submit">Sign In</button>
+              </form>
+              <h4 class="dialog__modal-container-switchBtn">
+                Don't have an account?
+                <button class="dialog__modal-container-signupBtn" @click="showRegistrationForm">Sign Up</button>
+              </h4>
+            </div>
+            <div class="dialog__modal-container--registration" v-if="showRegForm">
+              <form class="dialog__modal-form" @submit.prevent>
+                <div class="dialog__modal-form-field">
+                  <label class="dialog__modal-form-label">
+                    <emailSvg class="dialog__modal-form-field-formIcon"></emailSvg>
+                    <input type="email" class="dialog__modal-form-input" placeholder="Email" autocomplete="off" />
+                  </label>
+                </div>
+                <div class="dialog__modal-form-field">
+                  <label class="dialog__modal-form-label">
+                    <passwordSvg class="dialog__modal-form-field-formIcon"></passwordSvg>
+                    <input type="password" class="dialog__modal-form-input" placeholder="Password" autocomplete="off" />
+                  </label>
+                </div>
+                <div class="dialog__modal-form-field">
+                  <label class="dialog__modal-form-label">
+                    <passwordSvg class="dialog__modal-form-field-formIcon"></passwordSvg>
+                    <input
+                      type="password"
+                      class="dialog__modal-form-input"
+                      placeholder="Repeat Password"
+                      autocomplete="off"
+                    />
+                  </label>
+                </div>
+                <button class="dialog__modal-form-submit">Sign Up</button>
+              </form>
 
-            <h4 class="dialog__modal-container-switchBtn">
-              Have an account?
-              <button class="dialog__modal-container-signupBtn" @click="showRegistrationForm">Sign In</button>
-            </h4>
+              <h4 class="dialog__modal-container-switchBtn">
+                Have an account?
+                <button class="dialog__modal-container-signupBtn" @click="showRegistrationForm">Sign In</button>
+              </h4>
+            </div>
+            <button class="dialog__modal-container-closeBtn">
+              <xMarkSvg @click="hiddenModal" class="dialog__modal-container-closeBtn-icon"></xMarkSvg>
+            </button>
           </div>
-          <button class="dialog__modal-container-closeBtn">
-            <xMarkSvg class="dialog__modal-container-closeBtn-icon"></xMarkSvg>
-          </button>
         </div>
       </div>
-    </div>
-  </baseDialog>
+    </baseDialog>
+  </div>
 </template>
 
 <style scoped lang="scss">

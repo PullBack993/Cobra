@@ -92,33 +92,11 @@ onUnmounted(() => {
 
 defineExpose({
   openModal,
+  closeModal,
 });
 </script>
 
 <style lang="scss" scoped>
-.dialog__modal-openDialog {
-  top: 3.3rem;
-  right: 4.5rem;
-  height: 2.5rem;
-  &--light {
-    fill: $main-purple;
-  }
-  &--dark {
-    fill: $white;
-  }
-}
-.dialog__arrow {
-  height: 1.5rem;
-  fill: currentcolor;
-  vertical-align: middle;
-  transform: rotate(-90deg);
-  width: unset;
-
-  @media (min-width: $breakpoint-small) {
-    margin-left: 1rem;
-  }
-}
-
 .dialog {
   border: none;
   height: 100%;
@@ -129,70 +107,5 @@ defineExpose({
   width: 100vw;
   background-color: rgba(0, 0, 0, 0.6);
   overflow: hidden !important;
-
-  &__heading {
-    // font-size: $font-large;
-    // font-weight: $bold-default;
-    max-height: 100%;
-    text-overflow: ellipsis;
-    margin-left: 2rem;
-    overflow: hidden;
-    padding: 0 2rem;
-    width: 88%;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-  }
-
-  &__content {
-    padding: 2rem;
-    margin-bottom: 9.3rem;
-  }
-}
-
-.dialog__header {
-  position: sticky;
-  top: 0;
-  height: 7.6rem;
-  width: 100%;
-  // box-shadow: 0 3px 6px $color-box-shadow;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  z-index: 1;
-
-  // background: $color-white;
-}
-
-.dialog__footer {
-  position: fixed;
-  width: 100%;
-  bottom: 0;
-  z-index: 2;
-
-  // background: $color-white;
-  height: 9.3rem;
-  // box-shadow: 0 -3px 6px $color-box-shadow;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.dialog__footer-btn {
-  width: 16.5rem;
-}
-
-.dialog__content-wrap {
-  padding: 2rem;
-}
-
-.dialog__close-upper {
-  outline: inherit;
-  border: none;
-  background: none;
-  position: absolute;
-  top: 32%;
-  left: 0;
 }
 </style>

@@ -16,7 +16,7 @@ onMounted(() => {
   isMetamaskSupported.value = typeof (window as any).ethereum !== 'undefined';
 });
 
-//TODO implement it
+// TODO implement it
 // (window as any).ethereum?.on('accountsChanged', () => {
 //   Cookies.remove('auth_token');
 //   store.login = false;
@@ -29,8 +29,7 @@ async function connectWallet() {
     if (ua.match(/(iPad|iPhone|iPod)/g)) {
       downloadUrl.value = 'https://apps.apple.com/us/app/metamask/id1438144202';
     } else if (ua.match(/Android/i)) {
-      downloadUrl.value =
-        'https://play.google.com/store/apps/details?id=io.metamask';
+      downloadUrl.value = 'https://play.google.com/store/apps/details?id=io.metamask';
     } else {
       downloadUrl.value = 'https://metamask.io/download.html';
     }
@@ -59,6 +58,7 @@ async function connectWallet() {
     );
 
     if (response.data && response.status === 200) {
+      console.log('yes login;');
       store.login = true;
     }
   } catch (err) {
