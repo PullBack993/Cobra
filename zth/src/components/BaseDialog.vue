@@ -1,37 +1,21 @@
 <template>
-  <loginSvg class="dialog__modal-openDialog" @click="openModal()"></loginSvg>
-  <dialog ref="baseDialog" class="dialog">
-    <header class="dialog__header" v-if="headerText">
-      <button class="dialog__close-upper" @click.prevent="closeModal()"></button>
-      <h2 class="dialog__heading">
-        {{ headerText }}
-      </h2>
-    </header>
-    <section class="dialog__content">
+  <section>
+    <dialog ref="baseDialog" class="dialog">
       <slot> </slot>
-    </section>
-  </dialog>
+    </dialog>
+  </section>
 </template>
 
 <script lang="ts" setup>
 import dialogPolyfill from 'dialog-polyfill';
 import { onMounted, onUnmounted, ref } from 'vue';
-import loginSvg from '../assets/BaseIcons/loginIcon.svg';
-import emailSvg from '../assets/BaseIcons/email.svg';
-import passwordSvg from '../assets/BaseIcons/password.svg';
-import xMarkSvg from '../assets/BaseIcons/xmark.svg';
-
-interface Props {
-  headerText: string;
-}
-
-defineProps<Props>();
 
 const isDialogSupported = ref(true);
 
 const baseDialog = ref<HTMLDialogElement>();
 
 const openModal = () => {
+  console.log('open modal');
   baseDialog.value?.showModal();
   window.history.pushState({ checkoutModal: true }, '');
   document.body.style.overflow = 'hidden';
@@ -39,11 +23,7 @@ const openModal = () => {
     baseDialog.value.style.overflow = 'scroll';
   }
 };
-// const historyBack = (): void => {
-//   if (window.history.state && window.history.state.checkoutModal) {
-//     window.history.back();
-//   }
-// };
+
 const modalExistsAndIsOpen = (): boolean | undefined => baseDialog.value && baseDialog.value.open;
 
 const closeCallback = (): void => {
@@ -56,7 +36,6 @@ const closeCallback = (): void => {
 };
 const closeModal = () => {
   if (modalExistsAndIsOpen()) {
-    // historyBack();
     baseDialog.value?.close();
   } else {
     baseDialog.value?.classList.add('close');
@@ -98,9 +77,10 @@ onMounted(() => {
         closeModal();
       }
     }
+    openModal();
   });
 
-  // fixes overflow on dialog close event
+  // fixes overflow on dialog close event if needed.It is replaced by '!important css'
   baseDialog.value?.addEventListener('close', () => {
     document.body.style.overflow = 'auto';
   });
@@ -148,6 +128,7 @@ defineExpose({
   padding: 0;
   width: 100vw;
   background-color: rgba(0, 0, 0, 0.6);
+  overflow: hidden !important;
 
   &__heading {
     // font-size: $font-large;

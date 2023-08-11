@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, onUnmounted, ref } from 'vue';
-import BaseDialog from '../components/BaseDialog.vue';
+import LoginRegister from '../components/LoginRegister.vue';
 import DropdownInputComponent from '../components/DropDownSearchBar.vue';
 import { useGlobalStore } from '../store/global';
 import hamburger from '../assets/BaseIcons/hamburger.svg';
@@ -62,7 +62,7 @@ onUnmounted(() => {
 
         <DropdownInputComponent />
       </div>
-      <BaseDialog />
+      <LoginRegister />
     </div>
   </header>
 </template>
