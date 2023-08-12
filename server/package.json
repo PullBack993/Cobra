@@ -27,7 +27,7 @@
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
     "socket.io": "^4.7.1",
-    "web3": "^4.0.1",
+    "web3": "^4.0.3",
     "ws": "^8.13.0"
   },
   "devDependencies": {
