@@ -9,10 +9,13 @@ export const useGlobalStore = defineStore('globalStore', {
     },
   },
   actions: {
-    async refreshToken() {
-      /* eslint no-promise-executor-return: "off" */
-      await new Promise((resolve) => setTimeout(resolve, 3600000));
-      await this.isLogin();
+    setUser(user:{isLoggedIn: boolean, imageUrl: string}){
+      this.login = user.isLoggedIn;
+      this.userImage = user.imageUrl;
+    },
+    clearUser() {
+      this.login = false;
+      this.userImage = '';
     },
     async isLogin() {
       try {
@@ -20,10 +23,7 @@ export const useGlobalStore = defineStore('globalStore', {
           withCredentials: true,
         });
         if (response.status === 200) {
-          this.login = response.data.isLogin;
-          this.userImage = response.data.imageUrl;
-          console.log(response.data);
-          await this.refreshToken();
+          this.setUser(response.data);
         }
       } catch (error) {
         console.log(error);

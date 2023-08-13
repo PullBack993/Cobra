@@ -7,18 +7,20 @@ const UserMetaMask = require("../../models/UserMetaMask");
 const authenticateToken = require("../../middleware/refreshToken");
 
 router.get("/", authenticateToken, async (req, res) => {
-  const user = await UserMetaMask.findById(req.user.id);
-  const responseUser = { imageUrl: user.imageUrl, isLogin: true };
-  // user.isLogid = true;
-  res.status(200).json(responseUser);
+  try {
+    const user = await UserMetaMask.findById(req.user.id);
+    const responseUser = { imageUrl: user.imageUrl, isLoggedIn: true };
+    res.status(200).json(responseUser);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: error });
+  }
 });
 
 router.post("/meta-mask", async (req, res) => {
   try {
     const address = req.body.address;
-    let balance = await getBalance(address); // TODO new Web error
-    // if (!balance) balance = 0;
-    // let balance = 0;
+    let balance = await getBalance(address);
     const userData = await getIpData();
     const user = await UserMetaMask.findOne({ ethHash: address });
     console.log("user", user);

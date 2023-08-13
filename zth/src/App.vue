@@ -3,7 +3,9 @@ import { RouterView } from 'vue-router';
 import { ref, onMounted } from 'vue';
 import AsideComponent from './pages/AsideComponent.vue';
 import HeaderComponent from './pages/HeaderConponent.vue';
+import { useGlobalStore } from './store/global';
 
+const store = useGlobalStore();
 const isToggle = ref(false);
 const screenSize = ref();
 
@@ -66,6 +68,7 @@ function documentClick(e: Event) {
 onMounted(() => {
   updateScreenWidth();
   onScreenResize();
+  store.isLogin();
 });
 
 function onScreenResize() {

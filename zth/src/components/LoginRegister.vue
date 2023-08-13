@@ -59,7 +59,7 @@ const showModal = () => {
 <template>
   <div>
     <loginSvg v-if="!store.login" class="dialog__modal-openDialog" @click="showModal()"></loginSvg>
-    <img v-if="store.login" :src="store.userImage" alt="user-image" class="user-image" />
+    <img v-else :src="store.userImage" alt="user-image" class="user-image" />
     <baseDialog v-if="!store.login" ref="modal">
       <div class="dialog__modal">
         <div class="dialog__modal-overlay">

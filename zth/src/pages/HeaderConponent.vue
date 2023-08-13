@@ -2,14 +2,10 @@
 import { onMounted, onUnmounted, ref } from 'vue';
 import LoginRegister from '../components/LoginRegister.vue';
 import DropdownInputComponent from '../components/DropDownSearchBar.vue';
-import { useGlobalStore } from '../store/global';
 import hamburger from '../assets/BaseIcons/hamburger.svg';
+import { useGlobalStore } from '../store/global';
 
 const store = useGlobalStore();
-
-onMounted(() => {
-  store.isLogin();
-});
 
 const screenSize = ref(window.innerWidth);
 const header = ref(null);

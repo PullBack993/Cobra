@@ -393,6 +393,8 @@ onMounted(() => {
   }
   .dark {
     width: 2.5rem;
+    height: 5rem;
+    cursor: pointer;
   }
   .theme {
     display: flex;
@@ -408,6 +410,7 @@ onMounted(() => {
     margin-bottom: 4rem;
     position: absolute;
     bottom: 0;
+    cursor: pointer;
 
     &::before {
       position: absolute;
@@ -415,6 +418,8 @@ onMounted(() => {
       height: 4rem;
       border-radius: 6rem;
       content: '';
+      cursor: pointer;
+
       transition: background-color 0.15s ease, -webkit-transform 0.3s ease;
       transition: transform 0.3s ease, background-color 0.15s ease;
       transition: transform 0.3s ease, background-color 0.15s ease, -webkit-transform 0.3s ease;
@@ -426,6 +431,8 @@ onMounted(() => {
       .light {
         color: $white;
         width: 2.5rem;
+        height: 5rem;
+        cursor: pointer;
       }
     }
 
