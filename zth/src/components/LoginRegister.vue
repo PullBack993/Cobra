@@ -58,9 +58,9 @@ const showModal = () => {
 
 <template>
   <div>
-    <loginSvg class="dialog__modal-openDialog" @click="showModal()"></loginSvg>
-
-    <baseDialog ref="modal">
+    <loginSvg v-if="!store.login" class="dialog__modal-openDialog" @click="showModal()"></loginSvg>
+    <img v-if="store.login" :src="store.userImage" alt="user-image" class="user-image" />
+    <baseDialog v-if="!store.login" ref="modal">
       <div class="dialog__modal">
         <div class="dialog__modal-overlay">
           <div class="dialog__modal-container" @click.stop :class="`${store.themeDark ? 'bg-dark' : 'bg-light'}`">
@@ -185,6 +185,15 @@ const showModal = () => {
     font-size: 2rem !important;
     font-weight: 500;
   }
+}
+
+.user-image {
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  top: 2.9rem;
+  right: 2.3rem;
+  position: absolute;
 }
 .dialog__modal-openDialog {
   top: 3.3rem;

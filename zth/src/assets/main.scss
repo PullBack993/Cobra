@@ -79,9 +79,6 @@
   src: url('./fonts/encode-sans-semi-expanded-v19-latin-900.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
 
-
-
-
 *,
 *::before,
 *::after {
@@ -105,7 +102,7 @@ body {
   color: var(--color-text);
   background: linear-gradient(189deg, rgba(29,12,56,1) 0%, rgba(12,20,68,1) 53%, rgba(44,16,65,1) 100%);
   transition: color 0.5s, background-color 0.5s;
-  line-height: 1.6rem;
+  line-height: 2.1rem;
   // font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
   //   Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",
   //   sans-serif;

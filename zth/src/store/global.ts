@@ -2,7 +2,7 @@ import axios from 'axios';
 import { defineStore } from 'pinia';
 
 export const useGlobalStore = defineStore('globalStore', {
-  state: () => ({ themeDark: false, login: false }),
+  state: () => ({ themeDark: false, login: false, userImage: ''}),
   getters: {
     test(state) {
       return state.login;
@@ -21,6 +21,8 @@ export const useGlobalStore = defineStore('globalStore', {
         });
         if (response.status === 200) {
           this.login = response.data.isLogin;
+          this.userImage = response.data.imageUrl;
+          console.log(response.data);
           await this.refreshToken();
         }
       } catch (error) {

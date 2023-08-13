@@ -7,10 +7,10 @@ const UserMetaMask = require("../../models/UserMetaMask");
 const authenticateToken = require("../../middleware/refreshToken");
 
 router.get("/", authenticateToken, async (req, res) => {
-  console.log(req.user);
-  console.log("from / refreshToken =>", req.cookies.zth_rLt_K6u3hTf);
-  console.log("from / accessToken =>", req.cookies.zth_aSt_1xRg9Jd);
-  res.status(200).json({ isLogin: true });
+  const user = await UserMetaMask.findById(req.user.id);
+  const responseUser = { imageUrl: user.imageUrl, isLogin: true };
+  // user.isLogid = true;
+  res.status(200).json(responseUser);
 });
 
 router.post("/meta-mask", async (req, res) => {

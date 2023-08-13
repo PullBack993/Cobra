@@ -9,7 +9,6 @@ const userMetaMaskSchema = new Schema({
   isAdmin: { type: Boolean, default: false },
   likedCoin: [{ type: String, default: "" }],
   refreshToken: { type: String, default: "" },
-  imageUrl: { type: String, default: "" },
 });
 
 const UserMetaMask = model("UserHash", userMetaMaskSchema);
