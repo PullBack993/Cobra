@@ -75,60 +75,89 @@ const showModal = () => {
                 >Click here to download and install Metamask</a
               >
             </div>
-            <p class="dialog__modal-container-signMsg">Or Sign in with E-mail</p>
-            <div class="dialog__modal-container--login" v-if="!showRegForm">
-              <form class="dialog__modal-form" @submit.prevent>
-                <div class="dialog__modal-form-field">
-                  <label class="dialog__modal-form-label">
-                    <emailSvg class="dialog__modal-form-field-formIcon"></emailSvg>
-                    <input type="email" class="dialog__modal-form-input" placeholder="Email" autocomplete="off" />
-                  </label>
-                </div>
-                <div class="dialog__modal-form-field">
-                  <label class="dialog__modal-form-label">
-                    <passwordSvg class="dialog__modal-form-field-formIcon"></passwordSvg>
-                    <input type="password" class="dialog__modal-form-input" placeholder="Password" autocomplete="off" />
-                  </label>
-                </div>
-                <button class="dialog__modal-form-submit">Sign In</button>
-              </form>
-              <h4 class="dialog__modal-container-switchBtn">
-                Don't have an account?
-                <button class="dialog__modal-container-signupBtn" @click="showRegistrationForm">Sign Up</button>
-              </h4>
-            </div>
-            <div class="dialog__modal-container--registration" v-if="showRegForm">
-              <form class="dialog__modal-form" @submit.prevent>
-                <div class="dialog__modal-form-field">
-                  <label class="dialog__modal-form-label">
-                    <emailSvg class="dialog__modal-form-field-formIcon"></emailSvg>
-                    <input type="email" class="dialog__modal-form-input" placeholder="Email" autocomplete="off" />
-                  </label>
-                </div>
-                <div class="dialog__modal-form-field">
-                  <label class="dialog__modal-form-label">
-                    <passwordSvg class="dialog__modal-form-field-formIcon"></passwordSvg>
-                    <input type="password" class="dialog__modal-form-input" placeholder="Password" autocomplete="off" />
-                  </label>
-                </div>
-                <div class="dialog__modal-form-field">
-                  <label class="dialog__modal-form-label">
-                    <passwordSvg class="dialog__modal-form-field-formIcon"></passwordSvg>
-                    <input
-                      type="password"
-                      class="dialog__modal-form-input"
-                      placeholder="Repeat Password"
-                      autocomplete="off"
-                    />
-                  </label>
-                </div>
-                <button class="dialog__modal-form-submit">Sign Up</button>
-              </form>
+            <p class="dialog__modal-container-signMsg unavailable-msg">Currently unavailable</p>
+            <div class="unavailable" disabled>
+              <p class="dialog__modal-container-signMsg">Or Sign in with E-mail</p>
+              <div class="dialog__modal-container--login" v-if="!showRegForm">
+                <form class="dialog__modal-form" @submit.prevent>
+                  <div class="dialog__modal-form-field">
+                    <label class="dialog__modal-form-label">
+                      <emailSvg class="dialog__modal-form-field-formIcon"></emailSvg>
+                      <input
+                        type="email"
+                        class="dialog__modal-form-input"
+                        placeholder="Email"
+                        disabled
+                        autocomplete="off"
+                      />
+                    </label>
+                  </div>
+                  <div class="dialog__modal-form-field">
+                    <label class="dialog__modal-form-label">
+                      <passwordSvg class="dialog__modal-form-field-formIcon"></passwordSvg>
+                      <input
+                        type="password"
+                        disabled
+                        class="dialog__modal-form-input"
+                        placeholder="Password"
+                        autocomplete="off"
+                      />
+                    </label>
+                  </div>
+                  <button class="dialog__modal-form-submit">Sign In</button>
+                </form>
+                <h4 class="dialog__modal-container-switchBtn">
+                  Don't have an account?
+                  <!-- @click="showRegistrationForm" -->
+                  <button class="dialog__modal-container-signupBtn">Sign Up</button>
+                </h4>
+              </div>
+              <div class="dialog__modal-container--registration" v-if="showRegForm">
+                <form class="dialog__modal-form" @submit.prevent>
+                  <div class="dialog__modal-form-field">
+                    <label class="dialog__modal-form-label">
+                      <emailSvg class="dialog__modal-form-field-formIcon"></emailSvg>
+                      <input
+                        type="email"
+                        class="dialog__modal-form-input"
+                        placeholder="Email"
+                        disabled
+                        autocomplete="off"
+                      />
+                    </label>
+                  </div>
+                  <div class="dialog__modal-form-field">
+                    <label class="dialog__modal-form-label">
+                      <passwordSvg class="dialog__modal-form-field-formIcon"></passwordSvg>
+                      <input
+                        type="password"
+                        class="dialog__modal-form-input"
+                        placeholder="Password"
+                        autocomplete="off"
+                        disabled
+                      />
+                    </label>
+                  </div>
+                  <div class="dialog__modal-form-field">
+                    <label class="dialog__modal-form-label">
+                      <passwordSvg class="dialog__modal-form-field-formIcon"></passwordSvg>
+                      <input
+                        type="password"
+                        class="dialog__modal-form-input"
+                        placeholder="Repeat Password"
+                        autocomplete="off"
+                        disabled
+                      />
+                    </label>
+                  </div>
+                  <button class="dialog__modal-form-submit">Sign Up</button>
+                </form>
 
-              <h4 class="dialog__modal-container-switchBtn">
-                Have an account?
-                <button class="dialog__modal-container-signupBtn" @click="showRegistrationForm">Sign In</button>
-              </h4>
+                <h4 class="dialog__modal-container-switchBtn">
+                  Have an account?
+                  <!-- <button class="dialog__modal-container-signupBtn" @click="showRegistrationForm">Sign In</button> -->
+                </h4>
+              </div>
             </div>
             <button class="dialog__modal-container-closeBtn">
               <xMarkSvg @click="hiddenModal" class="dialog__modal-container-closeBtn-icon"></xMarkSvg>
@@ -141,6 +170,22 @@ const showModal = () => {
 </template>
 
 <style scoped lang="scss">
+.unavailable {
+  // remove after implement login/register
+  align-content: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  filter: blur(0.2rem);
+  position: relative;
+  &-msg {
+    position: absolute;
+    top: 28rem;
+    rotate: 45grad;
+    font-size: 2rem !important;
+    font-weight: 500;
+  }
+}
 .dialog__modal-openDialog {
   top: 3.3rem;
   right: 4.5rem;
@@ -213,7 +258,8 @@ const showModal = () => {
         font-weight: 700;
         color: #00aaff;
         text-decoration: underline;
-        cursor: pointer;
+        // cursor: pointer;
+        pointer-events: none;
       }
     }
 
@@ -225,7 +271,8 @@ const showModal = () => {
 
     &-signupBtn {
       margin-left: 0.5rem;
-      cursor: pointer;
+      // cursor: pointer;
+      pointer-events: none;
       font-size: 1.8rem;
       color: $main_purple;
       font-weight: 700;
@@ -287,7 +334,7 @@ const showModal = () => {
         background-color: $input-bg-dark;
       }
       &:focus {
-        border-bottom: 0.1rem solid $main_purple;
+        // border-bottom: 0.1rem solid $main_purple;
       }
     }
     &-submit {
@@ -298,10 +345,11 @@ const showModal = () => {
       color: $white;
       border: none;
       border-radius: 0.5rem;
-      cursor: pointer;
+      // cursor: pointer;
+      pointer-events: none;
       transition: all 0.3s ease-in-out;
       &:hover {
-        background-color: $main_purple-dark-5;
+        // background-color: $main_purple-dark-5;
       }
     }
   }

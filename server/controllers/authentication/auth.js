@@ -25,11 +25,14 @@ router.post("/meta-mask", async (req, res) => {
     console.log("adress", address);
 
     if (!user) {
+      const imageUrl = await generateRandomImage();
+
       const newUser = new UserMetaMask({
         ethHash: address,
         ip: userData.ip,
         city: userData.city,
         balance,
+        imageUrl: imageUrl.small,
       });
       await newUser.save();
       const [accessToken, refreshToken] = createToken(newUser._id);
@@ -51,6 +54,54 @@ router.post("/meta-mask", async (req, res) => {
     res.status(errResponse.code).json(errResponse);
   }
 });
+
+function generateRandomImage() {
+  const apiUrl = process.env.API_UNSPLASH;
+  const accessKey = process.env.UNSPLASH;
+
+  const params = `?client_id=${accessKey}&query=random`;
+  const options = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+
+  return new Promise((resolve, reject) => {
+    try {
+      const req = https.request(apiUrl + params, options, (res) => {
+        let responseData = "";
+
+        res.on("data", (chunk) => {
+          responseData += chunk;
+        });
+
+        res.on("end", () => {
+          const response = JSON.parse(responseData);
+
+          if (res.statusCode === 200) {
+            const imageUrls = {
+              small: response.urls.small,
+              regular: response.urls.regular,
+              full: response.urls.full,
+            };
+            resolve(imageUrls);
+          } else {
+            reject(new Error(response.errors[0]));
+          }
+        });
+      });
+
+      req.on("error", (error) => {
+        reject(error);
+      });
+
+      req.end();
+    } catch (error) {
+      console.error(error);
+    }
+  });
+}
 
 function setCookie(res, accessToken, refreshToken) {
   const oneHour = new Date(Date.now() + 61 * 60 * 1000);
