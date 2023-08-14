@@ -5,7 +5,7 @@ import { useGlobalStore } from '../store/global';
 
 const baseApiUrl = import.meta.env.VITE_APP_BASE_URL;
 
-const emit = defineEmits(['metamask-data']);
+const emit = defineEmits(['metamask-data', 'metamsk-loading']);
 const store = useGlobalStore();
 const address = ref('');
 const isMetamaskSupported = ref(false);
@@ -46,6 +46,7 @@ async function connectWallet() {
     }
     return;
   }
+  emit('metamsk-loading');
   const accounts = await (window as any).ethereum?.request({
     method: 'eth_requestAccounts',
   });
@@ -64,6 +65,8 @@ async function connectWallet() {
     }
   } catch (err) {
     console.log(err);
+  } finally {
+    emit('metamsk-loading');
   }
 }
 </script>

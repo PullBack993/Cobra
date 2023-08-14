@@ -21,14 +21,7 @@ const props = withDefaults(defineProps<Props>(), {
   value: '',
   noResult: false,
 });
-const emit = defineEmits([
-  'keyArrow',
-  'onInput',
-  'clearValues',
-  'scrollDirection',
-  'open',
-  'enter:event',
-]);
+const emit = defineEmits(['keyArrow', 'onInput', 'clearValues', 'scrollDirection', 'open', 'enter:event']);
 const dropDownOpen = ref(props.open);
 const searchParams = ref(props.value);
 const selectedItem = ref(props.currentItem);
@@ -125,11 +118,7 @@ function addClickEvent() {
 
 function documentKey(event: KeyboardEvent) {
   const { key } = event as KeyboardEvent;
-  if (
-    (key === 'f' || key === 'F') &&
-    dropDownOpen.value === false &&
-    !props.prevent
-  ) {
+  if ((key === 'f' || key === 'F') && dropDownOpen.value === false && !props.prevent) {
     emit('open', true);
     event.preventDefault();
     input?.value?.focus();
@@ -138,11 +127,7 @@ function documentKey(event: KeyboardEvent) {
 }
 
 function documentClick(event: Event) {
-  if (
-    dropDownOpen.value &&
-    event.target &&
-    !props.root.contains(event.target as HTMLElement)
-  ) {
+  if (dropDownOpen.value && event.target && !props.root.contains(event.target as HTMLElement)) {
     emit('open', false);
     document.removeEventListener('click', documentClick);
     document.removeEventListener('click', documentKey);
@@ -218,10 +203,7 @@ function onInput() {
     type="text"
     class="input"
     ref="input"
-    :class="[
-      `${open ? 'input-open' : 'input-close'}`,
-      `${store.themeDark ? 'bg-dark' : 'bg-light'}`,
-    ]"
+    :class="[`${open ? 'input-open' : 'input-close'}`, `${store.themeDark ? 'bg-dark' : 'bg-light'}`]"
     v-model="searchParams"
     aria-labelledby="search"
   />
@@ -240,7 +222,7 @@ function onInput() {
   height: 5rem;
   border-radius: 1rem;
   border: none;
-  padding-right: 2.7rem;
+  padding-right: 4.5rem;
   &-open {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;

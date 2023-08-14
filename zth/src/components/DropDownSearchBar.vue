@@ -277,6 +277,7 @@ function onOpen(value) {
 
   &-key {
     width: 1.7rem;
+    height: 2rem;
     position: absolute;
     right: 0;
     margin-right: 1rem;

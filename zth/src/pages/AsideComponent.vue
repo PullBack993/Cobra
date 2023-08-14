@@ -147,12 +147,12 @@ onMounted(() => {
         <RouterLink to="/volume-monitor" class="sidebar-home">
           <ratioSVG class="sidebar-home-icon sidebar-home-icon--scale" />
 
-          <p :class="`${isToggle ? 'visible' : 'invisible'}`">Global Metrics</p>
+          <p :class="`${isToggle ? 'visible' : 'invisible'}`">Volume Monitor</p>
         </RouterLink>
 
         <RouterLink to="/news" class="sidebar-home">
           <news-s-v-g class="material-symbols-outlined sidebar-home-icon"></news-s-v-g>
-          <p :class="`${isToggle ? 'visible' : 'invisible'}`">Volume Metrics</p>
+          <p :class="`${isToggle ? 'visible' : 'invisible'}`">News</p>
         </RouterLink>
 
         <RouterLink to="/long-short" class="sidebar-home">
@@ -353,7 +353,7 @@ onMounted(() => {
       fill: $main_purple;
       stroke-width: 10;
       stroke: $main_purple;
-      height: 3rem;
+      height: 2.6rem;
       width: 3rem;
       &--scale {
         transform: scale(1.3);
@@ -427,9 +427,9 @@ onMounted(() => {
 
     &-light {
       margin-left: 1rem;
-
+      display: flex;
       .light {
-        color: $white;
+        fill: $white;
         width: 2.5rem;
         height: 5rem;
         cursor: pointer;

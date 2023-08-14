@@ -1,18 +1,20 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import loginSvg from '../assets/BaseIcons/loginIcon.svg';
+import loginSvg from '../assets/BaseIcons/login.svg';
 import emailSvg from '../assets/BaseIcons/email.svg';
 import passwordSvg from '../assets/BaseIcons/password.svg';
 import xMarkSvg from '../assets/BaseIcons/xmark.svg';
 import MetaMask from './MetaMask.vue';
 import { useGlobalStore } from '../store/global';
 import baseDialog from './BaseDialog.vue';
+import HorizontalEllipsisSpinner from './utils/HorizontalEllipsisSpinner.vue';
 
 const showRegForm = ref(false);
 const store = useGlobalStore();
 const isMetamaskSupported = ref(true);
 const downloadUrl = ref('');
 const favDialog = ref();
+const isMetamaskOpen = ref(false);
 
 const handleData = (data) => {
   isMetamaskSupported.value = data.supported;
@@ -54,20 +56,32 @@ const showModal = () => {
   modal.value?.openModal(); // baseDialog
   document.addEventListener('keydown', handleEscape);
 };
+
+const handleLoading = () => {
+  isMetamaskOpen.value = !isMetamaskOpen.value;
+};
 </script>
 
 <template>
   <div>
-    <loginSvg v-if="!store.login" class="dialog__modal-openDialog" @click="showModal()"></loginSvg>
-    <img v-else :src="store.userImage" alt="user-image" class="user-image" />
+    <loginSvg
+      v-if="!store.login"
+      :class="`${store.themeDark ? 'dialog__modal-openDialog--dark' : 'dialog__modal-openDialog--light'}`"
+      class="dialog__modal-openDialog"
+      @click="showModal()"
+    ></loginSvg>
+    <img v-else :src="store.userImage" loading="lazy" alt="user-image" class="user-image" />
     <baseDialog v-if="!store.login" ref="modal">
+      <div class="spinner" v-if="isMetamaskOpen">
+        <HorizontalEllipsisSpinner></HorizontalEllipsisSpinner>
+      </div>
       <div class="dialog__modal">
         <div class="dialog__modal-overlay">
           <div class="dialog__modal-container" @click.stop :class="`${store.themeDark ? 'bg-dark' : 'bg-light'}`">
             <h3 class="dialog__modal-title">Sign In</h3>
-            <p class="dialog__modal-container-signMsg">Connect to your MetaMask Wallet</p>
+            <p class="dialog__modal-container-signMsg">Connect with your MetaMask Wallet</p>
             <div class="dialog__modal-container-metamask">
-              <MetaMask @metamask-data="handleData" />
+              <MetaMask @metamask-data="handleData" @metamsk-loading="handleLoading" />
             </div>
             <div class="dialog__modal-container-errorBlock" v-if="!isMetamaskSupported">
               <p class="dialog__modal-container-errorBlock-errorMsg">Metamask not found.</p>
@@ -186,36 +200,39 @@ const showModal = () => {
     font-weight: 500;
   }
 }
-
+.spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  height: 100%;
+  width: 100%;
+  z-index: 9991;
+  background: #0000006e;
+  position: fixed;
+  // overflow: hidden;
+}
 .user-image {
   border-radius: 50%;
-  width: 3rem;
-  height: 3rem;
+  width: 4rem;
+  height: 4rem;
   top: 2.9rem;
   right: 2.3rem;
   position: absolute;
 }
-.dialog__modal-openDialog {
-  top: 3.3rem;
-  right: 4.5rem;
-  height: 2.5rem;
-  &--light {
-    fill: $main-purple;
-  }
-  &--dark {
-    fill: $white;
-  }
-}
 
 .dialog__modal {
   &-openDialog {
-    // position: absolute;
+    top: 3.3rem;
+    right: 1.8rem;
     height: 2.5rem;
+    width: 3rem;
+    position: absolute;
     &--light {
       fill: $main-purple;
     }
     &--dark {
-      fill: $white;
+      fill: $black;
     }
   }
   &-overlay {
