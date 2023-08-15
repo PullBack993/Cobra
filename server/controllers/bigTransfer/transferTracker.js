@@ -98,7 +98,7 @@ async function fetchCoinImage(coin) {
 // }
 
 function determineImage(image) {
-  return image.data.image?.thumb
+  return image?.data?.image?.thumb
     ? image.data.image?.thumb
     : image.data.image?.large
     ? image.data.image?.large

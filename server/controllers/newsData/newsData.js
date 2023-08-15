@@ -4,6 +4,8 @@ const router = require("express").Router();
 const CronJob = require("cron").CronJob;
 const Article = require("../../models/NewsCoins");
 const https = require("https");
+const sharp = require("sharp");
+const axios = require("axios");
 
 const imageCache = new Map();
 
@@ -64,6 +66,24 @@ router.get("/article/:id", async (req, res) => {
   }
 });
 
+async function removeLogoFromImage(imageBuffer) {
+  // Todo implement it! It should add own logo for each image at the bottom
+  try {
+    const logoPath = __dirname + "/zth.svg";
+
+    const logoBuffer = await sharp(logoPath).resize(20, 10).toBuffer();
+
+    const modifiedBuffer = await sharp(imageBuffer)
+      .composite([{ input: logoBuffer, gravity: "southeast" }])
+      .toBuffer();
+
+    return modifiedBuffer;
+  } catch (error) {
+    console.error("Error removing logo:", error);
+    throw error;
+  }
+}
+
 async function getImageProxyUrl(imageUrl) {
   try {
     if (imageCache.has(imageUrl)) {
@@ -117,10 +137,11 @@ async function getImageProxyUrl(imageUrl) {
         chunks.push(chunk);
       });
 
-      response.on("end", () => {
+      response.on("end", async () => {
         const imageContent = Buffer.concat(chunks);
         const base64Image = imageContent.toString("base64");
         const dataUri = `data:${contentType};base64,${base64Image}`;
+
         imageCache.set(imageUrl, dataUri);
         resolve(dataUri);
       });

@@ -38,28 +38,18 @@ onMounted(async () => {
 <template>
   <div class="article">
     <div class="article-header" v-if="article">
-      <img
-        class="article-header--image"
-        :src="article.titleImage"
-        :alt="article.title"
-      />
+      <img class="article-header--image" :src="article.titleImage" :alt="article.title" />
       <h1 class="article-header--title">{{ article.title }}</h1>
     </div>
     <div class="article-body">
-      <div
-        v-for="(section, index) in article?.sections"
-        :key="index"
-        class="article-section"
-      >
+      <div v-for="(section, index) in article?.sections" :key="index" class="article-section">
         <h2 class="article-title">{{ section?.heading }}</h2>
         <div class="article-content">
           <div v-for="(text, index) in section.text" :key="index">
             <p
               ref="text"
               class="article-text"
-              :class="`${
-                store.themeDark ? 'article-text--light' : 'article-text--dark'
-              }`"
+              :class="`${store.themeDark ? 'article-text--light' : 'article-text--dark'}`"
             >
               {{ text }}
             </p>
@@ -69,11 +59,7 @@ onMounted(async () => {
             <em>
               <p
                 class="article-paragraph"
-                :class="`${
-                  store.themeDark
-                    ? 'article-paragraph--light'
-                    : 'article-paragraph--dark'
-                }`"
+                :class="`${store.themeDark ? 'article-paragraph--light' : 'article-paragraph--dark'}`"
               >
                 {{ section?.paragraph }}
               </p>
@@ -83,23 +69,14 @@ onMounted(async () => {
             <li
               v-for="(item, index) in section.listItems"
               class="article-list-item"
-              :class="`${
-                store.themeDark
-                  ? 'article-list-item--light'
-                  : 'article-list-item--dark'
-              }`"
+              :class="`${store.themeDark ? 'article-list-item--light' : 'article-list-item--dark'}`"
               :key="index"
             >
               {{ item }}
             </li>
           </ul>
-          <div v-if="section.image" class="article-image">
-            <img
-              v-for="(image, i) in section.image"
-              :key="i"
-              :src="image"
-              alt="Section Image"
-            />
+          <div v-if="section.image.length > 0" class="article-image">
+            <img v-for="(image, i) in section.image" :key="i" :src="image" alt="Section Image" />
           </div>
         </div>
       </div>
@@ -302,6 +279,16 @@ onMounted(async () => {
     display: flex;
     justify-content: center;
     margin-bottom: 1rem;
+    // &::after {
+    //   content: 'Zero To Hero';
+    //   width: 17rem;
+    //   height: 3rem;
+    //   position: absolute;
+    //   top: 94%;
+    //   left: 81%;
+    //   background-color: black;
+    //   color: white;
+    // }
 
     img {
       max-width: 100%;

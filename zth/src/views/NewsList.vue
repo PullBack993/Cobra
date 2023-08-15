@@ -26,6 +26,7 @@ const loadNews = () => {
       .then((response) => {
         if (response.status === 200) {
           if (response.data.length !== 0) {
+            console.log(response.data);
             newsListData.value.push(...response.data);
             loading.value = false;
           } else {
@@ -73,6 +74,7 @@ onMounted(() => {
             >
               {{ section.sections[0]?.text[0] }}
             </p>
+            <p>{{ section.createTime }}</p>
           </div>
         </li>
       </router-link>
