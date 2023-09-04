@@ -71,11 +71,12 @@ const handleLoading = () => {
       @click="showModal()"
     ></loginSvg>
     <img v-else :src="store.userImage" loading="lazy" alt="user-image" class="user-image" />
+  <Teleport to="body">
     <baseDialog v-if="!store.login" ref="modal">
       <div class="spinner" v-if="isMetamaskOpen">
         <HorizontalEllipsisSpinner></HorizontalEllipsisSpinner>
       </div>
-      <div class="dialog__modal">
+      <div class="dialog__modal" v-if="isMetamaskOpen">
         <div class="dialog__modal-overlay">
           <div class="dialog__modal-container" @click.stop :class="`${store.themeDark ? 'bg-dark' : 'bg-light'}`">
             <h3 class="dialog__modal-title">Sign In</h3>
@@ -180,7 +181,8 @@ const handleLoading = () => {
         </div>
       </div>
     </baseDialog>
-  </div>
+</Teleport>
+    </div>
 </template>
 
 <style scoped lang="scss">

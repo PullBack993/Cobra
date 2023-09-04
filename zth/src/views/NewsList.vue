@@ -49,6 +49,33 @@ onMounted(() => {
   loadingLength.value = Math.ceil(window.innerHeight / 10 / 17);
   loadNews();
 });
+function calculateDateTimeDifference(dateStr: string): string {
+  const date: Date = new Date(dateStr);
+
+  const now: Date = new Date();
+
+  const diff = now.getTime() - date.getTime();
+
+  const diffYears = now.getFullYear() - date.getFullYear();
+  const diffMonths = now.getMonth() - date.getMonth();
+  const diffDays = now.getDate() - date.getDate();
+  const diffHours = Math.floor(diff / (60 * 60 * 1000));
+  const diffMinutes = Math.floor(diff / (60 * 1000));
+
+  if (diffMinutes < 60) {
+    return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''}`;
+  }
+  if (diffHours < 24) {
+    return `${diffHours} hour${diffHours > 1 ? 's' : ''}`;
+  }
+  if (diffDays < 30) {
+    return `${diffDays} day${diffDays > 1 ? 's' : ''}`;
+  }
+  if (diffMonths < 12) {
+    return `${diffMonths} month${diffMonths > 1 ? 's' : ''}`;
+  }
+  return `${diffYears} year${diffYears > 1 ? 's' : ''}`;
+}
 </script>
 
 <template>
@@ -65,6 +92,8 @@ onMounted(() => {
           <div class="news__container-image"></div>
           <div class="news__content">
             <img :src="section.titleImage" :alt="section.title" class="news__image" loading="lazy" />
+            <p>{{ calculateDateTimeDifference(section.createTime) }}</p>
+
             <h3 class="news__title">
               {{ section.title }}
             </h3>
@@ -74,7 +103,6 @@ onMounted(() => {
             >
               {{ section.sections[0]?.text[0] }}
             </p>
-            <p>{{ section.createTime }}</p>
           </div>
         </li>
       </router-link>

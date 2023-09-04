@@ -137,7 +137,7 @@ async function getImageProxyUrl(imageUrl) {
         chunks.push(chunk);
       });
 
-      response.on("end", async () => {
+      response.on("end", () => {
         const imageContent = Buffer.concat(chunks);
         const base64Image = imageContent.toString("base64");
         const dataUri = `data:${contentType};base64,${base64Image}`;

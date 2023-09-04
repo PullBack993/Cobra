@@ -2,7 +2,7 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.ts",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -24,7 +24,6 @@
     "jimp": "^0.22.10",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.9.0",
-    "nodemon": "^3.0.1",
     "puppeteer": "^20.8.3",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
@@ -34,6 +33,7 @@
     "ws": "^8.13.0"
   },
   "devDependencies": {
+    "nodemon": "^3.0.1",
     "ts-node": "^10.9.1"
   }
 }

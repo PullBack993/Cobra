@@ -9,7 +9,7 @@ const authenticateToken = require("../../middleware/refreshToken");
 router.get("/", authenticateToken, async (req, res) => {
   try {
     const user = await UserMetaMask.findById(req.user.id);
-    const responseUser = { imageUrl: user.imageUrl, isLoggedIn: true };
+    const responseUser = { imageUrl: user.imageUrl, isLoggedIn: true }; 
     res.status(200).json(responseUser);
   } catch (error) {
     console.log(error);
