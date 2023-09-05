@@ -4,7 +4,10 @@
     -webkit-scrollbar-color: $color transparent;
     -moz-scrollbar-color: $color transparent;
     
-    
+    // IOS
+    &::-webkit-scrollbar-track {
+      border-radius: $border-radius;
+    }
     // Chrome
     &::-webkit-scrollbar {
       height: $height;

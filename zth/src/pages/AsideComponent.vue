@@ -233,6 +233,7 @@ onMounted(() => {
   width: 25rem !important;
   overflow: hidden;
   backdrop-filter: blur(1rem);
+  -webkit-backdrop-filter: blur(1rem);
 }
 .shrink {
   transform: translateX(-25rem);

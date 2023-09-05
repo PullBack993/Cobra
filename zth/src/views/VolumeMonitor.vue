@@ -473,7 +473,8 @@ const btcCountChanged = (value: string) => {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-  backdrop-filter: blur(5px); /* Apply blur effect */
+  backdrop-filter: blur(0.5rem); /* Apply blur effect */
+  -webkit-backdrop-filter: blur(0.5rem);
   display: block; /* Initially hidden */
   &-title {
     margin-bottom: 2rem;

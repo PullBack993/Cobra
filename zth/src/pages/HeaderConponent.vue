@@ -88,6 +88,7 @@ onUnmounted(() => {
   z-index: 9;
   background: transparent;
   backdrop-filter: blur(9rem);
+  -webkit-backdrop-filter: blur(9rem) 
 }
 .main {
   border-bottom: 0.1rem solid $main-purple;
