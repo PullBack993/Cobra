@@ -15,7 +15,6 @@ const isDialogSupported = ref(true);
 const baseDialog = ref<HTMLDialogElement>();
 
 const openModal = () => {
-  console.log('open modal');
   baseDialog.value?.showModal();
   window.history.pushState({ checkoutModal: true }, '');
   document.body.style.overflow = 'hidden';
@@ -99,17 +98,17 @@ defineExpose({
 <style lang="scss" scoped>
 .dialog {
   border: none;
-  height: 100%;
+  height: 100vh;
   margin: 0;
   max-height: none;
   max-width: none;
   padding: 0;
   width: 100vw;
   background-color: rgba(0, 0, 0, 0.6);
-  overflow: hidden !important;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  position: fixed;
+  z-index: 1000;
+  overflow: hidden;
 }
 </style>

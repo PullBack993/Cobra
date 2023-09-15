@@ -126,7 +126,7 @@ router.post("/long-short", async (req, res) => {
     const test = async () => {
       try {
         const inputSelector = ".cg-style-by6qva";
-        const dialogElement = await page.$(".fc-dialog");
+        const dialogElement = await page?.$(".fc-dialog");
         if (dialogElement) {
           // Click on the "Manage options" button.
           const manage = await dialogElement.$$(".fc-button-label");

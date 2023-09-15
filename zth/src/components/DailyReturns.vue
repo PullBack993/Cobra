@@ -308,12 +308,13 @@ const capitalizeFirstLetter = computed(
     text-align: left;
     padding: 0.8rem;
     font-weight: 600;
-    position: fixed;
+    position: initial;
     z-index: 1;
     background-color: $bg-dark-purple;
     width: 6rem;
     text-align: center;
     left: 0;
+    -webkit-transform: translateZ(0);
     border-right: 0.1rem ridge $main-purple;
   }
 
@@ -356,6 +357,7 @@ const capitalizeFirstLetter = computed(
   .returns__table {
     &-year--item {
       left: 8rem;
+      -webkit-transform: translateZ(8rem);
     }
   }
 }

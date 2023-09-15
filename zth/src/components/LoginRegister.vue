@@ -10,6 +10,7 @@ import baseDialog from './BaseDialog.vue';
 import HorizontalEllipsisSpinner from './utils/HorizontalEllipsisSpinner.vue';
 
 const showRegForm = ref(false);
+const test = ref(false);
 const store = useGlobalStore();
 const isMetamaskSupported = ref(true);
 const downloadUrl = ref('');
@@ -25,9 +26,9 @@ const showRegistrationForm = () => {
   showRegForm.value = !showRegForm.value;
 };
 
-const themeClass = computed(() =>
-  store.themeDark ? 'dialog__modal-openDialog--light' : 'dialog__modal-openDialog--dark'
-);
+// const themeClass = computed(() =>
+//   store.themeDark ? 'dialog__modal-openDialog--light' : 'dialog__modal-openDialog--dark'
+// );
 
 const modal = ref<InstanceType<typeof baseDialog> | null>(null);
 
@@ -39,6 +40,7 @@ watch(
 );
 
 const hiddenModal = () => {
+  test.value = false;
   modal.value?.closeModal();
   /* eslint-disable no-use-before-define */
   document.removeEventListener('keydown', handleEscape);
@@ -46,6 +48,8 @@ const hiddenModal = () => {
 
 const handleEscape = (event: KeyboardEvent) => {
   if (event.key === 'Escape') {
+  test.value = false;
+
     console.log('escape');
     event.preventDefault();
     hiddenModal();
@@ -53,6 +57,7 @@ const handleEscape = (event: KeyboardEvent) => {
 };
 const showModal = () => {
   console.log('test');
+  test.value = true
   modal.value?.openModal(); // baseDialog
   document.addEventListener('keydown', handleEscape);
 };
@@ -61,7 +66,6 @@ const handleLoading = () => {
   isMetamaskOpen.value = !isMetamaskOpen.value;
 };
 </script>
-
 <template>
   <div>
     <loginSvg
@@ -71,12 +75,12 @@ const handleLoading = () => {
       @click="showModal()"
     ></loginSvg>
     <img v-else :src="store.userImage" loading="lazy" alt="user-image" class="user-image" />
-  <Teleport to="body">
-    <baseDialog v-if="!store.login" ref="modal">
+    <Teleport to="#app">
+    <baseDialog v-if="!store.login && test" ref="modal">
       <div class="spinner" v-if="isMetamaskOpen">
         <HorizontalEllipsisSpinner></HorizontalEllipsisSpinner>
       </div>
-      <div class="dialog__modal" v-if="isMetamaskOpen">
+      <div class="dialog__modal" >
         <div class="dialog__modal-overlay">
           <div class="dialog__modal-container" @click.stop :class="`${store.themeDark ? 'bg-dark' : 'bg-light'}`">
             <h3 class="dialog__modal-title">Sign In</h3>
@@ -181,7 +185,7 @@ const handleLoading = () => {
         </div>
       </div>
     </baseDialog>
-</Teleport>
+  </Teleport>
     </div>
 </template>
 
@@ -196,10 +200,11 @@ const handleLoading = () => {
   position: relative;
   &-msg {
     position: absolute;
-    top: 28rem;
+    top: 35rem;
     rotate: 45grad;
     font-size: 2rem !important;
     font-weight: 500;
+    z-index: 9;
   }
 }
 .spinner {
@@ -256,7 +261,7 @@ const handleLoading = () => {
     flex-direction: column;
     align-items: center;
     width: 40rem;
-    height: 65rem;
+    height: 65%;
     border: 0.1rem solid rgba(255, 255, 255, 0.2705882353);
     border-radius: 1rem;
     background: linear-gradient(189deg, rgb(29, 12, 56) 0%, rgb(12, 20, 68) 53%, rgb(44, 16, 65) 100%);
@@ -286,8 +291,9 @@ const handleLoading = () => {
         font-weight: 700;
         color: #00aaff;
         text-decoration: underline;
-        // cursor: pointer;
-        pointer-events: none;
+        cursor: pointer;
+        z-index: 9;
+        pointer-events: auto;
       }
     }
 
@@ -311,6 +317,9 @@ const handleLoading = () => {
       top: 2rem;
       color: $white;
       font-size: 2rem;
+      cursor: pointer;
+      pointer-events: auto;
+
       &-icon {
         height: 2.5rem;
       }
