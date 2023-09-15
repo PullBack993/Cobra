@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, watch } from 'vue';
 import loginSvg from '../assets/BaseIcons/login.svg';
 import emailSvg from '../assets/BaseIcons/email.svg';
 import passwordSvg from '../assets/BaseIcons/password.svg';
@@ -14,10 +14,9 @@ const test = ref(false);
 const store = useGlobalStore();
 const isMetamaskSupported = ref(true);
 const downloadUrl = ref('');
-const favDialog = ref();
 const isMetamaskOpen = ref(false);
 
-const handleData = (data) => {
+const handleData = (data: any) => {
   isMetamaskSupported.value = data.supported;
   downloadUrl.value = data.url;
 };
@@ -26,6 +25,7 @@ const showRegistrationForm = () => {
   showRegForm.value = !showRegForm.value;
 };
 
+// TODO implement it!
 // const themeClass = computed(() =>
 //   store.themeDark ? 'dialog__modal-openDialog--light' : 'dialog__modal-openDialog--dark'
 // );
@@ -261,12 +261,15 @@ const handleLoading = () => {
     flex-direction: column;
     align-items: center;
     width: 40rem;
-    height: 65%;
+    height: 95%;
     border: 0.1rem solid rgba(255, 255, 255, 0.2705882353);
     border-radius: 1rem;
     background: linear-gradient(189deg, rgb(29, 12, 56) 0%, rgb(12, 20, 68) 53%, rgb(44, 16, 65) 100%);
-
     padding: 2rem;
+
+    @media(min-width: $breakpoint_verysmall){
+      height: 65rem;
+    }
 
     &-metamask {
       margin: 2rem auto;

@@ -315,7 +315,7 @@ const capitalizeFirstLetter = computed(
     text-align: center;
     left: 0;
     -webkit-transform: translateZ(0);
-    border-right: 0.1rem ridge $main-purple;
+      border-right: 0.1rem ridge $main-purple;
   }
 
   &-date {
