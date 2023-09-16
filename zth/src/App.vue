@@ -55,7 +55,6 @@ function documentClick(e: Event) {
   if (!HTMLElementClass) {
     HTMLElementClass = (e.target as HTMLButtonElement).className;
   }
-  console.log('html element', HTMLElementClass);
   if (
     (screenSize.value < 768 && !checkElements(HTMLElementClass) && !(HTMLElementClass instanceof SVGAnimatedString)) ||
     HTMLElementClass === ''

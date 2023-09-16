@@ -48,7 +48,7 @@ onUnmounted(() => {
   <header class="header" ref="header">
     <div class="main">
       <div class="search">
-        <div v-if="screenSize < 768" class="search__lines" @click="emit('openSidebar')">
+        <div v-if="screenSize <= 768" class="search__lines" @click="emit('openSidebar')">
           <hamburger
             class="search__lines-icon"
             :class="`${store.themeDark ? 'search__lines-icon--light' : 'search__lines-icon--dark'}`"

@@ -49,32 +49,62 @@ onMounted(() => {
   loadingLength.value = Math.ceil(window.innerHeight / 10 / 17);
   loadNews();
 });
+// function calculateDateTimeDifference(dateStr: string): string {
+//   const date: Date = new Date(dateStr);
+
+//   const now: Date = new Date();
+
+//   const diff = now.getTime() - date.getTime();
+
+//   const diffYears = now.getFullYear() - date.getFullYear();
+//   const diffMonths = now.getMonth() - date.getMonth();
+//   const diffDays = now.getDate() - date.getDate();
+//   const diffHours = Math.floor(diff / (60 * 60 * 1000));
+//   const diffMinutes = Math.floor(diff / (60 * 1000));
+
+//   if (diffMinutes < 60) {
+//     return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''}`;
+//   }
+//   if (diffHours < 24) {
+//     return `${diffHours} hour${diffHours > 1 ? 's' : ''}`;
+//   }
+//   if (diffDays < 30) {
+//     return `${diffDays} day${diffDays > 1 ? 's' : ''}`;
+//   }
+//   if (diffMonths < 12) {
+//     return `${diffMonths} month${diffMonths > 1 ? 's' : ''}`;
+//   }
+//   return `${diffYears} year${diffYears > 1 ? 's' : ''}`;
+// }
+
 function calculateDateTimeDifference(dateStr: string): string {
   const date: Date = new Date(dateStr);
 
   const now: Date = new Date();
 
-  const diff = now.getTime() - date.getTime();
+  const diff: number = now.getTime() - date.getTime();
 
-  const diffYears = now.getFullYear() - date.getFullYear();
-  const diffMonths = now.getMonth() - date.getMonth();
-  const diffDays = now.getDate() - date.getDate();
-  const diffHours = Math.floor(diff / (60 * 60 * 1000));
-  const diffMinutes = Math.floor(diff / (60 * 1000));
+  const diffYears: number = Math.floor(diff / (365.25 * 24 * 60 * 60 * 1000));
+  const diffMonths: number = Math.floor((diff % (365.25 * 24 * 60 * 60 * 1000)) / (30.436875 * 24 * 60 * 60 * 1000));
+  const diffDays: number = Math.floor((diff % (30.436875 * 24 * 60 * 60 * 1000)) / (24 * 60 * 60 * 1000));
+  const diffHours: number = Math.floor((diff % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+  const diffMinutes: number = Math.floor((diff % (60 * 60 * 1000)) / (60 * 1000));
+  const diffSeconds: number = Math.floor((diff % (60 * 1000)) / 1000);
 
-  if (diffMinutes < 60) {
-    return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''}`;
-  }
-  if (diffHours < 24) {
-    return `${diffHours} hour${diffHours > 1 ? 's' : ''}`;
-  }
-  if (diffDays < 30) {
-    return `${diffDays} day${diffDays > 1 ? 's' : ''}`;
-  }
-  if (diffMonths < 12) {
+  if (diffYears > 0) {
+    return `${diffYears} year${diffYears > 1 ? 's' : ''}`;
+  } else if (diffMonths > 0) {
     return `${diffMonths} month${diffMonths > 1 ? 's' : ''}`;
+  } else if (diffDays > 0) {
+    return `${diffDays} day${diffDays > 1 ? 's' : ''}`;
+  } else if (diffHours > 0) {
+    return `${diffHours} hour${diffHours > 1 ? 's' : ''}`;
+  } else if (diffMinutes > 0) {
+    return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''}`;
+  } else {
+    return `${diffSeconds} second${diffSeconds > 1 ? 's' : ''}`;
   }
-  return `${diffYears} year${diffYears > 1 ? 's' : ''}`;
+
 }
 </script>
 
@@ -92,7 +122,7 @@ function calculateDateTimeDifference(dateStr: string): string {
           <div class="news__container-image"></div>
           <div class="news__content">
             <img :src="section.titleImage" :alt="section.title" class="news__image" loading="lazy" />
-            <p>{{ calculateDateTimeDifference(section.createTime) }}</p>
+            <p class="news__time">{{ calculateDateTimeDifference(section.createTime) }} ago</p>
 
             <h3 class="news__title">
               {{ section.title }}
@@ -228,23 +258,47 @@ function calculateDateTimeDifference(dateStr: string): string {
 
   &__image {
     min-width: 10rem;
-    min-height: 10rem;
-    height: 10rem;
-    margin-right: 1rem;
+    min-height: 17rem;
+    height: 17rem;
+    width: 90%;
+    margin: 0 auto;
     border-radius: 1rem;
     float: left;
+
+    @media(min-width: $breakpoint_mobiletabs){
+      width: 90%;
+    }
+
+    @media(min-width: $breakpoint_verysmall){
+      width: 70%
+    }
 
     @media (min-width: $breakpoint_small) {
       min-width: 12rem;
       min-height: 12rem;
       height: 12rem;
+      width: auto;
+      margin-right: 1rem;
+      
     }
   }
 
   &__content {
+    display: flex;
+    flex-direction: column;
+    @media(min-width: $breakpoint_small){
+      display: unset;
+    }
+
     @media (min-width: $breakpoint_container) {
       margin-left: 3rem;
     }
+  }
+
+  &__time{
+    font-size: 1.2rem;
+    text-align: right;
+    
   }
   &__title {
     // text-align: justify;
