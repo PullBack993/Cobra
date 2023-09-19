@@ -60,7 +60,7 @@ console.log(time,coin)
     url: `https://open-api.coinglass.com/public/v2/long_short?time_type=${time}&symbol=${coin}`,
     headers: {
       accept: 'application/json',
-      coinglassSecret: '72169bd867a34c49a55069bb41868ee9'
+      coinglassSecret: process.env.COING_KEY
     }
   };
   
