@@ -8,7 +8,7 @@ const {
   createWebSocketServer,
 } = require("./controllers/bigTransfer/transferTracker");
 
-start();
+
 async function start() {
   const app = express();
   expressConfig(app);
@@ -24,3 +24,4 @@ function connectWs() {
   connectToBinanceWS();
   createWebSocketServer(8080);
 }
+start();
