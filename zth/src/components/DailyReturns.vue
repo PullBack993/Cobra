@@ -12,6 +12,7 @@ const baseData = ref();
 const currentMonth = ref<number>(1);
 const currentType = ref<string>('day');
 const loading = ref<boolean>(false); // TODO add placeholder spinner
+//TODO place all constant to file
 const timeStamp = ['Daily', 'Weekly', 'Monthly', 'Quarterly'];
 const months = [
   'January',
@@ -28,9 +29,7 @@ const months = [
   'December',
 ];
 const selectedType = ref('Daily');
-const themeClass = computed(() =>
-  store.themeDark ? 'light-theme' : 'dark-theme'
-);
+const themeClass = computed(() => (store.themeDark ? 'light-theme' : 'dark-theme'));
 
 const colorPriceAction = computed(() => (difference: number) => {
   const test = Math.abs(difference);
@@ -48,19 +47,13 @@ const colorPriceAction = computed(() => (difference: number) => {
   if (difference > 0) {
     if (colorLevel > 255) {
       console.log(colorLevel);
-      return `background-color: rgba( ${
-        colorLevel % 7
-      }, ${colorLevel}, 70, ${colorLevel});`;
+      return `background-color: rgba( ${colorLevel % 7}, ${colorLevel}, 70, ${colorLevel});`;
     }
-    return `background-color: rgba( ${
-      colorLevel % 2
-    }, ${colorLevel}, 70, ${colorLevel});`;
+    return `background-color: rgba( ${colorLevel % 2}, ${colorLevel}, 70, ${colorLevel});`;
   }
 
   if (difference < 0) {
-    return `background-color: rgba(${colorLevel + 70}, ${
-      colorLevel / 7
-    }, 50, ${colorLevel});`;
+    return `background-color: rgba(${colorLevel + 70}, ${colorLevel / 7}, 50, ${colorLevel});`;
   }
   return '';
 });
@@ -91,9 +84,7 @@ function reqData(month: number, type: string) {
           baseData.value = res.data[0].Timestamp.years;
           data.value = Object.values(baseData.value['2012']).reverse();
 
-          time.value = Object.keys(
-            baseData.value['2012'][currentMonth.value?.toString()]
-          );
+          time.value = Object.keys(baseData.value['2012'][currentMonth.value?.toString()]);
           // Reverse object to take first year
           baseData.value = { ...Object.entries(baseData.value).reverse() };
         }
@@ -124,60 +115,35 @@ function timeChange(value: string) {
 function removeLy() {
   selectedType.value = currentType.value;
   if (currentType.value === 'Daily') {
-    currentType.value = `${currentType.value
-      .slice(0, -3)
-      .toLocaleLowerCase()}y`;
+    currentType.value = `${currentType.value.slice(0, -3).toLocaleLowerCase()}y`;
   } else {
     currentType.value = currentType.value.slice(0, -2).toLocaleLowerCase();
   }
 }
 
-const capitalizeFirstLetter = computed(
-  () => selectedType.value.charAt(0).toUpperCase() + selectedType.value.slice(1)
-);
+const capitalizeFirstLetter = computed(() => selectedType.value.charAt(0).toUpperCase() + selectedType.value.slice(1));
 </script>
 
 <template>
   <div class="returns">
     <p class="returns__title">Bitcoin {{ capitalizeFirstLetter }} returns(%)</p>
     <div class="returns__main">
-      <div
-        class="returns__chart-select-item"
-        :class="themeClass"
-        v-if="currentType === 'day'"
-      >
+      <div class="returns__chart-select-item" :class="themeClass" v-if="currentType === 'day'">
         <div class="returns__chart-select-item">Month</div>
-        <DropdownSmall
-          :data="months"
-          :readonly="true"
-          :with-arrow-icon="true"
-          @new-value:input="monthChange"
-        />
+        <DropdownSmall :data="months" :readonly="true" :with-arrow-icon="true" @new-value:input="monthChange" />
       </div>
       <div class="returns__chart-select-item" :class="themeClass">
         <div class="returns__chart-select-item">Type</div>
 
-        <DropdownSmall
-          :data="timeStamp"
-          :readonly="true"
-          :with-arrow-icon="true"
-          @new-value:input="timeChange"
-        />
+        <DropdownSmall :data="timeStamp" :readonly="true" :with-arrow-icon="true" @new-value:input="timeChange" />
       </div>
       <div
         class="returns__chart-select-item"
-        :class="[
-          themeClass,
-          currentType != 'day' ? 'returns__chart-select-item--non' : '',
-        ]"
+        :class="[themeClass, currentType != 'day' ? 'returns__chart-select-item--non' : '']"
       >
         <div class="returns__chart-select-item">Symbol</div>
 
-        <DropdownSmall
-          :data="['BTC']"
-          :readonly="true"
-          :with-arrow-icon="true"
-        />
+        <DropdownSmall :data="['BTC']" :readonly="true" :with-arrow-icon="true" />
       </div>
     </div>
   </div>
@@ -185,12 +151,7 @@ const capitalizeFirstLetter = computed(
     <table class="returns__table" :class="themeClass" v-if="data">
       <tr class="returns__table-date">
         <th class="returns__table-date--time" :class="themeClass">Time</th>
-        <th
-          class="returns__table-date--item"
-          :class="themeClass"
-          v-for="(day, i) in time"
-          :key="i"
-        >
+        <th class="returns__table-date--item" :class="themeClass" v-for="(day, i) in time" :key="i">
           {{ day !== '' ? day : i + 1 }}
         </th>
       </tr>
@@ -209,11 +170,7 @@ const capitalizeFirstLetter = computed(
         </tr>
       </tbody>
       <tbody v-if="currentType === 'day'">
-        <tr
-          class="returns__table"
-          v-for="(year, index) in baseData"
-          :key="index"
-        >
+        <tr class="returns__table" v-for="(year, index) in baseData" :key="index">
           <td class="returns__table-year--item">{{ year[0] }}</td>
           <td
             class="returns__table-year-percentage--ratio"
@@ -252,6 +209,7 @@ const capitalizeFirstLetter = computed(
     display: flex;
     min-height: 5rem;
     flex-wrap: wrap;
+    gap: 1rem;
   }
 
   &__container {
@@ -315,7 +273,9 @@ const capitalizeFirstLetter = computed(
     text-align: center;
     left: 0;
     -webkit-transform: translateZ(0);
-      border-right: 0.1rem ridge $main-purple;
+    border-right: 0.1rem ridge $main-purple;
+    position: -webkit-sticky;
+    position: sticky;
   }
 
   &-date {
@@ -353,11 +313,10 @@ const capitalizeFirstLetter = computed(
   }
 }
 
-@media (min-width: $breakpoint_small) {
+@media (min-width: $breakpoint_medium) {
   .returns__table {
     &-year--item {
-      left: 8rem;
-      -webkit-transform: translateZ(8rem);
+      left: 0;
     }
   }
 }

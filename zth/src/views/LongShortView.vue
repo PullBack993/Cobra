@@ -5,24 +5,38 @@ import DropdownSmall from '@/components/DropDownLongShort.vue';
 import GraphicLongShort from '@/components/GraphicLongShort.vue';
 import allCoins from '../components/data/coinglass.json';
 import { useGlobalStore } from '../store/global';
+import { Coin } from '../Interfaces/ICoinLongShort';
 
 const allowsCoins = allCoins;
 const currentValue = ref('BTC');
-const currentTime = ref('5 minute');
-const coins = ref();
+const currentTime = ref('1 hour');
+const coins = ref<Coin | []>([]);
 const intervalId = ref(0);
 const loading = ref(false);
 const store = useGlobalStore();
 const baseApiUrl = import.meta.env.VITE_APP_BASE_URL;
+// TODO constant => file
+const timeMap: { [timeWord: string]: string } = {
+  '5 minute': 'm5',
+  '15 minute': 'm15',
+  '30 minute': 'm30',
+  '1 hour': 'h1',
+  '4 hour': 'h4',
+  '12 hour': 'h12',
+  '24 hour': 'h24',
+};
 
+// todo implement it
 interface Props {
-  coins?: any;
+  coins?: Coin;
   loading: boolean;
 }
 
-const themeClass = computed(() =>
-  store.themeDark ? 'long__short-theme--light' : 'long__short-theme--dark'
-);
+const transformTime = (timeWord: string) => {
+  return timeMap[timeWord];
+};
+
+const themeClass = computed(() => (store.themeDark ? 'long__short-theme--light' : 'long__short-theme--dark'));
 
 function valueChange(value: string) {
   currentValue.value = value; // ETH req
@@ -38,8 +52,6 @@ onMounted(() => {
 
 onUnmounted(() => {
   clearInterval(intervalId.value);
-  // close browser back end
-  axios.post(`${baseApiUrl}/exchange/long-short`, { exit: true });
 });
 
 watch(
@@ -55,7 +67,8 @@ watch(
 );
 
 function reqData() {
-  const coinData = { time: currentTime.value, symbol: currentValue.value };
+  const ransformedTime = transformTime(currentTime.value);
+  const coinData = { time: ransformedTime, coin: currentValue.value };
   axios
     .post(`${baseApiUrl}/exchange/long-short`, coinData)
     .then((res) => {
@@ -86,19 +99,13 @@ intervalId.value = Number(setInterval(reqData, 13000));
           </div>
           <div class="long__short-chart-select-item">
             <div class="long__short-period" :class="themeClass">Period</div>
-            <div :class="themeClass">
+            <div :class="themeClass" class="long__short-dropdown">
               <DropdownSmall
                 :with-arrow-icon="true"
                 :readonly="true"
-                :data="[
-                  '5 minute',
-                  '15 minute',
-                  '30 minute',
-                  '1 hour',
-                  '4 hour',
-                  '12 hour',
-                  '24 hour',
-                ]"
+                :propsCurrentIndexItem="3"
+                :preselected-value="3"
+                :data="['5 minute', '15 minute', '30 minute', '1 hour', '4 hour', '12 hour', '24 hour']"
                 @new-value:input="timeChange"
               />
             </div>
@@ -111,9 +118,19 @@ intervalId.value = Number(setInterval(reqData, 13000));
 </template>
 
 <style scoped lang="scss">
+:deep(.long__short-value){
+  width: 13.4rem;
+}
+:deep(.long__short-chart-select){
+  gap: 1rem;
+}
 .long__short {
   display: flex;
   margin: 1rem;
+
+  &-dropdown {
+    width: 14rem;
+  }
 
   &-col {
     display: flex;
@@ -123,12 +140,14 @@ intervalId.value = Number(setInterval(reqData, 13000));
     -moz-box-direction: normal;
     flex-flow: row wrap;
   }
+
   &-title {
     margin: 1rem auto;
     font-size: 3rem;
     font-weight: 500;
     padding-bottom: 1rem;
   }
+
   &-theme--dark {
     color: $white;
     --text-color: $white;
@@ -153,6 +172,7 @@ intervalId.value = Number(setInterval(reqData, 13000));
       font-weight: 300;
     }
   }
+
   &-symbol,
   &-period {
     margin-left: 1.1rem;

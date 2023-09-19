@@ -518,6 +518,7 @@ const btcCountChanged = (value: string) => {
   &__dropdown-container {
     display: flex;
     padding-right: 1rem;
+    gap: 1rem;
   }
 
   &__title {

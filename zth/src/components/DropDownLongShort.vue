@@ -9,17 +9,21 @@ interface Props {
   data: string[]; // symbol or period of time
   withArrowIcon?: boolean;
   readonly?: boolean;
+  propsCurrentIndexItem? : number;
+  preselectedValue?: number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   withArrowIcon: false,
   readonly: false,
+  propsCurrentIndexItem: 0,
+  preselectedValue: 0,
 });
 const emit = defineEmits(['newValue:input']);
 
 let activeScrollItem = 0;
 const store = useGlobalStore();
-const currentIndexItem = ref(0);
+const currentIndexItem = ref(props.propsCurrentIndexItem);
 const savedValue = ref();
 const itemList = ref(null);
 const list = ref<HTMLElement>();
@@ -27,7 +31,7 @@ const coinsLength = ref(props.data.length);
 const open = ref(false);
 const root = ref<HTMLElement>();
 const topElement = ref<HTMLElement>();
-const currentValue = ref(props.data[0]);
+const currentValue = ref(props.data[props.preselectedValue]);
 const data = ref<string | string[]>(props.data);
 const noResult = ref(false);
 
@@ -225,7 +229,8 @@ function selectInput() {
 <style scoped lang="scss">
 .long__short {
   &-value {
-    max-width: 12rem;
+    max-width: 14rem;
+    width: 13rem;
     cursor: pointer;
     font-size: 1.6rem;
     font-weight: 500;

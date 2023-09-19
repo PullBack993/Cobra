@@ -2,16 +2,17 @@
 import { ref, watch, computed } from 'vue';
 import placeHolderLoader from './utils/PlaceHolderLoader.vue';
 import { useGlobalStore } from '../store/global';
+import { Coin, CombinedCoinexchange } from '../Interfaces/ICoinLongShort';
 
 const store = useGlobalStore();
 
 interface Props {
-  coins?: any;
+  coins: Coin | [];
   loading: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {});
-const coinsData = ref();
+const coinsData = ref<Coin | []>([]);
 const loadingLength = ref(12);
 
 const themeClass = computed(() =>
@@ -30,20 +31,26 @@ watch(
     coinsData.value = value;
   }
 );
+
+const combinedCoinsData = computed<[CombinedCoinexchange]>(() => {
+  if (coinsData.value) {
+    return [coinsData.value[0], ...coinsData.value[0]?.list];
+  } 
+  return []
+})
 </script>
 <template>
-  <div v-if="coinsData">
-    <div class="graphic__ratio" v-for="(data, index) in coinsData" :key="index">
+  <div v-if="coinsData.length > 0">
+    <div class="graphic__ratio" v-for="(data, index) in  combinedCoinsData" :key="index">
       <div class="graphic__ratio-container">
         <div class="graphic__ratio-exchange">
           <div class="graphic__ratio-exchange--logo">
-            <img class="graphic__ratio-exchange--image" alt="btc" loading="lazy" :src="data.exchangeLogo" />
+            <img class="graphic__ratio-exchange--image" alt="btc" loading="lazy" :src="index === 0 ? data.symbolLogo : data.exchangeLogo" />
             <div :class="themeClass">
-              {{ data.exchangeName }}
+              {{index === 0 ? data.symbol : data.exchangeName }}
             </div>
           </div>
         </div>
-
         <div class="graphic__ratio-main">
           <div>
             <div class="graphic__ratio-progress" :class="progressClass">
@@ -54,7 +61,7 @@ watch(
               ></div>
               <div class="graphic__ratio-values-container">
                 <div class="graphic__ratio-long-value">{{ data.longRate }}%</div>
-                <div class="graphic__ratio-short-value">{{ data.shortRate }}%</div>
+                <div class="graphic__ratio-short-value">{{ data.shortRate }}%</div> 
               </div>
             </div>
           </div>
