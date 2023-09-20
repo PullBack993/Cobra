@@ -9,7 +9,7 @@ interface Props {
   data: string[]; // symbol or period of time
   withArrowIcon?: boolean;
   readonly?: boolean;
-  propsCurrentIndexItem? : number;
+  propsCurrentIndexItem?: number;
   preselectedValue?: number;
 }
 
@@ -36,9 +36,7 @@ const data = ref<string | string[]>(props.data);
 const noResult = ref(false);
 
 function selectedItem(event: Event) {
-  const currentItemValue = (event.target as HTMLElement)?.getAttribute(
-    'currentItem'
-  );
+  const currentItemValue = (event.target as HTMLElement)?.getAttribute('currentItem');
   if (currentItemValue !== null) {
     const currentItemNumber = Number(currentItemValue);
     if (!Number.isNaN(currentItemNumber)) {
@@ -63,10 +61,7 @@ function scrollPosition(direction: number) {
       return;
     }
     const items = Array.from(itemList.value) as Node[];
-    activeScrollItem = Math.min(
-      Math.max(0, activeScrollItem + direction),
-      items.length - 1
-    );
+    activeScrollItem = Math.min(Math.max(0, activeScrollItem + direction), items.length - 1);
     let top = (items[activeScrollItem] as HTMLElement).offsetTop;
     if (top === 71) {
       top = 1;
@@ -110,15 +105,11 @@ function handelClearValue() {
 
 function enterEvent() {
   if (itemList.value) {
-    const selectedValue = (
-      itemList?.value[currentIndexItem?.value] as HTMLElement
-    ).textContent;
+    const selectedValue = (itemList?.value[currentIndexItem?.value] as HTMLElement).textContent;
     currentValue.value = selectedValue || '';
     emit('newValue:input', currentValue.value);
     currentIndexItem.value = Number(
-      (
-        itemList?.value[currentIndexItem?.value] as HTMLElement
-      )?.attributes.getNamedItem('currentItem')?.value
+      (itemList?.value[currentIndexItem?.value] as HTMLElement)?.attributes.getNamedItem('currentItem')?.value
     );
     activeScrollItem = currentIndexItem.value;
     savedValue.value = currentIndexItem.value;
@@ -127,9 +118,7 @@ function enterEvent() {
 }
 
 function findCoin(value: string) {
-  const searchedCoins = props.data.filter((coin: string) =>
-    coin?.includes(value.toUpperCase())
-  );
+  const searchedCoins = props.data.filter((coin: string) => coin?.includes(value.toUpperCase()));
   return searchedCoins;
 }
 
@@ -159,36 +148,22 @@ function selectInput() {
     <Arrow-Icon
       @click="selectInput"
       :class="[
-        open && !withArrowIcon
-          ? 'long__short-arrow-invisible'
-          : 'long__short-icon long__short-changed-icon',
+        open && !withArrowIcon ? 'long__short-arrow-invisible' : 'long__short-icon long__short-changed-icon',
         open ? 'long__short-arrow-rotate' : 'long__short-arrow-icon',
-        store.themeDark
-          ? 'long__short-arrow--light'
-          : 'long__short-arrow--dark',
+        store.themeDark ? 'long__short-arrow--light' : 'long__short-arrow--dark',
       ]"
     ></Arrow-Icon>
     <Search-Icon
-      :class="[
-        open && !withArrowIcon
-          ? 'long__short-icon long__short-changed-icon'
-          : 'long__short-arrow-invisible',
-      ]"
+      :class="[open && !withArrowIcon ? 'long__short-icon long__short-changed-icon' : 'long__short-arrow-invisible']"
     ></Search-Icon>
     <div
       class="long__short-dropdown-symbol"
-      :class="
-        open
-          ? 'long__short-dropdown-symbol'
-          : 'long__short-dropdown-symbol--is-open'
-      "
+      :class="open ? 'long__short-dropdown-symbol' : 'long__short-dropdown-symbol--is-open'"
     >
       <div
         ref="list"
         class="long__short-list"
-        :class="`${
-          store.themeDark ? 'long__short-list--light' : 'long__short-list--dark'
-        }`"
+        :class="`${store.themeDark ? 'long__short-list--light' : 'long__short-list--dark'}`"
       >
         <ul ref="topElement" class="long__short-items">
           <li
@@ -199,22 +174,10 @@ function selectInput() {
             :key="index"
             @click="selectedItem"
             :class="[
-              `${
-                store.themeDark && index === currentIndexItem
-                  ? 'long__short-active--light'
-                  : ''
-              }`,
-              `${
-                !store.themeDark && index === currentIndexItem
-                  ? 'long__short-active--dark'
-                  : ''
-              }`,
+              `${store.themeDark && index === currentIndexItem ? 'long__short-active--light' : ''}`,
+              `${!store.themeDark && index === currentIndexItem ? 'long__short-active--dark' : ''}`,
 
-              `${
-                store.themeDark
-                  ? 'long__short-item--light'
-                  : 'long__short-item--dark'
-              }`,
+              `${store.themeDark ? 'long__short-item--light' : 'long__short-item--dark'}`,
             ]"
           >
             {{ name }}
@@ -232,10 +195,13 @@ function selectInput() {
     max-width: 14rem;
     width: 13rem;
     cursor: pointer;
-    font-size: 1.6rem;
+    font-size: $font-size-small;
     font-weight: 500;
     height: 3rem;
-    position: absolute;
+
+    @media (min-width: $breakpoint-mobiletabs) {
+      font-size: $font-size-base;
+    }
   }
   &-active--light {
     background-color: $main-plum-purple;
@@ -277,7 +243,6 @@ function selectInput() {
     width: 11rem;
     background: $bg-dark-purple;
     border-radius: $border-light;
-    top: 3.5rem;
 
     &--is-open {
       display: none;
@@ -304,7 +269,7 @@ function selectInput() {
     border-bottom-right-radius: 1rem;
     position: absolute;
     z-index: 3;
-    width: 12rem;
+    width: 13rem;
 
     &--light {
       background-color: $white;

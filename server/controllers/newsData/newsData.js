@@ -174,6 +174,7 @@ async function fetchNews() {
   let browser;
   try {
     browser = await puppeteer.launch({
+      headers: 'new',
       args: ["--disable-setuid-sandbox", "--no-sandbox", "--single-process", "--no-zygote"],
       protocolTimeout: 240000,
     });

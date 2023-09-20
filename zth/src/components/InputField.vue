@@ -222,7 +222,7 @@ function onInput() {
   height: 5rem;
   border-radius: 1rem;
   border: none;
-  padding-right: 4.5rem;
+  padding-right: 3rem;
   &-open {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;

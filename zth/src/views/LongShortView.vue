@@ -62,11 +62,12 @@ watch(
     coins.value = [];
 
     reqData();
-    intervalId.value = Number(setInterval(reqData, 13000));
+    intervalId.value = Number(setInterval(reqData, 20000));
   }
 );
 
 function reqData() {
+  loading.value = true;
   const ransformedTime = transformTime(currentTime.value);
   const coinData = { time: ransformedTime, coin: currentValue.value };
   axios
@@ -81,7 +82,7 @@ function reqData() {
     });
 }
 
-intervalId.value = Number(setInterval(reqData, 13000));
+intervalId.value = Number(setInterval(reqData, 20000));
 </script>
 
 <template>
@@ -95,7 +96,9 @@ intervalId.value = Number(setInterval(reqData, 13000));
         <div class="long__short-chart-select">
           <div class="long__short-chart-select-item" :class="themeClass">
             <div class="long__short-symbol">Symbol</div>
-            <DropdownSmall :data="allowsCoins" @new-value:input="valueChange" />
+            <div :class="themeClass" class="long__short-dropdown">
+              <DropdownSmall :data="allowsCoins" @new-value:input="valueChange" />
+            </div>
           </div>
           <div class="long__short-chart-select-item">
             <div class="long__short-period" :class="themeClass">Period</div>
@@ -103,9 +106,7 @@ intervalId.value = Number(setInterval(reqData, 13000));
               <DropdownSmall
                 :with-arrow-icon="true"
                 :readonly="true"
-                :propsCurrentIndexItem="3"
-                :preselected-value="3"
-                :data="['5 minute', '15 minute', '30 minute', '1 hour', '4 hour', '12 hour', '24 hour']"
+                :data="['1 hour', '4 hour', '12 hour', '24 hour']"
                 @new-value:input="timeChange"
               />
             </div>
@@ -118,19 +119,43 @@ intervalId.value = Number(setInterval(reqData, 13000));
 </template>
 
 <style scoped lang="scss">
-:deep(.long__short-value){
-  width: 13.4rem;
+:deep(.long__short-value) {
+  width: 10rem;
 }
-:deep(.long__short-chart-select){
-  gap: 1rem;
+
+@media (min-width: $breakpoint_mobiletabs) {
+  :deep(.long__short-value) {
+    width: 13.4rem;
+  }
+}
+
+:deep(.long__short-chart-select) {
+  gap: 0;
+}
+@media (min-width: $breakpoint_mobiletabs) {
+  :deep(.long__short-chart-select) {
+    gap: 1rem;
+  }
+}
+
+:deep(.long__short-icon) {
+  right: 0.8rem;
+  top: 0.8rem;
+}
+.main-long__short {
+  overflow: hidden;
 }
 .long__short {
   display: flex;
   margin: 1rem;
 
-  &-dropdown {
-    width: 14rem;
-  }
+  // &-dropdown {
+  //   width: 10rem;
+
+  //   @media (min-width: $breakpoint_mobiletabs) {
+  //     width: 13.4rem;
+  //   }
+  // }
 
   &-col {
     display: flex;
@@ -142,10 +167,15 @@ intervalId.value = Number(setInterval(reqData, 13000));
   }
 
   &-title {
-    margin: 1rem auto;
-    font-size: 3rem;
+    margin: 0rem auto;
+    font-size: $font-size-base;
     font-weight: 500;
-    padding-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    @media (min-width: $breakpoint-mobiletabs) {
+      font-size: $font-size-medium;
+      padding-bottom: 1rem;
+      margin: 1rem auto;
+    }
   }
 
   &-theme--dark {
@@ -159,14 +189,13 @@ intervalId.value = Number(setInterval(reqData, 13000));
 
   &-chart-select {
     display: flex;
-    flex: 1 0 100%;
     justify-content: flex-end;
     margin: 1rem 0;
+    flex: 1 1 100%;
 
     &-item {
       position: relative;
       height: 3rem;
-      width: 14rem;
       margin-bottom: 2rem;
       padding-right: 2rem;
       font-weight: 300;
@@ -177,8 +206,11 @@ intervalId.value = Number(setInterval(reqData, 13000));
   &-period {
     margin-left: 1.1rem;
     margin-bottom: 0.5rem;
-    font-size: 1.6rem;
-    font-weight: 500;
+    font-size: $font-size-small;
+    font-weight: 300;
+    @media (min-width: $breakpoint-mobiletabs) {
+      font-size: $font-size-base;
+    }
   }
 }
 </style>
