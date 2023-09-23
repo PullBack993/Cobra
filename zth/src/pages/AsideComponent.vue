@@ -43,6 +43,8 @@ const width = ref('');
 
 const switchTheme = () => {
   store.themeDark = !store.themeDark;
+  const theme = document.querySelector(`[data-zth-color-scheme="${store.themeDark ? 'dark' : 'light'}"]`) as HTMLElement;
+  theme.dataset.zthColorScheme = !store.themeDark ? 'dark' : 'light';
   dark.value = store.themeDark;
   if (dark.value) {
     document.body.style.background = 'white';

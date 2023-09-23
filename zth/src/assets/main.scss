@@ -79,6 +79,13 @@
   src: url('./fonts/encode-sans-semi-expanded-v19-latin-900.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
 
+:root {
+  --clr-body-bg: hsl(0 0% 90%);
+  --clr-card-bg: hsl(0 0% 100%);
+  --clr-text: hsl(0 0% 15%);
+  --clr-heading: hsl(0 0% 25%);
+  --red: blue;
+}
 *,
 *::before,
 *::after {
@@ -116,6 +123,8 @@ body {
 
 body *{
   font-family:  "Encode Sans Semi Expanded", sans-serif;
+  font-size: $font-medium;
+  line-height: $line-height-default;
 }
 
 main{
@@ -126,6 +135,7 @@ main{
     margin: 0 0 0 8.5rem;
   }
   min-height: 45rem;
+  
 }
 
 button {
@@ -153,4 +163,13 @@ input {
 
 li,ul{
   list-style: none;
+}
+
+h1 {
+  font-size: $font-medium;
+  line-height: $line-height-default;
+}
+
+html[data-zth-color-scheme="dark"]{
+  --red: $white;
 }

@@ -35,19 +35,24 @@ watch(
 const combinedCoinsData = computed<[CombinedCoinexchange]>(() => {
   if (coinsData.value) {
     return [coinsData.value[0], ...coinsData.value[0]?.list];
-  } 
-  return []
-})
+  }
+  return [];
+});
 </script>
 <template>
   <div v-if="coinsData.length > 0">
-    <div class="graphic__ratio" v-for="(data, index) in  combinedCoinsData" :key="index">
+    <div class="graphic__ratio" v-for="(data, index) in combinedCoinsData" :key="index">
       <div class="graphic__ratio-container">
         <div class="graphic__ratio-exchange">
           <div class="graphic__ratio-exchange--logo">
-            <img class="graphic__ratio-exchange--image" alt="btc" loading="lazy" :src="index === 0 ? data.symbolLogo : data.exchangeLogo" />
+            <img
+              class="graphic__ratio-exchange--image"
+              alt="btc"
+              loading="lazy"
+              :src="index === 0 ? data.symbolLogo : data.exchangeLogo"
+            />
             <div :class="themeClass">
-              {{index === 0 ? data.symbol : data.exchangeName }}
+              {{ index === 0 ? data.symbol : data.exchangeName }}
             </div>
           </div>
         </div>
@@ -61,7 +66,7 @@ const combinedCoinsData = computed<[CombinedCoinexchange]>(() => {
               ></div>
               <div class="graphic__ratio-values-container">
                 <div class="graphic__ratio-long-value">{{ data.longRate }}%</div>
-                <div class="graphic__ratio-short-value">{{ data.shortRate }}%</div> 
+                <div class="graphic__ratio-short-value">{{ data.shortRate }}%</div>
               </div>
             </div>
           </div>
@@ -114,7 +119,7 @@ const combinedCoinsData = computed<[CombinedCoinexchange]>(() => {
   }
 }
 .graphic__ratio {
-  margin: 1rem;
+  margin: 1rem 0;
   row-gap: 4rem;
 
   &-container {
@@ -134,14 +139,17 @@ const combinedCoinsData = computed<[CombinedCoinexchange]>(() => {
     max-width: 50%;
 
     &-name--dark {
-      font-weight: bold;
-      padding-left: 1.5rem;
-      color: white;
+      font-weight: 600;
+      padding-left: 1rem;
+      color: $white;
+      font-size: $clamp-font-small;
+
     }
     &-name--light {
-      font-weight: bold;
-      padding-left: 1.5rem;
+      font-weight: 600;
+      padding-left: 1rem;
       color: $main-purple;
+      font-size: $clamp-font-small;
     }
     &--logo {
       display: -webkit-flex;
@@ -150,11 +158,12 @@ const combinedCoinsData = computed<[CombinedCoinexchange]>(() => {
       -webkit-align-items: center;
       -moz-box-align: center;
       align-items: center;
+      margin-bottom: 1rem;
     }
     &--image {
-      width: 2.4rem;
-      height: 2.4rem;
+      width: $image-small;
     }
+  
   }
   &-main {
     display: block;
@@ -166,15 +175,13 @@ const combinedCoinsData = computed<[CombinedCoinexchange]>(() => {
   }
   &-progress {
     position: relative;
-    height: 3.5rem;
+    height: min(3rem, 3.5rem);
     display: flex;
     border-radius: 1rem;
     &--light {
-      // background-color: $chart-red;
       background: linear-gradient(to right, #ff000022, #d32f2f80 90%, #d32f2f80);
     }
     &--dark {
-      // background-color: $chart-dark-red;
       background: linear-gradient(to right, #ff000000, #d32f2f80 90%, #d32f2f80);
     }
   }
@@ -200,12 +207,16 @@ const combinedCoinsData = computed<[CombinedCoinexchange]>(() => {
     line-height: 3.5rem;
     width: 100%;
     display: flex;
+    top: 0.5rem;
   }
   &-long-value,
   &-short-value {
     width: 50%;
     text-align: center;
-    color: white;
+    vertical-align: center;
+    color: $white;
+    font-size: $clamp-font-small;
+    font-weight: 500;
   }
 }
 
@@ -228,5 +239,4 @@ const combinedCoinsData = computed<[CombinedCoinexchange]>(() => {
     }
   }
 }
-// );
 </style>

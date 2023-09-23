@@ -17,46 +17,50 @@ let btcPrice;
 startCronJobs();
 
 async function connectToBinanceWS() {
-  const coins100 = await get100CoinsByPrice();
-  const ws = new WebSocket("wss://stream.binance.com:9443/ws");
+  try {
+    const coins100 = await get100CoinsByPrice();
+    const ws = new WebSocket("wss://stream.binance.com:9443/ws");
 
-  ws.on("open", () => {
-    ws.send(
-      JSON.stringify({
-        method: "SUBSCRIBE",
-        params: coins100.map((coin) => coin.name),
-        id: 1,
-      })
-    );
-  });
-
-  ws.on("message", (data) => {
-    const now = Date.now();
-    const msg = JSON.parse(data);
-    coins100.forEach(async (coin, index) => {
-      if (
-        msg.s === coin.symbol &&
-        msg.e === "aggTrade" &&
-        msg.q > coin.qEqBTC &&
-        now - lastMessageTime < 50
-      ) {
-        const searchedCoin = findCoin(allCoins, msg.s.split("USDT")[0]);
-        msg.image = await fetchCoinImage(searchedCoin);
-        const test = (msg.p * msg.q) / (btcPrice * selectedVolume);
-        msg.beq = test;
-        msg.T = convertTimestamp(msg.T);
-        last20Values.push(msg);
-        if (last20Values.length > maxValues) {
-          last20Values.shift();
-        }
-        sendToClient(last20Values);
-      }
+    ws.on("open", () => {
+      ws.send(
+        JSON.stringify({
+          method: "SUBSCRIBE",
+          params: coins100.map((coin) => coin.name),
+          id: 1,
+        })
+      );
     });
 
-    lastMessageTime = now;
-  });
+    ws.on("message", (data) => {
+      const now = Date.now();
+      const msg = JSON.parse(data);
+      coins100.forEach(async (coin, index) => {
+        if (
+          msg.s === coin.symbol &&
+          msg.e === "aggTrade" &&
+          msg.q > coin.qEqBTC &&
+          now - lastMessageTime < 50
+        ) {
+          const searchedCoin = findCoin(allCoins, msg.s.split("USDT")[0]);
+          msg.image = await fetchCoinImage(searchedCoin);
+          const test = (msg.p * msg.q) / (btcPrice * selectedVolume);
+          msg.beq = test;
+          msg.T = convertTimestamp(msg.T);
+          last20Values.push(msg);
+          if (last20Values.length > maxValues) {
+            last20Values.shift();
+          }
+          sendToClient(last20Values);
+        }
+      });
 
-  return sendToClient;
+      lastMessageTime = now;
+    });
+
+    return sendToClient;
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 async function fetchCoinImage(coin) {

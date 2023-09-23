@@ -154,6 +154,7 @@ function selectInput() {
       ]"
     ></Arrow-Icon>
     <Search-Icon
+     @click="selectInput"
       :class="[open && !withArrowIcon ? 'long__short-icon long__short-changed-icon' : 'long__short-arrow-invisible']"
     ></Search-Icon>
     <div
@@ -195,13 +196,9 @@ function selectInput() {
     max-width: 14rem;
     width: 13rem;
     cursor: pointer;
-    font-size: $font-size-small;
+    font-size: $clamp-font-small;
     font-weight: 500;
     height: 3rem;
-
-    @media (min-width: $breakpoint-mobiletabs) {
-      font-size: $font-size-base;
-    }
   }
   &-active--light {
     background-color: $main-plum-purple;
@@ -258,10 +255,9 @@ function selectInput() {
 
   &-list {
     border-top: none;
-    scrollbar-color: $main-purple transparent;
+    @include customHorizontalScrollbar($height: 200rem);
     padding: 0.5rem 0;
     display: block;
-    scrollbar-width: thin;
     overflow: auto;
     overflow-x: hidden;
     max-height: 19.5rem;
@@ -270,6 +266,7 @@ function selectInput() {
     position: absolute;
     z-index: 3;
     width: 13rem;
+    
 
     &--light {
       background-color: $white;
@@ -278,27 +275,15 @@ function selectInput() {
     &--dark {
       background-color: $bg-dark-purple;
     }
-
-    &::-webkit-scrollbar {
-      width: 1.2rem;
-      border-radius: 5rem;
-    }
-    &::-webkit-scrollbar-thumb {
-      background-color: $main-purple;
-      border: 0.5rem solid transparent;
-      background-clip: padding-box;
-      border-radius: 5rem;
-    }
   }
 
   &-items {
     list-style: none;
   }
   &-item {
-    font-size: 2rem;
     font-weight: 400;
     cursor: pointer;
-    font-size: 1.6rem;
+    font-size: $clamp-font-small;
     font-weight: 500;
     padding: 0.5rem 1.1rem;
     &--dark {

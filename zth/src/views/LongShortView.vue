@@ -12,7 +12,7 @@ const currentValue = ref('BTC');
 const currentTime = ref('1 hour');
 const coins = ref<Coin | []>([]);
 const intervalId = ref(0);
-const loading = ref(false);
+const loading = ref(true);
 const store = useGlobalStore();
 const baseApiUrl = import.meta.env.VITE_APP_BASE_URL;
 // TODO constant => file
@@ -67,7 +67,6 @@ watch(
 );
 
 function reqData() {
-  loading.value = true;
   const ransformedTime = transformTime(currentTime.value);
   const coinData = { time: ransformedTime, coin: currentValue.value };
   axios
@@ -90,7 +89,7 @@ intervalId.value = Number(setInterval(reqData, 20000));
     <div class="long__short">
       <div class="long__short-col">
         <div :class="themeClass" class="long__short-title">
-          <span>Exchange {{ currentValue }} Long/Short Ration</span>
+          <span class="long__short-title--text">{{ currentValue }} Long/Short Ration</span>
         </div>
 
         <div class="long__short-chart-select">
@@ -122,9 +121,23 @@ intervalId.value = Number(setInterval(reqData, 20000));
 :deep(.long__short-value) {
   width: 10rem;
 }
+:deep(.long__short-dropdown-symbol) {
+  width: 10rem;
+}
+
+:deep(.long__short-list) {
+  width: 10rem;
+}
 
 @media (min-width: $breakpoint_mobiletabs) {
   :deep(.long__short-value) {
+    width: 13.4rem;
+  }
+  :deep(.long__short-dropdown-symbol) {
+    width: 13.4rem;
+  }
+
+  :deep(.long__short-list) {
     width: 13.4rem;
   }
 }
@@ -147,15 +160,6 @@ intervalId.value = Number(setInterval(reqData, 20000));
 }
 .long__short {
   display: flex;
-  margin: 1rem;
-
-  // &-dropdown {
-  //   width: 10rem;
-
-  //   @media (min-width: $breakpoint_mobiletabs) {
-  //     width: 13.4rem;
-  //   }
-  // }
 
   &-col {
     display: flex;
@@ -167,14 +171,17 @@ intervalId.value = Number(setInterval(reqData, 20000));
   }
 
   &-title {
-    margin: 0rem auto;
-    font-size: $font-size-base;
-    font-weight: 500;
     padding-bottom: 0.5rem;
+    margin: 0;
+    margin: 0rem auto;
     @media (min-width: $breakpoint-mobiletabs) {
-      font-size: $font-size-medium;
       padding-bottom: 1rem;
       margin: 1rem auto;
+    }
+    &--text {
+      font-size: clamp($font-almost-large, 2vw + 1rem, $font-large);
+      line-height: $line-height-verysmall;
+      font-weight: 500;
     }
   }
 
@@ -206,11 +213,8 @@ intervalId.value = Number(setInterval(reqData, 20000));
   &-period {
     margin-left: 1.1rem;
     margin-bottom: 0.5rem;
-    font-size: $font-size-small;
-    font-weight: 300;
-    @media (min-width: $breakpoint-mobiletabs) {
-      font-size: $font-size-base;
-    }
+    font-size: clamp($font-small-tiny, 1vw + 0.8rem, $font-very-small);
+    font-weight: 400;
   }
 }
 </style>
