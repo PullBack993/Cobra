@@ -356,7 +356,7 @@ onMounted(() => {
       fill: $main_purple;
       stroke-width: 10;
       stroke: $main_purple;
-      height: 2.6rem;
+      height: clamp(2.1rem, 2vw + 0.26rem, 2.3rem);
       width: 3rem;
       &--scale {
         transform: scale(1.3);

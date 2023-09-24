@@ -236,10 +236,10 @@ const handleLoading = () => {
     width: 3rem;
     position: absolute;
     &--light {
-      fill: var(--red);
+      fill: $main-purple;
     }
     &--dark {
-      fill: var(--red);
+      fill: $black;
     }
   }
   &-overlay {
