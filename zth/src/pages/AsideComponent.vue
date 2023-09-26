@@ -403,6 +403,7 @@ onMounted(() => {
     display: flex;
     border: solid 0.1rem rgb(76, 73, 73);
     width: 16rem;
+
     margin-left: 1.6rem;
     border-radius: 6rem;
     text-decoration: none;
@@ -429,18 +430,18 @@ onMounted(() => {
     }
 
     &-light {
-      margin-left: 1rem;
+      margin-left: 0.8rem;
       display: flex;
       .light {
         fill: $white;
-        width: 2.5rem;
-        height: 5rem;
+        height: clamp(2.1rem, 2vw + 0.26rem, 2.3rem);
+        width: 3rem;
         cursor: pointer;
       }
     }
 
     &-dark {
-      margin-right: 1rem;
+      margin-right: 0.8rem;
 
       .material-symbols-outlined {
         font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;

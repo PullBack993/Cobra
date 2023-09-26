@@ -199,11 +199,12 @@ const capitalizeFirstLetter = computed(() => selectedType.value.charAt(0).toUppe
     color: $white;
     display: flex;
     width: 100%;
-    font-size: 3rem;
     justify-content: center;
     margin-bottom: 3.7rem;
     margin-top: 1rem;
     line-height: 3rem;
+    font-size: $clamp-font-large-almost-large;
+    line-height: $clamp-font-small-medium-large;
   }
   &__main {
     display: flex;
@@ -222,7 +223,7 @@ const capitalizeFirstLetter = computed(() => selectedType.value.charAt(0).toUppe
   &__chart-select-item {
     margin-left: 1.1rem;
     margin-bottom: 0.5rem;
-    font-size: 1.6rem;
+    font-size: clamp($font-small-tiny, 1vw + 0.8rem, $font-very-small);
     width: 12rem;
     &--non {
       margin-top: 0 !important;
@@ -243,11 +244,13 @@ const capitalizeFirstLetter = computed(() => selectedType.value.charAt(0).toUppe
     &--ratio {
       text-align: center;
       font-weight: bold;
+      font-size: $clamp-font-small;
     }
     &--positive {
       background: $chart-dark-green;
       font-weight: 600;
       color: $chart-light-green;
+      
     }
     &--positive-light {
       background: $chart-light-green;
