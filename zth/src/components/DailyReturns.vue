@@ -279,6 +279,7 @@ const capitalizeFirstLetter = computed(() => selectedType.value.charAt(0).toUppe
     border-right: 0.1rem ridge $main-purple;
     position: -webkit-sticky;
     position: sticky;
+    font-size: $clamp-font-small-2;
   }
 
   &-date {
@@ -293,6 +294,7 @@ const capitalizeFirstLetter = computed(() => selectedType.value.charAt(0).toUppe
       color: $white;
       min-width: 10rem;
       font-weight: bold;
+      font-size: $clamp-font-small-2;
     }
   }
 }

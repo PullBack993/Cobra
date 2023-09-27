@@ -407,7 +407,7 @@ const btcCountChanged = (value: string) => {
                 <td>
                   <span class="text-primary">
                     <span class="card__td-text-muted">Date</span>
-                    <span class="card__td-text-dynamic">
+                    <span class="card__td-text-dynamic--date">
                       {{ transaction.T }}
                     </span>
                   </span>
@@ -604,11 +604,16 @@ const btcCountChanged = (value: string) => {
     display: block;
     color: $white-5;
     font-weight: 600;
-    font-size: 1.4rem;
+    font-size: $clamp-font-very-small;
     padding-bottom: 0.5rem;
+    white-space: nowrap;
   }
   &-text-dynamic {
     font-weight: 700;
+    font-size: $clamp-font-small-medium;
+    &--date{
+      font-size: $clamp-font-small;
+    }
   }
 }
 
