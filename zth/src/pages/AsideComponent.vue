@@ -253,7 +253,7 @@ onMounted(() => {
   overflow: hidden;
   background-color: $dark_blue;
   border-right: 0.1rem solid $grey_5;
-  transition: all 0.1s linear;
+  transition: width 0.1s linear;
   margin-top: auto;
 
   .image {
@@ -375,9 +375,10 @@ onMounted(() => {
   .visible {
     opacity: 1;
     padding-left: 1rem;
-    font-size: 2rem;
+    font-size: $clamp-font-large-almost-large;
     font-weight: 300;
     color: $main_purple;
+    // transition-delay: 3s;
   }
 
   .active {
