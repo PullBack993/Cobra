@@ -16,7 +16,11 @@ router.post("/id", async (req, res) => {
 
   try {
     let data = await CoinGeckoClient.coins.fetch(coinName);
-    console.log('data => ', data)
+    if(!data.success){
+      res.status(404).json({message: "You've exceeded the Search Rate Limit"})
+      return
+    }
+    // console.log('data => ', data)
     coinName = coinName.toUpperCase();
     if (data && data.data.tickers) {
       // Sometimes data look like target(USD) base(coinName-BTC) -- right is base base(BTC), target(USD).
@@ -61,8 +65,8 @@ router.post("/id", async (req, res) => {
       return res.status(204).json("");
     }
   } catch (error) {
-    console.log(error);
-    res.json("error", error);
+    console.log('error =>>> ', error);
+    res.json("error", error.message);
   }
 });
 

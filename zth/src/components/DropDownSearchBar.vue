@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, nextTick } from 'vue';
-import axios, { Canceler } from 'axios';
+import axios, { Canceler, AxiosError } from 'axios';
 import HorizontalEllipsisSpinner from './utils/HorizontalEllipsisSpinner.vue';
 import InputField from './InputField.vue';
 import sKeyIcon from '../assets/BaseIcons/key.svg';
@@ -16,6 +16,7 @@ const itemList = ref(null);
 const list = ref<HTMLElement>();
 const searchParams = ref('');
 const coins = ref(null);
+const lastSearch = ref('');
 const timeout = ref(0);
 const loading = ref(false);
 const error = ref(false);
@@ -23,8 +24,7 @@ const open = ref(false);
 const coinsLength = ref(0);
 const topElement = ref<HTMLElement>();
 const abort = ref<Canceler>();
-// const allCoins = import('./data/coins.json');
-console.log(allCoins);
+const errorMessage = ref('');
 
 function scrollPosition(direction: number) {
   if (direction === 1) {
@@ -84,67 +84,80 @@ function findCoin(allCoins) {
 function onInput(value: string) {
   searchParams.value = value;
   // TODO need to save old value and set new value
+  clearTimeout(timeout?.value);
+  console.log(lastSearch.value?.name);
   if (searchParams?.value.length === 0) {
-    searchParams.value = 'BTC';
+    // TODO what happens if user come back after delay? The last search will apear ?
+    coins.value = lastSearch.value;
+    loading.value = false;
+    return;
   }
   loading.value = true;
   try {
-    if (searchParams?.value.length >= 2) {
-      const searchedCoin = findCoin(allCoins);
-      console.log(searchedCoin);
-      if (searchedCoin) {
-        // handelClearValue();
-        axios
-          .post('http://localhost:3000/id', searchedCoin, {
-            cancelToken: new axios.CancelToken((abortCanceler: Canceler) => {
-              abort.value = abortCanceler;
-            }),
-          })
-          .then((res) => {
-            if (!res.data) {
+    timeout.value = setTimeout(async () => {
+      if (searchParams?.value.length >= 2) {
+        const searchedCoin = findCoin(allCoins);
+        console.log(searchedCoin);
+        if (searchedCoin) {
+          axios
+            .post('http://localhost:3000/id', searchedCoin, {
+              cancelToken: new axios.CancelToken((abortCanceler: Canceler) => {
+                abort.value = abortCanceler;
+              }),
+            })
+            .then((res) => {
+              if (!res.data) {
+                loading.value = false;
+                coins.value = '';
+                coinsLength.value = 0;
+                return;
+              }
+              lastSearch.value = res.data;
+              coins.value = res.data;
+              coinsLength.value = res.data.data.length;
+              error.value = false;
               loading.value = false;
-              coins.value = '';
-              coinsLength.value = 0;
-              return;
-            }
-            console.log(res.data)
-            coins.value = res.data;
-            coinsLength.value = res.data.data.length;
-            error.value = false;
-            loading.value = false;
-          })
-          .catch((err) => {
-            if (err instanceof axios.Cancel) {
-              return;
-            }
-            console.log('drop down', err);
-            loading.value = false;
-            error.value = true;
-          });
+            })
+            .catch((err) => {
+              if (err instanceof axios.Cancel) {
+                return;
+              }
+              onError(err.message);
+            });
+        } else {
+          notFound();
+        }
       } else {
-        loading.value = false;
-        error.value = false;
-        coins.value = '';
-        coinsLength.value = 0;
+        notFound();
       }
-    } else {
-      loading.value = false;
-      coins.value = '';
-      coinsLength.value = 0;
-      error.value = false;
-    }
+    }, 500);
   } catch (err) {
     // ignore abort error
     if (err instanceof axios.Cancel) {
       return;
     }
     console.log('drop down =>', err);
-    loading.value = false;
-    error.value = true; // check it
+    onError(err.message);
   }
 }
 
+const notFound = () => {
+  loading.value = false;
+  error.value = false;
+  coins.value = '';
+  coinsLength.value = 0;
+};
+
+const onError = (errorMessage: string) => {
+  console.log('drop down', err);
+  errorMessage.value = errorMessage;
+  coins.value = '';
+  loading.value = false;
+  error.value = true;
+};
+
 onMounted(() => {
+  console.log('initially mounted');
   timeout.value = setTimeout(() => {
     loading.value = true;
     axios
@@ -182,6 +195,9 @@ const stopMainScroll = () => {
 function onOpen(value: boolean) {
   open.value = value;
   stopMainScroll();
+  if (lastSearch.value?.name) {
+      onInput(lastSearch.value.name);
+  }
 }
 </script>
 <template>
@@ -281,7 +297,7 @@ function onOpen(value: boolean) {
       <div v-if="!coins && !loading && searchParams.length && !error > 0" class="search__container-no-results">
         No results for "{{ searchParams }}"
       </div>
-      <div class="search__container-error" v-if="error && !loading">Something went wrong</div>
+      <div class="search__container-error" v-if="error && !loading">{{ errorMessage }}</div>
     </div>
   </div>
 </template>
