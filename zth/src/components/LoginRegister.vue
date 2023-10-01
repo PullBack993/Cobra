@@ -10,7 +10,6 @@ import baseDialog from './BaseDialog.vue';
 import HorizontalEllipsisSpinner from './utils/HorizontalEllipsisSpinner.vue';
 
 const showRegForm = ref(false);
-const test = ref(false);
 const store = useGlobalStore();
 const isMetamaskSupported = ref(true);
 const downloadUrl = ref('');
@@ -40,7 +39,6 @@ watch(
 );
 
 const hiddenModal = () => {
-  test.value = false;
   modal.value?.closeModal();
   /* eslint-disable no-use-before-define */
   document.removeEventListener('keydown', handleEscape);
@@ -48,7 +46,6 @@ const hiddenModal = () => {
 
 const handleEscape = (event: KeyboardEvent) => {
   if (event.key === 'Escape') {
-  test.value = false;
 
     console.log('escape');
     event.preventDefault();
@@ -57,7 +54,6 @@ const handleEscape = (event: KeyboardEvent) => {
 };
 const showModal = () => {
   console.log('test');
-  test.value = true
   modal.value?.openModal(); // baseDialog
   document.addEventListener('keydown', handleEscape);
 };
@@ -76,7 +72,7 @@ const handleLoading = () => {
     ></loginSvg>
     <img v-else :src="store.userImage" loading="lazy" alt="user-image" class="user-image" />
     <Teleport to="#app">
-    <baseDialog v-if="!store.login && test" ref="modal">
+    <baseDialog v-if="!store.login" ref="modal">
       <div class="spinner" v-if="isMetamaskOpen">
         <HorizontalEllipsisSpinner></HorizontalEllipsisSpinner>
       </div>
@@ -230,11 +226,13 @@ const handleLoading = () => {
 
 .dialog__modal {
   &-openDialog {
-    top: 3.3rem;
-    right: 1.8rem;
-    height: 2.5rem;
-    width: 3rem;
+    right: 0rem;
+    padding-right: 2rem;;
+    height: 100%;
+    width: 5rem;
     position: absolute;
+    top: 0;
+    cursor: pointer;
     &--light {
       fill: $main-purple;
     }

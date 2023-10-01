@@ -12,9 +12,11 @@ router.post("/id", async (req, res) => {
   const CoinGeckoClient = new CoinGecko();
   const coinSymbol = req.body.symbol.toUpperCase();
   let coinName = req.body.id;
+  console.log(coinName)
 
   try {
     let data = await CoinGeckoClient.coins.fetch(coinName);
+    console.log('data => ', data)
     coinName = coinName.toUpperCase();
     if (data && data.data.tickers) {
       // Sometimes data look like target(USD) base(coinName-BTC) -- right is base base(BTC), target(USD).

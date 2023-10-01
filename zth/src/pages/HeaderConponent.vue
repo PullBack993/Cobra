@@ -45,7 +45,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <header class="header" ref="header">
+  <header class="header" ref="header" :class="`${store.themeDark ? 'header--light' : 'header--dark'}`">
     <div class="main">
       <div class="search">
         <div v-if="screenSize <= 768" class="search__lines" @click="emit('openSidebar')">
@@ -55,7 +55,6 @@ onUnmounted(() => {
             alt="hamburger"
           ></hamburger>
         </div>
-
         <DropdownInputComponent />
       </div>
       <LoginRegister />
@@ -64,15 +63,18 @@ onUnmounted(() => {
 </template>
 
 <style scoped lang="scss">
+:deep(.input) {
+  padding-right: 5rem;
+}
 .search__lines {
   position: absolute;
   left: 0;
-  top: 1.8rem;
+  top: 0;
 
   &-icon {
-    display: block;
     cursor: pointer;
     z-index: 98;
+    margin: 0;
 
     &--light {
       fill: $main_purple;
@@ -86,32 +88,34 @@ onUnmounted(() => {
   top: 0;
   position: sticky;
   z-index: 9;
-  background: transparent;
-  backdrop-filter: blur(9rem);
-  -webkit-backdrop-filter: blur(9rem) 
+  &--light {
+    background-color: $white;
+  }
+  &--dark {
+    background-color: $bg-dark-purple;
+  }
 }
 .main {
   border-bottom: 0.1rem solid $main-purple;
-  height: 9.5rem;
+  height: 7.5rem;
   display: flex;
   justify-content: space-between;
   .search {
     position: relative;
-    margin: auto;
     border-radius: 0.6rem;
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     align-content: center;
-    height: 9rem;
-    margin: 0 1rem;
+    height: 5rem;
+    margin: auto 1rem;
     @media (min-width: $breakpoint_small) {
-      margin: 0;
-      width: 45%;
+      margin: auto 1rem;
+      width: 35%;
     }
     @media (min-width: $breakpoint_medium) {
-      width: 40%;
+      width: 30%;
     }
   }
 }

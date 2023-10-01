@@ -1,17 +1,19 @@
-<script setup>
+<script setup lang="ts">
 import { onMounted, ref, nextTick } from 'vue';
-import axios from 'axios';
+import axios, { Canceler } from 'axios';
 import HorizontalEllipsisSpinner from './utils/HorizontalEllipsisSpinner.vue';
 import InputField from './InputField.vue';
 import sKeyIcon from '../assets/BaseIcons/key.svg';
 import { useGlobalStore } from '../store/global';
+import { handleScrollBoxWheel } from '@/components/utils/helper';
+import allCoins from '@/components/data/coins.json';
 
 const store = useGlobalStore();
 const currentItem = ref(0);
 let activeScrollItem = 0;
 const root = ref('');
 const itemList = ref(null);
-const list = ref('');
+const list = ref<HTMLElement>();
 const searchParams = ref('');
 const coins = ref(null);
 const timeout = ref(0);
@@ -19,9 +21,12 @@ const loading = ref(false);
 const error = ref(false);
 const open = ref(false);
 const coinsLength = ref(0);
-const topElement = ref();
+const topElement = ref<HTMLElement>();
+const abort = ref<Canceler>();
+// const allCoins = import('./data/coins.json');
+console.log(allCoins);
 
-function scrollPosition(direction) {
+function scrollPosition(direction: number) {
   if (direction === 1) {
     currentItem.value++;
   } else {
@@ -35,33 +40,34 @@ function scrollPosition(direction) {
     const items = Array.from(itemList.value);
     activeScrollItem = Math.min(Math.max(0, activeScrollItem + direction), items.length - 1);
     let top = items[activeScrollItem]?.offsetTop;
-    console.log('top dropdown', top);
     if (top === 71) {
       top = 1;
     }
     list.value?.scrollTo({ top, behavior: 'smooth' });
   });
 }
-
+// Need to adjust thescroll position when item is selected
 function handelClearValue() {
   currentItem.value = 0;
   activeScrollItem = 0;
-  topElement?.value?.scrollIntoView();
+  topElement?.value?.scrollTo({ top: 0, behavior: 'auto' });
+  const listElement = document.querySelector('.search__container-list');
+  listElement?.removeEventListener('wheel', handleScrollBoxWheel);
+  document.removeEventListener('click', documentClick);
 }
 function documentClick(event) {
   if (open.value && event.target) {
+    console.log('document clicked');
     open.value = false;
     document.removeEventListener('click', documentClick);
   }
 }
 
 const selectedItem = () => {
-  open.value = !open.value;
-  if (open.value === true) {
+  if (open.value) {
     document.addEventListener('click', documentClick);
   } else {
     handelClearValue();
-    document.removeEventListener('click', documentClick);
   }
 };
 
@@ -75,56 +81,69 @@ function findCoin(allCoins) {
   return searchedCoin;
 }
 
-function onInput(value) {
+function onInput(value: string) {
   searchParams.value = value;
+  // TODO need to save old value and set new value
+  if (searchParams?.value.length === 0) {
+    searchParams.value = 'BTC';
+  }
   loading.value = true;
-  clearTimeout(timeout?.value);
   try {
-    if (timeout?.value === 0 || searchParams?.value.length <= 2) {
-      loading.value = false;
-    }
-    timeout.value = setTimeout(async () => {
-      if (searchParams?.value.length >= 3) {
-        const { default: allCoins } = await import('./data/coins.json');
-        const searchedCoin = findCoin(allCoins);
-        console.log(searchedCoin);
-        if (searchedCoin) {
-          handelClearValue();
-          axios
-            .post('http://localhost:3000/id', searchedCoin)
-            .then((res) => {
-              if (!res.data) {
-                loading.value = false;
-                coins.value = '';
-                coinsLength.value = 0;
-                error.value = true;
-                return;
-              }
-              coins.value = res.data;
-              coinsLength.value = res.data.data.length;
-
-              error.value = false;
+    if (searchParams?.value.length >= 2) {
+      const searchedCoin = findCoin(allCoins);
+      console.log(searchedCoin);
+      if (searchedCoin) {
+        // handelClearValue();
+        axios
+          .post('http://localhost:3000/id', searchedCoin, {
+            cancelToken: new axios.CancelToken((abortCanceler: Canceler) => {
+              abort.value = abortCanceler;
+            }),
+          })
+          .then((res) => {
+            if (!res.data) {
               loading.value = false;
-            })
-            .catch((err) => {
-              console.log('drop down', err);
-              loading.value = false;
-              error.value = true;
-            });
-        } else {
-          loading.value = false;
-          error.value = false;
-          coins.value = '';
-          coinsLength.value = 0;
-        }
+              coins.value = '';
+              coinsLength.value = 0;
+              return;
+            }
+            console.log(res.data)
+            coins.value = res.data;
+            coinsLength.value = res.data.data.length;
+            error.value = false;
+            loading.value = false;
+          })
+          .catch((err) => {
+            if (err instanceof axios.Cancel) {
+              return;
+            }
+            console.log('drop down', err);
+            loading.value = false;
+            error.value = true;
+          });
+      } else {
+        loading.value = false;
+        error.value = false;
+        coins.value = '';
+        coinsLength.value = 0;
       }
-    }, 500);
+    } else {
+      loading.value = false;
+      coins.value = '';
+      coinsLength.value = 0;
+      error.value = false;
+    }
   } catch (err) {
+    // ignore abort error
+    if (err instanceof axios.Cancel) {
+      return;
+    }
     console.log('drop down =>', err);
     loading.value = false;
     error.value = true; // check it
   }
 }
+
 onMounted(() => {
   timeout.value = setTimeout(() => {
     loading.value = true;
@@ -138,15 +157,14 @@ onMounted(() => {
           error.value = true;
           return;
         }
-        // TODO remove console.logs
         coins.value = res.data;
         coinsLength.value = res.data.data.length;
-
         error.value = false;
         loading.value = false;
       })
       .catch((err) => {
-        console.log(err);
+        console.log('drop down =>', err);
+        console.error(err);
         loading.value = false;
         error.value = true;
         coinsLength.value = 0;
@@ -154,8 +172,16 @@ onMounted(() => {
   }, 500);
 });
 
-function onOpen(value) {
+const stopMainScroll = () => {
+  if (open.value) {
+    const listElement = document.querySelector('.search__container-list');
+    listElement?.addEventListener('wheel', handleScrollBoxWheel);
+  }
+};
+
+function onOpen(value: boolean) {
   open.value = value;
+  stopMainScroll();
 }
 </script>
 <template>
@@ -255,7 +281,7 @@ function onOpen(value) {
       <div v-if="!coins && !loading && searchParams.length && !error > 0" class="search__container-no-results">
         No results for "{{ searchParams }}"
       </div>
-      <div class="search__container-error" v-if="error && !loading">Error</div>
+      <div class="search__container-error" v-if="error && !loading">Something went wrong</div>
     </div>
   </div>
 </template>
@@ -316,7 +342,7 @@ function onOpen(value) {
     display: block;
     scrollbar-width: thin;
     -webkit-tap-highlight-color: transparent;
-    overflow: auto;
+    overflow-y: scroll;
     overflow-x: hidden;
     max-height: 33rem;
     border-bottom-left-radius: 1rem;
