@@ -6,6 +6,7 @@ import { IWebsocket } from '../Interfaces/IWebsocket';
 import BaseTableFrame from '../components/BaseTableFrame.vue';
 import DropdownSmall from '../components/DropDownLongShort.vue';
 import { useGlobalStore } from '../store/global';
+import defaultimage from '../assets/BaseIcons/default-image.png';
 
 interface ITickVolume {
   symbol: string;
@@ -110,6 +111,7 @@ const getObjectBySymbol = (newTransaction: IWebsocket) => {
     const marketMaker = newTransaction.m;
     const img = newTransaction.image;
     const matchingSymbol = tickVolume.value?.find((obj) => obj.symbol === symbol);
+    console.log('matchingSymbol', matchingSymbol);
     if (matchingSymbol) {
       matchingSymbol.volume += volumeEqualBtc;
       if (marketMaker) {
@@ -118,6 +120,9 @@ const getObjectBySymbol = (newTransaction: IWebsocket) => {
         matchingSymbol.sell += volumeEqualBtc;
       }
     } else {
+       if (tickVolume.value?.length >= best10Coins) {
+        tickVolume.value?.pop();
+      }
       tickVolume.value?.push({
         symbol,
         volume: volumeEqualBtc,
@@ -125,9 +130,7 @@ const getObjectBySymbol = (newTransaction: IWebsocket) => {
         sell: marketMaker ? 0 : volumeEqualBtc,
         image: img,
       });
-      if (tickVolume.value?.length > best10Coins) {
-        tickVolume.value?.pop();
-      }
+     
     }
   }
 };
@@ -146,6 +149,9 @@ const getVolumeBySymbol = (newTransaction: IWebsocket | undefined) => {
         matchingSymbol.sell += 1;
       }
     } else {
+      if (ticks.value?.length >= best10Coins) {
+        ticks.value?.pop();
+      }
       ticks.value?.push({
         symbol,
         count: 1,
@@ -153,9 +159,7 @@ const getVolumeBySymbol = (newTransaction: IWebsocket | undefined) => {
         sell: marketMaker ? 0 : 1,
         image: img,
       });
-      if (ticks.value?.length > best10Coins) {
-        ticks.value?.pop();
-      }
+   
     }
   }
 };
@@ -192,7 +196,7 @@ const connectToSocket = () => {
         if (last20Coins.length > 20) {
           last20Coins.pop();
         }
-        return item.beq >= btcSelectedVolume.value;
+        return item.beq >= btcSelectedVolume.value / 2;
       });
 
       if (!firstResponse.value) {
@@ -239,7 +243,7 @@ onUnmounted(() => {
 
 const btcCountChanged = (value: string) => {
   btcSelectedVolume.value = Number(value.split(' ')[0]);
-  transactions.value = last20Coins.filter((item: IWebsocket) => item.beq >= btcSelectedVolume.value).reverse();
+  transactions.value = last20Coins.filter((item: IWebsocket) => item.beq >= btcSelectedVolume.value / 2).reverse();
   updateTableBoard();
 };
 </script>
@@ -261,7 +265,8 @@ const btcCountChanged = (value: string) => {
                 <td>
                   <div class="card__td-symbol">
                     <span class="card__td-symbol-label">
-                      <img :src="tick?.image" class="card__td-img" :alt="tick.symbol" />
+                      <img v-if="tick.image" :src="tick?.image" class="card__td-img" :alt="tick.symbol" />
+                      <img v-else :src="defaultimage" :alt="tick.symbol" class="card__td-img" loading="lazy" />
                     </span>
                   </div>
                 </td>
@@ -301,7 +306,8 @@ const btcCountChanged = (value: string) => {
                 <td>
                   <div class="card__td-symbol">
                     <span class="card__td-symbol-label">
-                      <img :src="tick?.image" class="card__td-img" :alt="tick.symbol" />
+                      <img v-if="tick.image" :src="tick?.image" class="card__td-img" :alt="tick.symbol" />
+                      <img v-else :src="defaultimage" :alt="tick.symbol" class="card__td-img" loading="lazy" />
                     </span>
                   </div>
                 </td>
@@ -356,7 +362,19 @@ const btcCountChanged = (value: string) => {
                 <td>
                   <div class="card__td-symbol">
                     <span class="card__td-symbol-label">
-                      <img :src="transaction?.image" class="card__td-img" :alt="transaction.s.split('USDT')[0]" />
+                      <img
+                        v-if="transaction.image"
+                        :src="transaction?.image"
+                        class="card__td-img"
+                        :alt="transaction.s.split('USDT')[0]"
+                      />
+                      <img
+                        v-else
+                        :src="defaultimage"
+                        :alt="transaction.s.split('USDT')[0]"
+                        class="card__td-img"
+                        loading="lazy"
+                      />
                     </span>
                   </div>
                 </td>
@@ -573,6 +591,8 @@ const btcCountChanged = (value: string) => {
   }
   &-img {
     border-radius: 50%;
+    height: 3rem;
+    width: 3rem;
   }
   &-symbol {
     display: inline-block;
@@ -611,7 +631,7 @@ const btcCountChanged = (value: string) => {
   &-text-dynamic {
     font-weight: 700;
     font-size: $clamp-font-small-medium;
-    &--date{
+    &--date {
       font-size: $clamp-font-small;
     }
   }

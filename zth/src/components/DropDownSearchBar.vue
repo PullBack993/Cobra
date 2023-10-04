@@ -118,11 +118,11 @@ function onInput(value: string) {
               error.value = false;
               loading.value = false;
             })
-            .catch((err) => {
-              if (err instanceof axios.Cancel) {
+            .catch((error) => {
+              if (error instanceof axios.Cancel) {
                 return;
               }
-              onError(err.message);
+              onError(error.response?.data?.message);
             });
         } else {
           notFound();
@@ -131,13 +131,13 @@ function onInput(value: string) {
         notFound();
       }
     }, 500);
-  } catch (err) {
+  } catch (error) {
     // ignore abort error
-    if (err instanceof axios.Cancel) {
+    if (error instanceof axios.Cancel) {
       return;
     }
-    console.log('drop down =>', err);
-    onError(err.message);
+    console.log('drop down =>', error);
+    onError(error.response?.data?.message);
   }
 }
 
@@ -148,12 +148,13 @@ const notFound = () => {
   coinsLength.value = 0;
 };
 
-const onError = (errorMessage: string) => {
-  console.log('drop down', err);
-  errorMessage.value = errorMessage;
+const onError = (errorText: string) => {
+  console.log('=>>', errorText);
+  errorMessage.value = errorText;
   coins.value = '';
   loading.value = false;
   error.value = true;
+  coinsLength.value = 0;
 };
 
 onMounted(() => {
@@ -177,10 +178,8 @@ onMounted(() => {
       })
       .catch((err) => {
         console.log('drop down =>', err);
-        console.error(err);
-        loading.value = false;
-        error.value = true;
-        coinsLength.value = 0;
+        // console.error(err);
+        onError(err.response?.data?.message);
       });
   }, 500);
 });
@@ -196,7 +195,7 @@ function onOpen(value: boolean) {
   open.value = value;
   stopMainScroll();
   if (lastSearch.value?.name) {
-      onInput(lastSearch.value.name);
+    onInput(lastSearch.value.name);
   }
 }
 </script>
@@ -297,7 +296,7 @@ function onOpen(value: boolean) {
       <div v-if="!coins && !loading && searchParams.length && !error > 0" class="search__container-no-results">
         No results for "{{ searchParams }}"
       </div>
-      <div class="search__container-error" v-if="error && !loading">{{ errorMessage }}</div>
+      <div class="search__container-error" v-if="error && errorMessage && !loading">{{ errorMessage }}</div>
     </div>
   </div>
 </template>

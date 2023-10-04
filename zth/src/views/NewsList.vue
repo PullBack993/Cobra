@@ -6,6 +6,7 @@ import { useGlobalStore } from '../store/global';
 import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
 import baseButton from '../components/utils/BaseButton.vue';
 import { IArticle } from '../Interfaces/IArticle';
+import defaultimage from '../assets/BaseIcons/default-image.png';
 
 const baseApiUrl = import.meta.env.VITE_APP_BASE_URL;
 
@@ -49,33 +50,6 @@ onMounted(() => {
   loadingLength.value = Math.ceil(window.innerHeight / 10 / 17);
   loadNews();
 });
-// function calculateDateTimeDifference(dateStr: string): string {
-//   const date: Date = new Date(dateStr);
-
-//   const now: Date = new Date();
-
-//   const diff = now.getTime() - date.getTime();
-
-//   const diffYears = now.getFullYear() - date.getFullYear();
-//   const diffMonths = now.getMonth() - date.getMonth();
-//   const diffDays = now.getDate() - date.getDate();
-//   const diffHours = Math.floor(diff / (60 * 60 * 1000));
-//   const diffMinutes = Math.floor(diff / (60 * 1000));
-
-//   if (diffMinutes < 60) {
-//     return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''}`;
-//   }
-//   if (diffHours < 24) {
-//     return `${diffHours} hour${diffHours > 1 ? 's' : ''}`;
-//   }
-//   if (diffDays < 30) {
-//     return `${diffDays} day${diffDays > 1 ? 's' : ''}`;
-//   }
-//   if (diffMonths < 12) {
-//     return `${diffMonths} month${diffMonths > 1 ? 's' : ''}`;
-//   }
-//   return `${diffYears} year${diffYears > 1 ? 's' : ''}`;
-// }
 
 function calculateDateTimeDifference(dateStr: string): string {
   const date: Date = new Date(dateStr);
@@ -119,9 +93,10 @@ function calculateDateTimeDifference(dateStr: string): string {
         }"
       >
         <li class="news__list-content">
-          <div class="news__container-image"></div>
           <div class="news__content">
-            <img :src="section.titleImage" :alt="section.title" class="news__image" loading="lazy" />
+            
+            <img v-if="section.titleImage.length > 0" :src="section.titleImage" :alt="section.title" class="news__image" loading="lazy" />
+            <img v-else :src="defaultimage" :alt="section.title" class="news__image" loading="lazy" />
             <p class="news__time">{{ calculateDateTimeDifference(section.createTime) }} ago</p>
 
             <h3 class="news__title">

@@ -38,8 +38,7 @@ async function connectToBinanceWS() {
         if (
           msg.s === coin.symbol &&
           msg.e === "aggTrade" &&
-          msg.q > coin.qEqBTC &&
-          now - lastMessageTime < 50
+          msg.q >= (coin.qEqBTC / 2)
         ) {
           const searchedCoin = findCoin(allCoins, msg.s.split("USDT")[0]);
           msg.image = await fetchCoinImage(searchedCoin);
