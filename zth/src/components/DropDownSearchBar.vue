@@ -26,7 +26,7 @@ const topElement = ref<HTMLElement>();
 const abort = ref<Canceler>();
 const errorMessage = ref('');
 
-function scrollPosition(direction: number) {
+const scrollPosition = (direction: number) => {
   if (direction === 1) {
     currentItem.value++;
   } else {
@@ -45,23 +45,23 @@ function scrollPosition(direction: number) {
     }
     list.value?.scrollTo({ top, behavior: 'smooth' });
   });
-}
+};
 // Need to adjust thescroll position when item is selected
-function handelClearValue() {
+const handelClearValue = () => {
   currentItem.value = 0;
   activeScrollItem = 0;
   topElement?.value?.scrollTo({ top: 0, behavior: 'auto' });
   const listElement = document.querySelector('.search__container-list');
   listElement?.removeEventListener('wheel', handleScrollBoxWheel);
   document.removeEventListener('click', documentClick);
-}
-function documentClick(event) {
+};
+const documentClick = (event) => {
   if (open.value && event.target) {
     console.log('document clicked');
     open.value = false;
     document.removeEventListener('click', documentClick);
   }
-}
+};
 
 const selectedItem = () => {
   if (open.value) {
@@ -71,7 +71,7 @@ const selectedItem = () => {
   }
 };
 
-function findCoin(allCoins) {
+const findCoin = (allCoins) => {
   const searchedCoin = allCoins.find((coin) => {
     if (coin?.id === searchParams.value.toLowerCase() || coin?.symbol === searchParams.value.toLocaleLowerCase()) {
       return coin;
@@ -79,9 +79,9 @@ function findCoin(allCoins) {
     return null;
   });
   return searchedCoin;
-}
+};
 
-function onInput(value: string) {
+const onInput = (value: string) => {
   searchParams.value = value;
   // TODO need to save old value and set new value
   clearTimeout(timeout?.value);
@@ -139,7 +139,7 @@ function onInput(value: string) {
     console.log('drop down =>', error);
     onError(error.response?.data?.message);
   }
-}
+};
 
 const notFound = () => {
   loading.value = false;
@@ -191,13 +191,13 @@ const stopMainScroll = () => {
   }
 };
 
-function onOpen(value: boolean) {
+const onOpen = (value: boolean) => {
   open.value = value;
   stopMainScroll();
   if (lastSearch.value?.name) {
     onInput(lastSearch.value.name);
   }
-}
+};
 </script>
 <template>
   <div class="search__container" ref="root">

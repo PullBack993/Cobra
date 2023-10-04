@@ -51,7 +51,7 @@ onMounted(() => {
   loadNews();
 });
 
-function calculateDateTimeDifference(dateStr: string): string {
+const calculateDateTimeDifference = (dateStr: string): string => {
   const date: Date = new Date(dateStr);
 
   const now: Date = new Date();
@@ -78,8 +78,7 @@ function calculateDateTimeDifference(dateStr: string): string {
   } else {
     return `${diffSeconds} second${diffSeconds > 1 ? 's' : ''}`;
   }
-
-}
+};
 </script>
 
 <template>
@@ -94,8 +93,13 @@ function calculateDateTimeDifference(dateStr: string): string {
       >
         <li class="news__list-content">
           <div class="news__content">
-            
-            <img v-if="section.titleImage.length > 0" :src="section.titleImage" :alt="section.title" class="news__image" loading="lazy" />
+            <img
+              v-if="section.titleImage.length > 0"
+              :src="section.titleImage"
+              :alt="section.title"
+              class="news__image"
+              loading="lazy"
+            />
             <img v-else :src="defaultimage" :alt="section.title" class="news__image" loading="lazy" />
             <p class="news__time">{{ calculateDateTimeDifference(section.createTime) }} ago</p>
 
@@ -240,12 +244,12 @@ function calculateDateTimeDifference(dateStr: string): string {
     border-radius: 1rem;
     float: left;
 
-    @media(min-width: $breakpoint_mobiletabs){
+    @media (min-width: $breakpoint_mobiletabs) {
       width: 90%;
     }
 
-    @media(min-width: $breakpoint_verysmall){
-      width: 70%
+    @media (min-width: $breakpoint_verysmall) {
+      width: 70%;
     }
 
     @media (min-width: $breakpoint_small) {
@@ -254,14 +258,13 @@ function calculateDateTimeDifference(dateStr: string): string {
       height: 12rem;
       width: auto;
       margin-right: 1rem;
-      
     }
   }
 
   &__content {
     display: flex;
     flex-direction: column;
-    @media(min-width: $breakpoint_small){
+    @media (min-width: $breakpoint_small) {
       display: unset;
     }
 
@@ -270,10 +273,9 @@ function calculateDateTimeDifference(dateStr: string): string {
     }
   }
 
-  &__time{
+  &__time {
     font-size: 1.2rem;
     text-align: right;
-    
   }
   &__title {
     // text-align: justify;

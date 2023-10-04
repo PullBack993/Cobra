@@ -19,9 +19,9 @@ const toggle = () => {
     destroyClickEvent();
   }
 };
-function destroyClickEvent() {
+const destroyClickEvent = () => {
   document.removeEventListener('click', documentClick);
-}
+};
 
 const HTMLElementsNotClickable = [
   'sidebar-btn',
@@ -50,7 +50,7 @@ const checkElements = (clickedElement: string): boolean => {
   return found;
 };
 
-function documentClick(e: Event) {
+const documentClick = (e: Event) => {
   let HTMLElementClass = (e.target as HTMLButtonElement).className?.baseVal;
   if (!HTMLElementClass) {
     HTMLElementClass = (e.target as HTMLButtonElement).className;
@@ -62,7 +62,7 @@ function documentClick(e: Event) {
     isToggle.value = false;
     document.removeEventListener('click', documentClick);
   }
-}
+};
 
 onMounted(() => {
   updateScreenWidth();
@@ -70,15 +70,15 @@ onMounted(() => {
   store.isLogin();
 });
 
-function onScreenResize() {
+const onScreenResize = () => {
   window.addEventListener('resize', () => {
     updateScreenWidth();
   });
-}
+};
 
-function updateScreenWidth() {
+const updateScreenWidth = () => {
   screenSize.value = window.innerWidth;
-}
+};
 </script>
 
 <template>

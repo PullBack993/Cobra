@@ -22,7 +22,7 @@ onMounted(() => {
 //   store.login = false;
 // });
 
-async function connectWallet() {
+const connectWallet = async() => {
   if (!isMetamaskSupported.value) {
     const ua = navigator.userAgent;
 

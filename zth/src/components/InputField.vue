@@ -76,7 +76,7 @@ onMounted(() => {
   window.addEventListener('keydown', documentKey);
 });
 
-function documentKeyDown(event: KeyboardEvent) {
+const documentKeyDown = (event: KeyboardEvent) => {
   switch (event.key) {
     case 'Escape':
       handleEscapeEvent();
@@ -96,9 +96,9 @@ function documentKeyDown(event: KeyboardEvent) {
     default:
       break;
   }
-}
+};
 
-function selectInput() {
+const selectInput = () => {
   input?.value?.focus();
   if (dropDownOpen.value === false) {
     addClickEvent();
@@ -110,13 +110,13 @@ function selectInput() {
     emit('scrollDirection', 0);
     document.removeEventListener('click', documentClick);
   }
-}
+};
 
-function addClickEvent() {
+const addClickEvent = () => {
   document.addEventListener('click', documentClick);
-}
+};
 
-function documentKey(event: KeyboardEvent) {
+const documentKey = (event: KeyboardEvent) => {
   const { key } = event as KeyboardEvent;
   if ((key === 'f' || key === 'F') && dropDownOpen.value === false && !props.prevent) {
     emit('open', true);
@@ -124,9 +124,9 @@ function documentKey(event: KeyboardEvent) {
     input?.value?.focus();
     addClickEvent();
   }
-}
+};
 
-function documentClick(event: Event) {
+const documentClick = (event: Event) => {
   if (dropDownOpen.value && event.target && !props.root.contains(event.target as HTMLElement)) {
     emit('open', false);
     document.removeEventListener('click', documentClick);
@@ -143,27 +143,27 @@ function documentClick(event: Event) {
     searchParams.value = savedValue.value;
     emit('onInput', searchParams.value);
   }
-}
+};
 
-function handleArrowUp() {
+const handleArrowUp = () => {
   if (dropDownOpen.value && selectedItem.value > 0) {
     emit('scrollDirection', -1);
   }
-}
+};
 
-function handleTabEvent() {
+const handleTabEvent = () => {
   if (dropDownOpen.value) {
     emit('open', false);
   }
-}
+};
 
-function handleArrowDown() {
+const handleArrowDown = () => {
   if (dropDownOpen.value && props.coins - 2 >= selectedItem.value) {
     emit('scrollDirection', 1);
   }
-}
+};
 
-function handleEnterEvent() {
+const handleEnterEvent = () => {
   if (dropDownOpen.value && !isNotResult.value) {
     input?.value?.blur();
     document.removeEventListener('click', documentClick);
@@ -177,9 +177,9 @@ function handleEnterEvent() {
     searchParams.value = savedValue.value;
     emit('onInput', searchParams.value);
   }
-}
+};
 
-function handleEscapeEvent() {
+const handleEscapeEvent = () => {
   if (dropDownOpen.value) {
     // dropDownOpen.value = false;
     emit('open', false);
@@ -187,12 +187,12 @@ function handleEscapeEvent() {
     emit('clearValues', '');
     document.removeEventListener('click', documentClick);
   }
-}
+};
 
-function onInput() {
+const onInput = () => {
   searchParams.value = searchParams.value.replace(/[^a-zA-Z1234567890]/g, '');
   emit('onInput', searchParams.value);
-}
+};
 </script>
 <template>
   <input

@@ -65,7 +65,7 @@ onMounted(() => {
 // WEEK => month: 0, type: week, year 2023
 
 // test =>
-function reqData(month: number, type: string) {
+const reqData = (month: number, type: string) => {
   data.value = null;
   axios
     .post(`${baseApiUrl}/exchange/daily-return`, {
@@ -93,9 +93,9 @@ function reqData(month: number, type: string) {
     .catch((err) => {
       console.error(err);
     });
-}
+};
 
-function monthChange(value: string) {
+const monthChange = (value: string) => {
   months.forEach((month, index) => {
     if (month === value) {
       currentMonth.value = index + 1;
@@ -104,22 +104,22 @@ function monthChange(value: string) {
       reqData(currentMonth.value, currentType.value);
     }
   });
-}
+};
 
-function timeChange(value: string) {
+const timeChange = (value: string) => {
   currentType.value = value;
   removeLy();
   reqData(currentMonth.value, currentType.value);
-}
+};
 
-function removeLy() {
+const removeLy = () => {
   selectedType.value = currentType.value;
   if (currentType.value === 'Daily') {
     currentType.value = `${currentType.value.slice(0, -3).toLocaleLowerCase()}y`;
   } else {
     currentType.value = currentType.value.slice(0, -2).toLocaleLowerCase();
   }
-}
+};
 
 const capitalizeFirstLetter = computed(() => selectedType.value.charAt(0).toUpperCase() + selectedType.value.slice(1));
 </script>
@@ -250,7 +250,6 @@ const capitalizeFirstLetter = computed(() => selectedType.value.charAt(0).toUppe
       background: $chart-dark-green;
       font-weight: 600;
       color: $chart-light-green;
-      
     }
     &--positive-light {
       background: $chart-light-green;

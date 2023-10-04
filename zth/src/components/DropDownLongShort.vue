@@ -35,7 +35,7 @@ const currentValue = ref(props.data[props.preselectedValue]);
 const data = ref<string | string[]>(props.data);
 const noResult = ref(false);
 
-function selectedItem(event: Event) {
+const selectedItem = (event: Event) => {
   const currentItemValue = (event.target as HTMLElement)?.getAttribute('currentItem');
   if (currentItemValue !== null) {
     const currentItemNumber = Number(currentItemValue);
@@ -49,8 +49,8 @@ function selectedItem(event: Event) {
   emit('newValue:input', currentValue.value);
   open.value = false;
   scrollPosition(0);
-}
-function scrollPosition(direction: number) {
+};
+const scrollPosition = (direction: number) => {
   if (direction === 1) {
     currentIndexItem.value++;
   } else if (direction === -1) {
@@ -70,8 +70,8 @@ function scrollPosition(direction: number) {
       list.value.scrollTo({ top, behavior: 'smooth' });
     }
   });
-}
-function onInput(value: string) {
+};
+const onInput = (value: string) => {
   if (currentIndexItem.value !== 0) {
     savedValue.value = currentIndexItem.value;
   }
@@ -91,19 +91,19 @@ function onInput(value: string) {
     data.value = props.data;
     scrollPosition(0);
   }
-}
+};
 
-function onOpen(value: boolean) {
+const onOpen = (value: boolean) => {
   open.value = value;
-}
+};
 
-function handelClearValue() {
+const handelClearValue = () => {
   topElement?.value?.scrollIntoView();
   currentIndexItem.value = 0;
   activeScrollItem = 0;
-}
+};
 
-function enterEvent() {
+const enterEvent = () => {
   if (itemList.value) {
     const selectedValue = (itemList?.value[currentIndexItem?.value] as HTMLElement).textContent;
     currentValue.value = selectedValue || '';
@@ -115,16 +115,16 @@ function enterEvent() {
     savedValue.value = currentIndexItem.value;
     scrollPosition(0);
   }
-}
+};
 
-function findCoin(value: string) {
+const findCoin = (value: string) => {
   const searchedCoins = props.data.filter((coin: string) => coin?.includes(value.toUpperCase()));
   return searchedCoins;
-}
+};
 
-function selectInput() {
+const selectInput = () => {
   open.value = !open.value;
-}
+};
 </script>
 
 <template>
@@ -154,7 +154,7 @@ function selectInput() {
       ]"
     ></Arrow-Icon>
     <Search-Icon
-     @click="selectInput"
+      @click="selectInput"
       :class="[open && !withArrowIcon ? 'long__short-icon long__short-changed-icon' : 'long__short-arrow-invisible']"
     ></Search-Icon>
     <div
@@ -266,7 +266,6 @@ function selectInput() {
     position: absolute;
     z-index: 3;
     width: 13rem;
-    
 
     &--light {
       background-color: $white;

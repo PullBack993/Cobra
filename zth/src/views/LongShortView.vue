@@ -38,13 +38,13 @@ const transformTime = (timeWord: string) => {
 
 const themeClass = computed(() => (store.themeDark ? 'long__short-theme--light' : 'long__short-theme--dark'));
 
-function valueChange(value: string) {
+const valueChange = (value: string) => {
   currentValue.value = value; // ETH req
-}
+};
 
-function timeChange(value: string) {
+const timeChange = (value: string) => {
   currentTime.value = value;
-}
+};
 
 onMounted(() => {
   reqData();
@@ -66,7 +66,7 @@ watch(
   }
 );
 
-function reqData() {
+const reqData = () => {
   const ransformedTime = transformTime(currentTime.value);
   const coinData = { time: ransformedTime, coin: currentValue.value };
   axios
@@ -79,7 +79,7 @@ function reqData() {
       loading.value = false;
       console.error(err);
     });
-}
+};
 
 intervalId.value = Number(setInterval(reqData, 20000));
 </script>

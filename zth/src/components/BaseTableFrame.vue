@@ -24,12 +24,6 @@ const store = useGlobalStore();
   border-radius: 1rem;
 
   &-dark {
-    // background-image: linear-gradient(
-    //   225deg,
-    //   #1e07140f 0%,
-    //   #13061e58 50%,
-    //   #0e2b40 100%
-    // );
     &.tb {
       border: 0.1rem solid $white-2;
     }

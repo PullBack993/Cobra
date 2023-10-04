@@ -24,7 +24,7 @@ const scrollHandler = () => {
   }
   lastScrollPosition = currentScrollPosition;
 };
-function updateScreenWidth() {
+const updateScreenWidth = () =>{
   screenSize.value = window.innerWidth;
 }
 onMounted(() => {
@@ -33,7 +33,7 @@ onMounted(() => {
   onScreenResize();
 });
 
-function onScreenResize() {
+const onScreenResize = () => {
   window.addEventListener('resize', () => {
     updateScreenWidth();
   });
