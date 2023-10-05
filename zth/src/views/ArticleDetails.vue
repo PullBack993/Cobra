@@ -4,6 +4,7 @@ import axios, { AxiosError } from 'axios';
 import { useGlobalStore } from '../store/global';
 import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
 import { IArticleDetails } from '../Interfaces/IArticleDetails';
+import defaultimage from '../assets/BaseIcons/default-image.png';
 
 const baseApiUrl = import.meta.env.VITE_APP_BASE_URL;
 
@@ -76,7 +77,10 @@ onMounted(async () => {
             </li>
           </ul>
           <div v-if="section.image.length > 0" class="article-image">
-            <img v-for="(image, i) in section.image" :key="i" :src="image" alt="Section Image" />
+            <div class="article-image"  v-for="(image, i) in section.image" >
+              <img v-if="image.length > 0" :key="i" :src="image" alt="Section Image" />
+              <img v-else :src="defaultimage" :alt="section.title" class="news__image" loading="lazy" />
+            </div>
           </div>
         </div>
       </div>

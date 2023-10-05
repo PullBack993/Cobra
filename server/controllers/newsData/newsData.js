@@ -175,7 +175,6 @@ async function fetchNews() {
   try {
     browser = await puppeteer.launch({
       headers: 'new',
-      args: ["--disable-setuid-sandbox", "--no-sandbox", "--single-process", "--no-zygote"],
       protocolTimeout: 240000,
     });
     const page = await browser.newPage();
@@ -204,6 +203,7 @@ async function fetchNews() {
 
         if (!isInDatabase) {
           const articlePage = await browser.newPage();
+          console.log('href', newsAllTitles[i].href)
           await articlePage.goto(`${newsAllTitles[i]?.href}`);
           const articleData = await extractArticleData(articlePage, src);
           if (articleData) {

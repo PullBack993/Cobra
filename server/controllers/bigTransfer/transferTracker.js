@@ -14,7 +14,7 @@ const maxValues = 20;
 let last20Values = [];
 let selectedVolume = 1;
 let btcPrice;
-startCronJobs();
+// startCronJobs();
 
 async function connectToBinanceWS() {
   try {
@@ -136,7 +136,7 @@ function convertTimestamp(timestamp) {
 
 function createWebSocketServer(port) {
   const server = http.createServer();
-  const corsWhitelist = ["http://127.0.0.1:5173", "http://localhost:5173", "http://localhost:8080"];
+  const corsWhitelist = ["http://127.0.0.1:5173", "http://localhost:5173", "http://localhost:8080"]; // TODO change before go live
 
   io = socketIO(server, {
     cors: {
@@ -228,19 +228,13 @@ async function get100CoinsByPrice(volumeInBitcoinEq = 1) {
     console.error(error);
   }
 }
-
-function startCronJobs() {
-  const job = new CronJob("0 */2 * * * ", () => {
-    connectToBinanceWS();
-  });
-
   const jobGetCurrentPriceBTC = new CronJob(" */1 * * * *", async () => {
     btcPrice = await getBtcPrice();
   });
 
   jobGetCurrentPriceBTC.start();
-  job.start();
-}
+  // job.start();
+
 module.exports = {
   connectToBinanceWS,
   createWebSocketServer,
