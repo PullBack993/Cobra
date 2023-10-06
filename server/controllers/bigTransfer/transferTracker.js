@@ -4,7 +4,7 @@ const socketIO = require("socket.io");
 const https = require("https");
 const CronJob = require("cron").CronJob;
 const CoinGecko = require("coingecko-api");
-const allCoins = require("./coins.json");
+const allCoins = require("../../coins.json");
 const CoinGeckoClient = new CoinGecko();
 
 let coinImageCache = {};
