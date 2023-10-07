@@ -6,8 +6,12 @@ import InputField from './InputField.vue';
 import sKeyIcon from '../assets/BaseIcons/key.svg';
 import { useGlobalStore } from '../store/global';
 import { handleScrollBoxWheel } from '@/components/utils/helper';
-import allCoins from '@/components/data/coins.json';
 
+let allCoins = [ {
+    "id": "bitcoin",
+    "symbol": "btc",
+    "name": "Bitcoin"
+  },];
 const store = useGlobalStore();
 const currentItem = ref(0);
 let activeScrollItem = 0;
@@ -71,7 +75,7 @@ const selectedItem = () => {
   }
 };
 
-const findCoin = (allCoins) => {
+const findCoin = () => {
   const searchedCoin = allCoins.find((coin) => {
     if (coin?.id === searchParams.value.toLowerCase() || coin?.symbol === searchParams.value.toLocaleLowerCase()) {
       return coin;
@@ -158,6 +162,9 @@ const onError = (errorText: string) => {
 };
 
 onMounted(() => {
+  axios.get('http://localhost:3000/coins/list').then((res) => {
+    allCoins = res.data;  
+  });
   console.log('initially mounted');
   timeout.value = setTimeout(() => {
     loading.value = true;
