@@ -61,6 +61,7 @@ const scrollBehavior = async (to, from, savedPosition) => {
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
+  strict: true, 
   scrollBehavior,
 });
 

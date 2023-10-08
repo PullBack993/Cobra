@@ -1,35 +1,23 @@
 <script setup lang="ts">
 import { io, Socket } from 'socket.io-client';
-import { onUnmounted, onMounted, ref, watch, computed } from 'vue';
+import { onUnmounted, onMounted, ref, computed } from 'vue';
 import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
-import { IWebsocket } from '../Interfaces/IWebsocket';
+import { IWebsocket, ITickVolume, ITick } from '../Interfaces/IWebsocket';
 import BaseTableFrame from '../components/BaseTableFrame.vue';
+import VolumeMonitorBoard from '../components/VolumeMonitorBoard.vue';
 import DropdownSmall from '../components/DropDownLongShort.vue';
 import { useGlobalStore } from '../store/global';
 import defaultimage from '../assets/BaseIcons/default-image.png';
 
-interface ITickVolume {
-  symbol: string;
-  volume: number;
-  buy: number;
-  sell: number;
-  image: string;
-}
-
-interface ITick {
-  symbol: string;
-  count: number;
-  buy: number;
-  sell: number;
-  image: string;
-}
-
+const store = useGlobalStore();
 const baseApiUrl = import.meta.env.VITE_APP_WEBSOCKET;
+
 const allowsCoins = ['BTC', 'USDT'];
 const transactions = ref<[IWebsocket]>([]);
-const ticks = ref<[ITick]>();
-const store = useGlobalStore();
+const ticks = ref<[ITick]>([]);
+const tickVolume = ref<[ITickVolume]>([]);
 const overlayByWSDisconnect = ref(false);
+const firstResponse = ref(false);
 const best10Coins = 10;
 const loading = ref(true);
 const last20Coins: IWebsocket[] = [];
@@ -37,9 +25,7 @@ const btcSelectedVolume = ref(1);
 
 const themeClass = computed(() => (store.themeDark ? 'volume-monitor__theme-light' : 'volume-monitor__theme-dark'));
 
-const tickVolume = ref<[ITickVolume]>();
 let socket: Socket;
-const firstResponse = ref(false);
 
 const sortAscending = (data: [ITickVolume] | [ITick], objProperty: string) => {
   data?.sort((a, b) => (b as any)[objProperty] - (a as any)[objProperty]);
@@ -224,7 +210,6 @@ const connectToSocket = () => {
       }
     });
   };
-
   attemptConnection();
 };
 
@@ -252,88 +237,18 @@ const btcCountChanged = (value: string) => {
   <div>
     <div class="volume-monitor" v-if="!loading">
       <div class="volume-monitor__additional-info">
-        <BaseTableFrame class="volume-monitor__container">
-          <span class="volume-monitor__left">
-            <h3 class="volume-monitor__title" :class="themeClass">Tick Board</h3>
-            <small :class="store.themeDark ? 'volume-monitor__title-small--light' : 'volume-monitor__title-small--dark'"
-              >The most ticked</small
-            >
-          </span>
-          <table class="tb__table">
-            <tbody>
-              <tr class="card__td-body" v-for="(tick, i) in ticks" :key="i">
-                <td>
-                  <div class="card__td-symbol">
-                    <span class="card__td-symbol-label">
-                      <img v-if="tick.image" :src="tick?.image" class="card__td-img" :alt="tick.symbol" />
-                      <img v-else :src="defaultimage" :alt="tick.symbol" class="card__td-img" loading="lazy" />
-                    </span>
-                  </div>
-                </td>
-                <td>
-                  <span class="card__td-text-muted"></span>
-                  <span class="card__td-text-dynamic" :class="themeClass"
-                    >{{ tick.symbol }}
-                    <label class="card__td-symbol-text-label">/USDT</label>
-                  </span>
-                </td>
-                <td>
-                  <span class="card__td-text-muted">Tick</span>
-                  <span class="card__td-text-dynamic">{{ tick.count }}</span>
-                </td>
-                <td>
-                  <span class="card__td-text-muted">Buy</span>
-                  <span class="card__td-text-dynamic green">{{ tick.buy }}</span>
-                </td>
-                <td>
-                  <span class="card__td-text-muted">Sell</span>
-                  <span class="card__td-text-dynamic red">{{ tick.sell }}</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </BaseTableFrame>
-        <BaseTableFrame class="volume-monitor__container">
-          <span class="volume-monitor__left">
-            <h3 class="volume-monitor__title" :class="themeClass">Volume Board</h3>
-            <small :class="store.themeDark ? 'volume-monitor__title-small--light' : 'volume-monitor__title-small--dark'"
-              >The most volume</small
-            >
-          </span>
-          <table class="tb__table">
-            <tbody v-if="tickVolume">
-              <tr class="card__td-body" v-for="(tick, i) in tickVolume" :key="i">
-                <td>
-                  <div class="card__td-symbol">
-                    <span class="card__td-symbol-label">
-                      <img v-if="tick.image" :src="tick?.image" class="card__td-img" :alt="tick.symbol" />
-                      <img v-else :src="defaultimage" :alt="tick.symbol" class="card__td-img" loading="lazy" />
-                    </span>
-                  </div>
-                </td>
-                <td>
-                  <span class="card__td-text-muted"></span>
-                  <span class="card__td-text-dynamic" :class="themeClass"
-                    >{{ tick.symbol }}
-                    <label class="card__td-symbol-text-label">/USDT</label>
-                  </span>
-                </td>
-                <td>
-                  <span class="card__td-text-muted">Volume (₿)</span>
-                  <span class="card__td-text-dynamic">{{ tick.volume.toFixed(2) }}</span>
-                </td>
-                <td>
-                  <span class="card__td-text-muted">Buy (₿)</span>
-                  <span class="card__td-text-dynamic green">{{ tick.buy.toFixed(2) }}</span>
-                </td>
-                <td>
-                  <span class="card__td-text-muted">Sell (₿)</span>
-                  <span class="card__td-text-dynamic red">{{ tick.sell.toFixed(2) }}</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </BaseTableFrame>
+        <VolumeMonitorBoard
+        :data="ticks"
+        :class-name="themeClass"
+        :board-title="'Tick Board'"
+        :board-title-addition="'The most ticked'"
+        />
+        <VolumeMonitorBoard
+        :data="tickVolume"
+        :class-name="themeClass"
+        :board-title="'Tick Board'"
+        :board-title-addition="'The most ticked'"
+        />
       </div>
       <div class="volume-monitor__main">
         <BaseTableFrame class="volume-monitor__container-tb">
@@ -366,6 +281,7 @@ const btcCountChanged = (value: string) => {
                         v-if="transaction.image"
                         :src="transaction?.image"
                         class="card__td-img"
+                        loading="lazy"
                         :alt="transaction.s.split('USDT')[0]"
                       />
                       <img
@@ -516,12 +432,6 @@ const btcCountChanged = (value: string) => {
     margin: 1rem;
     display: flex;
     flex-direction: column;
-  }
-
-  &__container {
-    margin-right: 2rem;
-    height: auto;
-    width: 100%;
   }
 
   &__container-tb {
