@@ -22,9 +22,9 @@ const store = useGlobalStore();
 <template>
   <BaseTableFrame class="volume-monitor__container" v-if="data">
     <span class="volume-monitor__left">
-      <h3 class="volume-monitor__title" :class="className">Tick Board</h3>
+      <h3 class="volume-monitor__title" :class="className">{{ boardTitle }}</h3>
       <small :class="store.themeDark ? 'volume-monitor__title-small--light' : 'volume-monitor__title-small--dark'"
-        >The most ticked</small
+        >{{boardTitleAddition}}</small
       >
     </span>
     <table class="tb__table">
@@ -52,14 +52,15 @@ const store = useGlobalStore();
           <td>
             <span class="card__td-text-muted">Buy</span>
             <span class="card__td-text-dynamic card__td-text-dynamic--green">{{
-              tick.count ? tick.buy : tick.buy.toFixed(2)
+              tick.count ? tick.sell : tick.sell.toFixed(2)
             }}</span>
           </td>
           <td>
             <span class="card__td-text-muted">Sell</span>
             <span class="card__td-text-dynamic card__td-text-dynamic--red">{{
-              tick.count ? tick.sell : tick.sell.toFixed(2)
+              tick.count ? tick.buy : tick.buy.toFixed(2)
             }}</span>
+          
           </td>
         </tr>
       </tbody>
@@ -85,7 +86,6 @@ const store = useGlobalStore();
   }
   &__title {
     font-weight: 500;
-    margin-bottom: 1rem;
     &-small--dark {
       color: $white-5;
     }

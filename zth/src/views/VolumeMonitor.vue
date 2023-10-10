@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { io, Socket } from 'socket.io-client';
-import { onUnmounted, onMounted, ref, computed } from 'vue';
+import { onBeforeUnmount, onMounted, ref, computed } from 'vue';
 import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
 import { IWebsocket, ITickVolume, ITick } from '../Interfaces/IWebsocket';
 import BaseTableFrame from '../components/BaseTableFrame.vue';
@@ -25,7 +25,11 @@ const btcSelectedVolume = ref(1);
 
 const themeClass = computed(() => (store.themeDark ? 'volume-monitor__theme-light' : 'volume-monitor__theme-dark'));
 
-let socket: Socket;
+const socket = io(baseApiUrl, {
+      extraHeaders: {
+        'my-custom-header': 'test', // TODO Replace with your authentication token value
+      },
+    });
 
 const sortAscending = (data: [ITickVolume] | [ITick], objProperty: string) => {
   data?.sort((a, b) => (b as any)[objProperty] - (a as any)[objProperty]);
@@ -161,11 +165,7 @@ const connectToSocket = () => {
   const maxConnectionAttempts = 5;
 
   const attemptConnection = () => {
-    socket = io(baseApiUrl, {
-      extraHeaders: {
-        'my-custom-header': 'test', // TODO Replace with your authentication token value
-      },
-    });
+
 
     socket.on('connect', () => {
       connectionAttempts = 0;
@@ -222,7 +222,7 @@ onMounted(() => {
   connectToSocket();
 });
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
   socket.disconnect();
 });
 
@@ -246,8 +246,8 @@ const btcCountChanged = (value: string) => {
         <VolumeMonitorBoard
         :data="tickVolume"
         :class-name="themeClass"
-        :board-title="'Tick Board'"
-        :board-title-addition="'The most ticked'"
+        :board-title="'Volume Board'"
+        :board-title-addition="'The most volume'"
         />
       </div>
       <div class="volume-monitor__main">
@@ -309,7 +309,7 @@ const btcCountChanged = (value: string) => {
                 <td>
                   <span>
                     <span class="card__td-text-muted">Volume (₿)</span>
-                    <span class="card__td-text-dynamic" :class="transaction.m ? 'green' : 'red'">
+                    <span class="card__td-text-dynamic" :class="!transaction.m ? 'green' : 'red'">
                       {{ Number(transaction.beq).toFixed(2) }}
                     </span>
                   </span>
@@ -317,8 +317,8 @@ const btcCountChanged = (value: string) => {
                 <td>
                   <span>
                     <span class="card__td-text-muted">Market Maker</span>
-                    <span class="card__td-text-dynamic" :class="transaction.m ? 'green' : 'red'">
-                      {{ transaction.m ? 'BUY' : 'SELL' }}
+                    <span class="card__td-text-dynamic" :class="!transaction.m ? 'green' : 'red'">
+                      {{ transaction.m ? 'SELL' : 'BUY' }}
                     </span>
                   </span>
                 </td>
@@ -441,6 +441,7 @@ const btcCountChanged = (value: string) => {
   &__additional-items {
     display: flex;
     justify-content: space-between;
+    height: 7rem;
   }
 
   &__dropdown-container {
@@ -451,7 +452,6 @@ const btcCountChanged = (value: string) => {
 
   &__title {
     font-weight: 500;
-    margin-bottom: 1rem;
     &-small--dark {
       color: $white-5;
     }

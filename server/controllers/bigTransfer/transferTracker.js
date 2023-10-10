@@ -37,8 +37,8 @@ async function connectToBinanceWS() {
       coins100.forEach(async (coin, index) => {
         if (
           msg.s === coin.symbol &&
-          msg.e === "aggTrade" &&
-          msg.q >= (coin.qEqBTC / 2)
+          msg.e === "trade" &&
+          msg.q >= (coin.qEqBTC)
         ) {
           const searchedCoin = findCoin(allCoins, msg.s.split("USDT")[0]);
           msg.image = await fetchCoinImage(searchedCoin);
@@ -90,15 +90,6 @@ async function fetchCoinImage(coin) {
   }
 }
 
-//       const image = await CoinGeckoClient.coins.fetch(coin.id);
-//       const imageUrl = determineImage(image);
-//       coinImageCache[coin.id] = imageUrl;
-//       return imageUrl;
-//     }
-//   } catch (error) {
-//     console.error("fetchCoinImage", error);
-//   }
-// }
 
 function determineImage(image) {
   return image?.data?.image?.thumb
@@ -136,7 +127,7 @@ function convertTimestamp(timestamp) {
 
 function createWebSocketServer(port) {
   const server = http.createServer();
-  const corsWhitelist = ["http://127.0.0.1:5173", "http://localhost:5173", "http://localhost:8080"]; // TODO change before go live
+  const corsWhitelist = ["http://127.0.0.1:5173", "http://localhost:5173"]; // TODO change before go live
 
   io = socketIO(server, {
     cors: {
@@ -146,12 +137,15 @@ function createWebSocketServer(port) {
       credentials: true,
     },
   });
-
-  io.on("connection", (socket) => {
+  io.on("connection", socket => {
     console.log("Connected to transfer tracker!");
     if (last20Values.length > 0) {
       io.emit("message", JSON.stringify(last20Values));
     }
+
+    socket.on("disconnect", () => {
+      console.log('from', socket.id, "Disconnected from transfer tracker!");
+    });
   });
 
   server.listen(port, () => {
@@ -209,7 +203,7 @@ async function get100CoinsByPrice(volumeInBitcoinEq = 1) {
 
             const pairs = sortedPairs.slice(0, 250).map((result) => ({
               symbol: result.symbol,
-              name: result.symbol.toLowerCase() + "@aggTrade",
+              name: result.symbol.toLowerCase() + "@trade",
               price: result.price,
               qEqBTC: (btcPrice * selectedVolume) / result.price,
             }));
