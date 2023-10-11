@@ -38,3 +38,20 @@
       background-color: #fffcfc;
     }
   };
+
+
+  @mixin trim($numLines: null){
+    @if $numLines != null {
+       display:-webkit-box;
+       -webkit-line-clamp:$numLines;
+       -webkit-box-orient:vertical; 
+       overflow:hidden;
+       white-space: pre-wrap;
+    }
+    @else{
+       text-overflow:ellipsis;
+       white-space:nowrap;
+       overflow:hidden;
+       display:block;
+    }
+ }

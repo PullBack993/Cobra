@@ -15,7 +15,7 @@ const mainUrl = process.env.NEWS_URL;
 fetchNews();
 
 router.get("/newsList", async (req, res) => {
-  const limit = 10;
+  const limit = 18;
   try {
     const page = parseInt(req.query.page);
     const skip = (page - 1) * limit;

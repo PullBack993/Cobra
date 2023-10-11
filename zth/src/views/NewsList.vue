@@ -101,18 +101,20 @@ const calculateDateTimeDifference = (dateStr: string): string => {
               loading="lazy"
             />
             <img v-else :src="defaultimage" :alt="section.title" class="news__image" loading="lazy" />
-            <p class="news__time">{{ calculateDateTimeDifference(section.createTime) }} ago</p>
 
             <h3 class="news__title">
               {{ section.title }}
             </h3>
-            <p
-              class="news__list-text"
-              :class="`${store.themeDark ? 'news__list-text--light' : 'news__list-text--dark'}`"
-            >
-              {{ section.sections[0]?.text[0] }}
-            </p>
+            <div class="news__text-container">
+              <p
+                class="news__list-text"
+                :class="`${store.themeDark ? 'news__list-text--light' : 'news__list-text--dark'}`"
+              >
+                {{ section.sections[0]?.text[0] }}
+              </p>
+            </div>
           </div>
+          <p class="news__time">{{ calculateDateTimeDifference(section.createTime) }} ago</p>
         </li>
       </router-link>
     </ul>
@@ -197,10 +199,17 @@ const calculateDateTimeDifference = (dateStr: string): string => {
 }
 
 .news {
+  max-width: $default-max-width;
   width: 100%;
   margin: auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+
   @media (min-width: $breakpoint_container) {
-    width: 80%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: 0.7fr;
+    gap: 2rem;
   }
 
   &__list-content {
@@ -209,23 +218,28 @@ const calculateDateTimeDifference = (dateStr: string): string => {
     color: $main-purple;
     line-height: 2.7rem;
     // flex-direction: column;
-    border-bottom: 1px solid black;
-    padding-bottom: 3rem;
+    // padding-bottom: 3rem;
 
     @media (min-width: $breakpoint_verysmall) {
-      padding-bottom: 6rem;
     }
   }
 
   &__list-items {
     display: flex;
     flex-direction: colum;
-    margin: 6rem auto;
     width: 95%;
     cursor: pointer;
+    transition: all 0.2s linear;
 
     @media (min-width: $breakpoint_large) {
       width: 80%;
+      margin-inline: auto;
+      margin-bottom: 1rem;
+      &:hover {
+        transform: scale(1.02);
+        border-radius: 1rem;
+        box-shadow: 2px 2px 5px 3px rgba(250, 250, 250, 0.2);
+      }
     }
   }
   &__list-link {
@@ -240,7 +254,7 @@ const calculateDateTimeDifference = (dateStr: string): string => {
     min-height: 17rem;
     height: 17rem;
     width: 90%;
-    margin: 0 auto;
+    margin-bottom: 5rem;
     border-radius: 1rem;
     float: left;
 
@@ -253,23 +267,22 @@ const calculateDateTimeDifference = (dateStr: string): string => {
     }
 
     @media (min-width: $breakpoint_small) {
-      min-width: 12rem;
-      min-height: 12rem;
-      height: 12rem;
-      width: auto;
-      margin-right: 1rem;
+      min-width: 15rem;
+      min-height: 15rem;
+      height: 15rem;
+      margin: 2rem auto 1rem auto;
     }
   }
 
   &__content {
     display: flex;
     flex-direction: column;
+    margin: 0 1.5rem;
+
     @media (min-width: $breakpoint_small) {
-      display: unset;
     }
 
     @media (min-width: $breakpoint_container) {
-      margin-left: 3rem;
     }
   }
 
@@ -284,13 +297,15 @@ const calculateDateTimeDifference = (dateStr: string): string => {
     font-size: 2rem;
     margin-bottom: 1rem;
     line-height: 1.2;
+    margin-top: 1rem;
+    @include trim(2);
+  }
+  &__text-container {
+    @include trim(2);
   }
   &__list-text {
     text-align: justify;
-    overflow: clip;
-    text-overflow: ellipsis;
-    -webkit-line-clamp: 6;
-    -webkit-box-orient: vertical;
+    display: inline;
     &--light {
       color: $black;
     }
@@ -300,7 +315,6 @@ const calculateDateTimeDifference = (dateStr: string): string => {
   }
 }
 .news__list-link:hover .news__title {
-  text-decoration: underline;
 }
 
 .button-container {
