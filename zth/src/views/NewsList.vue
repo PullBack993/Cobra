@@ -203,7 +203,15 @@ const calculateDateTimeDifference = (dateStr: string): string => {
   width: 100%;
   margin: auto;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(1, 1fr);
+  @media(min-width: $breakpoint_mobiletabs){
+    width: 80%;
+
+  }
+  @media(min-width: $breakpoint_small){
+    grid-template-columns: repeat(2, 1fr);
+    width: 100%
+  }
 
   @media (min-width: $breakpoint_container) {
     display: grid;
@@ -213,12 +221,8 @@ const calculateDateTimeDifference = (dateStr: string): string => {
   }
 
   &__list-content {
-    // text-align: left;
-    // align-items: left;
     color: $main-purple;
     line-height: 2.7rem;
-    // flex-direction: column;
-    // padding-bottom: 3rem;
 
     @media (min-width: $breakpoint_verysmall) {
     }
@@ -250,34 +254,17 @@ const calculateDateTimeDifference = (dateStr: string): string => {
   }
 
   &__image {
-    min-width: 10rem;
     min-height: 17rem;
     height: 17rem;
-    width: 90%;
     margin-bottom: 5rem;
     border-radius: 1rem;
-    float: left;
-
-    @media (min-width: $breakpoint_mobiletabs) {
-      width: 90%;
-    }
-
-    @media (min-width: $breakpoint_verysmall) {
-      width: 70%;
-    }
-
-    @media (min-width: $breakpoint_small) {
-      min-width: 15rem;
-      min-height: 15rem;
-      height: 15rem;
-      margin: 2rem auto 1rem auto;
-    }
+    margin: 2rem auto 1rem auto;
   }
 
   &__content {
     display: flex;
     flex-direction: column;
-    margin: 0 1.5rem;
+    margin: 2rem 1.5rem;
 
     @media (min-width: $breakpoint_small) {
     }
@@ -301,7 +288,7 @@ const calculateDateTimeDifference = (dateStr: string): string => {
     @include trim(2);
   }
   &__text-container {
-    @include trim(2);
+    @include trim(4);
   }
   &__list-text {
     text-align: justify;
