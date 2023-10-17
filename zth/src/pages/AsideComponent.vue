@@ -49,8 +49,8 @@ const switchTheme = () => {
   if (dark.value) {
     document.body.style.background = 'white';
   } else {
-    document.body.style.background =
-      'linear-gradient(189deg, rgba(29,12,56,1) 0%, rgba(12,20,68,1) 53%, rgba(44,16,65,1) 100%)';
+    document.body.style.background = 'linear-gradient(to right, rgb(0, 0, 0), #1d032a 30%, #000000 70%, #1d032a 95%)';
+
   }
 };
 

@@ -101,8 +101,12 @@ body {
   min-height: 100vh;
   margin: 0;
   color: var(--color-text);
-  background: linear-gradient(189deg, rgba(29,12,56,1) 0%, rgba(12,20,68,1) 53%, rgba(44,16,65,1) 100%);
-  transition: color 0.5s, background-color 0.5s;
+  // first color
+  // background: linear-gradient(189deg, rgba(29,12,56,1) 0%, rgba(12,20,68,1) 53%, rgba(44,16,65,1) 100%);
+  // background: rgb(138,0,255);
+
+  background: #000000;  /* fallback for old browsers */
+  background: linear-gradient(to right, rgb(0, 0, 0), #1d032a 30%, #000000 70%, #1d032a 95%);
   line-height: 2.1rem;
   // font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
   //   Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",

@@ -6,9 +6,9 @@
 import { computed } from 'vue';
 
 interface Props {
-  borderRadius?: string;
-  loaderWidth: number;
-  loaderHeight: number;
+  borderRadius?: number | string;
+  loaderWidth?: number | string;
+  loaderHeight?: number;
   widthUnit?: string;
 }
 
@@ -23,8 +23,8 @@ const styling = computed(() => {
   }
 
   return {
-    'border-radius': `${props.borderRadius}`,
-    width: `${props.loaderWidth}${props.widthUnit}`,
+    'border-radius': `${props.borderRadius}rem`,
+    width: `${props.loaderWidth}${typeof(props.loaderWidth) === 'string' ? '' : props.widthUnit }`,
     height: `${props.loaderHeight}rem`,
   };
 });

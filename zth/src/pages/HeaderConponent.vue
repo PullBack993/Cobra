@@ -92,7 +92,7 @@ onUnmounted(() => {
     background-color: $white;
   }
   &--dark {
-    background-color: $bg-dark-purple;
+    background: linear-gradient(to right, rgb(0, 0, 0), #1d032a 30%, #000000 70%, #1d032a 95%);
   }
 }
 .main {

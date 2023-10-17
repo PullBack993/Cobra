@@ -66,81 +66,103 @@ const calculateDateTimeDifference = (dateStr: string): string => {
   const diffSeconds: number = Math.floor((diff % (60 * 1000)) / 1000);
 
   if (diffYears > 0) {
-    return `${diffYears} year${diffYears > 1 ? 's' : ''}`;
+    return `${diffYears} Year${diffYears > 1 ? 's' : ''}`;
   } else if (diffMonths > 0) {
-    return `${diffMonths} month${diffMonths > 1 ? 's' : ''}`;
+    return `${diffMonths} Month${diffMonths > 1 ? 's' : ''}`;
   } else if (diffDays > 0) {
-    return `${diffDays} day${diffDays > 1 ? 's' : ''}`;
+    return `${diffDays} D${diffDays > 1 ? 's' : ''}`;
   } else if (diffHours > 0) {
-    return `${diffHours} hour${diffHours > 1 ? 's' : ''}`;
+    return `${diffHours} H${diffHours > 1 ? 's' : ''}`;
   } else if (diffMinutes > 0) {
-    return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''}`;
+    return `${diffMinutes} M`;
   } else {
-    return `${diffSeconds} second${diffSeconds > 1 ? 's' : ''}`;
+    return `${diffSeconds} Second${diffSeconds > 1 ? 's' : ''}`;
   }
 };
 </script>
 
 <template>
-  <div class="news" v-if="newsListData">
-    <ul v-for="(section, index) in newsListData" :key="index" class="news__list-items">
-      <router-link
-        class="news__list-link"
-        :to="{
-          name: 'ArticleDetails',
-          params: { id: section._id, title: section.title },
-        }"
-      >
-        <li class="news__list-content">
-          <div class="news__content">
-            <img
-              v-if="section.titleImage.length > 0"
-              :src="section.titleImage"
-              :alt="section.title"
-              class="news__image"
-              loading="lazy"
-            />
-            <img v-else :src="defaultimage" :alt="section.title" class="news__image" loading="lazy" />
-
-            <h3 class="news__title">
-              {{ section.title }}
-            </h3>
-            <div class="news__text-container">
-              <p
-                class="news__list-text"
-                :class="`${store.themeDark ? 'news__list-text--light' : 'news__list-text--dark'}`"
-              >
-                {{ section.sections[0]?.text[0] }}
-              </p>
+  <div class="news-container">
+    <div class="news" v-if="newsListData">
+      <ul v-for="(section, index) in newsListData" :key="index" class="news__list-items">
+        <router-link
+          class="news__list-link"
+          :to="{
+            name: 'ArticleDetails',
+            params: { id: section._id, title: section.title },
+          }"
+        >
+          <li class="news__list-content">
+            <div class="news__content">
+              <img
+                v-if="section.titleImage.length > 0"
+                :src="section.titleImage"
+                :alt="section.title"
+                class="news__image"
+                loading="lazy"
+              />
+              <img v-else :src="defaultimage" :alt="section.title" class="news__image" loading="lazy" />
+              <div class="news__container">
+                <h3 class="news__title">
+                  {{ section.title }}
+                </h3>
+                <div class="news__text-container">
+                  <p
+                    class="news__list-text"
+                    :class="`${store.themeDark ? 'news__list-text--light' : 'news__list-text--dark'}`"
+                  >
+                    {{ section.sections[0]?.text[0] }}
+                  </p>
+                </div>
+                <p class="news__time">{{ calculateDateTimeDifference(section.createTime) }} ago</p>
+              </div>
             </div>
-          </div>
-          <p class="news__time">{{ calculateDateTimeDifference(section.createTime) }} ago</p>
-        </li>
-      </router-link>
-    </ul>
-    <div v-if="loading" class="container">
-      <div v-for="(_, index) in loadingLength" :key="index">
-        <div class="loader">
-          <placeHolderLoader
-            class="loader-spliter"
-            :loader-width="26"
-            width-unit="rem"
-            :loader-height="12"
-          ></placeHolderLoader>
-          <div class="loader-content">
-            <placeHolderLoader
-              class="loader-spliter"
-              :loader-width="95"
-              width-unit="%"
-              :loader-height="5"
-            ></placeHolderLoader>
+          </li>
+        </router-link>
+      </ul>
+    </div>
 
+    <div v-if="loading" class="news loading">
+      <div v-for="(_, index) in loadingLength" :key="index">
+        <div class="news__content">
+          <div>
+            <placeHolderLoader class="news__image loading__image" :loader-height="13"> </placeHolderLoader>
+          </div>
+          <div class="loading__container">
             <placeHolderLoader
-              class="loader-spliter"
-              :loader-width="95"
-              width-unit="%"
-              :loader-height="4"
+              class="news__title loading__content"
+              :loader-height="2"
+              :width-unit="'rem'"
+              :loader-width="'auto'"
+              :border-radius="1"
             ></placeHolderLoader>
+            <placeHolderLoader
+              class="news__title loading__content"
+              :loader-height="2"
+              :loader-width="'auto'"
+              :width-unit="'rem'"
+              :border-radius="1"
+            ></placeHolderLoader>
+            <div class="loading__text-container">
+              <div v-for="(_, index) in 4" :key="index">
+                <placeHolderLoader
+                  class="loading__text"
+                  :border-radius="1"
+                  :width-unit="'rem'"
+                  :loader-width="'auto'"
+                  :loader-height="1"
+                >
+                </placeHolderLoader>
+              </div>
+            </div>
+            <placeHolderLoader
+              class="loading__time"
+              :border-radius="1"
+              :width-unit="'rem'"
+              :loader-width="4"
+              :loader-height="1"
+            >
+            </placeHolderLoader>
           </div>
         </div>
       </div>
@@ -154,32 +176,21 @@ const calculateDateTimeDifference = (dateStr: string): string => {
 </template>
 
 <style scoped lang="scss">
-.container {
-  margin: auto;
-  width: 97%;
-  @media (min-width: $breakpoint_large) {
-    width: 82%;
-  }
-}
-.loader {
-  display: flex;
-  height: 12rem;
-  margin: 6rem auto;
-  align-items: center;
-  @media (min-width: $breakpoint_verysmall) {
-    align-items: initial;
-    height: 10rem;
-  }
-
-  &-content {
-    display: flex;
+.loading {
+  overflow: hidden;
+  &__container {
     width: 100%;
-    flex-direction: column;
-    margin-left: 1rem;
-    height: 14rem;
-    @media (min-width: $breakpoint_medium) {
-      margin-left: 3rem;
-    }
+  }
+  &__time {
+    margin-top: 1rem;
+    margin-right: 0.5rem;
+    float: right;
+  }
+  &__text-container {
+    margin-top: 2rem;
+  }
+  &__text {
+    margin: 1rem 0;
   }
   &-spliter {
     box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
@@ -196,21 +207,32 @@ const calculateDateTimeDifference = (dateStr: string): string => {
       top: 0;
     }
   }
+  &__image {
+    width: 16rem;
+    height: 10rem;
+    margin-bottom: 5rem;
+    border-radius: 1rem;
+    margin-top: 3rem;
+    margin-right: 2rem;
+    @media (min-width: $breakpoint-medium) {
+      width: clamp(16rem, 17vw + 1rem, 23rem);
+      height: 13rem;
+    }
+    @media (min-width: $breakpoint-container) {
+      width: clamp(20rem, 12vw + 1rem, 23rem);
+    }
+  }
 }
 
 .news {
-  max-width: $default-max-width;
+  max-width: $max-width;
   width: 100%;
   margin: auto;
   display: grid;
   grid-template-columns: repeat(1, 1fr);
-  @media(min-width: $breakpoint_mobiletabs){
-    width: 80%;
 
-  }
-  @media(min-width: $breakpoint_small){
+  @media (min-width: $breakpoint_medium) {
     grid-template-columns: repeat(2, 1fr);
-    width: 100%
   }
 
   @media (min-width: $breakpoint_container) {
@@ -231,18 +253,17 @@ const calculateDateTimeDifference = (dateStr: string): string => {
   &__list-items {
     display: flex;
     flex-direction: colum;
-    width: 95%;
+    width: 100%;
     cursor: pointer;
     transition: all 0.2s linear;
 
     @media (min-width: $breakpoint_large) {
-      width: 80%;
+      width: 95%;
       margin-inline: auto;
       margin-bottom: 1rem;
       &:hover {
         transform: scale(1.02);
         border-radius: 1rem;
-        box-shadow: 2px 2px 5px 3px rgba(250, 250, 250, 0.2);
       }
     }
   }
@@ -254,19 +275,37 @@ const calculateDateTimeDifference = (dateStr: string): string => {
   }
 
   &__image {
-    min-height: 17rem;
-    height: 17rem;
-    margin-bottom: 5rem;
+    // min-height: 14rem;
+    height: 13rem;
+    margin-bottom: 2rem;
     border-radius: 1rem;
-    margin: 2rem auto 1rem auto;
+    margin-top: 3rem;
+    margin-right: 2rem;
+    margin-inline: auto;
+    width: 20rem;
+    @media (min-width: $breakpoint_verysmall) {
+      margin-inline: unset;
+      margin-right: 2rem;
+      margin-bottom: 5rem;
+    }
+    @media (min-width: $breakpoint-medium) {
+      height: 13rem;
+    }
   }
 
   &__content {
     display: flex;
     flex-direction: column;
     margin: 2rem 1.5rem;
+    border-radius:  2rem;
+    padding-top: 2rem;
+    padding-right: 1.5rem;
+    padding-left: 1rem;
+    background: linear-gradient(to right, rgba(158, 158, 158, 0) , rgba(255, 255, 255, 0) 20%, rgba(158, 158, 158, 0.24) 152%);
 
-    @media (min-width: $breakpoint_small) {
+
+    @media (min-width: $breakpoint_verysmall) {
+      flex-direction: row;
     }
 
     @media (min-width: $breakpoint_container) {
@@ -274,14 +313,15 @@ const calculateDateTimeDifference = (dateStr: string): string => {
   }
 
   &__time {
-    font-size: 1.2rem;
+    font-size: $font-small-tiny;
     text-align: right;
+    margin: 1rem;
   }
   &__title {
     // text-align: justify;
     text-align: left;
     font-weight: 500;
-    font-size: 2rem;
+    font-size: $clamp-font-small-medium;
     margin-bottom: 1rem;
     line-height: 1.2;
     margin-top: 1rem;
@@ -293,6 +333,7 @@ const calculateDateTimeDifference = (dateStr: string): string => {
   &__list-text {
     text-align: justify;
     display: inline;
+    font-size: $clamp-font-small-tiny-very-small;
     &--light {
       color: $black;
     }
@@ -301,12 +342,21 @@ const calculateDateTimeDifference = (dateStr: string): string => {
     }
   }
 }
-.news__list-link:hover .news__title {
-}
 
 .button-container {
   display: flex;
   justify-content: center;
   margin-bottom: 5rem;
+  height: 5rem;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-color: rgb(163, 184, 194);
+  }
+
+  100% {
+    background-color: rgb(240, 243, 245);
+  }
 }
 </style>

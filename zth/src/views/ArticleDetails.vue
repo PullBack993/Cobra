@@ -46,7 +46,7 @@ onMounted(async () => {
       <div v-for="(section, index) in article?.sections" :key="index" class="article-section">
         <h2 class="article-title">{{ section?.heading }}</h2>
         <div class="article-content">
-          <div v-for="(text, index) in section.text" :key="index">
+          <div :class="{'article-text--big': index === 0}" v-for="(text, i) in section.text" :key="i">
             <p
               ref="text"
               class="article-text"
@@ -77,7 +77,7 @@ onMounted(async () => {
             </li>
           </ul>
           <div v-if="section.image.length > 0" class="article-image">
-            <div class="article-image"  v-for="(image, i) in section.image" >
+            <div class="article-image" v-for="(image, i) in section.image">
               <img v-if="image.length > 0" :key="i" :src="image" alt="Section Image" />
               <img v-else :src="defaultimage" :alt="section.title" class="news__image" loading="lazy" />
             </div>
@@ -178,15 +178,19 @@ onMounted(async () => {
     }
 
     &--title {
-      background: $gradient-news-text;
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: $white;
       word-wrap: break-word;
-      overflow: hidden;
-      -webkit-box-orient: vertical;
-      line-height: 5rem;
-      font-weight: bold;
+      line-height: 3rem;
+      font-weight: 900;
+      font-size: $clamp-font-large-quite-large;
+      position: relative;
+      &::after{
+        position: absolute;
+        content: '';
+        background-color: black;
+        width:10rem;
+        height: 10;
+      }
     }
 
     &--image {
@@ -201,6 +205,18 @@ onMounted(async () => {
   &-section {
     margin-bottom: 2rem;
   }
+  &-text--big:nth-child(1) {
+    margin-top: 4rem;
+    & > p:first-child::first-line {
+      font-weight: 523;
+    }
+    & > p:first-child::first-letter {
+      font-size: 5em;
+      float: left;
+      line-height: 0.4;
+      margin-right: 0.5rem;
+    }
+  }
   &-title {
     font-size: 3rem;
     background: $gradient-news-text;
@@ -212,12 +228,12 @@ onMounted(async () => {
     word-wrap: break-word;
     line-height: 6rem;
   }
-
   &-text {
     font-size: 1.9rem;
     line-height: 1.5;
     margin-bottom: 1rem;
     word-wrap: break-word;
+
     &::after {
       content: '\a';
       white-space: pre;
