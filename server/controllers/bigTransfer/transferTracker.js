@@ -42,7 +42,10 @@ async function connectToBinanceWS() {
         ) {
           const searchedCoin = findCoin(allCoins, msg.s.split("USDT")[0]);
           msg.image = await fetchCoinImage(searchedCoin);
-          const test = (msg.p * msg.q) / (btcPrice * selectedVolume);
+          console.log('btc price =>',btcPrice)
+          console.log('selected volume =>', selectedVolume)
+          const test = (msg.p * msg.q) / btcPrice
+          console.log('test =>',test)
           msg.beq = test;
           msg.T = convertTimestamp(msg.T);
           last20Values.push(msg);
@@ -182,8 +185,7 @@ async function getBtcPrice() {
   }
 }
 
-async function get100CoinsByPrice(volumeInBitcoinEq = 1) {
-  selectedVolume = volumeInBitcoinEq;
+async function get100CoinsByPrice() {
   btcPrice = await getBtcPrice();
   try {
     return new Promise((resolve, reject) => {
@@ -205,7 +207,7 @@ async function get100CoinsByPrice(volumeInBitcoinEq = 1) {
               symbol: result.symbol,
               name: result.symbol.toLowerCase() + "@trade",
               price: result.price,
-              qEqBTC: (btcPrice * selectedVolume) / result.price,
+              qEqBTC: (btcPrice * 0.5) / result.price, // half of price mean 0.5 btc selected
             }));
 
             // console.log("Top 100 pairs by market capitalization with USDT:", pairs.slice(0, 100));
