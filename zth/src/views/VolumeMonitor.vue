@@ -18,18 +18,18 @@ const ticks = ref<[ITick]>([]);
 const tickVolume = ref<[ITickVolume]>([]);
 const overlayByWSDisconnect = ref(false);
 const firstResponse = ref(false);
-const best10Coins = 10;
+const best20Coins = 20;
 const loading = ref(true);
 const last20Coins: IWebsocket[] = [];
-const btcSelectedVolume = ref(1);
+const btcSelectedVolume = ref(0.5);
 
 const themeClass = computed(() => (store.themeDark ? 'volume-monitor__theme-light' : 'volume-monitor__theme-dark'));
 
 const socket = io(baseApiUrl, {
-      extraHeaders: {
-        'my-custom-header': 'test', // TODO Replace with your authentication token value
-      },
-    });
+  extraHeaders: {
+    'my-custom-header': 'test', // TODO Replace with your authentication token value
+  },
+});
 
 const sortAscending = (data: [ITickVolume] | [ITick], objProperty: string) => {
   data?.sort((a, b) => (b as any)[objProperty] - (a as any)[objProperty]);
@@ -101,7 +101,6 @@ const getObjectBySymbol = (newTransaction: IWebsocket) => {
     const marketMaker = newTransaction.m;
     const img = newTransaction.image;
     const matchingSymbol = tickVolume.value?.find((obj) => obj.symbol === symbol);
-    console.log('matchingSymbol', matchingSymbol);
     if (matchingSymbol) {
       matchingSymbol.volume += volumeEqualBtc;
       if (marketMaker) {
@@ -110,7 +109,7 @@ const getObjectBySymbol = (newTransaction: IWebsocket) => {
         matchingSymbol.sell += volumeEqualBtc;
       }
     } else {
-       if (tickVolume.value?.length >= best10Coins) {
+      if (tickVolume.value?.length >= best20Coins) {
         tickVolume.value?.pop();
       }
       tickVolume.value?.push({
@@ -120,7 +119,6 @@ const getObjectBySymbol = (newTransaction: IWebsocket) => {
         sell: marketMaker ? 0 : volumeEqualBtc,
         image: img,
       });
-     
     }
   }
 };
@@ -139,7 +137,7 @@ const getVolumeBySymbol = (newTransaction: IWebsocket | undefined) => {
         matchingSymbol.sell += 1;
       }
     } else {
-      if (ticks.value?.length >= best10Coins) {
+      if (ticks.value?.length >= best20Coins) {
         ticks.value?.pop();
       }
       ticks.value?.push({
@@ -149,7 +147,6 @@ const getVolumeBySymbol = (newTransaction: IWebsocket | undefined) => {
         sell: marketMaker ? 0 : 1,
         image: img,
       });
-   
     }
   }
 };
@@ -165,24 +162,18 @@ const connectToSocket = () => {
   const maxConnectionAttempts = 5;
 
   const attemptConnection = () => {
-
-
     socket.on('connect', () => {
       connectionAttempts = 0;
-    });
-
-    socket.on('disconnect', () => {
-      console.log('Disconnected from websocket');
     });
 
     socket.on('message', (responseData) => {
       const dataObject: [IWebsocket] = JSON.parse(responseData).reverse();
       transactions.value = dataObject.filter((item: IWebsocket) => {
         last20Coins.unshift(item);
-        if (last20Coins.length > 20) {
+        if (last20Coins.length > 100 && item.beq >= btcSelectedVolume.value) {
           last20Coins.pop();
         }
-        return item.beq >= btcSelectedVolume.value / 2;
+        return item.beq >= btcSelectedVolume.value;
       });
 
       if (!firstResponse.value) {
@@ -228,7 +219,7 @@ onBeforeUnmount(() => {
 
 const btcCountChanged = (value: string) => {
   btcSelectedVolume.value = Number(value.split(' ')[0]);
-  transactions.value = last20Coins.filter((item: IWebsocket) => item.beq >= btcSelectedVolume.value / 2).reverse();
+  transactions.value = last20Coins.filter((item: IWebsocket) => item.beq >= btcSelectedVolume.value).reverse();
   updateTableBoard();
 };
 </script>
@@ -238,16 +229,16 @@ const btcCountChanged = (value: string) => {
     <div class="volume-monitor" v-if="!loading">
       <div class="volume-monitor__additional-info">
         <VolumeMonitorBoard
-        :data="ticks"
-        :class-name="themeClass"
-        :board-title="'Tick Board'"
-        :board-title-addition="'The most ticked'"
+          :data="ticks"
+          :class-name="themeClass"
+          :board-title="'Tick Board'"
+          :board-title-addition="'The most ticked'"
         />
         <VolumeMonitorBoard
-        :data="tickVolume"
-        :class-name="themeClass"
-        :board-title="'Volume Board'"
-        :board-title-addition="'The most volume'"
+          :data="tickVolume"
+          :class-name="themeClass"
+          :board-title="'Volume Board'"
+          :board-title-addition="'The most volume'"
         />
       </div>
       <div class="volume-monitor__main">
@@ -261,9 +252,9 @@ const btcCountChanged = (value: string) => {
               >
             </span>
             <div class="volume-monitor__dropdown-container">
-              <DropdownSmall :data="allowsCoins" :with-arrow-icon="true" :readonly="true" />
+              <!-- <DropdownSmall :data="allowsCoins" :with-arrow-icon="true" :readonly="true" /> -->
               <DropdownSmall
-                :data="['1 BTC', '2 BTC', '3 BTC', '4 BTC', '5 BTC']"
+                :data="['0.5 BTC', '1 BTC', '2 BTC', '3 BTC', '4 BTC', '5 BTC']"
                 :with-arrow-icon="true"
                 :readonly="true"
                 @new-value:input="btcCountChanged"
@@ -273,7 +264,7 @@ const btcCountChanged = (value: string) => {
           <table class="tb__table">
             <thead></thead>
             <tbody>
-              <tr class="card__td-body" v-for="(transaction, i) in transactions" :key="i">
+              <tr class="card__td-body" v-for="(transaction, i) in last20Coins" :key="i">
                 <td>
                   <div class="card__td-symbol">
                     <span class="card__td-symbol-label">
@@ -310,7 +301,7 @@ const btcCountChanged = (value: string) => {
                   <span>
                     <span class="card__td-text-muted">Volume (₿)</span>
                     <span class="card__td-text-dynamic" :class="!transaction.m ? 'green' : 'red'">
-                      {{ Number(transaction.beq).toFixed(2) }}
+                      {{ Number(transaction.beq).toFixed(4) }}
                     </span>
                   </span>
                 </td>
@@ -326,7 +317,7 @@ const btcCountChanged = (value: string) => {
                   <span>
                     <span class="card__td-text-muted">Current Price</span>
                     <span class="card__td-text-dynamic">
-                      {{ Number(transaction.p).toFixed(2) }}
+                      {{ Number(transaction.p).toFixed(4) }}
                     </span>
                   </span>
                 </td>
@@ -334,7 +325,7 @@ const btcCountChanged = (value: string) => {
                   <span>
                     <span class="card__td-text-muted">Quantity</span>
                     <span class="card__td-text-dynamic">
-                      {{ Number(transaction.q).toFixed(2) }}
+                      {{ Number(transaction.q).toFixed(4) }}
                     </span>
                   </span>
                 </td>
@@ -394,12 +385,24 @@ const btcCountChanged = (value: string) => {
   margin-right: 1rem;
   margin-top: 1rem;
 }
+:deep(.volume-monitor__container:first-of-type) {
+    margin-right: 1rem;
+  }
+
 @media (min-width: $breakpoint_medium) {
   :deep(.root) {
     margin-right: 2rem;
     margin-bottom: 6rem;
   }
+:deep(.volume-monitor__container:first-of-type) {
+  margin-right: 0rem;
+
 }
+}
+:deep(.tb_responsive) {
+  max-height: 100rem;
+}
+
 .overlay {
   position: fixed;
   top: 0;
@@ -426,7 +429,7 @@ const btcCountChanged = (value: string) => {
 
 .volume-monitor {
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
 
   &__left {
     margin: 1rem;
@@ -435,7 +438,8 @@ const btcCountChanged = (value: string) => {
   }
 
   &__container-tb {
-    overflow: hidden;
+    overflow: auto;
+    max-height: 119rem;
   }
 
   &__additional-items {
@@ -477,7 +481,11 @@ const btcCountChanged = (value: string) => {
   &__additional-info {
     display: flex;
     width: 100%;
+      margin-top: 1rem;
     flex-direction: column;
+    @media (min-width: $breakpoint_medium) {
+      margin-top: 0;
+    }
   }
   &__main {
     width: 100%;
@@ -586,6 +594,7 @@ tr:nth-child(even) {
       flex: 0 0 auto;
       width: 33.33%;
       flex-direction: column;
+      margin-right: 2rem;
     }
     &__main {
       width: 66.66%;

@@ -13,7 +13,7 @@ const baseApiUrl = import.meta.env.VITE_APP_BASE_URL;
 const store = useGlobalStore();
 const newsListData = ref<Array<IArticle>>([]);
 const loading = ref(true);
-const loadingLength = ref(12);
+const loadingLength = ref(18);
 const page = ref(0);
 const disabledBtn = ref(false);
 const buttonText = ref('Show more');
@@ -47,7 +47,6 @@ const loadNews = () => {
 };
 
 onMounted(() => {
-  loadingLength.value = Math.ceil(window.innerHeight / 10 / 17);
   loadNews();
 });
 
@@ -269,6 +268,7 @@ const calculateDateTimeDifference = (dateStr: string): string => {
   }
   &__list-link {
     text-decoration: none;
+    width: 100%;
   }
   &__list-content {
     max-width: 100vw;

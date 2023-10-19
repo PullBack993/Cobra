@@ -23,4 +23,4 @@ $clamp-font-small-tiny-very-small: clamp($font-small-tiny, 1vw + 0.8rem,$font-ve
 $clamp-font-small-medium: clamp($font-small, 1vw + 0.8rem, $font-medium);
 $clamp-font-large-almost-large: clamp($font-almost-large, 2vw + 1rem, $font-large);
 $clamp-font-small-medium-large: clamp($font-small, 3vw + 1rem, $font-medium-large);
-$clamp-font-large-quite-large: clamp($font-large, 2vw + 1rem, $font-very-large);
+$clamp-font-large-quite-large: clamp($font-quite-large, 3vw + 1rem, $font-very-large);

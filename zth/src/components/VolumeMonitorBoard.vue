@@ -79,8 +79,7 @@ const store = useGlobalStore();
     flex-direction: column;
   }
 
-  &__container {
-    margin-right: 2rem;
+  &__container{
     height: auto;
     width: 100%;
   }

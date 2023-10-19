@@ -165,11 +165,11 @@ onMounted(async () => {
 .article {
   max-width: 90rem;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
 
   &-header {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 6rem;
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -180,7 +180,7 @@ onMounted(async () => {
     &--title {
       color: $white;
       word-wrap: break-word;
-      line-height: 3rem;
+      line-height: 4.5rem;
       font-weight: 900;
       font-size: $clamp-font-large-quite-large;
       position: relative;
@@ -218,18 +218,18 @@ onMounted(async () => {
     }
   }
   &-title {
-    font-size: 3rem;
-    background: $gradient-news-text;
+    font-size: $clamp-font-large-quite-large;
+    background: $white;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     font-weight: bold;
     margin-bottom: 1rem;
     word-wrap: break-word;
-    line-height: 6rem;
+    line-height: 4rem;
   }
   &-text {
-    font-size: 1.9rem;
+    font-size: $clamp-font-small-medium;
     line-height: 1.5;
     margin-bottom: 1rem;
     word-wrap: break-word;
@@ -249,14 +249,14 @@ onMounted(async () => {
   }
 
   &-paragraph {
-    font-size: 2rem;
+    font-size: $clamp-font-small-medium;
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: bold;
     margin-bottom: 1rem;
     word-wrap: break-word;
-    line-height: 4rem;
+    line-height: 3rem;
     &--light {
       background-color: $black;
     }
@@ -299,16 +299,6 @@ onMounted(async () => {
     display: flex;
     justify-content: center;
     margin-bottom: 1rem;
-    // &::after {
-    //   content: 'Zero To Hero';
-    //   width: 17rem;
-    //   height: 3rem;
-    //   position: absolute;
-    //   top: 94%;
-    //   left: 81%;
-    //   background-color: black;
-    //   color: white;
-    // }
 
     img {
       max-width: 100%;
