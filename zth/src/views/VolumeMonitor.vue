@@ -264,7 +264,7 @@ const btcCountChanged = (value: string) => {
           <table class="tb__table">
             <thead></thead>
             <tbody>
-              <tr class="card__td-body" v-for="(transaction, i) in last20Coins" :key="i">
+              <tr class="card__td-body" v-for="(transaction, i) in transactions" :key="i">
                 <td>
                   <div class="card__td-symbol">
                     <span class="card__td-symbol-label">
@@ -440,6 +440,8 @@ const btcCountChanged = (value: string) => {
   &__container-tb {
     overflow: auto;
     max-height: 119rem;
+//     max-height: 50rem;
+// overflow: auto;
   }
 
   &__additional-items {
