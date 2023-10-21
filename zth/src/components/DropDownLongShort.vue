@@ -50,6 +50,7 @@ const selectedItem = (event: Event) => {
   open.value = false;
   scrollPosition(0);
 };
+
 const scrollPosition = (direction: number) => {
   if (direction === 1) {
     currentIndexItem.value++;
@@ -71,6 +72,7 @@ const scrollPosition = (direction: number) => {
     }
   });
 };
+
 const onInput = (value: string) => {
   if (currentIndexItem.value !== 0) {
     savedValue.value = currentIndexItem.value;

@@ -386,18 +386,17 @@ const btcCountChanged = (value: string) => {
   margin-top: 1rem;
 }
 :deep(.volume-monitor__container:first-of-type) {
-    margin-right: 1rem;
-  }
+  margin-right: 1rem;
+}
 
 @media (min-width: $breakpoint_medium) {
   :deep(.root) {
     margin-right: 2rem;
     margin-bottom: 6rem;
   }
-:deep(.volume-monitor__container:first-of-type) {
-  margin-right: 0rem;
-
-}
+  :deep(.volume-monitor__container:first-of-type) {
+    margin-right: 0rem;
+  }
 }
 :deep(.tb_responsive) {
   max-height: 100rem;
@@ -431,6 +430,12 @@ const btcCountChanged = (value: string) => {
   display: flex;
   flex-direction: column;
 
+  &__container {
+    max-height: auto;
+    overflow: auto;
+    @include customHorizontalScrollbar($height: 0.1rem, $width: 0.2rem, $border-radius: 0.5rem);
+  }
+
   &__left {
     margin: 1rem;
     display: flex;
@@ -438,10 +443,9 @@ const btcCountChanged = (value: string) => {
   }
 
   &__container-tb {
+    max-height: 120rem;
     overflow: auto;
-    max-height: 119rem;
-//     max-height: 50rem;
-// overflow: auto;
+    @include customHorizontalScrollbar($height: 0.1rem, $width: 0.3rem, $border-radius: 0.5rem);
   }
 
   &__additional-items {
@@ -483,8 +487,9 @@ const btcCountChanged = (value: string) => {
   &__additional-info {
     display: flex;
     width: 100%;
-      margin-top: 1rem;
+    margin-top: 1rem;
     flex-direction: column;
+
     @media (min-width: $breakpoint_medium) {
       margin-top: 0;
     }
@@ -586,10 +591,8 @@ tr:nth-child(even) {
 @media (min-width: $breakpoint_medium) {
   .volume-monitor {
     flex-direction: row;
-
-    &__container {
-      width: auto;
-    }
+    margin-right: 2rem;
+    max-height: 120rem;
 
     &__additional-info {
       display: flex;

@@ -98,9 +98,9 @@ html {
 }
 
 body {
-  min-height: 100vh;
   margin: 0;
   color: var(--color-text);
+  overflow: auto;
   // first color
   // background: linear-gradient(189deg, rgba(29,12,56,1) 0%, rgba(12,20,68,1) 53%, rgba(44,16,65,1) 100%);
   // background: rgb(138,0,255);

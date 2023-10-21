@@ -3,6 +3,8 @@ import BaseTableFrame from '../components/BaseTableFrame.vue';
 import { useGlobalStore } from '../store/global';
 import defaultimage from '../assets/BaseIcons/default-image.png';
 import { ITickMerged } from '../Interfaces/IWebsocket';
+import { onMounted, onUnmounted } from 'vue';
+import { handleScrollBoxWheel } from '@/components/utils/helper';
 
 interface Props {
   data: [ITickMerged];
@@ -18,6 +20,15 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const store = useGlobalStore();
+
+onMounted(() => {
+  const volumeMonitor = document.querySelector('.volume-monitor__container');
+    volumeMonitor?.addEventListener('wheel',handleScrollBoxWheel);
+})
+onUnmounted(() => {
+  volumeMonitor?.removeEventListener('wheel',handleScrollBoxWheel);
+
+})
 </script>
 <template>
   <BaseTableFrame class="volume-monitor__container" v-if="data">
@@ -82,6 +93,7 @@ const store = useGlobalStore();
   &__container{
     height: auto;
     width: 100%;
+    overflow: auto;
   }
   &__title {
     font-weight: 500;
