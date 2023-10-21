@@ -299,6 +299,7 @@ onMounted(async () => {
     display: flex;
     justify-content: center;
     margin-bottom: 1rem;
+    width: 100%;
 
     img {
       max-width: 100%;

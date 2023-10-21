@@ -10,7 +10,7 @@ const CoinGeckoClient = new CoinGecko();
 let coinImageCache = {};
 let io;
 let lastMessageTime = 0;
-const maxValues = 20;
+const maxValues = 100;
 let last20Values = [];
 let selectedVolume = 1;
 let btcPrice;
