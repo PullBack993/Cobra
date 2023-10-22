@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import axios from 'axios';
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref, } from 'vue';
 import { useRoute } from 'vue-router';
 import { useGlobalStore } from '../store/global';
 import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
@@ -17,10 +17,43 @@ const loadingLength = ref(18);
 const page = ref(0);
 const disabledBtn = ref(false);
 const buttonText = ref('Show more');
+const test = () => {
+  store.currentPage += 1;
+  loadMoreNews()
+}
+const loadMoreNews = (test = '') => {
+  page.value = store.currentPage;
+  loading.value = true;
+  try {
+    axios
+      .get(`${baseApiUrl}/news/newsList?range=${page.value}&page=${test}`)
+      .then((response) => {
+        if (response.status === 200) {
+          if (response.data.length !== 0) {
+
+            console.log(response.data);
+            newsListData.value.push(...response.data);
+            loading.value = false;
+          } else {
+            disabledBtn.value = true;
+            loading.value = false;
+            buttonText.value = 'No more news available';
+          }
+        }
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+  } catch (err) {
+    loading.value = false;
+    console.error(err);
+  }
+}
 
 const loadNews = () => {
   page.value += 1;
   loading.value = true;
+
   try {
     axios
       .get(`${baseApiUrl}/news/newsList?page=${page.value}`)
@@ -47,7 +80,12 @@ const loadNews = () => {
 };
 
 onMounted(() => {
-  loadNews();
+  if(store.currentPage > 1){
+    loadMoreNews('2')
+  }else{
+    loadNews();
+  }
+  console.log('current PAGE =>',store.currentPage)
 });
 
 const calculateDateTimeDifference = (dateStr: string): string => {
@@ -167,7 +205,7 @@ const calculateDateTimeDifference = (dateStr: string): string => {
       </div>
     </div>
     <div class="button-container">
-      <baseButton @onClick="loadNews" :disabled="disabledBtn || loading" :theme="''" :type="undefined">{{
+      <baseButton @onClick="test" :disabled="disabledBtn || loading" :theme="''" :type="undefined">{{
         buttonText
       }}</baseButton>
     </div>

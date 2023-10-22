@@ -17,9 +17,23 @@ fetchNews();
 router.get("/newsList", async (req, res) => {
   const limit = 18;
   try {
-    const page = parseInt(req.query.page);
-    const skip = (page - 1) * limit;
-    const articles = await Article.find().skip(skip).sort({ createTime: -1 }).limit(limit);
+    let articles;
+    console.log('range =>', req.query.range)
+    console.log('page =>', req.query.page)
+    if (req.query.range && !req.query?.page) {
+      const range = req.query.range
+      const skip = (range -1) * limit; // 18
+      articles = await Article.find().skip(skip).sort({ createTime: -1 }).limit(limit );
+    }else if (req.query.range && req.query?.page) {
+      console.log('yes')
+      const range = req.query.range
+      const skip = (range -1) * limit; // 18
+      articles = await Article.find().sort({ createTime: -1 }).limit(limit * range );
+    } else {
+      const page = parseInt(req.query?.page);
+      const skip = (page - 1) * limit;
+      articles = await Article.find().skip(skip).sort({ createTime: -1 }).limit(limit);
+    }
 
     const updatedArticle = await Promise.all(
       articles.map(async (section, i) => {
@@ -174,7 +188,7 @@ async function fetchNews() {
   let browser;
   try {
     browser = await puppeteer.launch({
-      headers: 'new',
+      headers: "new",
       protocolTimeout: 240000,
     });
     const page = await browser.newPage();
@@ -203,7 +217,7 @@ async function fetchNews() {
 
         if (!isInDatabase) {
           const articlePage = await browser.newPage();
-          console.log('href', newsAllTitles[i].href)
+          console.log("href", newsAllTitles[i].href);
           await articlePage.goto(`${newsAllTitles[i]?.href}`);
           const articleData = await extractArticleData(articlePage, src);
           if (articleData) {

@@ -12,6 +12,7 @@ interface Props {
   boardTitle?: string;
   boardTitleAddition?: string;
 }
+const volumeMonitor = document.querySelector('.volume-monitor__container');
 
 const props = withDefaults(defineProps<Props>(), {
   className: '',
@@ -22,9 +23,9 @@ const props = withDefaults(defineProps<Props>(), {
 const store = useGlobalStore();
 
 onMounted(() => {
-  const volumeMonitor = document.querySelector('.volume-monitor__container');
     volumeMonitor?.addEventListener('wheel',handleScrollBoxWheel);
 })
+
 onUnmounted(() => {
   volumeMonitor?.removeEventListener('wheel',handleScrollBoxWheel);
 

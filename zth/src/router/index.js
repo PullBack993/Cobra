@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
+import { useGlobalStore } from '../store/global';
 
 const routes = [
   {
@@ -66,6 +67,17 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from) => {
+  console.log('to', to.name);
+  console.log('from', from.name);
+  const store = useGlobalStore();
+  if ((to.name === 'ArticleDetails' && from.name === "news") ){
+    console.log('RESET STORE CURRENT PAGE');
+  }else if((to.name === "news" && from.name === 'ArticleDetails') || to.name === 'news'){
+    console.log('TWO')
+  }else{
+    store.currentPage  = 1
+    console.log('RESET')
+  }
   document.title = to.meta.titme ?? 'ZTH';
 });
 
