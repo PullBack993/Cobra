@@ -21,12 +21,12 @@ const test = () => {
   store.currentPage += 1;
   loadMoreNews()
 }
-const loadMoreNews = (test = '') => {
+const loadMoreNews = (from = '') => {
   page.value = store.currentPage;
   loading.value = true;
   try {
     axios
-      .get(`${baseApiUrl}/news/newsList?range=${page.value}&page=${test}`)
+      .get(`${baseApiUrl}/news/newsList?range=${page.value}&page=${from}`)
       .then((response) => {
         if (response.status === 200) {
           if (response.data.length !== 0) {

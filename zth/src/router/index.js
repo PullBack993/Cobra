@@ -71,12 +71,9 @@ router.beforeEach((to, from) => {
   console.log('from', from.name);
   const store = useGlobalStore();
   if ((to.name === 'ArticleDetails' && from.name === "news") ){
-    console.log('RESET STORE CURRENT PAGE');
   }else if((to.name === "news" && from.name === 'ArticleDetails') || to.name === 'news'){
-    console.log('TWO')
   }else{
     store.currentPage  = 1
-    console.log('RESET')
   }
   document.title = to.meta.titme ?? 'ZTH';
 });
