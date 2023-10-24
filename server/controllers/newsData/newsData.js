@@ -18,17 +18,15 @@ router.get("/newsList", async (req, res) => {
   const limit = 18;
   try {
     let articles;
-    console.log('range =>', req.query.range)
-    console.log('page =>', req.query.page)
     if (req.query.range && !req.query?.page) {
-      const range = req.query.range
-      const skip = (range -1) * limit; // 18
-      articles = await Article.find().skip(skip).sort({ createTime: -1 }).limit(limit );
-    }else if (req.query.range && req.query?.page) {
-      console.log('yes')
-      const range = req.query.range
-      const skip = (range -1) * limit; // 18
-      articles = await Article.find().sort({ createTime: -1 }).limit(limit * range );
+      const range = req.query.range;
+      const skip = (range - 1) * limit;
+      articles = await Article.find().skip(skip).sort({ createTime: -1 }).limit(limit);
+    } else if (req.query.range && req.query?.page === "back") {
+      const range = req.query.range;
+      articles = await Article.find()
+        .sort({ createTime: -1 })
+        .limit(limit * range);
     } else {
       const page = parseInt(req.query?.page);
       const skip = (page - 1) * limit;

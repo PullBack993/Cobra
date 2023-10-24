@@ -24,7 +24,7 @@ const routes = [
     name: 'volume monitor',
     component: () => import('@/views/VolumeMonitor.vue'),
     meta: {
-      title: "Volume All Coins,Order Book,Bitcoin Open interest,Big Transfers | ZTH"
+      titme: "Volume All Coins,Order Book,Bitcoin Open interest,Big Transfers | ZTH"
     },
   },
   {
@@ -67,14 +67,12 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from) => {
-  console.log('to', to.name);
-  console.log('from', from.name);
   const store = useGlobalStore();
-  if ((to.name === 'ArticleDetails' && from.name === "news") ){
-  }else if((to.name === "news" && from.name === 'ArticleDetails') || to.name === 'news'){
-  }else{
-    store.currentPage  = 1
-  }
+  // reset news pagination counter if come from another page.
+  // don't touch the counter when going(forward or back) to news or articles.
+  if (!((to.name === 'ArticleDetails' && from.name === "news") || (to.name === "news" && from.name === 'ArticleDetails') || to.name === 'news')) {
+    store.newsPaginationCounter  = 1;
+    }
   document.title = to.meta.titme ?? 'ZTH';
 });
 

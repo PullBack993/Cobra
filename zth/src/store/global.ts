@@ -2,7 +2,7 @@ import axios from 'axios';
 import { defineStore } from 'pinia';
 
 export const useGlobalStore = defineStore('globalStore', {
-  state: () => ({ themeDark: false, login: false, userImage: '', currentPage: 1, scrollPosition: 0}),
+  state: () => ({ themeDark: false, login: false, userImage: '', newsPaginationCounter: 1, scrollPosition: 0}),
   getters: {
     test(state) {
       return state.login;

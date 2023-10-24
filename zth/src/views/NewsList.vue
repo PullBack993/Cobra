@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import axios from 'axios';
-import { onMounted, onUnmounted, ref, } from 'vue';
+import { onBeforeUnmount, onMounted, onUnmounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useGlobalStore } from '../store/global';
 import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
@@ -18,47 +18,20 @@ const page = ref(0);
 const disabledBtn = ref(false);
 const buttonText = ref('Show more');
 const test = () => {
-  store.currentPage += 1;
-  loadMoreNews()
-}
-const loadMoreNews = (from = '') => {
-  page.value = store.currentPage;
+  store.newsPaginationCounter += 1;
+  loadNews();
+};
+const loadMoreNews = (from = '', onMounted = '') => {
+  page.value = store.newsPaginationCounter;
   loading.value = true;
   try {
     axios
       .get(`${baseApiUrl}/news/newsList?range=${page.value}&page=${from}`)
       .then((response) => {
         if (response.status === 200) {
-          if (response.data.length !== 0) {
-
-            console.log(response.data);
-            newsListData.value.push(...response.data);
-            loading.value = false;
-          } else {
-            disabledBtn.value = true;
-            loading.value = false;
-            buttonText.value = 'No more news available';
+          if (onMounted === 'onMounted') {
+            scroll();
           }
-        }
-      })
-      .finally(() => {
-        loading.value = false;
-      });
-  } catch (err) {
-    loading.value = false;
-    console.error(err);
-  }
-}
-
-const loadNews = () => {
-  page.value += 1;
-  loading.value = true;
-
-  try {
-    axios
-      .get(`${baseApiUrl}/news/newsList?page=${page.value}`)
-      .then((response) => {
-        if (response.status === 200) {
           if (response.data.length !== 0) {
             console.log(response.data);
             newsListData.value.push(...response.data);
@@ -79,13 +52,62 @@ const loadNews = () => {
   }
 };
 
+const loadNews = (from = '', onMounted = '') => {
+  page.value += 1;
+  loading.value = true;
+
+  try {
+    let axiosRequest;
+    if (from) {
+      page.value = store.newsPaginationCounter;
+      axiosRequest = axios.get(`${baseApiUrl}/news/newsList?range=${page.value}&page=${from}`);
+    } else {
+      axiosRequest = axios.get(`${baseApiUrl}/news/newsList?page=${page.value}`);
+    }
+    axiosRequest
+      .then((response) => {
+        if (response.status === 200) {
+          if (onMounted === 'scrollOnMounted') {
+            scroll(); // need to scroll first if the date is updated; otherwise scroll not  to the right position
+          }
+          if (response.data.length !== 0) {
+            console.log(response.data);
+            newsListData.value.push(...response.data);
+            loading.value = false;
+          } else {
+            disabledBtn.value = true;
+            loading.value = false;
+            buttonText.value = 'No more news available';
+          }
+        }
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+  } catch (err) {
+    loading.value = false;
+    console.error(err);
+  }
+};
+
+const scroll = () => {
+  setTimeout(() => {
+    window.scrollTo(0, store.scrollPosition);
+  }, 150);
+};
+
 onMounted(() => {
-  if(store.currentPage > 1){
-    loadMoreNews('2')
-  }else{
+  if (store.newsPaginationCounter > 1) {
+    loadNews('back', 'scrollOnMounted');
+  } else {
     loadNews();
   }
-  console.log('current PAGE =>',store.currentPage)
+});
+
+onBeforeUnmount(() => {
+  if (store.newsPaginationCounter > 1) {
+    store.scrollPosition = window.scrollY;
+  }
 });
 
 const calculateDateTimeDifference = (dateStr: string): string => {
@@ -335,12 +357,16 @@ const calculateDateTimeDifference = (dateStr: string): string => {
     display: flex;
     flex-direction: column;
     margin: 2rem 1.5rem;
-    border-radius:  2rem;
+    border-radius: 2rem;
     padding-top: 2rem;
     padding-right: 1.5rem;
     padding-left: 1rem;
-    background: linear-gradient(to right, rgba(158, 158, 158, 0) , rgba(255, 255, 255, 0) 20%, rgba(158, 158, 158, 0.24) 152%);
-
+    background: linear-gradient(
+      to right,
+      rgba(158, 158, 158, 0),
+      rgba(255, 255, 255, 0) 20%,
+      rgba(158, 158, 158, 0.24) 152%
+    );
 
     @media (min-width: $breakpoint_verysmall) {
       flex-direction: row;
