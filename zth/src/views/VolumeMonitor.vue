@@ -286,15 +286,17 @@ const btcCountChanged = (value: string) => {
                   </div>
                 </td>
                 <td>
-                  <div href="" class="image">
-                    <label class="card__td-symbol-text" :class="themeClass">{{ transaction.s.split('USDT')[0] }}</label>
+                  <div>
+                    <span class="card__td-symbol-text" :class="themeClass">
+                      {{ transaction.s.split('USDT')[0] }}
                     <label class="card__td-symbol-text-label">/USDT</label>
+                  </span>
                   </div>
                 </td>
                 <td>
                   <span class="card__td-text-muted">Tick</span>
                   <span class="card__td-text-dynamic">
-                    <span>{{ getTickForSymbol(transaction.s.split('USDT')[0]) }}</span>
+                    {{ getTickForSymbol(transaction.s.split('USDT')[0]) }}
                   </span>
                 </td>
                 <td>
@@ -423,7 +425,7 @@ const btcCountChanged = (value: string) => {
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
-  color: white;
+  color: $white;
 }
 
 .volume-monitor {
@@ -431,9 +433,13 @@ const btcCountChanged = (value: string) => {
   flex-direction: column;
 
   &__container {
-    max-height: auto;
+    height: 30rem;
     overflow: auto;
     @include customHorizontalScrollbar($height: 0.1rem, $width: 0.2rem, $border-radius: 0.5rem);
+    @media(min-width: $breakpoint_medium) {
+        max-height: auto;
+        height: auto;
+    }
   }
 
   &__left {
@@ -462,6 +468,7 @@ const btcCountChanged = (value: string) => {
 
   &__title {
     font-weight: 500;
+    margin-bottom: 0.2rem;
     &-small--dark {
       color: $white-5;
     }
@@ -507,6 +514,10 @@ const btcCountChanged = (value: string) => {
   border-collapse: collapse;
   border-radius: 1rem;
   overflow: hidden;
+  margin-top: 1rem;
+  @media(min-width: $breakpoint_medium) {
+    margin-top: 0;
+  }
 }
 .card__td {
   &-body:not(:last-child) {
@@ -516,8 +527,8 @@ const btcCountChanged = (value: string) => {
   }
   &-img {
     border-radius: 50%;
-    height: 3rem;
-    width: 3rem;
+    width: $clamp-font-large-quite-large;
+    height: $clamp-font-large-quite-large;
   }
   &-symbol {
     display: inline-block;
@@ -537,7 +548,9 @@ const btcCountChanged = (value: string) => {
     }
     &-text {
       display: inline-block;
-      font-weight: 600;
+      font-weight: 700;
+      font-size:  $clamp-font-very-small-medium;
+
       &-label {
         color: $white-5;
         font-size: 11px;
@@ -549,13 +562,14 @@ const btcCountChanged = (value: string) => {
     display: block;
     color: $white-5;
     font-weight: 600;
-    font-size: $clamp-font-very-small;
+    
+    font-size:  $clamp-font-very-small;
     padding-bottom: 0.5rem;
     white-space: nowrap;
   }
   &-text-dynamic {
     font-weight: 700;
-    font-size: $clamp-font-small-medium;
+    font-size: $clamp-font-very-small-medium;
     &--date {
       font-size: $clamp-font-small;
     }

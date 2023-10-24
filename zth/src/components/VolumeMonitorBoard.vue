@@ -138,8 +138,8 @@ onUnmounted(() => {
   }
   &-img {
     border-radius: 50%;
-    height: 3rem;
-    width: 3rem;
+    width: $clamp-font-large-quite-large;
+    height: $clamp-font-large-quite-large;
   }
   &-symbol {
     display: inline-block;
@@ -160,6 +160,7 @@ onUnmounted(() => {
     &-text {
       display: inline-block;
       font-weight: 600;
+      font-size:  $clamp-font-very-small-medium;
       &-label {
         color: $white-5;
         font-size: 11px;
@@ -177,7 +178,7 @@ onUnmounted(() => {
   }
   &-text-dynamic {
     font-weight: 700;
-    font-size: $clamp-font-small-medium;
+    font-size: $clamp-font-very-small-medium;
     &--date {
       font-size: $clamp-font-small;
     }
