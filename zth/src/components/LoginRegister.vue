@@ -24,11 +24,6 @@ const showRegistrationForm = () => {
   showRegForm.value = !showRegForm.value;
 };
 
-// TODO implement it!
-// const themeClass = computed(() =>
-//   store.themeDark ? 'dialog__modal-openDialog--light' : 'dialog__modal-openDialog--dark'
-// );
-
 const modal = ref<InstanceType<typeof baseDialog> | null>(null);
 
 watch(
@@ -66,7 +61,6 @@ const handleLoading = () => {
   <div>
     <loginSvg
       v-if="!store.login"
-      :class="`${store.themeDark ? 'dialog__modal-openDialog--dark' : 'dialog__modal-openDialog--light'}`"
       class="dialog__modal-openDialog"
       @click="showModal()"
     ></loginSvg>
@@ -78,7 +72,7 @@ const handleLoading = () => {
       </div>
       <div class="dialog__modal" >
         <div class="dialog__modal-overlay">
-          <div class="dialog__modal-container" @click.stop :class="`${store.themeDark ? 'bg-dark' : 'bg-light'}`">
+          <div class="dialog__modal-container" @click.stop>
             <h3 class="dialog__modal-title">Sign In</h3>
             <p class="dialog__modal-container-signMsg">Connect with your MetaMask Wallet</p>
             <div class="dialog__modal-container-metamask">
@@ -227,18 +221,14 @@ const handleLoading = () => {
 .dialog__modal {
   &-openDialog {
     right: 0rem;
-    padding-right: 2rem;;
+    padding-right: 2rem;
     height: 100%;
     width: 5rem;
     position: absolute;
     top: 0;
     cursor: pointer;
-    &--light {
-      fill: $main-purple;
-    }
-    &--dark {
-      fill: $black;
-    }
+    fill: var(--main-purple-black);
+  
   }
   &-overlay {
     width: 100vw;
@@ -275,7 +265,7 @@ const handleLoading = () => {
     }
     &-errorBlock {
       background-color: transparent;
-      border: 0.1rem solid black;
+      border: 0.1rem solid $black;
       padding: 1.5rem;
       border-radius: 0.4rem;
       padding: 1.6rem;
@@ -365,15 +355,7 @@ const handleLoading = () => {
       border: none;
       border-bottom: 0.1rem solid $light_grey;
       transition: all 0.3s ease-in-out;
-      &--dark {
-        background-color: $light-grey;
-      }
-      &--light {
-        background-color: $input-bg-dark;
-      }
-      &:focus {
-        // border-bottom: 0.1rem solid $main_purple;
-      }
+      background-color: var( --dark-purple-light-grey);
     }
     &-submit {
       width: 100%;
@@ -383,12 +365,8 @@ const handleLoading = () => {
       color: $white;
       border: none;
       border-radius: 0.5rem;
-      // cursor: pointer;
       pointer-events: none;
       transition: all 0.3s ease-in-out;
-      &:hover {
-        // background-color: $main_purple-dark-5;
-      }
     }
   }
 }

@@ -2,9 +2,7 @@
 import axios from 'axios';
 import { onMounted, ref, computed } from 'vue';
 import DropdownSmall from '@/components/DropDownLongShort.vue';
-import { useGlobalStore } from '../store/global';
 
-const store = useGlobalStore();
 const baseApiUrl = import.meta.env.VITE_APP_BASE_URL;
 const data = ref();
 const time = ref<string[] | number>();
@@ -29,7 +27,6 @@ const months = [
   'December',
 ];
 const selectedType = ref('Daily');
-const themeClass = computed(() => (store.themeDark ? 'light-theme' : 'dark-theme'));
 
 const colorPriceAction = computed(() => (difference: number) => {
   const test = Math.abs(difference);
@@ -128,18 +125,18 @@ const capitalizeFirstLetter = computed(() => selectedType.value.charAt(0).toUppe
   <div class="returns">
     <p class="returns__title">Bitcoin {{ capitalizeFirstLetter }} returns(%)</p>
     <div class="returns__main">
-      <div class="returns__chart-select-item" :class="themeClass" v-if="currentType === 'day'">
+      <div class="returns__chart-select-item"  v-if="currentType === 'day'">
         <div class="returns__chart-select-item">Month</div>
         <DropdownSmall :data="months" :readonly="true" :with-arrow-icon="true" @new-value:input="monthChange" />
       </div>
-      <div class="returns__chart-select-item" :class="themeClass">
+      <div class="returns__chart-select-item" >
         <div class="returns__chart-select-item">Type</div>
 
         <DropdownSmall :data="timeStamp" :readonly="true" :with-arrow-icon="true" @new-value:input="timeChange" />
       </div>
       <div
         class="returns__chart-select-item"
-        :class="[themeClass, currentType != 'day' ? 'returns__chart-select-item--non' : '']"
+        :class="[ currentType != 'day' ? 'returns__chart-select-item--non' : '']"
       >
         <div class="returns__chart-select-item">Symbol</div>
 
@@ -148,10 +145,10 @@ const capitalizeFirstLetter = computed(() => selectedType.value.charAt(0).toUppe
     </div>
   </div>
   <div class="returns__container">
-    <table class="returns__table" :class="themeClass" v-if="data">
+    <table class="returns__table"  v-if="data">
       <tr class="returns__table-date">
-        <th class="returns__table-date--time" :class="themeClass">Time</th>
-        <th class="returns__table-date--item" :class="themeClass" v-for="(day, i) in time" :key="i">
+        <th class="returns__table-date--time" >Time</th>
+        <th class="returns__table-date--item"  v-for="(day, i) in time" :key="i">
           {{ day !== '' ? day : i + 1 }}
         </th>
       </tr>
@@ -290,22 +287,30 @@ const capitalizeFirstLetter = computed(() => selectedType.value.charAt(0).toUppe
       height: 3rem;
       width: 14rem;
       margin-bottom: 2rem;
-      color: $white;
+      color: var(--black-white);
       min-width: 10rem;
       font-weight: bold;
       font-size: $clamp-font-small-2;
     }
+    &--time{
+      color: var(--black-white);
+    }
   }
 }
-.light-theme {
-  color: $main-purple;
-  font-weight: 600;
-}
 
-.dark-theme {
-  --text-color: $white;
+.returns__table-year--item,
+.returns__table-year-percentage--ratio{
   color: $white;
 }
+// .light-theme {
+//   color: var(--main-purple-white);
+//   font-weight: 600;
+// }
+
+// .dark-theme {
+//   --text-color: var(--main-purple-white);
+//   color: $white;
+// }
 
 @media (min-width: $breakpoint_mobiletabs) {
   .returns {

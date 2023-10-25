@@ -169,6 +169,22 @@ h1 {
 }
 
 // TODO implement this
-// html[data-zth-color-scheme="dark"]{
-//   --red: $white;
-// }
+// Name convention: Dark = color name + LIGHT = color name.
+// Example: Dark = dark-purple + LIGHT: black = dark-purple-black
+html[data-zth-color-scheme="dark"]{
+  --main-purple-black: #8a00ff;
+  --main-purple-white: var(--main-purple-black);
+  --dark-purple-light-grey: #341c7e6a;
+  --white-black: #000000;
+  --black-white: var(--white);
+
+}
+
+html[data-zth-color-scheme="light"]{
+  --main-purple-black: #000000;
+  --light-grey-purple: lightgrey;
+  --white-black: #ffffff;
+  --black-white: #000000;
+  --main-purple-white: var(--white-black);
+
+}
