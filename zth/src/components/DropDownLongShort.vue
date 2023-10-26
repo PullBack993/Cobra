@@ -152,7 +152,6 @@ const selectInput = () => {
       :class="[
         open && !withArrowIcon ? 'long__short-arrow-invisible' : 'long__short-icon long__short-changed-icon',
         open ? 'long__short-arrow-rotate' : 'long__short-arrow-icon',
-        store.themeDark ? 'long__short-arrow--light' : 'long__short-arrow--dark',
       ]"
     ></Arrow-Icon>
     <Search-Icon
@@ -170,7 +169,7 @@ const selectInput = () => {
       >
         <ul ref="topElement" class="long__short-items">
           <li
-            class="long__short-item"
+            class="long__short-item, long__short-active--item"
             ref="itemList"
             v-for="(name, index) in data"
             :currentItem="index"
@@ -202,33 +201,32 @@ const selectInput = () => {
     font-weight: 500;
     height: 3rem;
   }
-  &-active--light {
-    background-color: $main-plum-purple;
-    transition: all 0.3s ease;
+  &-active--item{
+    // background-color: var(--white-2-main-plum-purple);
   }
-  &-active--dark {
-    background-color: $white-2;
-    transition: all 0.3s ease;
-  }
+  // &-active--light {
+  //   background-color: $main-plum-purple;
+  //   transition: all 0.3s ease;
+  // }
+  // &-active--dark {
+  //   background-color: $white-2;
+  //   transition: all 0.3s ease;
+  // }
   &-icon {
     display: block;
     position: absolute;
     right: 0.8rem;
     top: 0.8rem;
     cursor: pointer;
+
   }
   &-changed-icon {
     animation: topToBottom 0.35s ease-in;
+    fill: var(--white-black);
   }
   &-arrow-icon {
     transform: rotate(0);
     transition: all 0.3s ease;
-  }
-  &-arrow--light {
-    color: $black;
-  }
-  &-arrow--dark {
-    color: $white;
   }
   &-arrow-rotate {
     transform: rotate(-180deg);

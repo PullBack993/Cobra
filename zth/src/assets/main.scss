@@ -168,23 +168,70 @@ h1 {
   line-height: $line-height-default;
 }
 
-// TODO implement this
-// Name convention: Dark = color name + LIGHT = color name.
-// Example: Dark = dark-purple + LIGHT: black = dark-purple-black
+:root {
+  // Base colors;
+  --white: #ffffff;
+  --black: #000000;
+  --black-2:#00000033;
+  --white-2: #ffffff33;
+  --white-3: #ffffff4d;
+  --white-4: #ffffff66;
+  --white-5: #ffffff80;
+
+  --space-grey-2: #655d5d33;
+  --space-grey-5: #665e5e80;
+  --space-grey-8: #665e5ecc;
+  --light-grey: #d3d3d3;
+  
+  --night-blue: #05173781; //$dark-blue
+
+ // Main colors::after
+--brand-purple: #8a00ff;
+--brand-purple-light: #b971f8;
+--brand-purple-lighter: #cea1f9;
+--brand-purple-lightest: #e1caf769;
+
+--brand-purple-dark: #5b00ab;
+--brand-purple-dark-light: #482f5f;
+--brand-purple-dark-5: #5c00ad80;
+
+//Background colors
+--bg-grey: #d7d7d780;
+--bg-dark-purple: #16083e;
+--bg-input-purple: #8d5a92;
+--bg-input-dark: #341c7e6a;
+--bg-input-dark-2: #341c7e2d;
+--bg-input-dark-8: #341c7ed1;
+
+
+// Effects
+--metamask-yellow: #e8821e;
+--chart-dark-green: #123B40;
+--chart-dark-red: #442028;
+--chart-light-green: #16C784;
+--chart-green: #0ead98;
+--chart-red:#db5541;
+
+// Gradient Effects
+}
+
 html[data-zth-color-scheme="dark"]{
+
+  --main-plum-purple: #cea1f9;
   --main-purple-black: #8a00ff;
   --main-purple-white: var(--main-purple-black);
-  --dark-purple-light-grey: #341c7e6a;
-  --white-black: #000000;
-  --black-white: var(--white);
-
+  --dark-purple-light-grey: #0100036a;
+  --black-white: var(--black);
+  --white-black: var(--white);
+  --white-2-main-plum-purple: var(--white-2)
 }
 
 html[data-zth-color-scheme="light"]{
   --main-purple-black: #000000;
+  --main-purple-black: #8a00ff;
   --light-grey-purple: lightgrey;
-  --white-black: #ffffff;
   --black-white: #000000;
+  --white-black: var(--black);
   --main-purple-white: var(--white-black);
-
+  --main-plum-purple-white-2: var(--main-plum-purple);
 }

@@ -287,13 +287,13 @@ const capitalizeFirstLetter = computed(() => selectedType.value.charAt(0).toUppe
       height: 3rem;
       width: 14rem;
       margin-bottom: 2rem;
-      color: var(--black-white);
+      color: var(--white-black);
       min-width: 10rem;
       font-weight: bold;
       font-size: $clamp-font-small-2;
     }
     &--time{
-      color: var(--black-white);
+      color: var(--white-black);
     }
   }
 }
@@ -302,16 +302,6 @@ const capitalizeFirstLetter = computed(() => selectedType.value.charAt(0).toUppe
 .returns__table-year-percentage--ratio{
   color: $white;
 }
-// .light-theme {
-//   color: var(--main-purple-white);
-//   font-weight: 600;
-// }
-
-// .dark-theme {
-//   --text-color: var(--main-purple-white);
-//   color: $white;
-// }
-
 @media (min-width: $breakpoint_mobiletabs) {
   .returns {
     margin-right: 0;
