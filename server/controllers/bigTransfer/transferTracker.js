@@ -142,7 +142,8 @@ function createWebSocketServer(port) {
   });
   io.on("connection", socket => {
     console.log("Connected to transfer tracker!");
-    if (last20Values.length > 0) {
+    if (last20Values) {
+      console.log('message')
       io.emit("message", JSON.stringify(last20Values));
     }
 

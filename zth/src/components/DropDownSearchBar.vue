@@ -344,17 +344,15 @@ const onOpen = (value: boolean) => {
     right: 0;
     left: 0;
     z-index: 20;
-    border-bottom-left-radius: 1rem;
-    border-bottom-right-radius: 1rem;
+    border-radius: 1rem;
+    background: var(--bg-color-dark);
+    box-shadow: 0rem 0rem 2rem var(--zth-box-shadow);
+    border-top: none;
+
     &--is-open {
       display: none;
     }
-    &--dark {
-      background: $bg-dark-purple;
-    }
-    &--light {
-      background: $white;
-    }
+  
   }
   &-list {
     border: 0.1rem solid $input-bg-dark;

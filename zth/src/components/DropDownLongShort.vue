@@ -3,7 +3,6 @@ import { ref, nextTick } from 'vue';
 import ArrowIcon from '../assets/BaseIcons/arrow.svg';
 import SearchIcon from '../assets/BaseIcons/search.svg';
 import InputField from './InputField.vue';
-import { useGlobalStore } from '../store/global';
 
 interface Props {
   data: string[]; // symbol or period of time
@@ -22,7 +21,6 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(['newValue:input']);
 
 let activeScrollItem = 0;
-const store = useGlobalStore();
 const currentIndexItem = ref(props.propsCurrentIndexItem);
 const savedValue = ref();
 const itemList = ref(null);
@@ -165,22 +163,16 @@ const selectInput = () => {
       <div
         ref="list"
         class="long__short-list"
-        :class="`${store.themeDark ? 'long__short-list--light' : 'long__short-list--dark'}`"
       >
         <ul ref="topElement" class="long__short-items">
           <li
-            class="long__short-item, long__short-active--item"
+            class="long__short-item"
             ref="itemList"
             v-for="(name, index) in data"
             :currentItem="index"
             :key="index"
+            :class="{ 'long__short-active--item': index === currentIndexItem }"
             @click="selectedItem"
-            :class="[
-              `${store.themeDark && index === currentIndexItem ? 'long__short-active--light' : ''}`,
-              `${!store.themeDark && index === currentIndexItem ? 'long__short-active--dark' : ''}`,
-
-              `${store.themeDark ? 'long__short-item--light' : 'long__short-item--dark'}`,
-            ]"
           >
             {{ name }}
           </li>
@@ -201,24 +193,13 @@ const selectInput = () => {
     font-weight: 500;
     height: 3rem;
   }
-  &-active--item{
-    // background-color: var(--white-2-main-plum-purple);
-  }
-  // &-active--light {
-  //   background-color: $main-plum-purple;
-  //   transition: all 0.3s ease;
-  // }
-  // &-active--dark {
-  //   background-color: $white-2;
-  //   transition: all 0.3s ease;
-  // }
+
   &-icon {
     display: block;
     position: absolute;
     right: 0.8rem;
     top: 0.8rem;
     cursor: pointer;
-
   }
   &-changed-icon {
     animation: topToBottom 0.35s ease-in;
@@ -240,7 +221,6 @@ const selectInput = () => {
     width: 11rem;
     background: $bg-dark-purple;
     border-radius: $border-light;
-
     &--is-open {
       display: none;
     }
@@ -266,14 +246,10 @@ const selectInput = () => {
     position: absolute;
     z-index: 3;
     width: 13rem;
-
-    &--light {
-      background-color: $white;
-      font-weight: bold;
-    }
-    &--dark {
-      background-color: $bg-dark-purple;
-    }
+    background-color: var(--bg-color-dark);
+    border: 1px solid var(--zth-border);
+    border-top: none;
+    box-shadow: 0rem 0rem 2rem var(--zth-box-shadow);
   }
 
   &-items {
@@ -285,19 +261,16 @@ const selectInput = () => {
     font-size: $clamp-font-small;
     font-weight: 500;
     padding: 0.5rem 1.1rem;
-    &--dark {
-      color: $white;
-      &:hover {
-        background-color: $main-purple-dark;
-        border-radius: 0.4rem;
-      }
+    color: var(--zth-text);
+    &:hover:not(.long__short-active--item) {
+      background-color: var(--zth-hover);
+      border-radius: 0.4rem;
     }
-    &--light {
-      &:hover {
-        background-color: $main-plum-purple;
-        border-radius: 0.4rem;
-      }
-    }
+  }
+  &-active--item {
+    background-color: var(--bg-color-dark-soft-purple);
+    transition: all 0.3s ease;
+    padding-left: 1rem;
   }
 }
 

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import { useGlobalStore } from '../store/global';
 
 interface Props {
   currentItem?: number;
@@ -26,7 +25,6 @@ const dropDownOpen = ref(props.open);
 const searchParams = ref(props.value);
 const selectedItem = ref(props.currentItem);
 const input = ref<HTMLInputElement>();
-const store = useGlobalStore();
 const lengthCoins = ref(0);
 const savedValue = ref(props.value);
 const isNotResult = ref(false);
@@ -203,26 +201,21 @@ const onInput = () => {
     type="text"
     class="input"
     ref="input"
-    :class="[`${open ? 'input-open' : 'input-close'}`, `${store.themeDark ? 'bg-dark' : 'bg-light'}`]"
+    :class="`${open ? 'input-open' : 'input-close'}`"
     v-model="searchParams"
     aria-labelledby="search"
   />
 </template>
 <style lang="scss" scoped>
-//TODO DARK LIGHT !!!
-
-.bg-dark {
-  background-color: $main-light-purple;
-}
-.bg-light {
-  background-color: $input-bg-dark;
-}
 .input {
   width: 100%;
   height: 5rem;
   border-radius: 1rem;
   border: none;
   padding-right: 3rem;
+  background-color: var(--bg-color-dark-purple);
+  box-shadow: 0rem 0.2rem 0.9rem var(--zth-box-shadow);
+
   &-open {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
