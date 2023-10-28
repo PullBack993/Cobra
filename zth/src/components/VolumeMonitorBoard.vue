@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import BaseTableFrame from '../components/BaseTableFrame.vue';
-import { useGlobalStore } from '../store/global';
 import defaultimage from '../assets/BaseIcons/default-image.png';
 import { ITickMerged } from '../Interfaces/IWebsocket';
 import { onMounted, onUnmounted } from 'vue';
@@ -20,8 +19,6 @@ const props = withDefaults(defineProps<Props>(), {
   boardTitleAddition: '',
 });
 
-const store = useGlobalStore();
-
 onMounted(() => {
     volumeMonitor?.addEventListener('wheel',handleScrollBoxWheel);
 })
@@ -35,7 +32,7 @@ onUnmounted(() => {
   <BaseTableFrame class="volume-monitor__container" v-if="data">
     <span class="volume-monitor__left">
       <h3 class="volume-monitor__title" :class="className">{{ boardTitle }}</h3>
-      <small :class="store.themeDark ? 'volume-monitor__title-small--light' : 'volume-monitor__title-small--dark'"
+      <small class="volume-monitor__title-small"
         >{{boardTitleAddition}}</small
       >
     </span>
@@ -98,27 +95,15 @@ onUnmounted(() => {
   }
   &__title {
     font-weight: 500;
-    &-small--dark {
-      color: $white-5;
-    }
-
-    &-small--light {
-      color: $grey-black-8;
-    }
-  }
-
-  &__theme-light {
-    color: $black;
-  }
-
-  &__theme-dark {
-    color: $white;
+    color: var(--zth-text);
   }
 
   small {
     margin-right: 7rem;
     font-size: 1.1rem;
     width: 100%;
+    color: $grey-black-8;
+
   }
 }
 

@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
 import placeHolderLoader from './utils/PlaceHolderLoader.vue';
-import { useGlobalStore } from '../store/global';
 import { Coin, CombinedCoinexchange } from '../Interfaces/ICoinLongShort';
-
-const store = useGlobalStore();
 
 interface Props {
   coins: Coin | [];
@@ -14,16 +11,6 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {});
 const coinsData = ref<Coin | []>([]);
 const loadingLength = ref(12);
-
-const themeClass = computed(() =>
-  store.themeDark ? 'graphic__ratio-exchange-name--light' : 'graphic__ratio-exchange-name--dark'
-);
-
-const progressClass = computed(() =>
-  store.themeDark ? 'graphic__ratio-progress--light' : 'graphic__ratio-progress--dark'
-);
-
-const longProgress = computed(() => (store.themeDark ? 'graphic__ratio-long--light' : 'graphic__ratio-long--dark'));
 
 watch(
   () => props.coins,
@@ -51,17 +38,16 @@ const combinedCoinsData = computed<[CombinedCoinexchange]>(() => {
               loading="lazy"
               :src="index === 0 ? data.symbolLogo : data.exchangeLogo"
             />
-            <div :class="themeClass">
+            <div class="graphic__ratio-exchange-name">
               {{ index === 0 ? data.symbol : data.exchangeName }}
             </div>
           </div>
         </div>
         <div class="graphic__ratio-main">
           <div>
-            <div class="graphic__ratio-progress" :class="progressClass">
+            <div class="graphic__ratio-progress" >
               <div
                 class="graphic__ratio-long"
-                :class="longProgress"
                 :style="{ width: Number(data.longRate) + '%' }"
               ></div>
               <div class="graphic__ratio-values-container">
@@ -138,19 +124,13 @@ const combinedCoinsData = computed<[CombinedCoinexchange]>(() => {
     flex: 0 0 50%;
     max-width: 50%;
 
-    &-name--dark {
+    &-name{
+      color: var(--zth-text);
       font-weight: 600;
       padding-left: 1rem;
-      color: $white;
-      font-size: $clamp-font-small;
-
-    }
-    &-name--light {
-      font-weight: 600;
-      padding-left: 1rem;
-      color: $main-purple;
       font-size: $clamp-font-small;
     }
+  
     &--logo {
       display: -webkit-flex;
       display: -moz-box;
@@ -178,12 +158,8 @@ const combinedCoinsData = computed<[CombinedCoinexchange]>(() => {
     height: min(3rem, 3.5rem);
     display: flex;
     border-radius: 1rem;
-    &--light {
-      background: linear-gradient(to right, #ff000022, #d32f2f80 90%, #d32f2f80);
-    }
-    &--dark {
-      background: linear-gradient(to right, #ff000000, #d32f2f80 90%, #d32f2f80);
-    }
+    background: var(--zth-long-short-red);
+
   }
 
   &-long {
@@ -194,12 +170,7 @@ const combinedCoinsData = computed<[CombinedCoinexchange]>(() => {
     width: 50%;
     border-radius: 1rem 0rem 0 1rem;
     border-right-color: inherit;
-    &--light {
-      background: linear-gradient(to left, #449c671d, #5dc7878c 50%, #5dc787);
-    }
-    &--dark {
-      background: linear-gradient(to left, #449c6739, #5dc7878c 50%, #5dc787);
-    }
+    background: var(--zth-long-short-green);
   }
 
   &-values-container {

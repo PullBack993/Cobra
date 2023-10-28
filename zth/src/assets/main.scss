@@ -215,6 +215,13 @@ h1 {
 --chart-red:#db5541;
 
 // Gradient Effects
+--long-short-red-light: linear-gradient(to right, #9b282851, #d33131a9 90%, #d32f2f);
+--long-short-red-dark: linear-gradient(to right, #ff000000, #d32f2f80 90%, #d32f2f80);
+
+--long-short-green-light: linear-gradient(to left, #449c6751, #27c164a1 50%, #38c771);
+--long-short-green-dark: linear-gradient(to left, #449c671d, #5dc7878c 50%, #5dc787);
+
+
 
 // shadow effect
 --zth-light-shadow: #ffffff2f;
@@ -225,6 +232,8 @@ html[data-zth-color-scheme="dark"]{
   --zth-hover: var(--brand-purple-dark);
   --zth-border: var(--brand-purple-dark-light);
   --zth-box-shadow: var(--zth-light-shadow);
+  --zth-long-short-red: var(--long-short-red-dark);
+  --zth-long-short-green: var(--long-short-green-dark);
   
 
   --main-plum-purple: #cea1f9;
@@ -246,6 +255,10 @@ html[data-zth-color-scheme="light"]{
   --zth-hover: var(--brand-purple-lighter);
   --zth-border: var(--brand-purple-dark);
   --zth-box-shadow: var(--zth-light-shadow-dark);
+  --zth-long-short-red: var(--long-short-red-light);
+  --zth-long-short-green: var(--long-short-green-light);
+
+
 
 
   --main-purple-black: #000000;

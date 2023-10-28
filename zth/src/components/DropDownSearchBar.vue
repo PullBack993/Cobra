@@ -224,7 +224,6 @@ const onOpen = (value: boolean) => {
     <div
       :class="[
         open ? 'search__container-dropdown' : 'search__container-dropdown--is-open',
-        `${store.themeDark ? 'search__container-dropdown--light' : 'search__container-dropdown--dark'}`,
       ]"
     >
       <div ref="list" class="search__container-list" v-if="coins && !loading">
@@ -233,9 +232,6 @@ const onOpen = (value: boolean) => {
             <img class="search__container-list-image" loading="lazy" :src="coins.image.small" :alt="coins.name" />
             <div
               class="search__container-list-current"
-              :class="
-                store.themeDark ? 'search__container-list-current--light' : 'search__container-list-coin-name--dark'
-              "
             >
               {{ coins.name }}
             </div>
@@ -259,9 +255,6 @@ const onOpen = (value: boolean) => {
             >
               <div
                 class="search__container-list-current--base"
-                :class="
-                  store.themeDark ? 'search__container-list-current--light' : 'search__container-list-current--dark'
-                "
               >
                 <img
                   :src="coins.image.small"
@@ -300,7 +293,7 @@ const onOpen = (value: boolean) => {
         <HorizontalEllipsisSpinner />
       </div>
       <!-- TODO set class/style -->
-      <div v-if="!coins && !loading && searchParams.length && !error > 0" class="search__container-no-results">
+      <div v-if="!coins && !loading && searchParams.length && !error" class="search__container-no-results">
         No results for "{{ searchParams }}"
       </div>
       <div class="search__container-error" v-if="error && errorMessage && !loading">{{ errorMessage }}</div>
@@ -443,6 +436,7 @@ const onOpen = (value: boolean) => {
       font-size: 2rem;
       color: $white;
       list-style: none;
+      color: var( --zth-text);
       &:hover {
         background-color: $input-bg-dark-2;
       }
@@ -462,14 +456,6 @@ const onOpen = (value: boolean) => {
 
       &--base {
         display: flex;
-      }
-
-      &--light {
-        color: $black;
-      }
-
-      &--dark {
-        color: $white;
       }
 
       &-active {

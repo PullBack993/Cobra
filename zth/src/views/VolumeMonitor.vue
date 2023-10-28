@@ -12,7 +12,7 @@ import defaultimage from '../assets/BaseIcons/default-image.png';
 const store = useGlobalStore();
 const baseApiUrl = import.meta.env.VITE_APP_WEBSOCKET;
 
-const allowsCoins = ['BTC', 'USDT'];
+const allowsCoins = ['BTC', 'USDT']; // TODO should implement this
 const transactions = ref<[IWebsocket]>([]);
 const ticks = ref<[ITick]>([]);
 const tickVolume = ref<[ITickVolume]>([]);
@@ -230,13 +230,11 @@ const btcCountChanged = (value: string) => {
       <div class="volume-monitor__additional-info">
         <VolumeMonitorBoard
           :data="ticks"
-          :class-name="themeClass"
           :board-title="'Tick Board'"
           :board-title-addition="'The most ticked'"
         />
         <VolumeMonitorBoard
           :data="tickVolume"
-          :class-name="themeClass"
           :board-title="'Volume Board'"
           :board-title-addition="'The most volume'"
         />
