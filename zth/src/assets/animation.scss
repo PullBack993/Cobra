@@ -21,3 +21,13 @@
     opacity: 1;
   }
 }
+
+@keyframes slide-in {
+  from {
+    transform: translateX(-1rem);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}

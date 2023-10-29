@@ -3,9 +3,6 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import LoginRegister from '../components/LoginRegister.vue';
 import DropdownInputComponent from '../components/DropDownSearchBar.vue';
 import hamburger from '../assets/BaseIcons/hamburger.svg';
-import { useGlobalStore } from '../store/global';
-
-const store = useGlobalStore();
 
 const screenSize = ref(window.innerWidth);
 const header = ref(null);
@@ -45,13 +42,12 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <header class="header" ref="header" :class="`${store.themeDark ? 'header--light' : 'header--dark'}`">
+  <header class="header" ref="header">
     <div class="main">
       <div class="search">
         <div v-if="screenSize <= 768" class="search__lines" @click="emit('openSidebar')">
           <hamburger
             class="search__lines-icon"
-            :class="`${store.themeDark ? 'search__lines-icon--light' : 'search__lines-icon--dark'}`"
             alt="hamburger"
           ></hamburger>
         </div>
@@ -75,25 +71,19 @@ onUnmounted(() => {
     cursor: pointer;
     z-index: 98;
     margin: 0;
-
-    &--light {
-      fill: $main_purple;
-    }
-    &--dark {
-      fill: $white;
-    }
+    fill: var(--zth-text);
   }
 }
 .header {
   top: 0;
   position: sticky;
   z-index: 9;
-  &--light {
-    background-color: $white;
-  }
-  &--dark {
-    background: linear-gradient(to right, rgb(0, 0, 0), #1d032a 30%, #000000 70%, #1d032a 95%);
-  }
+  // &--light {
+  //   background-color: $white;
+  // }
+  // &--dark {
+  //   background: linear-gradient(to right, rgb(0, 0, 0), #1d032a 30%, #000000 70%, #1d032a 95%);
+  // }
 }
 .main {
   border-bottom: 0.1rem solid $main-purple;

@@ -33,9 +33,7 @@ const HTMLElementsNotClickable = [
   'theme dark-icon',
   'theme light-icon',
   'sidebar darkUnActive is-expand',
-  'search__lines-icon search__lines-icon--dark',
-  'search__lines-icon search__lines-icon--light',
-  'test',
+  'search__lines-icon',
   '',
 ];
 
@@ -52,13 +50,15 @@ const checkElements = (clickedElement: string): boolean => {
 
 const documentClick = (e: Event) => {
   let HTMLElementClass = (e.target as HTMLButtonElement).className?.baseVal;
+  console.log(HTMLElementClass);
   if (!HTMLElementClass) {
     HTMLElementClass = (e.target as HTMLButtonElement).className;
   }
   if (
-    (screenSize.value < 768 && !checkElements(HTMLElementClass) && !(HTMLElementClass instanceof SVGAnimatedString)) ||
+    (screenSize.value <= 768 && !checkElements(HTMLElementClass) && !(HTMLElementClass instanceof SVGAnimatedString)) ||
     HTMLElementClass === ''
   ) {
+    console.log('less then 768 set to false', isToggle.value);
     isToggle.value = false;
     document.removeEventListener('click', documentClick);
   }

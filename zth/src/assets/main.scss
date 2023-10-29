@@ -106,7 +106,7 @@ body {
   // background: rgb(138,0,255);
 
   background: #000000;  /* fallback for old browsers */
-  background: linear-gradient(to right, rgb(0, 0, 0), #1d032a 30%, #000000 70%, #1d032a 95%);
+  background: var(--bg-main);
   line-height: 2.1rem;
   // font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
   //   Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",
@@ -221,7 +221,9 @@ h1 {
 --long-short-green-light: linear-gradient(to left, #449c6751, #27c164a1 50%, #38c771);
 --long-short-green-dark: linear-gradient(to left, #449c671d, #5dc7878c 50%, #5dc787);
 
-
+ // Background Effects
+   --main-bg: linear-gradient(to right, rgb(0, 0, 0), #1d032a 30%, #000000 70%, #1d032a 95%);
+   --aside-bg: var(--night-blue);
 
 // shadow effect
 --zth-light-shadow: #ffffff2f;
@@ -234,7 +236,8 @@ html[data-zth-color-scheme="dark"]{
   --zth-box-shadow: var(--zth-light-shadow);
   --zth-long-short-red: var(--long-short-red-dark);
   --zth-long-short-green: var(--long-short-green-dark);
-  
+
+
 
   --main-plum-purple: #cea1f9;
   --main-purple-black: #8a00ff;
@@ -248,6 +251,9 @@ html[data-zth-color-scheme="dark"]{
 
   --bg-color-dark-soft-purple: var(--bg-input-dark-8);
   --bg-color-dark: var(--bg-dark-purple);
+
+  --bg-main: var(--main-bg);
+  --bg-aside: var(--aside-bg);
 }
 
 html[data-zth-color-scheme="light"]{
@@ -273,6 +279,10 @@ html[data-zth-color-scheme="light"]{
   --bg-color-dark-purple: var(--bg-input-dark-3);
   --bg-color-dark-soft-purple: var(--bg-input-dark-2);
   --bg-color-dark: var(--white);
+  --bg-main: var(--white);
+  --bg-aside: var(--white);
+
+
 
 
 }

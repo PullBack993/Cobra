@@ -20,6 +20,7 @@ const HTMLElementsNotClickable = [
   'material-symbols-outlined dark',
   'theme dark-icon',
   'theme light-icon',
+  'search__lines-icon',
   'sidebar darkUnActive is-expand',
   '',
 ];
@@ -45,13 +46,6 @@ const switchTheme = () => {
   store.themeDark = !store.themeDark;
   const theme = document.querySelector(`[data-zth-color-scheme="${store.themeDark ? 'dark' : 'light'}"]`) as HTMLElement;
   theme.dataset.zthColorScheme = !store.themeDark ? 'dark' : 'light';
-  dark.value = store.themeDark;
-  if (dark.value) {
-    document.body.style.background = 'white';
-  } else {
-    document.body.style.background = 'linear-gradient(to right, rgb(0, 0, 0), #1d032a 30%, #000000 70%, #1d032a 95%)';
-
-  }
 };
 
 const checkElements = (clickedElement: string): boolean => {
@@ -92,7 +86,6 @@ watch(
   () => props.toggleMobile,
   () => {
     if (screenSize.value <= 768) {
-      console.log('props.toggle1', isToggle.value, props.toggleMobile);
       isToggle.value = props.toggleMobile;
     }
   }
@@ -116,7 +109,7 @@ const onScreenResize = () => {
 };
 
 onMounted(() => {
-  dark.value = store.themeDark;
+  dark.value = store.themeDark;  // Should be base on user preferences !!!
   screenSize.value = window.innerWidth;
   onScreenResize();
   document.addEventListener('keydown', handelEscape);
@@ -129,7 +122,7 @@ onMounted(() => {
     <aside
       :style="{ opacity: opacity, width: width }"
       class="sidebar"
-      :class="[{ darkUnActive: dark }, `${isToggle ? 'is-expand' : 'shrink'}`, { isOpenAside: isToggle }]"
+      :class="[ `${isToggle ? 'is-expand' : 'shrink'}`, { isOpenAside: isToggle }]"
     >
       <RouterLink to="/" class="image">
         <div>
@@ -137,7 +130,7 @@ onMounted(() => {
         </div>
       </RouterLink>
       <label for="sidebar-toggle" @click="toggle()" class="sidebar-btn">
-        <span :class="[`${isToggle ? 'active' : ''}`, `${dark ? 'sidebar-icon-active' : ''}`]" class="sidebar-icon"
+        <span :class="[`${isToggle ? 'active' : ''}`]" class="sidebar-icon"
           >&nbsp;</span
         >
       </label>
@@ -153,7 +146,7 @@ onMounted(() => {
         </RouterLink>
 
         <RouterLink to="/news" class="sidebar-home">
-          <news-s-v-g class="material-symbols-outlined sidebar-home-icon"></news-s-v-g>
+          <newsSVG class="material-symbols-outlined sidebar-home-icon"></newsSVG>
           <p :class="`${isToggle ? 'visible' : 'invisible'}`">News</p>
         </RouterLink>
 
@@ -166,7 +159,7 @@ onMounted(() => {
       <div
         class="theme"
         @click="switchTheme"
-        :class="[`${dark ? 'light-icon' : 'dark-icon'}`, `${isToggle ? '' : 'toggle'}`]"
+        :class="[`${ store.themeDark ? 'light-icon' : 'dark-icon'}`, `${isToggle ? '' : 'toggle'}`]"
       >
         <div class="theme-light">
           <button tabindex="-1" class="material-symbols-outlined light" :class="`${isToggle ? '' : 'toggle-light'}`">
@@ -184,6 +177,7 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
+
 .router-link-active {
   &::after {
     content: '';
@@ -199,14 +193,6 @@ onMounted(() => {
   }
 }
 
-.darkUnActive {
-  background-color: $grey-5 !important;
-
-  &.sidebar {
-    border-right: 0.1rem solid $grey-black-5 !important;
-  }
-}
-
 .search__lines {
   position: sticky;
   top: 3.4rem;
@@ -216,18 +202,11 @@ onMounted(() => {
   width: 3.7rem;
   z-index: 98;
   height: 0;
-  fill: $white;
+  fill: var(--zth-text);
 
   &-icon {
     display: block;
     cursor: pointer;
-
-    &--light {
-      fill: $main_purple;
-    }
-    &--dark {
-      fill: $white;
-    }
   }
 }
 
@@ -251,8 +230,8 @@ onMounted(() => {
   flex-direction: column;
   position: fixed;
   overflow: hidden;
-  background-color: $dark_blue;
-  border-right: 0.1rem solid $grey_5;
+  background-color: var(--bg-aside);
+  border-right: 0.1rem solid var(--zth-hover);
   transition: width 0.1s linear;
   margin-top: auto;
 
@@ -285,14 +264,16 @@ onMounted(() => {
 
   &-icon {
     position: relative;
+    color: var(--zth-text);
 
     &,
     &::before,
     &::after {
       width: 3rem;
       height: 0.2rem;
-      background-color: $white;
+      background-color: var(--zth-text);
       display: inline-block;
+      
     }
 
     &::before,
@@ -305,22 +286,13 @@ onMounted(() => {
 
     &::before {
       top: -0.8rem;
+      
     }
 
     &::after {
       top: 0.8rem;
     }
 
-    &-active {
-      &,
-      &::before,
-      &::after {
-        width: 3rem;
-        height: 0.2rem;
-        background-color: $black;
-        display: inline-block;
-      }
-    }
   }
 
   &-container {
@@ -337,6 +309,7 @@ onMounted(() => {
     padding: 2rem 2rem 2rem 2.5rem;
     align-items: center;
     margin: auto 0;
+    height: 6rem;
 
     &:hover {
       transition: 0.1s all ease-in-out;
@@ -354,8 +327,6 @@ onMounted(() => {
 
     &-icon {
       fill: $main_purple;
-      stroke-width: 10;
-      stroke: $main_purple;
       height: clamp(2.1rem, 2vw + 0.26rem, 2.3rem);
       width: 3rem;
       &--scale {
@@ -378,13 +349,14 @@ onMounted(() => {
     font-size: $clamp-font-large-almost-large;
     font-weight: 300;
     color: $main_purple;
+    animation: topToBottom 0.5s ease-in-out;
     // transition-delay: 3s;
   }
 
   .active {
     float: right;
     background-color: transparent;
-  }
+  } 
 
   .active::before {
     top: 0;
@@ -434,7 +406,7 @@ onMounted(() => {
       margin-left: 0.8rem;
       display: flex;
       .light {
-        fill: $white;
+        fill: var(--zth-text);
         height: clamp(2.1rem, 2vw + 0.26rem, 2.3rem);
         width: 3rem;
         cursor: pointer;
@@ -450,15 +422,14 @@ onMounted(() => {
     }
   }
 
-  .light-icon::before {
+  .theme.light-icon::before {
     background-color: $main_purple;
     box-shadow: rgba(149, 157, 165, 0.2) 0 8rem 2.4rem;
     transform: translateX(0%);
   }
 
-  .dark-icon::before {
+  .theme.dark-icon::before {
     background-color: $main_purple-dark;
-
     box-shadow: rgba(149, 157, 165, 0.2) 0 8rem 2.4rem;
     transform: translateX(100%);
   }
@@ -519,4 +490,16 @@ onMounted(() => {
     display: none;
   }
 }
+
+// @keyframes text-out-after {
+//   0% {
+//     opacity: 0;
+//   }
+//   50% {
+//     opacity: 0.5;
+//   }
+//   100% {
+//     opacity: 1;
+//   }
+// }
 </style>
