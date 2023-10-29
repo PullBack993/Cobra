@@ -50,7 +50,6 @@ onMounted(async () => {
             <p
               ref="text"
               class="article-text"
-              :class="`${store.themeDark ? 'article-text--light' : 'article-text--dark'}`"
             >
               {{ text }}
             </p>
@@ -60,7 +59,6 @@ onMounted(async () => {
             <em>
               <p
                 class="article-paragraph"
-                :class="`${store.themeDark ? 'article-paragraph--light' : 'article-paragraph--dark'}`"
               >
                 {{ section?.paragraph }}
               </p>
@@ -70,7 +68,6 @@ onMounted(async () => {
             <li
               v-for="(item, index) in section.listItems"
               class="article-list-item"
-              :class="`${store.themeDark ? 'article-list-item--light' : 'article-list-item--dark'}`"
               :key="index"
             >
               {{ item }}
@@ -178,7 +175,7 @@ onMounted(async () => {
     }
 
     &--title {
-      color: $white;
+      color: var(--zth-text);
       word-wrap: break-word;
       line-height: 4.5rem;
       font-weight: 900;
@@ -219,31 +216,24 @@ onMounted(async () => {
   }
   &-title {
     font-size: $clamp-font-large-quite-large;
-    background: $white;
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     background-clip: text;
     font-weight: bold;
     margin-bottom: 1rem;
     word-wrap: break-word;
     line-height: 4rem;
+    color: var(--zth-text);
   }
   &-text {
     font-size: $clamp-font-small-medium;
     line-height: 1.5;
     margin-bottom: 1rem;
     word-wrap: break-word;
+    color: var(--zth-text);
 
     &::after {
       content: '\a';
       white-space: pre;
-      color: white;
-    }
-
-    &--light {
-      color: $black;
-    }
-    &--dark {
       color: $white;
     }
   }
@@ -257,12 +247,7 @@ onMounted(async () => {
     margin-bottom: 1rem;
     word-wrap: break-word;
     line-height: 3rem;
-    &--light {
-      background-color: $black;
-    }
-    &--dark {
-      background-color: $white;
-    }
+    background-color: var(--zth-text);
   }
 
   &-list-container {
@@ -274,13 +259,7 @@ onMounted(async () => {
     margin-bottom: 2.5rem;
     line-height: 1.7;
     word-wrap: break-word;
-    &--light {
-      color: $black;
-    }
-    &--dark {
-      color: $white;
-    }
-
+    color: var(--zth-text);
     &::before {
       content: '';
       display: inline-block;

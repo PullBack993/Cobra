@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import axios from 'axios';
 import { onBeforeUnmount, onMounted, onUnmounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
 import { useGlobalStore } from '../store/global';
 import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
 import baseButton from '../components/utils/BaseButton.vue';
@@ -167,9 +166,7 @@ const calculateDateTimeDifference = (dateStr: string): string => {
                 </h3>
                 <div class="news__text-container">
                   <p
-                    class="news__list-text"
-                    :class="`${store.themeDark ? 'news__list-text--light' : 'news__list-text--dark'}`"
-                  >
+                    class="news__list-text">
                     {{ section.sections[0]?.text[0] }}
                   </p>
                 </div>
@@ -398,12 +395,8 @@ const calculateDateTimeDifference = (dateStr: string): string => {
     text-align: justify;
     display: inline;
     font-size: $clamp-font-small-tiny-very-small;
-    &--light {
-      color: $black;
-    }
-    &--dark {
-      color: $white;
-    }
+    color: var(--zth-text);
+    
   }
 }
 

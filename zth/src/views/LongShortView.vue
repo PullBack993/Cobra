@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted, watch, onUnmounted, computed } from 'vue';
+import { ref, onMounted, watch, onUnmounted } from 'vue';
 import axios from 'axios';
 import DropdownSmall from '@/components/DropDownLongShort.vue';
 import GraphicLongShort from '@/components/GraphicLongShort.vue';
 import allCoins from '../components/data/coinglass.json';
-import { useGlobalStore } from '../store/global';
 import { Coin } from '../Interfaces/ICoinLongShort';
 
 const allowsCoins = allCoins;
@@ -13,7 +12,6 @@ const currentTime = ref('1 hour');
 const coins = ref<Coin | []>([]);
 const intervalId = ref(0);
 const loading = ref(true);
-const store = useGlobalStore();
 const baseApiUrl = import.meta.env.VITE_APP_BASE_URL;
 // TODO constant => file
 const timeMap: { [timeWord: string]: string } = {
@@ -35,8 +33,6 @@ interface Props {
 const transformTime = (timeWord: string) => {
   return timeMap[timeWord];
 };
-
-const themeClass = computed(() => (store.themeDark ? 'long__short-theme--light' : 'long__short-theme--dark'));
 
 const valueChange = (value: string) => {
   currentValue.value = value; // ETH req
@@ -88,20 +84,20 @@ intervalId.value = Number(setInterval(reqData, 20000));
   <div class="main-long__short">
     <div class="long__short">
       <div class="long__short-col">
-        <div :class="themeClass" class="long__short-title">
+        <div class="long__short-title long__short-theme">
           <span class="long__short-title--text">{{ currentValue }} Long/Short Ration</span>
         </div>
 
         <div class="long__short-chart-select">
-          <div class="long__short-chart-select-item" :class="themeClass">
+          <div class="long__short-chart-select-item long__short-theme" >
             <div class="long__short-symbol">Symbol</div>
-            <div :class="themeClass" class="long__short-dropdown">
+            <div  class="long__short-dropdown">
               <DropdownSmall :data="allowsCoins" @new-value:input="valueChange" />
             </div>
           </div>
           <div class="long__short-chart-select-item">
-            <div class="long__short-period" :class="themeClass">Period</div>
-            <div :class="themeClass" class="long__short-dropdown">
+            <div class="long__short-period long__short-theme">Period</div>
+            <div class="long__short-dropdown long__short-theme">
               <DropdownSmall
                 :with-arrow-icon="true"
                 :readonly="true"
@@ -158,6 +154,7 @@ intervalId.value = Number(setInterval(reqData, 20000));
 .main-long__short {
   overflow: hidden;
 }
+
 .long__short {
   display: flex;
 
@@ -185,15 +182,9 @@ intervalId.value = Number(setInterval(reqData, 20000));
     }
   }
 
-  &-theme--dark {
-    color: $white;
-    --text-color: $white;
+  &-theme {
+    color: var(--zth-text);
   }
-
-  &-theme--light {
-    color: $main-purple;
-  }
-
   &-chart-select {
     display: flex;
     justify-content: flex-end;

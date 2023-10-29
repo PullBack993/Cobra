@@ -23,8 +23,6 @@ const loading = ref(true);
 const last20Coins: IWebsocket[] = [];
 const btcSelectedVolume = ref(0.5);
 
-const themeClass = computed(() => (store.themeDark ? 'volume-monitor__theme-light' : 'volume-monitor__theme-dark'));
-
 const socket = io(baseApiUrl, {
   extraHeaders: {
     'my-custom-header': 'test', // TODO Replace with your authentication token value
@@ -243,14 +241,11 @@ const btcCountChanged = (value: string) => {
         <BaseTableFrame class="volume-monitor__container-tb">
           <div class="volume-monitor__additional-items">
             <span class="volume-monitor__left">
-              <h3 class="volume-monitor__title" :class="themeClass">Volume Monitor</h3>
-              <small
-                :class="store.themeDark ? 'volume-monitor__title-small--light' : 'volume-monitor__title-small--dark'"
-                >Thank you Binance</small
-              >
+              <h3 class="volume-monitor__title volume-monitor__theme">Volume Monitor</h3>
+              <small>Thank you Binance</small>
             </span>
             <div class="volume-monitor__dropdown-container">
-              <!-- <DropdownSmall :data="allowsCoins" :with-arrow-icon="true" :readonly="true" /> -->
+              <!-- <DropdownSmall :data="allowsCoins" :with-arrow-icon="true" :readonly="true" />  TODO Implement it -->
               <DropdownSmall
                 :data="['0.5 BTC', '1 BTC', '2 BTC', '3 BTC', '4 BTC', '5 BTC']"
                 :with-arrow-icon="true"
@@ -285,7 +280,7 @@ const btcCountChanged = (value: string) => {
                 </td>
                 <td>
                   <div>
-                    <span class="card__td-symbol-text" :class="themeClass">
+                    <span class="card__td-symbol-text volume-monitor__theme">
                       {{ transaction.s.split('USDT')[0] }}
                     <label class="card__td-symbol-text-label">/USDT</label>
                   </span>
@@ -467,27 +462,15 @@ const btcCountChanged = (value: string) => {
   &__title {
     font-weight: 500;
     margin-bottom: 0.2rem;
-    &-small--dark {
-      color: $white-5;
-    }
-
-    &-small--light {
-      color: $grey-black-8;
-    }
   }
-
-  &__theme-light {
-    color: $black;
+  &__theme{
+    color: var(--zth-text);
   }
-
-  &__theme-dark {
-    color: $white;
-  }
-
   small {
     margin-right: 7rem;
     font-size: 1.1rem;
     width: 100%;
+    color: $grey-black-8;
   }
   &__additional-info {
     display: flex;
