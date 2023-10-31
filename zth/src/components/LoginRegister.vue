@@ -227,7 +227,7 @@ const handleLoading = () => {
     position: absolute;
     top: 0;
     cursor: pointer;
-    fill: var(--main-purple-black);
+    fill: var(--zth-icon);
   
   }
   &-overlay {
@@ -355,7 +355,7 @@ const handleLoading = () => {
       border: none;
       border-bottom: 0.1rem solid $light_grey;
       transition: all 0.3s ease-in-out;
-      background-color: var( --dark-purple-light-grey);
+      background-color: var( --dark-gray-5);
     }
     &-submit {
       width: 100%;

@@ -40,6 +40,7 @@ async function connectToBinanceWS() {
           msg.e === "trade" &&
           msg.q >= (coin.qEqBTC)
         ) {
+          console.log('Binance send massage');
           const searchedCoin = findCoin(allCoins, msg.s.split("USDT")[0]);
           msg.image = await fetchCoinImage(searchedCoin);
           console.log('btc price =>',btcPrice)

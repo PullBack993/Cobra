@@ -178,6 +178,8 @@ h1 {
   --white-4: #ffffff66;
   --white-5: #ffffff80;
 
+  --dark-gray-4: #0100036a;
+
   --space-grey-2: #655d5d33;
   --space-grey-5: #665e5e80;
   --space-grey-8: #665e5ecc;
@@ -236,22 +238,12 @@ html[data-zth-color-scheme="dark"]{
   --zth-box-shadow: var(--zth-light-shadow);
   --zth-long-short-red: var(--long-short-red-dark);
   --zth-long-short-green: var(--long-short-green-dark);
-
-
-
-  --main-plum-purple: #cea1f9;
-  --main-purple-black: #8a00ff;
-  --main-purple-white: var(--main-purple-black);
-  --dark-purple-light-grey: #0100036a;
-  --black-white: var(--black);
-  --white-black: var(--white);
+  --zth-icon: var(--brand-purple);
 
 
   --bg-color-dark-purple: var(--bg-input-dark);
-
   --bg-color-dark-soft-purple: var(--bg-input-dark-8);
   --bg-color-dark: var(--bg-dark-purple);
-
   --bg-main: var(--main-bg);
   --bg-aside: var(--aside-bg);
 }
@@ -263,17 +255,7 @@ html[data-zth-color-scheme="light"]{
   --zth-box-shadow: var(--zth-light-shadow-dark);
   --zth-long-short-red: var(--long-short-red-light);
   --zth-long-short-green: var(--long-short-green-light);
-
-
-
-
-  --main-purple-black: #000000;
-  --main-purple-black: #8a00ff;
-  --light-grey-purple: lightgrey;
-  --black-white: #000000;
-  --white-black: var(--black);
-  --main-purple-white: var(--white-black);
-
+  --zth-icon: var(--black);
 
 
   --bg-color-dark-purple: var(--bg-input-dark-3);

@@ -203,7 +203,7 @@ const selectInput = () => {
   }
   &-changed-icon {
     animation: topToBottom 0.35s ease-in;
-    fill: var(--white-black);
+    fill: var(--zth-text);
   }
   &-arrow-icon {
     transform: rotate(0);

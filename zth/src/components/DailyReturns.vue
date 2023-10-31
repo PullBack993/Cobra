@@ -222,6 +222,7 @@ const capitalizeFirstLetter = computed(() => selectedType.value.charAt(0).toUppe
     margin-bottom: 0.5rem;
     font-size: clamp($font-small-tiny, 1vw + 0.8rem, $font-very-small);
     width: 12rem;
+    color: var(--zth-text);
     &--non {
       margin-top: 0 !important;
     }
@@ -287,13 +288,13 @@ const capitalizeFirstLetter = computed(() => selectedType.value.charAt(0).toUppe
       height: 3rem;
       width: 14rem;
       margin-bottom: 2rem;
-      color: var(--white-black);
+      color: var(--zth-text);
       min-width: 10rem;
       font-weight: bold;
       font-size: $clamp-font-small-2;
     }
     &--time{
-      color: var(--white-black);
+      color: var(--zth-text);
     }
   }
 }
