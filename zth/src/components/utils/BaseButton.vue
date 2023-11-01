@@ -42,7 +42,7 @@ const classes: Record<string, any> = computed(() => ({
   border-radius: 0.5rem;
   outline: none;
   background-color: $main-purple;
-  color: $white;
+  color:   var(--white);
   font-size: 1.6rem;
   font-weight: 600;
   cursor: pointer;
@@ -50,12 +50,12 @@ const classes: Record<string, any> = computed(() => ({
   &:hover {
     border-color: $main-purple-dark-5;
     background: $main-purple-dark-5;
-    color: $white;
+    color:   var(--white);
   }
 }
 .is-disabled{
-    background-color: $grey-5;
-    color: $light-grey;
+    background-color: var(--white-3);
+    color: var(--light-grey);
     pointer-events: none;
 }
 </style>

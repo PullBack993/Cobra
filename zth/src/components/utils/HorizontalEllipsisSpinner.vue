@@ -22,7 +22,7 @@
     width: 1.3rem;
     height: 1.3rem;
     border-radius: 50%;
-    background: $white;
+    background: var(--white);
     animation-timing-function: cubic-bezier(0, 1, 1, 0);
 
     &:nth-child(1) {

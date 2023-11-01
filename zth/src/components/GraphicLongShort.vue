@@ -185,7 +185,7 @@ const combinedCoinsData = computed<[CombinedCoinexchange]>(() => {
     width: 50%;
     text-align: center;
     vertical-align: center;
-    color: $white;
+    color:  var(--white);
     font-size: $clamp-font-small;
     font-weight: 500;
   }

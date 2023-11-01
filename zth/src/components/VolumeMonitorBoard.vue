@@ -102,14 +102,14 @@ onUnmounted(() => {
     margin-right: 7rem;
     font-size: 1.1rem;
     width: 100%;
-    color: $grey-black-8;
+    color: var(--space-grey-8);
 
   }
 }
 
 .tb__table {
   width: 100%;
-  color: $white;
+  color:  var(--white);
   caption-side: bottom;
   border-collapse: collapse;
   border-radius: 1rem;
@@ -119,7 +119,7 @@ onUnmounted(() => {
   &-body:not(:last-child) {
     border-bottom-width: 1px;
     border-bottom-style: dashed;
-    border-bottom-color: $white;
+    border-bottom-color:  var(--white);
   }
   &-img {
     border-radius: 50%;
@@ -147,7 +147,7 @@ onUnmounted(() => {
       font-weight: 600;
       font-size:  $clamp-font-very-small-medium;
       &-label {
-        color: $white-5;
+        color:  var(--white-5);
         font-size: 11px;
         text-decoration: none;
       }
@@ -155,7 +155,7 @@ onUnmounted(() => {
   }
   &-text-muted {
     display: block;
-    color: $white-5;
+    color:  var(--white-5);
     font-weight: 600;
     font-size: $clamp-font-very-small;
     padding-bottom: 0.5rem;

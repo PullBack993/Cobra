@@ -405,7 +405,6 @@ const onOpen = (value: boolean) => {
       margin-left: 1rem;
       animation: topToBottom 0.4s ease-in;
       border-radius: 50%;
-      background: $white;
     }
     &-coin-name {
       margin-left: 1rem;
@@ -414,13 +413,6 @@ const onOpen = (value: boolean) => {
       font-weight: bold;
       position: relative;
       animation: topToBottom 0.4s ease-in;
-
-      &--dark {
-        color: $white;
-      }
-      &--light {
-        color: $black;
-      }
     }
     &-top {
       width: 95%;
@@ -434,7 +426,6 @@ const onOpen = (value: boolean) => {
     //TODO check current element and index.on match should be like hover efect
     &-current {
       font-size: 2rem;
-      color: $white;
       list-style: none;
       color: var( --zth-text);
       &:hover {
@@ -459,7 +450,7 @@ const onOpen = (value: boolean) => {
       }
 
       &-active {
-        background-color: $white-2;
+        background-color: var(--white-2);
       }
 
       &--target {
@@ -467,7 +458,7 @@ const onOpen = (value: boolean) => {
         position: relative;
         margin-right: 2rem;
         border-radius: 50%;
-        background-color: $white;
+        background-color: var(--white);
       }
 
       &--baseImg {
@@ -475,7 +466,7 @@ const onOpen = (value: boolean) => {
         position: absolute;
         left: 1.5rem;
         border-radius: 50%;
-        background: $white;
+        background:  var(--white);
       }
       &--base,
       &--price,
@@ -504,7 +495,7 @@ const onOpen = (value: boolean) => {
     line-height: 1.71429;
     text-overflow: ellipsis;
     margin: 1rem;
-    color: $white;
+    color:  var(--white);
   }
 }
 

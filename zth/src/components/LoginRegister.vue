@@ -242,7 +242,7 @@ const handleLoading = () => {
   &-title {
     margin-top: 3rem;
     font-size: 3rem;
-    color: $white;
+    color:  var(--white);
   }
   &-container {
     display: flex;
@@ -291,7 +291,7 @@ const handleLoading = () => {
     &-signMsg {
       margin-top: 3rem;
       font-size: 1.4rem;
-      color: $white;
+      color:  var(--white);
     }
 
     &-signupBtn {
@@ -306,7 +306,7 @@ const handleLoading = () => {
       position: absolute;
       right: 2rem;
       top: 2rem;
-      color: $white;
+      color:  var(--white);
       font-size: 2rem;
       cursor: pointer;
       pointer-events: auto;
@@ -318,7 +318,7 @@ const handleLoading = () => {
     &-switchBtn {
       display: flex;
       margin: 0 auto;
-      color: $white;
+      color:  var(--white);
       justify-content: center;
       align-items: center;
     }
@@ -362,7 +362,7 @@ const handleLoading = () => {
       padding: 1rem;
       font-size: 1.6rem;
       background-color: $main_purple;
-      color: $white;
+      color:  var(--white);
       border: none;
       border-radius: 0.5rem;
       pointer-events: none;

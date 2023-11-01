@@ -245,24 +245,8 @@ const capitalizeFirstLetter = computed(() => selectedType.value.charAt(0).toUppe
   &-year-percentage {
     &--ratio {
       text-align: center;
-      font-weight: bold;
+      font-weight: 500;
       font-size: $clamp-font-small;
-    }
-    &--positive {
-      background: $chart-dark-green;
-      font-weight: 600;
-      color: $chart-light-green;
-    }
-    &--positive-light {
-      background: $chart-light-green;
-      font-weight: 600;
-      color: $chart-dark-green;
-    }
-
-    &--negative {
-      color: $chart-dark-red;
-      font-weight: 600;
-      background-color: $chart-red;
     }
   }
 
@@ -272,19 +256,19 @@ const capitalizeFirstLetter = computed(() => selectedType.value.charAt(0).toUppe
     font-weight: 600;
     position: initial;
     z-index: 1;
-    background-color: $bg-dark-purple;
+    background-color: var(--bg-dark-purple);
     width: 6rem;
     text-align: center;
     left: 0;
     -webkit-transform: translateZ(0);
-    border-right: 0.1rem ridge $main-purple;
+    border-right: 0.1rem ridge var(--brand-purple);
     position: -webkit-sticky;
     position: sticky;
     font-size: $clamp-font-small-2;
   }
 
   &-date {
-    color: $white;
+    color: var(--white);
 
     &--item {
       text-align: center;
@@ -302,12 +286,10 @@ const capitalizeFirstLetter = computed(() => selectedType.value.charAt(0).toUppe
     }
   }
 }
-.null{
-  background-color: aqua;
-}
+
 .returns__table-year--item,
 .returns__table-year-percentage--ratio{
-  color: $white;
+  color: var(--white);
 }
 @media (min-width: $breakpoint_mobiletabs) {
   .returns {

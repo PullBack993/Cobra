@@ -78,12 +78,6 @@ onUnmounted(() => {
   top: 0;
   position: sticky;
   z-index: 9;
-  // &--light {
-  //   background-color: $white;
-  // }
-  // &--dark {
-  //   background: linear-gradient(to right, rgb(0, 0, 0), #1d032a 30%, #000000 70%, #1d032a 95%);
-  // }
 }
 .main {
   border-bottom: 0.1rem solid $main-purple;

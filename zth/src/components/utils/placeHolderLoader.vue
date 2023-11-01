@@ -36,7 +36,7 @@ const styling = computed(() => {
   position: relative;
   width: fit-content;
   cursor: wait;
-  background-color: $bg-color-grey;
+  background-color: var(--bg-grey-5);
 }
 
 .loader::after {
@@ -64,7 +64,7 @@ const styling = computed(() => {
     90deg,
     transparent,
     transparent,
-    $light_grey,
+    var(--light_grey),
     transparent,
     transparent
   );

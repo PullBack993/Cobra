@@ -418,7 +418,7 @@ const btcCountChanged = (value: string) => {
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
-  color: $white;
+  color: var(--white);
 }
 
 .volume-monitor {
@@ -470,7 +470,7 @@ const btcCountChanged = (value: string) => {
     margin-right: 7rem;
     font-size: 1.1rem;
     width: 100%;
-    color: $grey-black-8;
+    color: var(--space-grey-8);
   }
   &__additional-info {
     display: flex;
@@ -490,7 +490,7 @@ const btcCountChanged = (value: string) => {
 
 .tb__table {
   width: 100%;
-  color: $white;
+  color: var(--white);
   caption-side: bottom;
   border-collapse: collapse;
   border-radius: 1rem;
@@ -504,7 +504,7 @@ const btcCountChanged = (value: string) => {
   &-body:not(:last-child) {
     border-bottom-width: 1px;
     border-bottom-style: dashed;
-    border-bottom-color: $white;
+    border-bottom-color: var(--white);
   }
   &-img {
     border-radius: 50%;
@@ -533,7 +533,7 @@ const btcCountChanged = (value: string) => {
       font-size:  $clamp-font-very-small-medium;
 
       &-label {
-        color: $white-5;
+        color: var(--white-5);
         font-size: 11px;
         text-decoration: none;
       }
@@ -541,7 +541,7 @@ const btcCountChanged = (value: string) => {
   }
   &-text-muted {
     display: block;
-    color: $white-5;
+    color: var(--white-5);
     font-weight: 600;
     
     font-size:  $clamp-font-very-small;

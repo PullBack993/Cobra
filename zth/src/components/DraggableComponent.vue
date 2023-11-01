@@ -108,7 +108,7 @@ const handleStyle = computed(() => {
 
   &:active {
     cursor: grabbing;
-    color: $white;
+    color: var(--white);
   }
 }
 </style>

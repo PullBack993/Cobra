@@ -234,7 +234,8 @@ onMounted(async () => {
     &::after {
       content: '\a';
       white-space: pre;
-      color: $white;
+      color: var(--white);
+
     }
   }
 
@@ -266,7 +267,7 @@ onMounted(async () => {
       border: 0.2rem solid $main-purple;
       border-radius: 50%;
       background: rgba(0, 0, 0, 0);
-      color: $white;
+      color: var(--white);
       width: 1.3rem;
       height: 1.3rem;
       text-align: center;
