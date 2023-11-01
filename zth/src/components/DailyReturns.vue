@@ -46,13 +46,17 @@ const colorPriceAction = computed(() => (difference: number) => {
       console.log(colorLevel);
       return `background-color: rgba( ${colorLevel % 7}, ${colorLevel}, 70, ${colorLevel});`;
     }
-    return `background-color: rgba( ${colorLevel % 2}, ${colorLevel}, 70, ${colorLevel});`;
+    return `background-color: rgba( ${colorLevel % 5}, ${colorLevel}, 70, ${colorLevel});`;
   }
 
   if (difference < 0) {
+    if(difference >= -0.01){
+    return `background-color: rgba(${colorLevel}, ${colorLevel}, 50, ${colorLevel + 20});`;
+
+    }
     return `background-color: rgba(${colorLevel + 70}, ${colorLevel / 7}, 50, ${colorLevel});`;
   }
-  return '';
+  return 'background-color: var(--black);';
 });
 
 onMounted(() => {
@@ -193,7 +197,7 @@ const capitalizeFirstLetter = computed(() => selectedType.value.charAt(0).toUppe
   min-height: 5rem;
 
   &__title {
-    color: $white;
+    color: var(--white);
     display: flex;
     width: 100%;
     justify-content: center;
@@ -298,7 +302,9 @@ const capitalizeFirstLetter = computed(() => selectedType.value.charAt(0).toUppe
     }
   }
 }
-
+.null{
+  background-color: aqua;
+}
 .returns__table-year--item,
 .returns__table-year-percentage--ratio{
   color: $white;

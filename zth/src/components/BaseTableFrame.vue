@@ -25,16 +25,16 @@ const store = useGlobalStore();
 
   &-dark {
     &.tb {
-      border: 0.1rem solid $white-2;
+      border: 0.1rem solid var(--white-2);
     }
-    box-shadow: 0rem 0rem 2rem $white-2;
+    box-shadow: 0rem 0rem 2rem var(--white-2);
   }
 
   &-light {
     &.tb {
-      border: 0.1rem solid $black-2;
+      border: 0.1rem solid var(--black-2);
     }
-    box-shadow: 0rem 0rem 2rem $input-bg-dark;
+    box-shadow: 0rem 0rem 2rem var(--bg-input-dark);
   }
 
   &__body {
