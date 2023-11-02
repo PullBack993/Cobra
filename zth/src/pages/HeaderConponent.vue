@@ -80,7 +80,7 @@ onUnmounted(() => {
   z-index: 9;
 }
 .main {
-  border-bottom: 0.1rem solid $main-purple;
+  border-bottom: 0.1rem solid  var(--brand-purple);
   height: 7.5rem;
   display: flex;
   justify-content: space-between;

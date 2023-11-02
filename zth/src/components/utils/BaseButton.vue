@@ -41,15 +41,15 @@ const classes: Record<string, any> = computed(() => ({
   border: none;
   border-radius: 0.5rem;
   outline: none;
-  background-color: $main-purple;
+  background-color:  var(--brand-purple);
   color:   var(--white);
   font-size: 1.6rem;
   font-weight: 600;
   cursor: pointer;
 
   &:hover {
-    border-color: $main-purple-dark-5;
-    background: $main-purple-dark-5;
+    border-color: var(--brand-purple-dark-5);
+    background: var(--brand-purple-dark-5);
     color:   var(--white);
   }
 }

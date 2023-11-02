@@ -264,7 +264,7 @@ onMounted(async () => {
     &::before {
       content: '';
       display: inline-block;
-      border: 0.2rem solid $main-purple;
+      border: 0.2rem solid var(--brand-purple);
       border-radius: 50%;
       background: rgba(0, 0, 0, 0);
       color: var(--white);

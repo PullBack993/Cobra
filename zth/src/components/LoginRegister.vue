@@ -265,7 +265,7 @@ const handleLoading = () => {
     }
     &-errorBlock {
       background-color: transparent;
-      border: 0.1rem solid $black;
+      border: 0.1rem solid var(--black);
       padding: 1.5rem;
       border-radius: 0.4rem;
       padding: 1.6rem;
@@ -299,7 +299,7 @@ const handleLoading = () => {
       // cursor: pointer;
       pointer-events: none;
       font-size: 1.8rem;
-      color: $main_purple;
+      color: var(--brand-purple);
       font-weight: 700;
     }
     &-closeBtn {
@@ -339,7 +339,7 @@ const handleLoading = () => {
         height: 1.8rem;
         position: absolute;
         left: 1.5rem;
-        fill: $main_purple;
+        fill: var(--brand-purple);
       }
     }
     &-label {
@@ -353,7 +353,7 @@ const handleLoading = () => {
       padding: 1rem 4rem 1rem 6rem;
       font-size: 1.6rem;
       border: none;
-      border-bottom: 0.1rem solid $light_grey;
+      border-bottom: 0.1rem solid var(--light-grey);
       transition: all 0.3s ease-in-out;
       background-color: var( --dark-gray-5);
     }
@@ -361,7 +361,7 @@ const handleLoading = () => {
       width: 100%;
       padding: 1rem;
       font-size: 1.6rem;
-      background-color: $main_purple;
+      background-color: var(--brand-purple);
       color:  var(--white);
       border: none;
       border-radius: 0.5rem;

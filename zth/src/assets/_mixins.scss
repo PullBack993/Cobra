@@ -1,4 +1,4 @@
-@mixin customHorizontalScrollbar($height: 0.8rem,$width: 0.7rem, $color: $main-purple, $border-radius: 1rem) {
+@mixin customHorizontalScrollbar($height: 0.8rem,$width: 0.7rem, $color: var(--brand-purple), $border-radius: 1rem) {
     // Chrome and Firefox
     scrollbar-color: $color transparent;
     -webkit-scrollbar-color: $color transparent;

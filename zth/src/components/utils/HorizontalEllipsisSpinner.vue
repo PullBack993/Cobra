@@ -32,25 +32,25 @@
     }
 
     &:nth-child(2) {
-      background: $main-purple;
+      background: var(--brand-purple);
       left: 0.8rem;
       animation: ellipsis-second 0.6s infinite;
     }
 
     &:nth-child(3) {
-      background: $main_medium_purple;
+      background: var(--brand-purple-light);
       left: 3.2rem;
       animation: ellipsis-second 0.6s infinite;
     }
 
     &:nth-child(3) {
-      background: $main_medium_purple;
+      background: var(--brand-purple-light);
       left: 3.2rem;
       animation: ellipsis-second 0.6s infinite;
     }
 
     &:nth-child(4) {
-      background: $main_plum_purple;
+      background: var(--brand-purple-lighter);
       left: 5.6rem;
       animation: ellipsis-last 0.6s infinite;
     }

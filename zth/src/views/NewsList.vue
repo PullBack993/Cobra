@@ -299,7 +299,7 @@ const calculateDateTimeDifference = (dateStr: string): string => {
   }
 
   &__list-content {
-    color: $main-purple;
+    color: var(--brand-purple);
     line-height: 2.7rem;
 
     @media (min-width: $breakpoint_verysmall) {

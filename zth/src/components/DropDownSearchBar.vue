@@ -326,7 +326,7 @@ const onOpen = (value: boolean) => {
     border-radius: 0.5rem;
     transform: scale(2.2);
     right: 0.6rem;
-    fill: $main-purple;
+    fill: var(--brand-purple);
   }
   &-dropdown {
     animation: topToBottom 0.35s ease-in;
@@ -350,7 +350,7 @@ const onOpen = (value: boolean) => {
   &-list {
     border: 0.1rem solid $input-bg-dark;
     border-top: none;
-    scrollbar-color: $main-purple transparent;
+    scrollbar-color: var(--brand-purple) transparent;
     padding: 0.5rem 0;
     display: block;
     scrollbar-width: thin;
@@ -365,7 +365,7 @@ const onOpen = (value: boolean) => {
     }
     &::-webkit-scrollbar-thumb {
       height: 5rem;
-      background-color: $main-purple;
+      background-color: var(--brand-purple);
       border: 0.5rem solid transparent;
       background-clip: padding-box;
       border-radius: 5rem;
@@ -416,7 +416,7 @@ const onOpen = (value: boolean) => {
     }
     &-top {
       width: 95%;
-      border-bottom: 0.1rem solid $main-purple-dark-5;
+      border-bottom: 0.1rem solid var(--brand-purple-dark-5);
       margin: auto;
       padding-top: 0.5rem;
     }

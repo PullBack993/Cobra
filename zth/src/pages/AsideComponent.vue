@@ -183,7 +183,7 @@ onMounted(() => {
     content: '';
     position: absolute;
     height: 3.5rem;
-    border-left: 0.3rem solid $main-purple;
+    border-left: 0.3rem solid  var(--brand-purple);
     left: 0.1rem;
   }
   &.image {
@@ -326,7 +326,7 @@ onMounted(() => {
     }
 
     &-icon {
-      fill: $main_purple;
+      fill: var(--brand-purple);
       height: clamp(2.1rem, 2vw + 0.26rem, 2.3rem);
       width: 3rem;
       &--scale {
@@ -348,7 +348,7 @@ onMounted(() => {
     padding-left: 1rem;
     font-size: $clamp-font-large-almost-large;
     font-weight: 300;
-    color: $main_purple;
+    color: var(--brand-purple);
     animation: topToBottom 0.5s ease-in-out;
     // transition-delay: 3s;
   }
@@ -423,13 +423,13 @@ onMounted(() => {
   }
 
   .theme.light-icon::before {
-    background-color: $main_purple;
+    background-color: var(--brand-purple);
     box-shadow: rgba(149, 157, 165, 0.2) 0 8rem 2.4rem;
     transform: translateX(0%);
   }
 
   .theme.dark-icon::before {
-    background-color: $main_purple-dark;
+    background-color: var(--brand-purple);
     box-shadow: rgba(149, 157, 165, 0.2) 0 8rem 2.4rem;
     transform: translateX(100%);
   }

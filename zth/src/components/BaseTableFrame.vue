@@ -38,7 +38,7 @@ const store = useGlobalStore();
   }
 
   &__body {
-    color: $black;
+    color: var(--black);
     flex: 1 1 auto;
   }
   &__responsive {
