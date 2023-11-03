@@ -64,7 +64,7 @@ const styling = computed(() => {
     90deg,
     transparent,
     transparent,
-    var(--light_grey),
+    var(--light-grey),
     transparent,
     transparent
   );

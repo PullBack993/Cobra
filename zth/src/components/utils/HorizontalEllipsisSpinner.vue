@@ -26,7 +26,7 @@
     animation-timing-function: cubic-bezier(0, 1, 1, 0);
 
     &:nth-child(1) {
-      background: $main_purple-dark-5;
+      background: var(--brand-purple-dark-5);
       left: 0.8rem;
       animation: ellipsis-first 0.6s infinite;
     }

@@ -1,35 +1,63 @@
-// TODO adjust color light/dark with own color
+:root {
+  // Base colors;
+  --white: #ffffff;
+  --black: #000000;
+  --black-2:#00000033;
+  --white-2: #ffffff33;
+  --white-3: #ffffff4d;
+  --white-4: #ffffff66;
+  --white-5: #ffffff80;
 
-// Base colors
+  --dark-gray-4: #0100036a;
 
-
-
-// Dark theme colors(Main)
-$main-purple-dark-5: #5c00ad80;
-$main-purple-dark: #5b00ab;
-$medium-purple: #482f5f;
-$input-color-dark: #8d5a92;
-$bg-dark-purple: #16083e;
-$input-bg-dark: #341c7e6a;
-$input-bg-dark-2: #341c7e2d;
-$input-bg-dark-8: #341c7ed1;
-$metamask-yellow: #e8821e;
-
-$chart-dark-green: #123B40;
-$chart-dark-red: #442028;
-
-$chart-light-green: #16C784;
-
-
-$chart-green: #0ead98;
-$chart-red: #db5541;
-
-
-// Gradient 
-$gradient-news-text: linear-gradient(
-    90deg,
-    rgb(110, 42, 144) 0%,
-    rgba(220, 36, 48, 1) 100%
-  );
-
+  --space-grey-2: #655d5d33;
+  --space-grey-5: #665e5e80;
+  --space-grey-8: #665e5ecc;
+  --light-grey: #d3d3d3;
   
+  --night-blue: #05173781; //$dark-blue
+
+ // Main colors::after
+--brand-purple: #8a00ff;
+--brand-purple-light: #b971f8;
+--brand-purple-lighter: #cea1f9;
+--brand-purple-lightest: #e1caf769;
+
+--brand-purple-dark: #5b00ab;
+--brand-purple-dark-light: #482f5f;
+--brand-purple-dark-5: #5c00ad80;
+
+//Background colors
+--bg-grey:#b5b2b2;
+--bg-grey-5: #d7d7d780;
+--bg-dark-purple: #16083e;
+--bg-input-purple: #8d5a92;
+--bg-input-dark: #341c7e6a;
+--bg-input-dark-2: #341c7e2d;
+--bg-input-dark-3: #341c7d4c;
+--bg-input-dark-8: #341c7ed1;
+
+
+// Effects
+--metamask-yellow: #e8821e;
+--chart-dark-green: #123B40;
+--chart-dark-red: #442028;
+--chart-light-green: #16C784;
+--chart-green: #0ead98;
+--chart-red:#db5541;
+
+// Gradient Effects
+--long-short-red-light: linear-gradient(to right, #9b282851, #d33131a9 90%, #d32f2f);
+--long-short-red-dark: linear-gradient(to right, #ff000000, #d32f2f80 90%, #d32f2f80);
+
+--long-short-green-light: linear-gradient(to left, #449c6751, #27c164a1 50%, #38c771);
+--long-short-green-dark: linear-gradient(to left, #449c671d, #5dc7878c 50%, #5dc787);
+
+ // Background Effects
+   --main-bg: linear-gradient(to right, rgb(0, 0, 0), #1d032a 30%, #000000 70%, #1d032a 95%);
+   --aside-bg: var(--night-blue);
+
+// shadow effect
+--zth-light-shadow: #ffffff2f;
+--zth-light-shadow-dark: #5c5c5cb3;
+}

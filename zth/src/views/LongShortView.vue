@@ -153,6 +153,8 @@ intervalId.value = Number(setInterval(reqData, 20000));
 }
 .main-long__short {
   overflow: hidden;
+  max-width: 144rem;
+margin: auto;
 }
 
 .long__short {

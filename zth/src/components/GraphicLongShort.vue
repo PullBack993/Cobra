@@ -60,38 +60,44 @@ const combinedCoinsData = computed<[CombinedCoinexchange]>(() => {
       </div>
     </div>
   </div>
-
+  
   <div v-if="!coinsData || loading">
     <div v-for="(_, index) in loadingLength" :key="index">
       <div class="loader">
         <placeHolderLoader
-          class="loader-spliter"
-          :loader-width="15"
-          width-unit="rem"
+          class="loader-spliter graphic__ratio-exchange"
+          :loader-width="'none'"
           :loader-height="3.5"
         ></placeHolderLoader>
 
         <placeHolderLoader
-          class="loader-spliter"
-          :loader-width="82"
-          width-unit="%"
+          class="loader-spliter graphic__ratio-main"
+          :loader-width="'none'"
           :loader-height="3.5"
         ></placeHolderLoader>
       </div>
-    </div>
+    </div>*-
   </div>
 </template>
 
 <style scoped lang="scss">
 .loader {
-  display: flex;
-  -webkit-flex-flow: row wrap;
-  flex-flow: row wrap;
+  width: 100%;
+  flex-direction: row;
+  flex-wrap: wrap;
+  display:flex;
+  margin: 0.5rem 0;
+
+  @media(min-width: $breakpoint_verysmall){
+    flex-direction: row;
+    flex-wrap:nowrap;
+  }
 
   &-spliter {
     box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
-    margin: 1rem;
     border-radius: 1rem;
+    margin-right: 1rem;
+  
     &::before {
       content: '';
       display: block;
@@ -122,7 +128,7 @@ const combinedCoinsData = computed<[CombinedCoinexchange]>(() => {
     -webkit-flex: 0 0 50%;
     -moz-box-flex: 0;
     flex: 0 0 50%;
-    max-width: 50%;
+    max-width: 30%;
 
     &-name{
       color: var(--zth-text);

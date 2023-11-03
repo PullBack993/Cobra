@@ -562,18 +562,18 @@ td {
 }
 
 tr:nth-child(odd) {
-  background-color: $input-bg-dark;
+  background-color: var(--bg-input-dark);
 }
 
 tr:nth-child(even) {
-  background-color: $input-bg-dark-8;
+  background-color: var(--bg-input-dark-8);
 }
 
 .green {
-  color: $chart-light-green;
+  color: var(--chart-light-green);
 }
 .red {
-  color: $chart-red;
+  color: var(--chart-red);
 }
 
 @media (min-width: $breakpoint_verysmall) {

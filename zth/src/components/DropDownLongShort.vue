@@ -219,7 +219,7 @@ const selectInput = () => {
 
   &-dropdown-symbol {
     width: 11rem;
-    background: $bg-dark-purple;
+    background: var(--bg-dark-purple);
     border-radius: $border-light;
     &--is-open {
       display: none;

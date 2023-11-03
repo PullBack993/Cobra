@@ -334,7 +334,7 @@ onMounted(() => {
       }
 
       &:hover {
-        color: $main-purple-dark;
+        color: var(--brand-purple-dark);
       }
     }
   }

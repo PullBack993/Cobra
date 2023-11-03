@@ -306,10 +306,10 @@ const onOpen = (value: boolean) => {
   padding-left: 5rem;
 }
 .positive {
-  color: $chart-green;
+  color: var(--chart-green);
 }
 .negative {
-  color: $chart-red;
+  color: var(--chart-red);
 }
 .search__container {
   width: 100%;
@@ -348,7 +348,7 @@ const onOpen = (value: boolean) => {
   
   }
   &-list {
-    border: 0.1rem solid $input-bg-dark;
+    border: 0.1rem solid var(--bg-input-dark);
     border-top: none;
     scrollbar-color: var(--brand-purple) transparent;
     padding: 0.5rem 0;
@@ -377,7 +377,7 @@ const onOpen = (value: boolean) => {
     &-last,
     &-change {
       font-weight: bold;
-      color: $medium-purple;
+      color: var(--brand-purple-dark-light);
       animation: topToBottom 0.4s ease-in;
       font-size: 1.3rem;
       line-height: 1.71429;
@@ -429,7 +429,7 @@ const onOpen = (value: boolean) => {
       list-style: none;
       color: var( --zth-text);
       &:hover {
-        background-color: $input-bg-dark-2;
+        background-color: var(--bg-input-dark);
       }
 
       &:hover &--base,

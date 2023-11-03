@@ -261,7 +261,7 @@ const handleLoading = () => {
 
     &-metamask {
       margin: 2rem auto;
-      background-color: $metamask_yellow;
+      background-color: var(--metamask-yellow);
     }
     &-errorBlock {
       background-color: transparent;
@@ -271,7 +271,7 @@ const handleLoading = () => {
       padding: 1.6rem;
 
       &-errorMsg {
-        color: $chart-red;
+        color: var(--chart-red);
         font-size: 1.5rem;
         line-height: 2rem;
         font-weight: 700;

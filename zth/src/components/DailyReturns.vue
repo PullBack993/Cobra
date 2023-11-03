@@ -138,14 +138,6 @@ const capitalizeFirstLetter = computed(() => selectedType.value.charAt(0).toUppe
 
         <DropdownSmall :data="timeStamp" :readonly="true" :with-arrow-icon="true" @new-value:input="timeChange" />
       </div>
-      <div
-        class="returns__chart-select-item"
-        :class="[ currentType != 'day' ? 'returns__chart-select-item--non' : '']"
-      >
-        <div class="returns__chart-select-item">Symbol</div>
-
-        <DropdownSmall :data="['BTC']" :readonly="true" :with-arrow-icon="true" />
-      </div>
     </div>
   </div>
   <div class="returns__container">
