@@ -292,34 +292,10 @@ function calculatePercentDifferenceDaily(data, month, type) {
 // }
 
 // async function wait(seconds) {
-//   console.log("waitttttttttttttttttttttt", new Date().toLocaleTimeString());
 //   await new Promise((resolve) => setTimeout(resolve, seconds | 120000));
-//   console.log("gooooooooooooooo ", new Date().toLocaleTimeString());
 // }
 
 // // test();
 // // takeNeeded(fetchCoins);
 // const fetchCoins = require("../../coins.json");
 // console.log(fetchCoins.length);
-
-{
-  /* <ul
-  role="listbox"
-  id=":R1l9mdqlq6:-listbox"
-  aria-labelledby=":R1l9mdqlq6:-label"
-  class="MuiAutocomplete-listbox MuiPopper-root cg-style-pw5ii0"
-  data-first-child=""
-  style="position: absolute; inset: 0px auto auto 0px; width: 98px; margin: 0px; transform: translate(700px, 999px);"
-  data-popper-placement="bottom"
->
-  <li
-    role="presentation"
-    class="MuiListItem-root MuiListItem-nesting MuiListItem-colorNeutral MuiListItem-variantPlain MuiAutocomplete-noOptions cg-style-d6c682"
-  >
-    No options
-  </li>
-</ul>; */
-}
-{
-  /* <li class="MuiAutocomplete-option cg-style-zixclz" tabindex="-1" role="option" id=":R1l9mdqlq6:-option-0" data-option-index="0" aria-disabled="false" aria-selected="false">ETH</li> */
-}

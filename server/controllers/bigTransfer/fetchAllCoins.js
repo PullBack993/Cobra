@@ -8,7 +8,6 @@ const JSON_FILE_PATH = './coins.json';
 
 
 function fetchAndSaveCoins() {
-    console.log('Fetching coins data...');
   axios.get(API_URL)
     .then((response) => {
       const newCoins = response.data;
@@ -28,7 +27,6 @@ function fetchAndSaveCoins() {
         fs.writeFileSync(JSON_FILE_PATH, JSON.stringify(newCoins, null, 2));
       }
 
-      console.log(`Coins data saved to ${JSON_FILE_PATH}`);
     })
     .catch((error) => {
       console.error('Error fetching coins:', error);

@@ -43,7 +43,6 @@ const colorPriceAction = computed(() => (difference: number) => {
 
   if (difference > 0) {
     if (colorLevel > 255) {
-      console.log(colorLevel);
       return `background-color: rgba( ${colorLevel % 7}, ${colorLevel}, 70, ${colorLevel});`;
     }
     return `background-color: rgba( ${colorLevel % 5}, ${colorLevel}, 70, ${colorLevel});`;

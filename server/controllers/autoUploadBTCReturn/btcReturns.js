@@ -26,7 +26,6 @@ async function fetchNewData() {
           });
           response.on("end", () => {
             const parsedData = JSON.parse(data);
-            console.log(parsedData)
             fetchedData = parsedData.data;
             dataLength = fetchedData?.length;
             //2. Calculate difference between two date
@@ -223,7 +222,6 @@ function calculateWeeklyChanges(data, dataLength) {
 
 function calculateMonthlyChanges(data, dataLength) {
   const differenceBeginMonth = calculateDifferenceFromBeginMonth(data);
-  console.log(differenceBeginMonth);
   const currentPrice = data[dataLength].price;
   const prevPrice = data[dataLength - differenceBeginMonth].price;
 
