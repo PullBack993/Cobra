@@ -3,8 +3,8 @@ const cookieParser = require("cookie-parser");
 const cors = require("../middleware/cors");
 const RateLimit = require("express-rate-limit");
 const limiter = RateLimit({
-  windowMs: 1 * 60 * 1000, // 1 minute
-  max: 500,
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100,  // max 100 requests per windowMs
 });
 
 module.exports = (app) => {
@@ -12,8 +12,7 @@ module.exports = (app) => {
   app.use(cors());
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
-  // Apply rate limiter to all requests
-  // app.use(limiter);
+  app.use(limiter);
 
   // Global error handler
   app.use((err, req, res, next) => {

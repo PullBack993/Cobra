@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { io, Socket } from 'socket.io-client';
-import { onBeforeUnmount, onMounted, ref, computed } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
 import { IWebsocket, ITickVolume, ITick } from '../Interfaces/IWebsocket';
 import BaseTableFrame from '../components/BaseTableFrame.vue';
@@ -9,7 +9,6 @@ import DropdownSmall from '../components/DropDownLongShort.vue';
 import { useGlobalStore } from '../store/global';
 import defaultimage from '../assets/BaseIcons/default-image.png';
 
-const store = useGlobalStore();
 const baseApiUrl = import.meta.env.VITE_APP_WEBSOCKET;
 
 const allowsCoins = ['BTC', 'USDT']; // TODO should implement this

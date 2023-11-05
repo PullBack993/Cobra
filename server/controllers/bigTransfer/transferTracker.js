@@ -8,7 +8,8 @@ const allCoins = require("../../coins.json");
 const CoinGeckoClient = new CoinGecko();
 
 let coinImageCache = {};
-let io;
+let customWS;
+let binanceWS;
 let lastMessageTime = 0;
 const maxValues = 100;
 let last20Values = [];
@@ -19,10 +20,13 @@ let btcPrice;
 async function connectToBinanceWS() {
   try {
     const coins100 = await get100CoinsByPrice();
-    const ws = new WebSocket("wss://stream.binance.com:9443/ws");
+    console.log('Creating WebSocket...');
 
-    ws.on("open", () => {
-      ws.send(
+    binanceWS = new WebSocket("wss://stream.binance.com:9443/ws");
+
+
+    binanceWS.on("open", () => {
+      binanceWS.send(
         JSON.stringify({
           method: "SUBSCRIBE",
           params: coins100.map((coin) => coin.name),
@@ -30,8 +34,8 @@ async function connectToBinanceWS() {
         })
       );
     });
-
-    ws.on("message", (data) => {
+ 
+    binanceWS.on("message", (data) => {
       const now = Date.now();
       const msg = JSON.parse(data);
       coins100.forEach(async (coin, index) => {
@@ -43,10 +47,7 @@ async function connectToBinanceWS() {
           console.log('Binance send massage');
           const searchedCoin = findCoin(allCoins, msg.s.split("USDT")[0]);
           msg.image = await fetchCoinImage(searchedCoin);
-          console.log('btc price =>',btcPrice)
-          console.log('selected volume =>', selectedVolume)
           const test = (msg.p * msg.q) / btcPrice
-          console.log('test =>',test)
           msg.beq = test;
           msg.T = convertTimestamp(msg.T);
           last20Values.push(msg);
@@ -59,12 +60,28 @@ async function connectToBinanceWS() {
 
       lastMessageTime = now;
     });
+    binanceWS.on('error', (error) => {
+      console.error('WebSocket error:', error);
+      // Attempt to reconnect.
+      setTimeout(reconnectToBinanceWS, 1000); // Adjust the delay as needed.
+    });
+
+    setTimeout(reconnectToBinanceWS, 2 * 60 * 60 * 1000);
 
     return sendToClient;
   } catch (error) {
     console.error(error);
   }
 }
+async function reconnectToBinanceWS() {
+  if (binanceWS) {
+    console.log('WS IS OPEN');
+    binanceWS.close();
+    console.log('WS IS OPEN recon',);
+  }
+  connectToBinanceWS();
+}
+
 
 async function fetchCoinImage(coin) {
   try {
@@ -133,7 +150,7 @@ function createWebSocketServer(port) {
   const server = http.createServer();
   const corsWhitelist = ["http://127.0.0.1:5173", "http://localhost:5173"]; // TODO change before go live
 
-  io = socketIO(server, {
+  customWS = socketIO(server, {
     cors: {
       origin: corsWhitelist,
       methods: ["GET", "POST"],
@@ -141,11 +158,10 @@ function createWebSocketServer(port) {
       credentials: true,
     },
   });
-  io.on("connection", socket => {
+  customWS.on("connection", socket => {
     console.log("Connected to transfer tracker!");
     if (last20Values) {
-      console.log('message')
-      io.emit("message", JSON.stringify(last20Values));
+      customWS.emit("message", JSON.stringify(last20Values));
     }
 
     socket.on("disconnect", () => {
@@ -159,7 +175,8 @@ function createWebSocketServer(port) {
 }
 
 function sendToClient(data) {
-  io.emit("message", JSON.stringify(data));
+  console.log('emit data')
+  customWS.emit("message", JSON.stringify(data));
 }
 
 async function getBtcPrice() {

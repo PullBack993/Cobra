@@ -186,8 +186,9 @@ async function fetchNews() {
   let browser;
   try {
     browser = await puppeteer.launch({
-      headers: "new",
+      headless: "new",
       protocolTimeout: 240000,
+      args: ['--no-sandbox']
     });
     const page = await browser.newPage();
     await page.goto(`${mainUrl}`);
@@ -230,6 +231,13 @@ async function fetchNews() {
     }
     console.error(error);
   }
+  finally{
+    if (browser) {
+      browser?.close();
+  console.log("Browser CLOSE =>>> 1X");
+
+    }
+  }
   console.log("Browser CLOSE =>>> X");
 }
 
@@ -238,8 +246,8 @@ async function checkIfTitleExistsInDatabase(title) {
     const article = await Article.findOne({ title: title });
     return article !== null;
   } catch (err) {
-    console.log(err);
     console.error(err);
+    await browser?.close();
   }
 }
 

@@ -54,7 +54,6 @@ router.post("/daily-return", async (req, res) => {
 
 router.post("/long-short", async (req, res) => {
   let { time, coin } = req.body;
-console.log(time,coin)
   const options = {
     method: 'GET',
     url: `https://open-api.coinglass.com/public/v2/long_short?time_type=${time}&symbol=${coin}`,

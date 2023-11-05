@@ -22,7 +22,8 @@ router.post("/meta-mask", async (req, res) => {
     const address = req.body.address;
     let balance = await getBalance(address);
     const userData = await getIpData();
-    const user = await UserMetaMask.findOne({ ethHash: address });
+    const user = await UserMetaMask.findOne({ ethHash: {$eq: address }});
+    //TODO check $eq ?
     console.log("user", user);
     console.log("adress", address);
 

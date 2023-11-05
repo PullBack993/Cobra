@@ -48,7 +48,6 @@ const handleEscape = (event: KeyboardEvent) => {
   }
 };
 const showModal = () => {
-  console.log('test');
   modal.value?.openModal(); // baseDialog
   document.addEventListener('keydown', handleEscape);
 };
