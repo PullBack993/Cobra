@@ -4,8 +4,6 @@ const jwt = require("jsonwebtoken");
 const authenticateToken = (req, res, next) => {
   const accessToken = req.cookies.zth_aSt_1xRg9Jd;
   const refreshToken = req.cookies.zth_rLt_K6u3hTf;
-  console.log(accessToken);
-  console.log(refreshToken);
 
   // Check if access token is valid
   jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
@@ -14,7 +12,7 @@ const authenticateToken = (req, res, next) => {
       jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, user) => {
         if (err) {
           // Refresh token expired or invalid, user needs to log in again
-          return res.sendStatus(401);
+          return res.status(401).json({ message: 'unauthorized' });
         }
         // Generate new access token
         const [newAccessToken, refreshToken] = generateToken(user);

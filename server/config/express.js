@@ -16,7 +16,12 @@ module.exports = (app) => {
 
   // Global error handler
   app.use((err, req, res, next) => {
+    if (err.status === 401) {
+      return res.status(401).json({ message: 'unauthorized' });
+    }
+  
     console.error(err);
     res.status(500).send("Internal Server Error");
+    next()
   });
 };

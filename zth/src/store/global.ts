@@ -26,7 +26,6 @@ export const useGlobalStore = defineStore('globalStore', {
           this.setUser(response.data);
         }
       } catch (error) {
-        console.log(error);
       }
     },
   },
