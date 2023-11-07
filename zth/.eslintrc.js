@@ -2,11 +2,11 @@ module.exports = {
   root: true,
   env: {
     browser: true,
+    node: true,
   },
   extends: [
     'plugin:vue/vue3-strongly-recommended',
     'plugin:@typescript-eslint/recommended',
-    '@vue/airbnb',
     'prettier',
     '@vue/typescript',
   ],
@@ -27,7 +27,7 @@ module.exports = {
         config: 'webpack/config.base.js',
       },
       alias: {
-        map: [['@', 'src']],
+        map: [['@', './src']],
         extensions: ['.ts', '.js', '.vue'],
       },
     },
