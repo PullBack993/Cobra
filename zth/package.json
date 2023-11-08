@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "build": "vite build",
-    "lint": "vue-cli-service lint",
+    "lint": "eslint --ext .js,.vue --ignore-patch .gitignore --fix src",
     "dev": "vite",
     "lint:css": "stylelint '**/*.scss'",
     "preview": "vite preview",
