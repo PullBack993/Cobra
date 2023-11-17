@@ -26,7 +26,7 @@ async function getLongShortDataForAllCoins() {
   });
 
   await cluster.task(async ({ page, data: coin }) => {
-    await page.goto("https://www.coinglass.com/LongShortRatio");
+    await page.goto(process.env.LONG_SHORT_URL);
 
     console.log(`Start scraping ${coin}`);
     const coinData = await getLongShortData(page, coin);

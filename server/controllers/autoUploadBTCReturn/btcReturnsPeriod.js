@@ -53,10 +53,10 @@ async function bitcoinReturns() {
     // const weeklyData = weeklyPercentDifferencePeriod(data, period);
     // const monthData = monthlyPercentDifferencePeriod(data, period);
     // const quarterData = quarterlyPercentDifferencePeriod(data, period);
-    // saveData(dailyData, "Day1");
-    // saveData(weeklyData, "Week1", weeklyCount);
-    // saveData(monthData, "Month1", monthlyCount);
-    // saveData(quarterData, "Quarter1", quarterlyCount);
+    // saveData(dailyData, "Day");
+    // saveData(weeklyData, "Week", weeklyCount);
+    // saveData(monthData, "Month", monthlyCount);
+    // saveData(quarterData, "Quarter", quarterlyCount);
   } catch (error) {
     console.error(error);
   }

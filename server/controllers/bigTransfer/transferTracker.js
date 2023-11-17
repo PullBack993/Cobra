@@ -75,9 +75,7 @@ async function connectToBinanceWS() {
 }
 async function reconnectToBinanceWS() {
   if (binanceWS) {
-    console.log('WS IS OPEN');
     binanceWS.close();
-    console.log('WS IS OPEN recon',);
   }
   connectToBinanceWS();
 }
@@ -159,14 +157,9 @@ function createWebSocketServer(port) {
     },
   });
   customWS.on("connection", socket => {
-    console.log("Connected to transfer tracker!");
     if (last20Values) {
       customWS.emit("message", JSON.stringify(last20Values));
     }
-
-    socket.on("disconnect", () => {
-      console.log('from', socket.id, "Disconnected from transfer tracker!");
-    });
   });
 
   server.listen(port, () => {
@@ -175,7 +168,6 @@ function createWebSocketServer(port) {
 }
 
 function sendToClient(data) {
-  console.log('emit data')
   customWS.emit("message", JSON.stringify(data));
 }
 
@@ -183,7 +175,7 @@ async function getBtcPrice() {
   try {
     return new Promise((resolve, reject) => {
       https
-        .get("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT", (response) => {
+        .get(process.env.BINANCE_BTC_PRICE, (response) => {
           let btcPrice = "";
 
           response.on("data", (chunk) => {
@@ -209,7 +201,7 @@ async function get100CoinsByPrice() {
   try {
     return new Promise((resolve, reject) => {
       https
-        .get("https://api.binance.com/api/v3/ticker/price", (resp) => {
+        .get(process.env.BINANCE_TICKET_PRICE , (resp) => {
           let data = "";
 
           resp.on("data", (chunk) => {
@@ -228,9 +220,6 @@ async function get100CoinsByPrice() {
               price: result.price,
               qEqBTC: (btcPrice * 0.5) / result.price, // half of price mean 0.5 btc selected
             }));
-
-            // console.log("Top 100 pairs by market capitalization with USDT:", pairs.slice(0, 100));
-            // console.log("Top 50 pairs by market capitalization with USDT:", pairs.slice(100, 50));
             resolve(pairs);
           });
         })

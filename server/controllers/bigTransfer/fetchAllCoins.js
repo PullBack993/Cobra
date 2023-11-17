@@ -3,7 +3,7 @@ const fs = require('fs');
 const Cron = require("cron").CronJob;
 
 
-const API_URL = 'https://api.coingecko.com/api/v3/coins/list';
+const API_URL = process.env.COING_COIN_LIST;
 const JSON_FILE_PATH = './coins.json';
 
 

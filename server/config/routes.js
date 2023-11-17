@@ -1,4 +1,3 @@
-const router = require("express").Router();
 const dataController = require("../controllers/data.js");
 const userController = require("../controllers/authentication/auth.js");
 const coinsDataController = require("../controllers/coinsData/exchangeLongShort");
