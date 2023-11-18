@@ -41,6 +41,7 @@ async function fetchNewData() {
         });
     });
   };
+
   try {
     await getData();
   } catch (error) {
@@ -60,6 +61,7 @@ function updateNewData(calculatedData) {
   const currentDay = currentDate.getUTCDate();
 
   // Check if TimeFrame is Day
+  try{
   BtcChangeIndicator.findOne(
     {
       name: "BTC",
@@ -69,20 +71,20 @@ function updateNewData(calculatedData) {
       if (err) throw err;
       if (btcChangeDoc) {
         // The document exists, update its "Timestamp" field
-        const currentTimestamp = btcChangeDoc.Timestamp;
-        if (!currentTimestamp.years) {
+        const currentTimestamp = btcChangeDoc.Timestamp; // TODO year: { 2023 } should be { 2023 }
+        if (!currentTimestamp) {
           // If the "years" array does not exist, create it
-          currentTimestamp.years = {};
+          currentTimestamp = {};
         }
-        if (!currentTimestamp.years[currentYear]) {
+        if (!currentTimestamp[currentYear]) {
           // If the current year object does not exist, create it
-          currentTimestamp.years[currentYear] = {};
+          currentTimestamp[currentYear] = {};
         }
-        if (!currentTimestamp.years[currentYear][currentMonth]) {
+        if (!currentTimestamp[currentYear][currentMonth]) {
           // If the current month object does not exist, create it
-          currentTimestamp.years[currentYear][currentMonth] = {};
+          currentTimestamp[currentYear][currentMonth] = {};
         }
-        currentTimestamp.years[currentYear][currentMonth][currentDay] = calculatedData;
+        currentTimestamp[currentYear][currentMonth][currentDay] = calculatedData;
         btcChangeDoc.Timestamp = currentTimestamp;
         btcChangeDoc.markModified("Timestamp"); // Mixed type => mark a field on a doc. as modified (Mongoose doesn't recognize as modification)
         btcChangeDoc.save((error) => {
@@ -94,6 +96,9 @@ function updateNewData(calculatedData) {
       }
     }
   );
+  }catch( error ){
+    console.error(error);
+  }
 }
 
 function updateNewDataWeek(calculatedData, data) {
@@ -204,7 +209,7 @@ function updateNewDataQuarter(calculatedData, fetchedData) {
 }
 
 function calculateDailyChanges(data, dataLength) {
-  const prevPrice = data[dataLength - 1]?.price;
+  const prevPrice = data[dataLength]?.price;
   const currentPrice = data[dataLength]?.price;
 
   const calculatePercentageChange = calculateDifference(currentPrice, prevPrice);

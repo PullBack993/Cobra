@@ -8,9 +8,9 @@ const axios = require("axios");
 
 // fetchNewData();
 // fetchNewDataPeriod();
-const job = new CronJob(" 0 */2 * * * ", () => {
+const job = new CronJob(" 0 */6 * * * ", () => {
   fetchNewData();
-  console.log("Running cron job every 2 hours!");
+  console.log("Fetch daily returns data!");
 });
 
 job.start();
@@ -18,22 +18,10 @@ job.start();
 router.post("/daily-return", async (req, res) => {
   try {
     const data = req.body;
-    const today = new Date();
-    const yearDiff = new Array(today.getFullYear() - 2012 + 1).fill(0);
     let result = {};
 
     if (data.type === "day") {
-      const month = data.month;
-      const searchParams = {};
-      yearDiff.forEach((_, index) => {
-        searchParams[`Timestamp.years.${2012 + index}.${month}`] = 1;
-      });
-      // fetchNewData();
-
-      result = await BtcChangeIndicator.find(
-        { [`Timestamp.years.2012.${month}`]: { $exists: true } },
-        searchParams
-      ).sort();
+      result = await BtcChangeIndicator.find({ TimeFrameName: "Day" }).sort();
     }
     if (data.type === "week") {
       result = await BtcChangeIndicator.find({ TimeFrameName: "Week" });

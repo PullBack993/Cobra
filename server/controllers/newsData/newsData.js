@@ -5,7 +5,6 @@ const CronJob = require("cron").CronJob;
 const Article = require("../../models/NewsCoins");
 const https = require("https");
 const sharp = require("sharp");
-const axios = require("axios");
 
 const imageCache = new Map();
 

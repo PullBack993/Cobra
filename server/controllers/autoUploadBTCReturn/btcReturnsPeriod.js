@@ -1,6 +1,6 @@
 const https = require("https");
 const BtcChangeIndicator = require("../../models/BtcChange");
-const weeklyCount = Array(52).fill(" ");
+const weeklyCount = Array(53).fill("");
 const monthlyCount = [
   "January",
   "February",
@@ -24,6 +24,9 @@ const options = {
   path: "/public/v2/index/bitcoin_profitable_days",
   headers: { accept: "application/json", coinglassSecret: process.env.COING_KEY },
 };
+
+// to fill db with data
+// bitcoinReturns()
 
 function fetchNewDataPeriod() {
   return new Promise((resolve, reject) => {
@@ -49,14 +52,14 @@ async function bitcoinReturns() {
   try {
     const data = await fetchNewDataPeriod();
     const period = 503; // begin of 2010
-    // const dailyData = dailyPercentDifferencePeriod(data, period);
-    // const weeklyData = weeklyPercentDifferencePeriod(data, period);
-    // const monthData = monthlyPercentDifferencePeriod(data, period);
-    // const quarterData = quarterlyPercentDifferencePeriod(data, period);
-    // saveData(dailyData, "Day");
-    // saveData(weeklyData, "Week", weeklyCount);
-    // saveData(monthData, "Month", monthlyCount);
-    // saveData(quarterData, "Quarter", quarterlyCount);
+    const dailyData = dailyPercentDifferencePeriod(data, period);
+    const weeklyData = weeklyPercentDifferencePeriod(data, period);
+    const monthData = monthlyPercentDifferencePeriod(data, period);
+    const quarterData = quarterlyPercentDifferencePeriod(data, period);
+    saveData(dailyData, "Day");
+    saveData(weeklyData, "Week", weeklyCount);
+    saveData(monthData, "Month", monthlyCount);
+    saveData(quarterData, "Quarter", quarterlyCount);
   } catch (error) {
     console.error(error);
   }
