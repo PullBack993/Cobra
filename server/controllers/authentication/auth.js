@@ -7,10 +7,8 @@ const UserMetaMask = require("../../models/UserMetaMask");
 const authenticateToken = require("../../middleware/refreshToken");
 
 router.get("/", authenticateToken, async (req, res) => {
-  console.log('user')
   try {
     const user = await UserMetaMask.findById(req.user.id);
-  console.log('user')
     if(user){
       const responseUser = { imageUrl: user.imageUrl, isLoggedIn: true }; 
       res.status(200).json(responseUser);
@@ -28,8 +26,6 @@ router.post("/meta-mask", async (req, res) => {
     const userData = await getIpData();
     const user = await UserMetaMask.findOne({ ethHash: {$eq: address }});
     //TODO check $eq ?
-    console.log("user", user);
-    console.log("adress", address);
 
     if (!user) {
       const imageUrl = await generateRandomImage();
@@ -151,7 +147,6 @@ async function checkChanges(user, balance, userData, refreshToken) {
     changesMade = true;
   }
   if (changesMade) {
-    console.log("true");
     await user.save();
   }
 }
@@ -163,7 +158,6 @@ async function getIpData() {
       let userIp = "";
       resp.on("data", (chunk) => {
         userIp += chunk;
-        console.log("My public IP address is: " + userIp);
       });
       resp.on("end", () => {
         const parsedData = JSON.parse(userIp);

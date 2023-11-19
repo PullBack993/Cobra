@@ -44,7 +44,6 @@ async function connectToBinanceWS() {
           msg.e === "trade" &&
           msg.q >= (coin.qEqBTC)
         ) {
-          console.log('Binance send massage');
           const searchedCoin = findCoin(allCoins, msg.s.split("USDT")[0]);
           msg.image = await fetchCoinImage(searchedCoin);
           const test = (msg.p * msg.q) / btcPrice
@@ -144,8 +143,7 @@ function convertTimestamp(timestamp) {
   return `${day}.${month}.${year} ${hour}:${minute}:${second}`;
 }
 
-function createWebSocketServer(port) {
-  const server = http.createServer();
+function createWebSocketServer(server) {
   const corsWhitelist = ["http://127.0.0.1:5173", "http://localhost:5173"]; // TODO change before go live
 
   customWS = socketIO(server, {
@@ -160,10 +158,6 @@ function createWebSocketServer(port) {
     if (last20Values) {
       customWS.emit("message", JSON.stringify(last20Values));
     }
-  });
-
-  server.listen(port, () => {
-    console.log(`WebSocket server is listening on port ${port}`);
   });
 }
 

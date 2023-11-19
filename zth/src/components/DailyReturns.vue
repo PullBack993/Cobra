@@ -6,7 +6,6 @@ import DropdownSmall from '@/components/DropDownLongShort.vue';
 const baseApiUrl = import.meta.env.VITE_APP_BASE_URL;
 const data = ref();
 const time = ref<string[] | number>();
-const baseData = ref();
 const currentMonth = ref<number>(1);
 const currentType = ref<string>('day');
 const loading = ref<boolean>(false); // TODO add placeholder spinner
@@ -61,10 +60,7 @@ const colorPriceAction = computed(() => (difference: number) => {
 onMounted(() => {
   reqData(currentMonth.value, currentType.value);
 });
-// DAY => month: 3, type: day, year: 2023 => DAY
-// WEEK => month: 0, type: week, year 2023
 
-// test =>
 const reqData = (month: number, type: string) => {
   data.value = null;
   axios
@@ -74,20 +70,15 @@ const reqData = (month: number, type: string) => {
     })
     .then((res) => {
       if (res.status === 200) {
-        // WEEK BASED
         if (res.data[0].TimeFrameName !== undefined) {
           data.value = res.data[0].Timestamp;
-          time.value = res.data[0].Length;
+          if(res.data[0].Length.length > 0){
+            time.value = res.data[0].Length;
+          }else{
+            time.value = Object.keys(data.value['2012'][currentMonth.value?.toString()]);
+          }
           data.value = { ...Object.entries(data.value).reverse() };
-        } else {
-          // DAY BASED
-          baseData.value = res.data[0].Timestamp.years;
-          data.value = Object.values(baseData.value['2012']).reverse();
-
-          time.value = Object.keys(baseData.value['2012'][currentMonth.value?.toString()]);
-          // Reverse object to take first year
-          baseData.value = { ...Object.entries(baseData.value).reverse() };
-        }
+        } 
       }
     })
     .catch((err) => {
@@ -144,7 +135,7 @@ const capitalizeFirstLetter = computed(() => selectedType.value.charAt(0).toUppe
       <tr class="returns__table-date">
         <th class="returns__table-date--time" >Time</th>
         <th class="returns__table-date--item"  v-for="(day, i) in time" :key="i">
-          {{ day !== '' ? day : i + 1 }}
+          {{ day !== '' ? day : i + 1}}
         </th>
       </tr>
       <tbody v-if="currentType !== 'day'">
@@ -162,16 +153,16 @@ const capitalizeFirstLetter = computed(() => selectedType.value.charAt(0).toUppe
         </tr>
       </tbody>
       <tbody v-if="currentType === 'day'">
-        <tr class="returns__table" v-for="(year, index) in baseData" :key="index">
+        <tr class="returns__table" v-for="(year, index) in data" :key="index">
           <td class="returns__table-year--item">{{ year[0] }}</td>
           <td
             class="returns__table-year-percentage--ratio"
-            :style="colorPriceAction(year[1][`${currentMonth}`][d]?.difference)"
-            v-for="(d, i) in time"
+            :style="colorPriceAction(d.difference)"
+            v-for="(d, i) in year[1][`${currentMonth}`]"
             :key="i"
           >
-            {{ year[1][`${currentMonth}`][d]?.difference?.toFixed(2) }}
-            <span v-if="year[1][`${currentMonth}`][d]?.difference">%</span>
+          {{ d.difference.toFixed(2) }}
+            <span v-if="d.difference.toFixed(2)">%</span>
           </td>
         </tr>
       </tbody>
@@ -203,6 +194,7 @@ const capitalizeFirstLetter = computed(() => selectedType.value.charAt(0).toUppe
     min-height: 5rem;
     flex-wrap: wrap;
     gap: 1rem;
+    margin-right: 1rem;
   }
 
   &__container {

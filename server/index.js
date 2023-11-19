@@ -14,14 +14,15 @@ async function start() {
   expressConfig(app);
   await databaseConfig(app);
   routerConfig(app);
-  connectWs();
 
   const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => console.log(`App start ==> http://localhost:3000`));
+  const server = app.listen(PORT, () => console.log(`App start ==> http://localhost:3000`));
+  connectWs(server);
+
 }
 
-function connectWs() {
+function connectWs(server) {
   connectToBinanceWS();
-  createWebSocketServer(8080);
+  createWebSocketServer(server);
 }
 start();

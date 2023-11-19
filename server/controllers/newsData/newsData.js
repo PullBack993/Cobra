@@ -335,6 +335,9 @@ async function extractArticleData(page, imageUrl) {
         lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };
       } else if (tagName === "p") {
         let text = await section.evaluate((node) => node?.textContent.trim());
+        if(text === 'TL;DR'){
+          text = '';
+        }
         text = text.replace(/cryptopotato/gi, "ZTH");
         text = text.replace(/By:\sEdris|By:\sShayan/gi, "");
         if (lastSection && text) {
@@ -343,7 +346,6 @@ async function extractArticleData(page, imageUrl) {
           try {
             const image = await section.$eval("img", (element) => element.src);
             if (lastSection && image) {
-              console.log("eeee=>>", image);
               lastSection.image.push(image);
               articleData.sections.push(lastSection);
               lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };

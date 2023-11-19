@@ -12,7 +12,6 @@ router.post("/id", async (req, res) => {
   const CoinGeckoClient = new CoinGecko();
   const coinSymbol = req.body.symbol.toUpperCase();
   let coinName = req.body.id;
-  console.log(coinName)
 
   try {
     let data = await CoinGeckoClient.coins.fetch(coinName);
