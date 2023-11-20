@@ -215,7 +215,6 @@ async function fetchNews() {
 
         if (!isInDatabase) {
           const articlePage = await browser.newPage();
-          console.log("href", newsAllTitles[i].href);
           await articlePage.goto(`${newsAllTitles[i]?.href}`);
           const articleData = await extractArticleData(articlePage, src);
           if (articleData) {
@@ -233,11 +232,9 @@ async function fetchNews() {
   finally{
     if (browser) {
       browser?.close();
-  console.log("Browser CLOSE =>>> 1X");
 
     }
   }
-  console.log("Browser CLOSE =>>> X");
 }
 
 async function checkIfTitleExistsInDatabase(title) {
@@ -262,7 +259,6 @@ async function extractArticleData(page, imageUrl) {
     let title = await page.$eval(".page-title", (element) => element.innerText);
     const existingArticle = await Article.findOne({ title });
     if (existingArticle) {
-      console.log("Article already exists in the database. Skipping...");
       return;
     }
     title = title.replace(/cryptopotato/gi, "ZTH");

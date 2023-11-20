@@ -8,7 +8,6 @@ puppeteer.use(StealthPlugin());
 // Not used
 
 const longShortJob = new CronJob("*/30 * * * * *", () => {
-  console.log("Running cron job every 30 sec!");
     getLongShortDataForAllCoins(allCoins);
 });
 
@@ -28,9 +27,7 @@ async function getLongShortDataForAllCoins() {
   await cluster.task(async ({ page, data: coin }) => {
     await page.goto(process.env.LONG_SHORT_URL);
 
-    console.log(`Start scraping ${coin}`);
     const coinData = await getLongShortData(page, coin);
-    console.log(`Finished scraping ${coin}`);
   });
   for (index; index < allCoins.length; index++) {
     await cluster.queue(allCoins[index]); // Add the coin to the cluster's task queue
@@ -39,7 +36,6 @@ async function getLongShortDataForAllCoins() {
   await cluster.idle();
   await cluster.close();
   isEnd = true;
-  console.log('isEnde',isEnd)
 }
 
 async function getLongShortData(page, symbol) {
@@ -62,7 +58,6 @@ async function getLongShortData(page, symbol) {
         if (dialogElement) {
           // Click on the "Manage options" button.
           const manage = await dialogElement.$$(".fc-button-label");
-          console.log("manage", manage[0], manage);
           manage[0].evaluate((el) => el?.click());
         }
 
@@ -144,7 +139,6 @@ async function getLongShortData(page, symbol) {
             );
             const firstNumber = await firstNumberHandle.jsonValue();
             const secondNumber = await secondNumberHandle.jsonValue();
-
             result.push({
               longRate: parseFloat(firstNumber),
               shortRate: parseFloat(secondNumber),
@@ -154,7 +148,6 @@ async function getLongShortData(page, symbol) {
           })
         );
 
-        console.log("result", result);
         result = [];
       } catch (err) {
         console.log(err);

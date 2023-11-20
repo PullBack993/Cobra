@@ -2,12 +2,9 @@ require("dotenv/config");
 const router = require("express").Router();
 const BtcChangeIndicator = require("../../models/BtcChange");
 const fetchNewData = require("../autoUploadBTCReturn/btcReturns");
-const fetchNewDataPeriod = require("../autoUploadBTCReturn/btcReturnsPeriod");
 const CronJob = require("cron").CronJob;
 const axios = require("axios");
 
-// fetchNewData();
-// fetchNewDataPeriod();
 const job = new CronJob(" 0 */6 * * * ", () => {
   fetchNewData();
   console.log("Fetch daily returns data!");
@@ -54,7 +51,6 @@ router.post("/long-short", async (req, res) => {
   axios
     .request(options)
     .then(function (response) {
-      console.log(response.data.data)
       if(response.data.data){
         res.json(response.data.data)
       }else{
