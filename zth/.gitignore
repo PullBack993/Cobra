@@ -17,7 +17,8 @@ coverage
 .env.local
 .env.*.local
 
-
+npm-debug.log
+.DS_Store
 
 /tests/e2e/videos/
 /tests/e2e/screenshots/
