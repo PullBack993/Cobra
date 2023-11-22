@@ -6,7 +6,6 @@ coverage
 *.local
 .env
 .prettierrc
-.cache
 
 
 # Editor directories and files
@@ -19,4 +18,3 @@ coverage
 *.sln
 *.sw?
 *.cache
-
