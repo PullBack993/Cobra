@@ -222,7 +222,7 @@ const btcCountChanged = (value: string) => {
 </script>
 
 <template>
-  <div>
+  <div class="volume-container">
     <div class="volume-monitor" v-if="!loading">
       <div class="volume-monitor__additional-info">
         <VolumeMonitorBoard
@@ -396,6 +396,11 @@ const btcCountChanged = (value: string) => {
   max-height: 100rem;
 }
 
+.volume-container{
+  max-width: 130rem;
+margin: auto;
+}
+
 .overlay {
   position: fixed;
   top: 0;
@@ -424,8 +429,9 @@ const btcCountChanged = (value: string) => {
   display: flex;
   flex-direction: column;
 
+
   &__container {
-    height: 30rem;
+    height: 46rem;
     overflow: auto;
     @include customHorizontalScrollbar($height: 0.1rem, $width: 0.2rem, $border-radius: 0.5rem);
     @media(min-width: $breakpoint_medium) {
@@ -507,8 +513,8 @@ const btcCountChanged = (value: string) => {
   }
   &-img {
     border-radius: 50%;
-    width: $clamp-font-large-quite-large;
-    height: $clamp-font-large-quite-large;
+    width: $font-medium-large;
+    height: $font-medium-large;
   }
   &-symbol {
     display: inline-block;
@@ -529,7 +535,7 @@ const btcCountChanged = (value: string) => {
     &-text {
       display: inline-block;
       font-weight: 700;
-      font-size:  $clamp-font-very-small-medium;
+      font-size: $clamp-font-tiny;
 
       &-label {
         color: var(--white-5);
@@ -541,17 +547,18 @@ const btcCountChanged = (value: string) => {
   &-text-muted {
     display: block;
     color: var(--white-5);
-    font-weight: 600;
-    
-    font-size:  $clamp-font-very-small;
+    font-weight: 500;
+    font-size: $font-size-small;
     padding-bottom: 0.5rem;
     white-space: nowrap;
   }
   &-text-dynamic {
     font-weight: 700;
-    font-size: $clamp-font-very-small-medium;
+    font-size: $font-size-small;
+
     &--date {
-      font-size: $clamp-font-small;
+      font-size: $clamp-font-tiny;
+      
     }
   }
 }

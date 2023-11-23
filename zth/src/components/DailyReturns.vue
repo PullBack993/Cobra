@@ -193,8 +193,8 @@ const capitalizeFirstLetter = computed(() => selectedType.value.charAt(0).toUppe
     display: flex;
     min-height: 5rem;
     flex-wrap: wrap;
-    gap: 1rem;
-    margin-right: 1rem;
+    gap: 1.5rem;
+    margin-right: 2rem;
   }
 
   &__container {

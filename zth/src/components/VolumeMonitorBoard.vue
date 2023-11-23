@@ -123,8 +123,9 @@ onUnmounted(() => {
   }
   &-img {
     border-radius: 50%;
-    width: $clamp-font-large-quite-large;
-    height: $clamp-font-large-quite-large;
+    width: $font-medium-large;
+    height: $font-medium-large;
+    
   }
   &-symbol {
     display: inline-block;
@@ -145,7 +146,8 @@ onUnmounted(() => {
     &-text {
       display: inline-block;
       font-weight: 600;
-      font-size:  $clamp-font-very-small-medium;
+      font-size: $clamp-font-tiny;
+
       &-label {
         color:  var(--white-5);
         font-size: 11px;
@@ -157,13 +159,13 @@ onUnmounted(() => {
     display: block;
     color:  var(--white-5);
     font-weight: 600;
-    font-size: $clamp-font-very-small;
+    font-size: $font-size-small;
     padding-bottom: 0.5rem;
     white-space: nowrap;
   }
   &-text-dynamic {
     font-weight: 700;
-    font-size: $clamp-font-very-small-medium;
+    font-size: $font-size-small;
     &--date {
       font-size: $clamp-font-small;
     }

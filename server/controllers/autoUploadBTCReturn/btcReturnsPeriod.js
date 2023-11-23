@@ -26,7 +26,7 @@ const options = {
 };
 
 // to fill db with data
-// bitcoinReturns()
+//  bitcoinReturns()
 
 function fetchNewDataPeriod() {
   return new Promise((resolve, reject) => {
@@ -49,6 +49,7 @@ function fetchNewDataPeriod() {
 
 // Usage example:
 async function bitcoinReturns() {
+  console.log('test')
   try {
     const data = await fetchNewDataPeriod();
     const period = 503; // begin of 2010
@@ -272,4 +273,4 @@ function getWeek(timestamp) {
   };
 }
 
-module.exports = fetchNewDataPeriod;
+module.exports = fetchNewDataPeriod , bitcoinReturns;

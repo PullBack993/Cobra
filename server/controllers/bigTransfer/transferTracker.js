@@ -231,7 +231,6 @@ async function get100CoinsByPrice() {
   });
 
   jobGetCurrentPriceBTC.start();
-  // job.start();
 
 module.exports = {
   connectToBinanceWS,

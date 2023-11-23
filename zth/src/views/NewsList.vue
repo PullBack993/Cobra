@@ -166,8 +166,12 @@ const calculateDateTimeDifference = (dateStr: string): string => {
                 </h3>
                 <div class="news__text-container">
                   <p
-                    class="news__list-text">
+                    class="news__list-text" v-if="section.sections[0]?.text[0]">
                     {{ section.sections[0]?.text[0] }}
+                  </p>
+                  <p
+                    class="news__list-text" v-else>
+                    {{ section.sections[0]?.listItems[0] }}
                   </p>
                 </div>
                 <p class="news__time">{{ calculateDateTimeDifference(section.createTime) }} ago</p>

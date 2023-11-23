@@ -11,7 +11,7 @@ const longShortJob = new CronJob("*/30 * * * * *", () => {
     getLongShortDataForAllCoins(allCoins);
 });
 
-longShortJob.start();
+// longShortJob.start();
 
 async function getLongShortDataForAllCoins() {
   isEnd = false;

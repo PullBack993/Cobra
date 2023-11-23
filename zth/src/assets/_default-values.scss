@@ -14,7 +14,7 @@ $border-middle: 0.7rem;
 
 
 $image-small: clamp(2rem, 3vw + 1rem, 2.4rem);
-
+$clamp-font-tiny: clamp($font-small-tiny, 1vw + 0.5rem, $font-very-small);
 $clamp-font-small: clamp($font-very-small, 1vw + 0.8rem, $font-small);
 $clamp-font-small-2: clamp($font-very-small, 1vw + 1rem, $font-small);
 $clamp-font-very-small: clamp($font-tiny, 0.5vw + 1rem, $font-very-small);
@@ -25,3 +25,5 @@ $clamp-font-small-medium: clamp($font-small, 1vw + 0.8rem, $font-medium);
 $clamp-font-large-almost-large: clamp($font-almost-large, 2vw + 1rem, $font-large);
 $clamp-font-small-medium-large: clamp($font-small, 3vw + 1rem, $font-medium-large);
 $clamp-font-large-quite-large: clamp($font-quite-large, 3vw + 1rem, $font-very-large);
+$clamp-font-small-large: clamp($font-almost-large, 1vw + 1rem, $font-medium-large);
+

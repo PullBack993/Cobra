@@ -187,7 +187,7 @@ async function fetchNews() {
     browser = await puppeteer.launch({
       headless: "new",
       protocolTimeout: 240000,
-      args: ['--no-sandbox']
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
     const page = await browser.newPage();
     await page.goto(`${mainUrl}`);

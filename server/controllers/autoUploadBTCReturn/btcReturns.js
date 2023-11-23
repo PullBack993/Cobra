@@ -1,6 +1,5 @@
 const https = require("https");
 const BtcChangeIndicator = require("../../models/BtcChange");
-
 async function fetchNewData() {
   //1. Fetch data
   const options = {
