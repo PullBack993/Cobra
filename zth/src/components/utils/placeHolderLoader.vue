@@ -24,7 +24,7 @@ const styling = computed(() => {
 
   return {
     'border-radius': `${props.borderRadius}rem`,
-    width: `${props.loaderWidth}${typeof(props.loaderWidth) === 'string' ? '' : props.widthUnit }`,
+    width: `${props.loaderWidth}${typeof props.loaderWidth === 'string' ? '' : props.widthUnit}`,
     height: `${props.loaderHeight}rem`,
   };
 });
@@ -60,14 +60,7 @@ const styling = computed(() => {
 }
 
 .animation--wave::after {
-  background: linear-gradient(
-    90deg,
-    transparent,
-    transparent,
-    var(--light-grey),
-    transparent,
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, transparent, var(--light-grey), transparent, transparent);
   transform: translateX(-100%);
   animation: wave 1.5s linear infinite;
 }
