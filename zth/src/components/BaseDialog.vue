@@ -41,7 +41,7 @@ const closeModal = () => {
     baseDialog.value?.addEventListener('animationend', closeCallback);
   }
   document.body.style.overflow = 'auto';
-  if (baseDialog.value) baseDialog.value.style.overflow = 'auto';
+  if (baseDialog.value) baseDialog.value.style.overflow = 'auto'; 
 };
 
 const closeModalWithoutAnimation = (): void => {
@@ -57,7 +57,7 @@ const closeModalWithoutAnimation = (): void => {
 onMounted(() => {
   // dialog polyfill
   isDialogSupported.value =
-    typeof baseDialog.value?.showModal === 'const' && baseDialog.value?.showModal !== undefined;
+    typeof baseDialog.value?.showModal === 'function' && baseDialog.value?.showModal !== undefined;
   if (!isDialogSupported.value && !window.HTMLDialogElement) {
     dialogPolyfill.registerDialog(baseDialog.value as HTMLDialogElement);
   }

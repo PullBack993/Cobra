@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import axios from 'axios';
-import { onBeforeUnmount, onMounted, onUnmounted, ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { useGlobalStore } from '../store/global';
-import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
-import baseButton from '../components/utils/BaseButton.vue';
+import placeHolderLoader from '@/components/utils/PlaceHolderLoader.vue';
+import baseButton from '@/components/utils/BaseButton.vue';
 import { IArticle } from '../Interfaces/IArticle';
 import defaultimage from '../assets/BaseIcons/default-image.png';
 

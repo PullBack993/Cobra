@@ -5,7 +5,7 @@ const fetchNewData = require("../autoUploadBTCReturn/btcReturns");
 const CronJob = require("cron").CronJob;
 const axios = require("axios");
 
-const job = new CronJob(" 0 */6 * * * ", () => {
+const job = new CronJob(" 1 0 * * * ", () => {
   fetchNewData();
   console.log("Fetch daily returns data!");
 });
