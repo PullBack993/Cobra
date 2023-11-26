@@ -74,10 +74,7 @@ const destroyClickEvent = () => {
 
 const toggle = () => {
   isToggle.value = !isToggle.value;
-  console.log('isToggle', isToggle.value);
-
   if (isToggle.value === true) {
-    console.log('addEvent');
     document.addEventListener('click', documentClick);
   } else destroyClickEvent();
 };
@@ -346,7 +343,7 @@ onMounted(() => {
   .visible {
     opacity: 1;
     padding-left: 1rem;
-    font-size: $clamp-font-large-almost-large;
+    font-size: $clamp-font-small-medium;
     font-weight: 300;
     color: var(--brand-purple);
     animation: topToBottom 0.5s ease-in-out;

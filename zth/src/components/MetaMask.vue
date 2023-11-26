@@ -59,7 +59,6 @@ const connectWallet = async() => {
     );
 
     if (response.data && response.status === 200) {
-      console.log('yes login;');
       store.login = true;
       store.userImage = response.data.imageUrl;
     }

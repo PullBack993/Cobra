@@ -61,7 +61,6 @@ const handelClearValue = () => {
 };
 const documentClick = (event) => {
   if (open.value && event.target) {
-    console.log('document clicked');
     open.value = false;
     document.removeEventListener('click', documentClick);
   }
@@ -89,7 +88,6 @@ const onInput = (value: string) => {
   searchParams.value = value;
   // TODO need to save old value and set new value
   clearTimeout(timeout?.value);
-  console.log(lastSearch.value?.name);
   if (searchParams?.value.length === 0) {
     // TODO what happens if user come back after delay? The last search will apear ?
     coins.value = lastSearch.value;
@@ -101,7 +99,6 @@ const onInput = (value: string) => {
     timeout.value = setTimeout(async () => {
       if (searchParams?.value.length >= 2) {
         const searchedCoin = findCoin(allCoins);
-        console.log(searchedCoin);
         if (searchedCoin) {
           axios
             .post('http://localhost:3000/id', searchedCoin, {
@@ -165,7 +162,6 @@ onMounted(() => {
   axios.get('http://localhost:3000/coins/list').then((res) => {
     allCoins = res.data;  
   });
-  console.log('initially mounted');
   timeout.value = setTimeout(() => {
     loading.value = true;
     axios

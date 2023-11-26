@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { io, Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
-import placeHolderLoader from '@/components/utils/PlaceHolderLoader.vue';
+import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
 import { IWebsocket, ITickVolume, ITick } from '../Interfaces/IWebsocket';
 import BaseTableFrame from '../components/BaseTableFrame.vue';
 import VolumeMonitorBoard from '../components/VolumeMonitorBoard.vue';

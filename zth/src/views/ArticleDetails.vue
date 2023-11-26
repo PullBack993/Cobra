@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import axios, { AxiosError } from 'axios';
-import placeHolderLoader from '@/components/utils/PlaceHolderLoader.vue';
+import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
 import { IArticleDetails } from '../Interfaces/IArticleDetails';
 import defaultimage from '../assets/BaseIcons/default-image.png';
 
@@ -35,7 +35,6 @@ onMounted(async () => {
 });
 
 const onEscape = (e: KeyboardEvent) => {
-  console.log(e.key);
   if (e.key === 'Escape' && isImageVisible) {
     hideImage();
   }

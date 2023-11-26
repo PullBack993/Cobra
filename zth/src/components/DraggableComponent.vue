@@ -58,8 +58,6 @@ const onMouseUp = () => {
 const onDragEnd = () => {
   const diff = startProgress - progress;
   isDragging = false;
-  console.log(diff);
-
 };
 
 const onDrag = (x) => {

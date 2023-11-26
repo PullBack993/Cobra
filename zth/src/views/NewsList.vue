@@ -2,8 +2,8 @@
 import axios from 'axios';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { useGlobalStore } from '../store/global';
-import placeHolderLoader from '@/components/utils/PlaceHolderLoader.vue';
-import baseButton from '@/components/utils/BaseButton.vue';
+import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
+import baseButton from '../components/utils/BaseButton.vue';
 import { IArticle } from '../Interfaces/IArticle';
 import defaultimage from '../assets/BaseIcons/default-image.png';
 
@@ -32,7 +32,6 @@ const loadMoreNews = (from = '', onMounted = '') => {
             scroll();
           }
           if (response.data.length !== 0) {
-            console.log(response.data);
             newsListData.value.push(...response.data);
             loading.value = false;
           } else {
@@ -70,7 +69,6 @@ const loadNews = (from = '', onMounted = '') => {
             scroll(); // need to scroll first if the date is updated; otherwise scroll not  to the right position
           }
           if (response.data.length !== 0) {
-            console.log(response.data);
             newsListData.value.push(...response.data);
             loading.value = false;
           } else {
@@ -182,7 +180,7 @@ const calculateDateTimeDifference = (dateStr: string): string => {
       </ul>
     </div>
 
-    <div v-if="loading" class="news loading">
+    <div v-if="loading || !newsListData" class="news loading">
       <div v-for="(_, index) in loadingLength" :key="index">
         <div class="news__content">
           <div>

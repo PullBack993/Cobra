@@ -42,7 +42,6 @@ const hiddenModal = () => {
 const handleEscape = (event: KeyboardEvent) => {
   if (event.key === 'Escape') {
 
-    console.log('escape');
     event.preventDefault();
     hiddenModal();
   }

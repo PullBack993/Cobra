@@ -13,7 +13,7 @@ const routes = [
   },
   {
     path: '/btc-returns',
-    name: 'home',
+    name: 'bitcoin return',
     component: HomeView,
     meta: {
       titme: "ZTH | Data Analysis,Bitcoin Open interest,Bitcoin Options,Crypto machine learning"

@@ -11,7 +11,6 @@ const screenSize = ref();
 
 const toggle = () => {
   isToggle.value = !isToggle.value;
-  console.log('istoggle =>', isToggle.value);
 
   if (isToggle.value === true) {
     document.addEventListener('click', documentClick);
@@ -50,7 +49,6 @@ const checkElements = (clickedElement: string): boolean => {
 
 const documentClick = (e: Event) => {
   let HTMLElementClass = (e.target as HTMLButtonElement).className?.baseVal;
-  console.log(HTMLElementClass);
   if (!HTMLElementClass) {
     HTMLElementClass = (e.target as HTMLButtonElement).className;
   }
@@ -58,7 +56,6 @@ const documentClick = (e: Event) => {
     (screenSize.value <= 768 && !checkElements(HTMLElementClass) && !(HTMLElementClass instanceof SVGAnimatedString)) ||
     HTMLElementClass === ''
   ) {
-    console.log('less then 768 set to false', isToggle.value);
     isToggle.value = false;
     document.removeEventListener('click', documentClick);
   }
