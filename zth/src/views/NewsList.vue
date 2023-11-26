@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { useGlobalStore } from '../store/global';
-import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
+import placeHolderLoader from '../components/PlaceHolderLoader.vue';
 import baseButton from '../components/utils/BaseButton.vue';
 import { IArticle } from '../Interfaces/IArticle';
 import defaultimage from '../assets/BaseIcons/default-image.png';

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
-import placeHolderLoader from './utils/PlaceHolderLoader.vue';
+import placeHolderLoader from './PlaceHolderLoader.vue';
 import { Coin, CombinedCoinexchange } from '../Interfaces/ICoinLongShort';
 
 interface Props {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import axios, { AxiosError } from 'axios';
-import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
+import placeHolderLoader from '../components/PlaceHolderLoader.vue';
 import { IArticleDetails } from '../Interfaces/IArticleDetails';
 import defaultimage from '../assets/BaseIcons/default-image.png';
 
