@@ -5,18 +5,18 @@ import { useGlobalStore } from '../store/global';
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: HomeView,
-    meta: {
-      titme: "ZTH | Data Analysis,Bitcoin Open interest,Bitcoin Options,Crypto machine learning"
-    },
-  },
-  {
-    path: '/news',
     name: 'news',
     component: () => import('@/views/NewsList.vue'),
     meta: {
       titme: "News Bitcoin, Ethereum, Crypto News and Price Data | ZTH"
+    },
+  },
+  {
+    path: '/btc-returns',
+    name: 'home',
+    component: HomeView,
+    meta: {
+      titme: "ZTH | Data Analysis,Bitcoin Open interest,Bitcoin Options,Crypto machine learning"
     },
   },
   {

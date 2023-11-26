@@ -66,7 +66,10 @@ router.get("/article/:id", async (req, res) => {
     await Promise.all(
       updatedArticle.sections.map(async (section) => {
         for (let i = 0; i < section.image.length; i++) {
-          section.image[i] = await getImageProxyUrl(section.image[i]);
+          const parts = section.image[i].split('https://');
+          const url = parts[2]
+            section.image[i] = await getImageProxyUrl('https://' + url);
+
         }
       })
     );

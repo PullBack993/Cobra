@@ -31,22 +31,26 @@ export const handleScrollBoxWheel = (event: WheelEvent) => {
   }
 };
 
-  export const throttle = (fn: Function, wait: number): any => {
-    let isCalled = false;
-    let timer: any;
-  
-    return (...args: any[]): any => {
-      if (!isCalled) {
-        fn(...args);
-        isCalled = true;
-        setTimeout(() => { isCalled = false; }, wait);
-      } else {
-        if (timer) {
-          clearTimeout(timer);
-        }
-  
-        // call event last time because it may blocked
-        timer = setTimeout(() => { fn(...args); }, wait);
+export const throttle = (fn: Function, wait: number): any => {
+  let isCalled = false;
+  let timer: any;
+
+  return (...args: any[]): any => {
+    if (!isCalled) {
+      fn(...args);
+      isCalled = true;
+      setTimeout(() => {
+        isCalled = false;
+      }, wait);
+    } else {
+      if (timer) {
+        clearTimeout(timer);
       }
-    };
+
+      // call event last time because it may blocked
+      timer = setTimeout(() => {
+        fn(...args);
+      }, wait);
+    }
   };
+};

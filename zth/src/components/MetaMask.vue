@@ -97,18 +97,19 @@ const connectWallet = async() => {
     pointer-events: auto;
     cursor: pointer;
 
-    padding: 10px 60px;
+    padding: 1rem 6rem;
 
     &-container {
-      margin-right: 10px;
+      margin-right: 1rem;
 
       &-icon {
-        height: 20px;
+        height: 1.5rem;
       }
     }
 
     &-text {
-      color: white;
+      font-size: $font-size-small;
+      color: var(--white);
     }
   }
 }

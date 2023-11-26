@@ -3,7 +3,7 @@ import { RouterLink } from 'vue-router';
 import { ref, onMounted, watch } from 'vue';
 import Cookies from 'js-cookie';
 import bgp from '../assets/BaseIcons/bgp.jpeg';
-import newsSVG from '../assets/BaseIcons/news.svg';
+import newsSVG from '../assets/BaseIcons/btc-return.svg';
 import longShortSVG from '../assets/BaseIcons/cryptocurrency.svg';
 import homeSVG from '../assets/BaseIcons/home.svg';
 import ratioSVG from '../assets/BaseIcons/ratio.svg';
@@ -145,9 +145,9 @@ onMounted(() => {
           <p :class="`${isToggle ? 'visible' : 'invisible'}`">Volume Monitor</p>
         </RouterLink>
 
-        <RouterLink to="/news" class="sidebar-home">
+        <RouterLink to="/btc-returns" class="sidebar-home">
           <newsSVG class="material-symbols-outlined sidebar-home-icon"></newsSVG>
-          <p :class="`${isToggle ? 'visible' : 'invisible'}`">News</p>
+          <p :class="`${isToggle ? 'visible' : 'invisible'}`">Bitcoin returns(%)</p>
         </RouterLink>
 
         <RouterLink to="/long-short" class="sidebar-home">
@@ -490,16 +490,4 @@ onMounted(() => {
     display: none;
   }
 }
-
-// @keyframes text-out-after {
-//   0% {
-//     opacity: 0;
-//   }
-//   50% {
-//     opacity: 0.5;
-//   }
-//   100% {
-//     opacity: 1;
-//   }
-// }
 </style>

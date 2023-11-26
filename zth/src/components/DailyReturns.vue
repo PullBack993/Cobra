@@ -193,8 +193,12 @@ const capitalizeFirstLetter = computed(() => selectedType.value.charAt(0).toUppe
     display: flex;
     min-height: 5rem;
     flex-wrap: wrap;
-    gap: 1.5rem;
-    margin-right: 2rem;
+    gap: 1rem;
+    margin: 0;
+    @media(min-width: $breakpoint_mobilelarge){
+      margin-right: 2rem;
+      gap: 1.5rem;
+    }
   }
 
   &__container {
@@ -213,9 +217,6 @@ const capitalizeFirstLetter = computed(() => selectedType.value.charAt(0).toUppe
     &--non {
       margin-top: 0 !important;
     }
-  }
-  &__chart-select-item:last-child {
-    margin-top: 1.5rem;
   }
 }
 

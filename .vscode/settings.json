@@ -1,3 +1,4 @@
 {
-    "vue.codeActions.enabled": false
+    "vue.codeActions.enabled": false,
+    "svg.preview.background": "editor"
 }

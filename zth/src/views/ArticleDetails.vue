@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import axios, { AxiosError } from 'axios';
-import { useGlobalStore } from '../store/global';
 import placeHolderLoader from '../components/utils/PlaceHolderLoader.vue';
 import { IArticleDetails } from '../Interfaces/IArticleDetails';
 import defaultimage from '../assets/BaseIcons/default-image.png';
@@ -12,10 +11,10 @@ interface Props {
   id: string; // URL params
   title: string;
 }
-
-const store = useGlobalStore();
 const loading = ref(true);
 const props = withDefaults(defineProps<Props>(), {});
+const clickedImage = ref();
+const isImageVisible = ref(false);
 
 const article = ref<IArticleDetails>();
 
@@ -34,6 +33,31 @@ onMounted(async () => {
       loading.value = false;
     });
 });
+
+const onEscape = (e: KeyboardEvent) => {
+  console.log(e.key);
+  if (e.key === 'Escape' && isImageVisible) {
+    hideImage();
+  }
+};
+
+const fullWidth = (e: Event) => {
+  clickedImage.value = e.target?.src;
+  isImageVisible.value = true;
+  document.body.style.overflow = 'hidden'; // Disable scrolling
+  document.addEventListener('keydown', onEscape);
+};
+const hideImage = () => {
+  isImageVisible.value = false;
+  document.body.style.overflow = 'auto'; // Enable scrolling
+  document.removeEventListener('keydown', onEscape);
+};
+
+const handleOutsideClick = (e: Event) => {
+  if (!e.target?.src && isImageVisible.value) {
+    hideImage();
+  }
+};
 </script>
 
 <template>
@@ -46,37 +70,32 @@ onMounted(async () => {
       <div v-for="(section, index) in article?.sections" :key="index" class="article-section">
         <h2 class="article-title">{{ section?.heading }}</h2>
         <div class="article-content">
-          <div :class="{'article-text--big': index === 0}" v-for="(text, i) in section.text" :key="i">
-            <p
-              ref="text"
-              class="article-text"
-            >
+          <div :class="{ 'article-text--big': index === 0 }" v-for="(text, i) in section.text" :key="i">
+            <p ref="text" class="article-text">
               {{ text }}
             </p>
             <br />
           </div>
           <blockquote>
             <em>
-              <p
-                class="article-paragraph"
-              >
+              <p class="article-paragraph">
                 {{ section?.paragraph }}
               </p>
             </em>
           </blockquote>
           <ul v-if="section.listItems" class="article-list-container">
-            <li
-              v-for="(item, index) in section.listItems"
-              class="article-list-item"
-              :key="index"
-            >
+            <li v-for="(item, index) in section.listItems" class="article-list-item" :key="index">
               {{ item }}
             </li>
           </ul>
           <div v-if="section.image.length > 0" class="article-image">
             <div class="article-image" v-for="(image, i) in section.image">
-              <img v-if="image.length > 0" :key="i" :src="image" alt="Section Image" />
+              <img v-if="image.length > 0" :key="i" :src="image" @click="fullWidth" alt="Section Image" />
               <img v-else :src="defaultimage" :alt="section.title" class="news__image" loading="lazy" />
+              <div v-show="isImageVisible" @click="handleOutsideClick" class="fullscreen-image">
+                <span class="close-btn" @click="hideImage">&times;</span>
+                <img :src="clickedImage" class="quality" alt="Full screen Image" />
+              </div>
             </div>
           </div>
         </div>
@@ -151,6 +170,42 @@ onMounted(async () => {
 </template>
 
 <style scoped lang="scss">
+.fullscreen-image {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+.quality {
+  image-rendering: optimizeQuality;
+  filter: brightness(105%) invert(5%) contrast(110%) sepia(20%);
+}
+.fullscreen-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  
+}
+
+.close-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 1rem;
+  font-size: 5rem;
+  color: var(--white);
+  cursor: pointer;
+  z-index: 999;
+}
+
+.close-btn:hover {
+  color: var(--zth-hover);
+}
 .loader-content-title {
   display: flex;
   gap: 3rem;
@@ -181,11 +236,11 @@ onMounted(async () => {
       font-weight: 900;
       font-size: $clamp-font-large-quite-large;
       position: relative;
-      &::after{
+      &::after {
         position: absolute;
         content: '';
         background-color: black;
-        width:10rem;
+        width: 10rem;
         height: 10;
       }
     }
@@ -235,7 +290,6 @@ onMounted(async () => {
       content: '\a';
       white-space: pre;
       color: var(--white);
-
     }
   }
 
@@ -284,6 +338,8 @@ onMounted(async () => {
     img {
       max-width: 100%;
       width: 100%;
+    clip-path: inset(0 0 2.8rem 0 round 1rem);
+
     }
   }
 

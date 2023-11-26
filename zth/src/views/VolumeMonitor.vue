@@ -225,11 +225,7 @@ const btcCountChanged = (value: string) => {
   <div class="volume-container">
     <div class="volume-monitor" v-if="!loading">
       <div class="volume-monitor__additional-info">
-        <VolumeMonitorBoard
-          :data="ticks"
-          :board-title="'Tick Board'"
-          :board-title-addition="'The most ticked'"
-        />
+        <VolumeMonitorBoard :data="ticks" :board-title="'Tick Board'" :board-title-addition="'The most ticked'" />
         <VolumeMonitorBoard
           :data="tickVolume"
           :board-title="'Volume Board'"
@@ -281,8 +277,8 @@ const btcCountChanged = (value: string) => {
                   <div>
                     <span class="card__td-symbol-text volume-monitor__theme">
                       {{ transaction.s.split('USDT')[0] }}
-                    <label class="card__td-symbol-text-label">/USDT</label>
-                  </span>
+                      <label class="card__td-symbol-text-label">/USDT</label>
+                    </span>
                   </div>
                 </td>
                 <td>
@@ -396,9 +392,9 @@ const btcCountChanged = (value: string) => {
   max-height: 100rem;
 }
 
-.volume-container{
-  max-width: 130rem;
-margin: auto;
+.volume-container {
+  max-width: $default-max-width;
+  margin: auto;
 }
 
 .overlay {
@@ -429,14 +425,13 @@ margin: auto;
   display: flex;
   flex-direction: column;
 
-
   &__container {
     height: 46rem;
     overflow: auto;
     @include customHorizontalScrollbar($height: 0.1rem, $width: 0.2rem, $border-radius: 0.5rem);
-    @media(min-width: $breakpoint_medium) {
-        max-height: auto;
-        height: auto;
+    @media (min-width: $breakpoint_medium) {
+      max-height: auto;
+      height: auto;
     }
   }
 
@@ -468,7 +463,7 @@ margin: auto;
     font-weight: 500;
     margin-bottom: 0.2rem;
   }
-  &__theme{
+  &__theme {
     color: var(--zth-text);
   }
   small {
@@ -501,7 +496,7 @@ margin: auto;
   border-radius: 1rem;
   overflow: hidden;
   margin-top: 1rem;
-  @media(min-width: $breakpoint_medium) {
+  @media (min-width: $breakpoint_medium) {
     margin-top: 0;
   }
 }
@@ -558,7 +553,6 @@ margin: auto;
 
     &--date {
       font-size: $clamp-font-tiny;
-      
     }
   }
 }
