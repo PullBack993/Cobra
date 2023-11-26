@@ -29,6 +29,8 @@ const coinsLength = ref(0);
 const topElement = ref<HTMLElement>();
 const abort = ref<Canceler>();
 const errorMessage = ref('');
+const baseApiUrl = import.meta.env.VITE_APP_BASE_URL;
+
 
 const scrollPosition = (direction: number) => {
   if (direction === 1) {
@@ -101,7 +103,7 @@ const onInput = (value: string) => {
         const searchedCoin = findCoin(allCoins);
         if (searchedCoin) {
           axios
-            .post('http://localhost:3000/id', searchedCoin, {
+            .post(`${baseApiUrl}/id`, searchedCoin, {
               cancelToken: new axios.CancelToken((abortCanceler: Canceler) => {
                 abort.value = abortCanceler;
               }),
@@ -159,13 +161,13 @@ const onError = (errorText: string) => {
 };
 
 onMounted(() => {
-  axios.get('http://localhost:3000/coins/list').then((res) => {
+  axios.get(`${baseApiUrl}/coins/list`).then((res) => {
     allCoins = res.data;  
   });
   timeout.value = setTimeout(() => {
     loading.value = true;
     axios
-      .post('http://localhost:3000/id', { id: 'bitcoin', symbol: 'btc' })
+      .post(`${baseApiUrl}/id`, { id: 'bitcoin', symbol: 'btc' })
       .then((res) => {
         if (!res.data) {
           loading.value = false;

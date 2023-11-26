@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { defineStore } from 'pinia';
+const baseApiUrl = import.meta.env.VITE_APP_BASE_URL;
+
 
 export const useGlobalStore = defineStore('globalStore', {
   state: () => ({ themeDark: false, login: false, userImage: '', newsPaginationCounter: 1, scrollPosition: 0}),
@@ -19,7 +21,7 @@ export const useGlobalStore = defineStore('globalStore', {
     },
     async isLogin() {
       try {
-        const response = await axios.get('http://localhost:3000/auth/', {
+        const response = await axios.get(`${baseApiUrl}/auth/`, {
           withCredentials: true,
         });
         if (response.status === 200) {
