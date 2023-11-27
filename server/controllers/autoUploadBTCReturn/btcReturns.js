@@ -101,8 +101,8 @@ function updateNewData(calculatedData) {
 }
 
 function updateNewDataWeek(calculatedData, data) {
-  const currentData = new Date();
-  const currentYear = currentData.getUTCFullYear();
+  const currentDate = new Date();
+  const currentYear = currentDate.getUTCFullYear();
   const currentCountOfWeeks = calculateCountOfWeeks(data);
 
   BtcChangeIndicator.findOne(
@@ -208,7 +208,7 @@ function updateNewDataQuarter(calculatedData, fetchedData) {
 }
 
 function calculateDailyChanges(data, dataLength) {
-  const prevPrice = data[dataLength]?.price;
+  const prevPrice = data[dataLength - 1]?.price;
   const currentPrice = data[dataLength]?.price;
 
   const calculatePercentageChange = calculateDifference(currentPrice, prevPrice);

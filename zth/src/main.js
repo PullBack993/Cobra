@@ -4,8 +4,6 @@ import App from '@/App.vue';
 import router from '@/router';
 import VueGtag from 'vue-gtag';
 import '@/assets/main.scss';
-import { inject } from '@/vercel/analytics/vue';
-inject();
 
 const pinia = createPinia();
 const app = createApp(App);
