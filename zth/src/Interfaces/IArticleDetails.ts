@@ -1,6 +1,7 @@
 export type IArticleDetails = {
     title: string;
     titleImage: string;
+    imageUrl: string;
     sections: [
       {
         heading: string;

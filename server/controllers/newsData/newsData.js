@@ -65,6 +65,7 @@ router.get("/article/:id", async (req, res) => {
 
     const updatedArticle = JSON.parse(JSON.stringify(article));
     updatedArticle.titleImage = await getImageProxyUrl(article.titleImage);
+    updatedArticle.imageUrl = article.titleImage
 
     await Promise.all(
       updatedArticle.sections.map(async (section) => {
