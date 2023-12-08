@@ -5,6 +5,9 @@ const CronJob = require("cron").CronJob;
 const Article = require("../../models/NewsCoins");
 const https = require("https");
 const sharp = require("sharp");
+const axios = require("axios");
+const { removeStopwords, eng } = require("stopword");
+
 
 const imageCache = new Map();
 
@@ -66,10 +69,9 @@ router.get("/article/:id", async (req, res) => {
     await Promise.all(
       updatedArticle.sections.map(async (section) => {
         for (let i = 0; i < section.image.length; i++) {
-          const parts = section.image[i].split('https://');
-          const url = parts[2]
-            section.image[i] = await getImageProxyUrl('https://' + url);
-
+          const parts = section.image[i].split("https://");
+          const url = parts[2];
+          section.image[i] = await getImageProxyUrl("https://" + url);
         }
       })
     );
@@ -190,7 +192,7 @@ async function fetchNews() {
     browser = await puppeteer.launch({
       headless: "new",
       protocolTimeout: 240000,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     const page = await browser.newPage();
     await page.goto(`${mainUrl}`);
@@ -221,7 +223,8 @@ async function fetchNews() {
           await articlePage.goto(`${newsAllTitles[i]?.href}`);
           const articleData = await extractArticleData(articlePage, src);
           if (articleData) {
-            await saveArticleToDatabase(articleData); // Save to DB
+            const article = await saveArticleToDatabase(articleData); // Save to DB
+            postTweet(articleData, article._id);
           }
         }
       }
@@ -231,11 +234,9 @@ async function fetchNews() {
       browser?.close();
     }
     console.error(error);
-  }
-  finally{
+  } finally {
     if (browser) {
       browser?.close();
-
     }
   }
 }
@@ -259,7 +260,7 @@ async function extractArticleData(page, imageUrl) {
       createTime: new Date().toISOString(),
     };
 
-    let title = await page.$eval(".page-title", (element) => element.innerText);
+    let title = await page?.$eval(".page-title", (element) => element.innerText);
     const existingArticle = await Article.findOne({ title });
     if (existingArticle) {
       return;
@@ -296,7 +297,7 @@ async function extractArticleData(page, imageUrl) {
       } else if (tagName === "h3") {
         let paragraph = await section.evaluate((node) => node.textContent.trim());
         if (!paragraph) {
-          const image = await section.$eval("img", (element) => element.src);
+          const image = await section?.$eval("img", (element) => element.src);
           if (lastSection && image) {
             lastSection.image.push(image);
             articleData.sections.push(lastSection);
@@ -318,7 +319,7 @@ async function extractArticleData(page, imageUrl) {
             lastSection.paragraph += paragraphText + "\n";
           } else {
             try {
-              const image = await section.$eval("img", (element) => element.src);
+              const image = await section?.$eval("img", (element) => element.src);
               if (lastSection && image) {
                 lastSection.image.push(image);
                 articleData.sections.push(lastSection);
@@ -334,8 +335,8 @@ async function extractArticleData(page, imageUrl) {
         lastSection = { heading: "", text: [], paragraph: "", image: [], listItems: [] };
       } else if (tagName === "p") {
         let text = await section.evaluate((node) => node?.textContent.trim());
-        if(text === 'TL;DR'){
-          text = '';
+        if (text === "TL;DR") {
+          text = "";
         }
         text = text.replace(/cryptopotato/gi, "ZTH");
         text = text.replace(/By:\sEdris|By:\sShayan/gi, "");
@@ -343,7 +344,7 @@ async function extractArticleData(page, imageUrl) {
           lastSection.text.push(text);
         } else {
           try {
-            const image = await section.$eval("img", (element) => element.src);
+            const image = await section?.$eval("img", (element) => element.src);
             if (lastSection && image) {
               lastSection.image.push(image);
               articleData.sections.push(lastSection);
@@ -355,7 +356,7 @@ async function extractArticleData(page, imageUrl) {
           }
         }
       } else if (tagName === "figure") {
-        const image = await section.$eval("img", (element) => element.src);
+        const image = await section?.$eval("img", (element) => element.src);
         if (lastSection && image) {
           lastSection.image.push(image);
           articleData.sections.push(lastSection);
@@ -386,6 +387,32 @@ async function extractArticleData(page, imageUrl) {
   }
 }
 
+async function generateShortenedUrl(title, id) {
+  // TODO
+  const longUrl = `https://one2hero.com/news/${id}/${encodeURIComponent(title)}`;
+  // const shortenedUrl = await TinyURL.shorten(longUrl);
+  return longUrl;
+}
+
+async function postTweet(data, id) {
+  const tweetData = {
+    text: data.title,
+    imageUrl: data.titleImage,
+    websiteUrl: await generateShortenedUrl(data.title, id),
+    hashTags: await generateHashtags(data.title)
+  };
+
+  const tweetEndpoint = `${process.env.LOCAL_BASE_URL}/tweet`;
+
+    axios.post(tweetEndpoint, tweetData)
+      .then(response => {
+        console.log('Tweet posted successfully');
+      })
+      .catch(error => {
+        console.error('Error posting tweet:', error.message);
+      });
+}
+
 async function saveArticleToDatabase(data) {
   try {
     const article = new Article({
@@ -395,9 +422,51 @@ async function saveArticleToDatabase(data) {
       createTime: new Date().toISOString(),
     });
 
-    await article.save();
+    return await article.save();
   } catch (err) {
     console.log(err);
   }
 }
+async function generateHashtags(newsTitle) {
+  try {
+
+    // Preprocess the news title
+    const processedTitle =await preprocessTitle(newsTitle);
+
+    const hashtags = postProcessHashtags(processedTitle);
+    return hashtags
+  } catch (err) {
+    console.log("ERROR ->", err);
+  }
+}
+
+async function preprocessTitle(title) {
+  // Remove irrelevant characters, punctuation, and stop words
+  const cleanTitle = title.replace(/[^a-zA-z0-9\s]/g, "");
+  const words = cleanTitle.split(" ");
+
+  // Filter out stop words
+  const filteredWords = removeStopwords(words, [...eng, 'show','will','by', 'digits','watch','likely','two','possible','reasons','why','whats','price','popular']);
+  const filteredWordsUpperPreference = []
+  filteredWords.forEach((word)=> {
+    if(word.toUpperCase() === word){
+      filteredWordsUpperPreference.unshift(word)
+    }else{
+      filteredWordsUpperPreference.push(word);
+    }
+  })
+  return filteredWordsUpperPreference;
+}
+
+function postProcessHashtags(predictedHashtags) {
+  // Remove duplicates
+  const uniqueHashtags = new Set(predictedHashtags);
+
+  const hashtags = [...uniqueHashtags].map((hashtag) => "#" + hashtag);
+  const filteredHashtags = hashtags.filter(
+    (hashtag) => hashtag.length >= 3 && hashtag.length <= 20
+  );
+  return filteredHashtags;
+}
+
 module.exports = router;

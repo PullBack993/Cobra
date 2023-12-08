@@ -4,6 +4,7 @@ import axios, { AxiosError } from 'axios';
 import placeHolderLoader from '../components/PlaceHolderLoader.vue';
 import { IArticleDetails } from '../Interfaces/IArticleDetails';
 import defaultimage from '../assets/BaseIcons/default-image.png';
+import generateTwitterCardMetaTags from '../main'
 
 const baseApiUrl = import.meta.env.VITE_APP_BASE_URL;
 
@@ -62,6 +63,7 @@ const handleOutsideClick = (e: Event) => {
 <template>
   <div class="article">
     <div class="article-header" v-if="article">
+      <meta v-meta="generateTwitterCardMetaTags(article.title, article.titleImage)">
       <img class="article-header--image" :src="article.titleImage" :alt="article.title" />
       <h1 class="article-header--title">{{ article.title }}</h1>
     </div>

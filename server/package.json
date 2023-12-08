@@ -21,13 +21,18 @@
     "express-rate-limit": "^6.7.0",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.9.0",
+    "natural": "^6.10.3",
+    "npm": "^10.2.4",
     "puppeteer": "^19.4.0",
     "puppeteer-cluster": "^0.23.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
     "sharp": "^0.32.4",
     "socket.io": "^4.7.1",
+    "stopword": "^2.0.8",
+    "twitter-api-v2": "^1.15.2",
     "web3": "^4.0.3",
+    "word2vec": "^1.1.5",
     "ws": "^8.13.0"
   },
   "devDependencies": {

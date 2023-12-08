@@ -8,7 +8,7 @@ const routes = [
     name: 'news',
     component: () => import('@/views/NewsList.vue'),
     meta: {
-      titme: "News Bitcoin, Ethereum, Crypto News and Price Data | ZTH"
+      titme: 'Crypto News,Crypto Price Data,Bitcoin, Ethereum | O2H',
     },
   },
   {
@@ -16,7 +16,7 @@ const routes = [
     name: 'bitcoin return',
     component: HomeView,
     meta: {
-      titme: "ZTH | Data Analysis,Bitcoin Open interest,Bitcoin Options,Crypto machine learning"
+      titme: 'Data Analysis,Bitcoin Open interest,Bitcoin Options,Crypto machine learning | O2H',
     },
   },
   {
@@ -24,7 +24,7 @@ const routes = [
     name: 'volume monitor',
     component: () => import('@/views/VolumeMonitor.vue'),
     meta: {
-      titme: "Volume All Coins,Order Book,Bitcoin Open interest,Big Transfers | ZTH"
+      titme: 'Volume All Coins,Order Book,Bitcoin Open interest,Big Transfers | O2H',
     },
   },
   {
@@ -36,14 +36,14 @@ const routes = [
       title: route.params.title,
     }),
     meta: { scrollToTop: true, title: 'Article' },
-    
   },
   {
     path: '/long-short',
     name: 'long-short',
     component: () => import('../views/LongShortView.vue'),
     meta: {
-      titme: "Bitcoin Long Short Ratio, ETH Longs/Shorts Ratio, Cryptocurrency Longs VS Shorts Ratio, Binance Long And Short Ratio | ZTH",
+      titme:
+        'Bitcoin/Ethereum Long Short Ratio,Binance Cryptocurrency Longs vs Shorts Ratio | O2H',
     },
   },
 ];
@@ -62,7 +62,7 @@ const scrollBehavior = async (to, from, savedPosition) => {
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
-  strict: true, 
+  strict: true,
   scrollBehavior,
 });
 
@@ -70,10 +70,16 @@ router.beforeEach((to, from) => {
   const store = useGlobalStore();
   // reset news pagination counter if come from another page.
   // don't touch the counter when going(forward or back) to news or articles.
-  if (!((to.name === 'ArticleDetails' && from.name === "news") || (to.name === "news" && from.name === 'ArticleDetails') || to.name === 'news')) {
-    store.newsPaginationCounter  = 1;
-    }
-  document.title = to.meta.titme ?? 'ZTH';
+  if (
+    !(
+      (to.name === 'ArticleDetails' && from.name === 'news') ||
+      (to.name === 'news' && from.name === 'ArticleDetails') ||
+      to.name === 'news'
+    )
+  ) {
+    store.newsPaginationCounter = 1;
+  }
+  document.title = to.meta.titme ?? 'O2H';
 });
 
 export default router;
