@@ -45,12 +45,13 @@ function generateTwitterCardMetaTags(newsTitle, imageUrl) {
     { name: 'og:description', content: newsTitle.substring(0, 200) },
     { name: 'og:url', content: window.location.href },
     { name: 'og:image', content: imageUrl },
-    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:card', content: 'summary' },
     { name: 'twitter:site', content: '@one2hero_com' },
     { name: 'twitter:creator', content: '@one2hero_com' },
     { name: 'twitter:title', content: newsTitle },
     { name: 'twitter:description', content: newsTitle.substring(0, 200) },
     { name: 'twitter:image', content: imageUrl },
+    { 'http-equiv': 'content-type', content: 'text/html'}
   ];
 }
 

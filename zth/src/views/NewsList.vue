@@ -142,7 +142,6 @@ const calculateDateTimeDifference = (dateStr: string): string => {
 <template>
   <div class="news-container">
     <div class="news" v-if="newsListData">
-      <meta v-meta="generateTwitterCardMetaTags('Crypto News,Crypto Price Data,Bitcoin, Ethereum | O2H', one2hero)">
       <ul v-for="(section, index) in newsListData" :key="index" class="news__list-items">
         <router-link
           class="news__list-link"
