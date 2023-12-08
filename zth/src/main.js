@@ -40,11 +40,11 @@ app.directive('meta', {
 function generateTwitterCardMetaTags(newsTitle, imageUrl) {
 
   return [
-    { name: 'og:type', content: 'website' },
-    { name: 'og:title', content: newsTitle },
-    { name: 'og:description', content: newsTitle.substring(0, 200) },
-    { name: 'og:url', content: window.location.href },
-    { name: 'og:image', content: imageUrl },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:title', content: newsTitle },
+    { property: 'og:description', content: newsTitle.substring(0, 200) },
+    { property: 'og:url', content: window.location.href },
+    { property: 'og:image', content: imageUrl },
     { name: 'twitter:card', content: 'summary' },
     { name: 'twitter:site', content: '@one2hero_com' },
     { name: 'twitter:creator', content: '@one2hero_com' },
