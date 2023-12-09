@@ -24,7 +24,6 @@ app.directive('meta', {
   beforeMount: function (el, binding) {
     // retrieve the meta tag data from binding
     const metaData = binding.value;
-    console.log(binding.value);
     // append the meta tags to the <head> section
     const headElement = document.head;
     for (const metaTag of metaData) {
