@@ -63,7 +63,7 @@ const handleOutsideClick = (e: Event) => {
 <template>
   <div class="article">
     <div class="article-header" v-if="article">
-      <meta v-meta="generateTwitterCardMetaTags(article.title, article.imageUrl)">
+      <div v-meta="generateTwitterCardMetaTags(article.title, article.imageUrl)"></div>
       <img class="article-header--image" :src="article.titleImage" :alt="article.title" />
       <h1 class="article-header--title">{{ article.title }}</h1>
     </div>
