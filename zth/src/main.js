@@ -24,12 +24,16 @@ app.directive('meta', {
   beforeMount: function (el, binding) {
     // retrieve the meta tag data from binding
     const metaData = binding.value;
-
+    console.log(binding.value);
     // append the meta tags to the <head> section
     const headElement = document.head;
     for (const metaTag of metaData) {
       const metaNode = document.createElement('meta');
-      metaNode.setAttribute('name', metaTag.name);
+      if (metaTag.property) {
+        metaNode.setAttribute('property', metaTag.property);
+      } else {
+        metaNode.setAttribute('name', metaTag.name);
+      }
       metaNode.setAttribute('content', metaTag.content);
       headElement.appendChild(metaNode);
     }
@@ -38,7 +42,6 @@ app.directive('meta', {
 
 // helper function to generate meta tag data
 function generateTwitterCardMetaTags(newsTitle, imageUrl) {
-
   return [
     { property: 'og:type', content: 'website' },
     { property: 'og:title', content: newsTitle },
@@ -51,7 +54,7 @@ function generateTwitterCardMetaTags(newsTitle, imageUrl) {
     { name: 'twitter:title', content: newsTitle },
     { name: 'twitter:description', content: newsTitle.substring(0, 200) },
     { name: 'twitter:image', content: imageUrl },
-    { 'http-equiv': 'content-type', content: 'text/html'}
+    { 'http-equiv': 'content-type', content: 'text/html' },
   ];
 }
 

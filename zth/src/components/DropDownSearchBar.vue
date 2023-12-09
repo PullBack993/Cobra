@@ -7,11 +7,13 @@ import sKeyIcon from '../assets/BaseIcons/key.svg';
 import { useGlobalStore } from '../store/global';
 import { handleScrollBoxWheel } from '@/components/utils/helper';
 
-let allCoins = [ {
-    "id": "bitcoin",
-    "symbol": "btc",
-    "name": "Bitcoin"
-  },];
+let allCoins = [
+  {
+    id: 'bitcoin',
+    symbol: 'btc',
+    name: 'Bitcoin',
+  },
+];
 const store = useGlobalStore();
 const currentItem = ref(0);
 let activeScrollItem = 0;
@@ -30,7 +32,6 @@ const topElement = ref<HTMLElement>();
 const abort = ref<Canceler>();
 const errorMessage = ref('');
 const baseApiUrl = import.meta.env.VITE_APP_BASE_URL;
-
 
 const scrollPosition = (direction: number) => {
   if (direction === 1) {
@@ -162,7 +163,7 @@ const onError = (errorText: string) => {
 
 onMounted(() => {
   axios.get(`${baseApiUrl}/coins/list`).then((res) => {
-    allCoins = res.data;  
+    allCoins = res.data;
   });
   timeout.value = setTimeout(() => {
     loading.value = true;
@@ -219,18 +220,12 @@ const onOpen = (value: boolean) => {
     />
     <sKeyIcon alt="key-s" class="search__container-key"></sKeyIcon>
     <!-- @click="selectInput($event)" -->
-    <div
-      :class="[
-        open ? 'search__container-dropdown' : 'search__container-dropdown--is-open',
-      ]"
-    >
+    <div :class="[open ? 'search__container-dropdown' : 'search__container-dropdown--is-open']">
       <div ref="list" class="search__container-list" v-if="coins && !loading">
         <ul class="search__container-list-items">
           <div ref="topElement" class="search__container-list-container">
             <img class="search__container-list-image" loading="lazy" :src="coins.image.small" :alt="coins.name" />
-            <div
-              class="search__container-list-current"
-            >
+            <div class="search__container-list-current">
               {{ coins.name }}
             </div>
           </div>
@@ -251,9 +246,7 @@ const onOpen = (value: boolean) => {
               class="search__container-list-item-container"
               :class="index == currentItem ? 'search__container-list-current-active' : ''"
             >
-              <div
-                class="search__container-list-current--base"
-              >
+              <div class="search__container-list-current--base">
                 <img
                   :src="coins.image.small"
                   :alt="coins.name"
@@ -343,7 +336,6 @@ const onOpen = (value: boolean) => {
     &--is-open {
       display: none;
     }
-  
   }
   &-list {
     border: 0.1rem solid var(--bg-input-dark);
@@ -425,7 +417,7 @@ const onOpen = (value: boolean) => {
     &-current {
       font-size: 2rem;
       list-style: none;
-      color: var( --zth-text);
+      color: var(--zth-text);
       &:hover {
         background-color: var(--bg-input-dark);
       }
@@ -464,7 +456,7 @@ const onOpen = (value: boolean) => {
         position: absolute;
         left: 1.5rem;
         border-radius: 50%;
-        background:  var(--white);
+        background: var(--white);
       }
       &--base,
       &--price,
@@ -493,7 +485,7 @@ const onOpen = (value: boolean) => {
     line-height: 1.71429;
     text-overflow: ellipsis;
     margin: 1rem;
-    color:  var(--white);
+    color: var(--white);
   }
 }
 
