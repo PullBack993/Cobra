@@ -24,7 +24,12 @@ app.directive('meta', {
   beforeMount: function (el, binding) {
     // retrieve the meta tag data from binding
     const metaData = binding.value;
-    // append the meta tags to the <head> section
+
+    const existingTwitterCardTags = document.head.querySelectorAll('meta[name^="twitter:"]');
+    const existingOg = document.head.querySelectorAll('meta[property^="og:"]');
+    removeMetaTags(existingTwitterCardTags);
+    removeMetaTags(existingOg);
+
     const headElement = document.head;
     for (const metaTag of metaData) {
       const metaNode = document.createElement('meta');
@@ -53,10 +58,13 @@ function generateTwitterCardMetaTags(newsTitle, imageUrl) {
     { name: 'twitter:title', content: newsTitle },
     { name: 'twitter:description', content: newsTitle.substring(0, 200) },
     { name: 'twitter:image', content: imageUrl },
-    { 'http-equiv': 'content-type', content: 'text/html' },
   ];
 }
-
+function removeMetaTags(tags){
+  if(tags){
+    tags.forEach(tag => tag.parentNode.removeChild(tag));
+  }
+}
 // expose the meta tag generation function globally
 export default generateTwitterCardMetaTags;
 

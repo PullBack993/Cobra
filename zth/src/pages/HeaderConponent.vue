@@ -84,6 +84,7 @@ onUnmounted(() => {
   height: 7.5rem;
   display: flex;
   justify-content: space-between;
+  background-color: var(--brand-purple-darker);
   .search {
     position: relative;
     border-radius: 0.6rem;
