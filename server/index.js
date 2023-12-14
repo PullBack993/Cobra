@@ -16,6 +16,7 @@ async function start() {
   routerConfig(app);
 
   const PORT = process.env.PORT || 3000;
+  console.log(PORT)
   const server = app.listen(PORT, () => console.log(`App start ==> http://localhost:3000`));
   connectWs(server);
 

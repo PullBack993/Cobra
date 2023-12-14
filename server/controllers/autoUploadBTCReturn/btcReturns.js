@@ -23,7 +23,7 @@ async function fetchNewData() {
           response.on("data", (chunk) => {
             data += chunk;
           });
-          response.on("end", () => {
+        response.on("end", () => {
             const parsedData = JSON.parse(data);
             fetchedData = parsedData.data;
             dataLength = fetchedData?.length;
@@ -208,7 +208,7 @@ function updateNewDataQuarter(calculatedData, fetchedData) {
 }
 
 function calculateDailyChanges(data, dataLength) {
-  const prevPrice = data[dataLength - 1]?.price;
+  const prevPrice = data[dataLength]?.price;
   const currentPrice = data[dataLength]?.price;
 
   const calculatePercentageChange = calculateDifference(currentPrice, prevPrice);

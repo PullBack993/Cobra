@@ -2,17 +2,19 @@ require("dotenv/config");
 const router = require("express").Router();
 const BtcChangeIndicator = require("../../models/BtcChange");
 const fetchNewData = require("../autoUploadBTCReturn/btcReturns");
+// const {bitcoinReturns} = require('../autoUploadBTCReturn/btcReturnsPeriod')
 const CronJob = require("cron").CronJob;
 const axios = require("axios");
-
 const job = new CronJob(" 1 0 * * * ", () => {
   fetchNewData();
   console.log("Fetch daily returns data!");
-});
-
+})
 job.start();
 
 router.post("/daily-return", async (req, res) => {
+  // fill db
+  // bitcoinReturns()
+
   try {
     const data = req.body;
     let result = {};

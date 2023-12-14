@@ -14,7 +14,7 @@ const intervalId = ref(0);
 const loading = ref(true);
 const baseApiUrl = import.meta.env.VITE_APP_BASE_URL;
 // TODO constant => file
-const timeMap: { [timeWord: string]: string } = {
+const timeMap: { [timeWord: string]: string } = { // TODO implement this
   // '5 minute': 'm5',
   // '15 minute': 'm15',
   // '30 minute': 'm30',
