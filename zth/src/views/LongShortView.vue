@@ -8,19 +8,19 @@ import { Coin } from '../Interfaces/ICoinLongShort';
 
 const allowsCoins = allCoins;
 const currentValue = ref('BTC');
-const currentTime = ref('1 hour');
+const currentTime = ref('24 hour');
 const coins = ref<Coin | []>([]);
 const intervalId = ref(0);
 const loading = ref(true);
 const baseApiUrl = import.meta.env.VITE_APP_BASE_URL;
 // TODO constant => file
 const timeMap: { [timeWord: string]: string } = {
-  '5 minute': 'm5',
-  '15 minute': 'm15',
-  '30 minute': 'm30',
-  '1 hour': 'h1',
-  '4 hour': 'h4',
-  '12 hour': 'h12',
+  // '5 minute': 'm5',
+  // '15 minute': 'm15',
+  // '30 minute': 'm30',
+  // '1 hour': 'h1',
+  // '4 hour': 'h4',
+  // '12 hour': 'h12',
   '24 hour': 'h24',
 };
 
@@ -101,7 +101,7 @@ intervalId.value = Number(setInterval(reqData, 20000));
               <DropdownSmall
                 :with-arrow-icon="true"
                 :readonly="true"
-                :data="['1 hour', '4 hour', '12 hour', '24 hour']"
+                :data="[ '24 hour']"
                 @new-value:input="timeChange"
               />
             </div>
