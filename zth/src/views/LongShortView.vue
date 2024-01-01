@@ -43,46 +43,49 @@ const timeChange = (value: string) => {
 };
 
 onMounted(() => {
-  reqData();
+  // reqData();
 });
 
 onUnmounted(() => {
-  clearInterval(intervalId.value);
+  // clearInterval(intervalId.value);
 });
 
-watch(
-  () => [currentTime.value, currentValue.value],
-  ([newTime, newSymbol]) => {
-    clearInterval(intervalId.value);
-    loading.value = true;
-    coins.value = [];
+// watch(
+  // () => [currentTime.value, currentValue.value],
+  // ([newTime, newSymbol]) => {
+  //   clearInterval(intervalId.value);
+  //   loading.value = true;
+  //   coins.value = [];
 
-    reqData();
-    intervalId.value = Number(setInterval(reqData, 20000));
-  }
-);
+  //   reqData();
+  //   intervalId.value = Number(setInterval(reqData, 20000));
+  // }
+// );
 
-const reqData = () => {
-  const ransformedTime = transformTime(currentTime.value);
-  const coinData = { time: ransformedTime, coin: currentValue.value };
-  axios
-    .post(`${baseApiUrl}/exchange/long-short`, coinData)
-    .then((res) => {
-      coins.value = res.data;
-      loading.value = false;
-    })
-    .catch((err) => {
-      loading.value = false;
-      console.error(err);
-    });
-};
+// const reqData = () => {
+//   const ransformedTime = transformTime(currentTime.value);
+//   const coinData = { time: ransformedTime, coin: currentValue.value };
+//   axios
+//     .post(`${baseApiUrl}/exchange/long-short`, coinData)
+//     .then((res) => {
+//       coins.value = res.data;
+//       loading.value = false;
+//     })
+//     .catch((err) => {
+//       loading.value = false;
+//       console.error(err);
+//     });
+// };
 
-intervalId.value = Number(setInterval(reqData, 20000));
+// intervalId.value = Number(setInterval(reqData, 20000));
 </script>
 
 <template>
-  <div class="main-long__short">
-    <div class="long__short">
+  
+  <div class="main-long__short " disabled>
+    <p class="dialog__modal-container-signMsg unavailable-msg">Currently unavailable</p>
+    
+    <div class="long__short unavailable">
       <div class="long__short-col">
         <div class="long__short-title long__short-theme">
           <span class="long__short-title--text">{{ currentValue }} Long/Short Ration</span>
@@ -114,6 +117,33 @@ intervalId.value = Number(setInterval(reqData, 20000));
 </template>
 
 <style scoped lang="scss">
+:deep(.loader) {
+  align-content: center;
+  align-items: center;
+  display: flex;
+  filter: blur(0.2rem);
+}
+.unavailable {
+  // remove after implement login/register
+  align-content: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  filter: blur(0.2rem);
+  position: relative;
+  z-index: 9;
+  &-msg {
+
+    position: absolute;
+    top: 35rem;
+    left: 5rem;
+    rotate: 45grad;
+    font-size: clamp(2rem, 3vw, 5rem);
+    font-weight: 500;
+    z-index: 9;
+    color: white;
+  }
+}
 :deep(.long__short-value) {
   width: 10rem;
 }
