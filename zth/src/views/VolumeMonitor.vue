@@ -21,7 +21,7 @@ const loading = ref(true);
 const last20Coins: IWebsocket[] = [];
 const btcSelectedVolume = ref(0.5);
 
-const socket = io(baseApiUrl, {
+const socket = io(baseApiUrl + '/volumes', {
   extraHeaders: {
     'my-custom-header': 'test', // TODO Replace with your authentication token value
   },

@@ -71,6 +71,7 @@ const loadNews = (from = '', onMounted = '') => {
             scroll(); // need to scroll first if the date is updated; otherwise scroll not  to the right position
           }
           if (response.data.length !== 0) {
+            console.log(response.data)
             newsListData.value.push(...response.data);
             loading.value = false;
           } else {

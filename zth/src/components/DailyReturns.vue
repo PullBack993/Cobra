@@ -72,6 +72,7 @@ const reqData = (month: number, type: string) => {
       if (res.status === 200) {
         if (res.data[0].TimeFrameName !== undefined) {
           data.value = res.data[0].Timestamp;
+
           if(res.data[0].Length.length > 0){
             time.value = res.data[0].Length;
           }else{
