@@ -1,6 +1,6 @@
 const dataController = require("../controllers/data.js");
 const userController = require("../controllers/authentication/auth.js");
-const coinsDataController = require("../controllers/coinsData/exchangeLongShort");
+const coinsDataController = require("../controllers/coinsData/scrapingLongShort");
 const newsData = require("../controllers/newsData/newsData");
 const x = require("../controllers/xTweet/xTweet");
 const coinsListController = require('../controllers/coinsListController/coinsListController.js');  

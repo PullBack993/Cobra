@@ -3,11 +3,9 @@ const express = require("express");
 const databaseConfig = require("./config/database");
 const expressConfig = require("./config/express");
 const routerConfig = require("./config/routes");
-const {
-  connectToBinanceWS,
-  createWebSocketServer,
-} = require("./controllers/bigTransfer/transferTracker");
-
+const { connectToBinanceWS, createVolumeWS } = require("./controllers/bigTransfer/transferTracker");
+const { createLongShortWS } = require("./controllers/coinsData/lonshShortWS");
+const { startSocketServer } = require("./config/socket");
 
 async function start() {
   const app = express();
@@ -16,14 +14,10 @@ async function start() {
   routerConfig(app);
 
   const PORT = process.env.PORT || 3000;
-  console.log(PORT)
+  console.log(PORT);
   const server = app.listen(PORT, () => console.log(`App start ==> http://localhost:3000`));
-  connectWs(server);
-
+  startSocketServer(server);
 }
 
-function connectWs(server) {
-  connectToBinanceWS();
-  createWebSocketServer(server);
-}
+
 start();

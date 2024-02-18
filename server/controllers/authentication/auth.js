@@ -12,9 +12,10 @@ router.get("/", authenticateToken, async (req, res) => {
     if(user){
       const responseUser = { imageUrl: user.imageUrl, isLoggedIn: true }; 
       res.status(200).json(responseUser);
+    }else{
+      res.status(401).json({message: 'Unauthorized'})
     }
   } catch (error) {
-    console.log('error', error);
     res.status(500).json({ error: error });
   }
 });
@@ -109,8 +110,8 @@ function generateRandomImage() {
 function setCookie(res, accessToken, refreshToken) {
   const oneHour = new Date(Date.now() + 61 * 60 * 1000);
   const oneWeek = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-  res.cookie("zth_aSt_1xRg9Jd", accessToken, { expires: oneHour });
-  res.cookie("zth_rLt_K6u3hTf", refreshToken, { expires: oneWeek });
+  res.cookie("zth_aSt_1xRg9Jd", accessToken, { expires: oneHour,sameSite: 'strict' });
+  res.cookie("zth_rLt_K6u3hTf", refreshToken, { expires: oneWeek,sameSite: 'strict'});
 }
 
 function createToken(userId) {

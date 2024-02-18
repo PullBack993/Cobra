@@ -8,7 +8,7 @@ const allCoins = require("../../coins.json");
 const CoinGeckoClient = new CoinGecko();
 
 let coinImageCache = {};
-let customWS;
+let volumesNamespace;
 let binanceWS;
 let lastMessageTime = 0;
 const maxValues = 100;
@@ -20,10 +20,9 @@ let btcPrice;
 async function connectToBinanceWS() {
   try {
     const coins100 = await get100CoinsByPrice();
-    console.log('Creating WebSocket...');
+    console.log("Creating WebSocket...");
 
     binanceWS = new WebSocket("wss://stream.binance.com:9443/ws");
-
 
     binanceWS.on("open", () => {
       binanceWS.send(
@@ -34,19 +33,15 @@ async function connectToBinanceWS() {
         })
       );
     });
- 
+
     binanceWS.on("message", (data) => {
       const now = Date.now();
       const msg = JSON.parse(data);
       coins100.forEach(async (coin, index) => {
-        if (
-          msg.s === coin.symbol &&
-          msg.e === "trade" &&
-          msg.q >= (coin.qEqBTC)
-        ) {
+        if (msg.s === coin.symbol && msg.e === "trade" && msg.q >= coin.qEqBTC) {
           const searchedCoin = findCoin(allCoins, msg.s.split("USDT")[0]);
           msg.image = await fetchCoinImage(searchedCoin);
-          const test = (msg.p * msg.q) / btcPrice
+          const test = (msg.p * msg.q) / btcPrice;
           msg.beq = test;
           msg.T = convertTimestamp(msg.T);
           last20Values.push(msg);
@@ -59,8 +54,8 @@ async function connectToBinanceWS() {
 
       lastMessageTime = now;
     });
-    binanceWS.on('error', (error) => {
-      console.error('WebSocket error:', error);
+    binanceWS.on("error", (error) => {
+      console.error("WebSocket error:", error);
       // Attempt to reconnect.
       setTimeout(reconnectToBinanceWS, 1000); // Adjust the delay as needed.
     });
@@ -78,7 +73,6 @@ async function reconnectToBinanceWS() {
   }
   connectToBinanceWS();
 }
-
 
 async function fetchCoinImage(coin) {
   try {
@@ -107,7 +101,6 @@ async function fetchCoinImage(coin) {
     console.error("fetchCoinImage", error);
   }
 }
-
 
 function determineImage(image) {
   return image?.data?.image?.thumb
@@ -143,51 +136,32 @@ function convertTimestamp(timestamp) {
   return `${day}.${month}.${year} ${hour}:${minute}:${second}`;
 }
 
-function createWebSocketServer(server) {
-  const corsWhitelist = ["http://127.0.0.1:5173", "http://localhost:5173", "http://localhost:8080","https://www.one2hero.com", " https://zth-p1d4c2ukk-pullback993.vercel.app", "https://zth.vercel.app", "https://one2hero.com", "www.one2hero.com"];
 
-  customWS = socketIO(server, {
-    cors: {
-      origin: corsWhitelist,
-      methods: ["GET", "POST"],
-      allowedHeaders: ["my-custom-header"],
-      credentials: true,
-    },
-  });
-  customWS.on("connection", socket => {
-    if (last20Values) {
-      customWS.emit("message", JSON.stringify(last20Values));
-    }
-  });
+async function createVolumeWS(app) {
+  try {
+
+
+    volumesNamespace = app.of("/volume/monitor");
+
+    volumesNamespace.on("connection", async (socket) => {
+      socket.on("disconnect", () => {
+      });
+      try {
+        // Assuming `last20Values` is acquired asynchronously
+        volumesNamespace.emit("message", JSON.stringify(last20Values));
+      } catch (error) {
+        console.error("Error fetching last 20 values:", error);
+        // Handle the error, e.g., notify the client
+      }
+    });
+  } catch (error) {
+    console.error("Error creating volume WebSocket:", error);
+    // Handle the error, e.g., log or report it
+  }
 }
 
 function sendToClient(data) {
-  customWS.emit("message", JSON.stringify(data));
-}
-
-async function getBtcPrice() {
-  try {
-    return new Promise((resolve, reject) => {
-      https
-        .get(process.env.BINANCE_BTC_PRICE, (response) => {
-          let btcPrice = "";
-
-          response.on("data", (chunk) => {
-            btcPrice += chunk;
-          });
-
-          response.on("end", () => {
-            resolve(JSON.parse(btcPrice).price);
-          });
-        })
-        .on("error", (error) => {
-          reject(error);
-        });
-    });
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
+  volumesNamespace.emit("message", JSON.stringify(data));
 }
 
 async function get100CoinsByPrice() {
@@ -195,7 +169,7 @@ async function get100CoinsByPrice() {
   try {
     return new Promise((resolve, reject) => {
       https
-        .get(process.env.BINANCE_TICKET_PRICE , (resp) => {
+        .get(process.env.BINANCE_TICKET_PRICE, (resp) => {
           let data = "";
 
           resp.on("data", (chunk) => {
@@ -226,13 +200,38 @@ async function get100CoinsByPrice() {
     console.error(error);
   }
 }
-  const jobGetCurrentPriceBTC = new CronJob(" */1 * * * *", async () => {
-    btcPrice = await getBtcPrice();
-  });
+const jobGetCurrentPriceBTC = new CronJob(" */1 * * * *", async () => {
+  btcPrice = await getBtcPrice();
+});
 
-  jobGetCurrentPriceBTC.start();
+jobGetCurrentPriceBTC.start();
+
+async function getBtcPrice() {
+  try {
+    return new Promise((resolve, reject) => {
+      https
+        .get(process.env.BINheANCE_BTC_PRICE, (response) => {
+          let btcPrice = "";
+
+          response.on("data", (chunk) => {
+            btcPrice += chunk;
+          });
+
+          response.on("end", () => {
+            resolve(JSON.parse(btcPrice).price);
+          });
+        })
+        .on("error", (error) => {
+          reject(error);
+        });
+    });
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
 
 module.exports = {
   connectToBinanceWS,
-  createWebSocketServer,
+  createVolumeWS,
 };

@@ -12,7 +12,7 @@ const authenticateToken = (req, res, next) => {
       jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, user) => {
         if (err) {
           // Refresh token expired or invalid, user needs to log in again
-          return res.status(401).json({ message: 'unauthorized' });
+          return res.status(401).json({ message: "unauthorized" });
         }
         // Generate new access token
         const [newAccessToken, refreshToken] = generateToken(user);
@@ -58,12 +58,12 @@ async function updateUser(user, refreshToken) {
 
 function setAccessCookie(res, accessToken) {
   const oneHour = new Date(Date.now() + 61 * 60 * 1000);
-  res.cookie("zth_aSt_1xRg9Jd", accessToken, { expires: oneHour });
+  res.cookie("zth_aSt_1xRg9Jd", accessToken, { expires: oneHour, sameSite: "strict" });
 }
 
 function setCookie(res, accessToken, refreshToken) {
   setAccessCookie(res, accessToken);
   const oneWeek = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-  res.cookie("zth_rLt_K6u3hTf", refreshToken, { expires: oneWeek });
+  res.cookie("zth_rLt_K6u3hTf", refreshToken, { expires: oneWeek, sameSite: "strict" });
 }
 module.exports = authenticateToken;

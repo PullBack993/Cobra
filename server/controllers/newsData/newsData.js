@@ -8,7 +8,6 @@ const sharp = require("sharp");
 const axios = require("axios");
 const { removeStopwords, eng } = require("stopword");
 
-
 const imageCache = new Map();
 
 puppeteer.use(StealthPlugin());

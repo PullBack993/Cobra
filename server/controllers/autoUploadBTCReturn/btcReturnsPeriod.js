@@ -63,7 +63,6 @@ async function bitcoinReturns() {
 }
 
 async function saveData(data, type, length) {
-  console.log("save daily");
   if (data) {
     const generatedData = new BtcChangeIndicator({
       name: "BTC",
@@ -78,7 +77,8 @@ async function saveData(data, type, length) {
 function dailyPercentDifferencePeriod(data, period) {
   const dailyChanges = {};
   try {
-    for (let i = period; i < data.length; i++ ) {
+    
+    for (let i = period; i < data.length - 1; i++ ) {
 
       const date = new Date(data[i].createTime);
       const year = date.getFullYear();

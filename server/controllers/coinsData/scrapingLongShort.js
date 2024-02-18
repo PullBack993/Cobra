@@ -1,167 +1,176 @@
-const allCoins = require("./coinglass.json");
-const { Cluster } = require("puppeteer-cluster");
-const puppeteer = require("puppeteer");
+const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
-
+const CronJob = require("cron").CronJob;
+const router = require("express").Router();
+const { updateData } = require("./store");
+const { emitData } = require("./lonshShortWS");
 puppeteer.use(StealthPlugin());
 
-// Not used
+const wantedCoins = [
+  "BTC",
+  "ETH",
+  "SOL",
+  "XRP",
+  "ADA",
+  "AVAX",
+  "DOGE",
+  "LINK",
+  "TRX",
+  "DOT",
+  "MATIC",
+  "LTC",
+  "ETC",
+  "APT",
+  "INJ",
+  "OP",
+  "KAS",
+  "ARB",
+  "ATOM",
+];
 
-const longShortJob = new CronJob("*/30 * * * * *", () => {
-    getLongShortDataForAllCoins(allCoins);
+const scrapeLongShort = new CronJob("*/10 * * * *", () => {
+  const timeNow = new Date();
+  console.log(
+    "Start sraping",
+    timeNow.getHours() + ":" + timeNow.getMinutes() + ":" + timeNow.getSeconds()
+  );
+  startBrowser();
 });
+scrapeLongShort.start();
 
-// longShortJob.start();
-
-async function getLongShortDataForAllCoins() {
-  isEnd = false;
-
-  const cluster = await Cluster.launch({
-    concurrency: Cluster.CONCURRENCY_CONTEXT,
-    maxConcurrency: 5,
-    puppeteerOptions: {
-      headless: 'new',
-    },
-  });
-
-  await cluster.task(async ({ page, data: coin }) => {
-    await page.goto(process.env.LONG_SHORT_URL);
-
-    const coinData = await getLongShortData(page, coin);
-  });
-  for (index; index < allCoins.length; index++) {
-    await cluster.queue(allCoins[index]); // Add the coin to the cluster's task queue
+async function startBrowser() {
+  counter = 0; // retry browser
+  try {
+    const browser = await puppeteer.launch({
+      headless: "new",
+      // headless: false, // Debug purposes only
+      args: ["--disable-setuid-sandbox", "--no-sandbox", "--single-process", "--no-zygote"],
+      protocolTimeout: 240000,
+    });
+    console.log("Launching browser...");
+    const page = await browser.newPage();
+    await page.goto(
+      process.env.LONG_SHORT_URL,
+      { timeout: 240000 },
+      { waitUntil: "domcontentloaded" }
+    );
+    await configurateCoinTime(page);
+    await browser.close();
+  } catch (error) {
+    console.error("daily-returns", error);
+    if (counter >= 7) {
+      throw new Error(error);
+    }
+    await startBrowser();
+    counter++;
   }
-
-  await cluster.idle();
-  await cluster.close();
-  isEnd = true;
 }
 
-async function getLongShortData(page, symbol) {
-  try {
-    const time = "5 minute";
-
+async function configurateCoinTime(page) {
+  for (const coin of wantedCoins) {
     let result = [];
+    try {
+      // 1. Cookies accept
+      await acceptCookies(page);
+      // 2. Dropdown Coin5r
+      await changeCoin(page, coin);
+      const timeNow = new Date();
 
+      // 3. Dropdown Time
+      await changeTime(page);
+      // 4. Get name and logo
+      await page.waitForTimeout(1000);
+      let nameWithLogo = await getNameWithLogo(page, coin);
 
-    // Check if the current symbol is the same as the previous one
-    const shouldChangeSymbol = previousSymbol !== symbol || previousSymbol === null;
-
-    // Check if the current time is the same as the previous one
-    const shouldChangeTime = previousTime !== time || previousTime === null;
-
-    const test = async () => {
-      try {
-        const inputSelector = ".cg-style-by6qva";
-        const dialogElement = await page?.$(".fc-dialog");
-        if (dialogElement) {
-          // Click on the "Manage options" button.
-          const manage = await dialogElement.$$(".fc-button-label");
-          manage[0].evaluate((el) => el?.click());
-        }
-
-        if (shouldChangeSymbol) {
-          previousSymbol = symbol;
-          await page?.waitForSelector(inputSelector);
-          const dropDownSymbol = await page?.$$(inputSelector);
-          if (dropDownSymbol) {
-            await dropDownSymbol[1]?.evaluate((b) => b.click());
-          }
-          await page.keyboard.press("Backspace");
-          await page.keyboard.press("Backspace");
-          await page.keyboard.press("Backspace");
-          await page.keyboard.press("Backspace");
-          await page.keyboard.press("Backspace");
-          await page.keyboard.press("Backspace");
-
-          await dropDownSymbol[1].type(`${symbol}`);
-
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-
-          const liElements = await page.$$("ul#\\:Rqkptaaqm li");
-          let matchingLiElement = null;
-
-          for (const liElement of liElements) {
-            const text = await page.evaluate((el) => el.textContent.trim(), liElement);
-            if (text === symbol) {
-              matchingLiElement = liElement;
-              break;
-            }
-          }
-          if (symbol !== "BTC") {
-            await page.keyboard.press("ArrowDown");
-            await page.keyboard.press("Enter");
-          }
-        }
-
-        const timeSelector = ".cg-style-co7wrl";
-
-        if (shouldChangeTime) {
-          previousTime = time;
-          await page?.waitForSelector(timeSelector);
-          const dropDownTime = await page.$$(timeSelector);
-          if (dropDownTime.length >= 2) {
-            await dropDownTime[2].evaluate((b) => b.click());
-          }
-          await page?.waitForSelector(".cg-style-1872y3 li");
-          const options = await page.$$(".cg-style-1872y3 li");
-          for (let i = 0; i < options.length; i++) {
-            const optionTitle = await options[i].evaluate((el) => el.textContent);
-            if (optionTitle === time) {
-              await options[i].evaluate((b) => b.click());
-              await new Promise((resolve) => setTimeout(resolve, 1000));
-            }
-          }
-        } else {
-          await page?.waitForSelector(timeSelector);
-          const dropDownTime = await page.$$(timeSelector);
-          if (dropDownTime.length >= 2) {
-            await dropDownTime[2].evaluate((b) => b.click());
-            await dropDownTime[2].evaluate((b) => b.click());
-          }
-        }
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        let nameWithLogo = await getNameWithLogo(page, symbol);
-
-        if (nameWithLogo[0].length <= 0) {
-          nameWithLogo = await getNameWithLogo(page, symbol);
-        }
-
-        const elements = await page.$$(".cg-style-1si2ck2");
-        await Promise.all(
-          elements.map(async (element, index) => {
-            const firstNumberHandle = await element.evaluateHandle((el) =>
-              el.querySelector("div:first-child").textContent.trim()
-            );
-            const secondNumberHandle = await element.evaluateHandle((el) =>
-              el.querySelector("div:last-child").textContent.trim()
-            );
-            const firstNumber = await firstNumberHandle.jsonValue();
-            const secondNumber = await secondNumberHandle.jsonValue();
-            result.push({
-              longRate: parseFloat(firstNumber),
-              shortRate: parseFloat(secondNumber),
-              exchangeLogo: nameWithLogo[1][index],
-              exchangeName: nameWithLogo[0][index],
-            });
-          })
-        );
-
-        result = [];
-      } catch (err) {
-        console.log(err);
-        result = [];
+      if (nameWithLogo[0]?.length <= 0) {
+        nameWithLogo = await getNameWithLogo(page, coin);
       }
-    };
-    await test();
-  } catch (err) {
-    if (err.name === "AbortError") {
-      console.log("Operation aborted by user");
+      // 5. Get long short data?
+      const elements = await page.$$(".cg-style-1si2ck2");
+      await Promise.all(
+        elements.map(async (element, index) => {
+          const firstNumberHandle = await element.evaluateHandle((el) =>
+            el.querySelector("div:first-child").textContent.trim()
+          );
+          const secondNumberHandle = await element.evaluateHandle((el) =>
+            el.querySelector("div:last-child").textContent.trim()
+          );
+          const firstNumber = await firstNumberHandle.jsonValue();
+          const secondNumber = await secondNumberHandle.jsonValue();
+          result.push({
+            longRate: parseFloat(firstNumber),
+            shortRate: parseFloat(secondNumber),
+            exchangeLogo: nameWithLogo[1][index],
+            exchangeName: nameWithLogo[0][index],
+            timestamp: Date.now(),
+          });
+        })
+      );
+      // save and emit data to ws
+      const coinData = await updateData(result[0], result);
+      if (coinData) {
+        emitData(coinData);
+      }
+      result = [];
+    } catch (err) {
+      console.log("Fail scraping long-short ration", err);
+      result = [];
     }
-    isRequestDone = true;
-    console.error("exchange long short main ==>", err);
   }
+}
+
+async function acceptCookies(page) {
+  const dialogElement = await page?.$(".fc-dialog");
+  if (dialogElement) {
+    // Click on the "Manage options" button.
+    const manage = await dialogElement.$$(".fc-button-label");
+    manage[0].evaluate((el) => el?.click());
+  }
+}
+
+async function changeCoin(page, coin) {
+  if (coin !== "BTC") {
+    const inputSelector = ".cg-style-phfqk";
+    await page?.waitForSelector(inputSelector);
+    const dropDownSymbol = await page?.$$(inputSelector);
+    if (dropDownSymbol) {
+      await dropDownSymbol[1]?.evaluate((b) => b.click());
+    }
+    await page.keyboard.press("Backspace");
+    await page.keyboard.press("Backspace");
+    await page.keyboard.press("Backspace");
+    await page.keyboard.press("Backspace");
+    await page.keyboard.press("Backspace");
+    await page.keyboard.press("Backspace");
+
+    await dropDownSymbol[1].type(`${coin}`);
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const liElements = await page.$$(".cg-style-1fwlt2m");
+    let matchingLiElement = null;
+
+    for (const liElement of liElements) {
+      const text = await page.evaluate((el) => el.textContent.trim(), liElement);
+      if (text === coin) {
+        matchingLiElement = liElement;
+        break;
+      }
+    }
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("Enter");
+  }
+}
+
+async function changeTime(page) {
+  const timeSelector = ".cg-style-1qmzz5g";
+
+  await page?.waitForSelector(timeSelector);
+  const dropDownTime = await page.$$(timeSelector);
+  await dropDownTime[3].click();
+
+  const fiveMinute = await page.$$(".cg-style-1829snp");
+  await fiveMinute[3].click();
 }
 
 async function getNameWithLogo(page, symbol) {
@@ -179,7 +188,7 @@ async function getNameWithLogo(page, symbol) {
         }
         if (beginPush) {
           sName.push(symbolName[i].textContent.trim()); // extract the text content of each element and add to the array
-          xName.push(exchangeLogo[i].getAttribute("src"));
+          xName.push(exchangeLogo[i]?.getAttribute("src"));
         }
       }
       return [sName, xName];
@@ -189,3 +198,5 @@ async function getNameWithLogo(page, symbol) {
     console.error("getNameWithLogo error: " + error);
   }
 }
+
+module.exports = router;
