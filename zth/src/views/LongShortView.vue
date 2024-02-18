@@ -3,10 +3,10 @@ import { ref, onMounted, watch, onUnmounted } from 'vue';
 import axios from 'axios';
 import DropdownSmall from '@/components/DropDownLongShort.vue';
 import GraphicLongShort from '@/components/GraphicLongShort.vue';
-import allCoins from '../components/data/coinglass.json';
+// import allCoins from '../components/data/coinglass.json';
 import { Coin } from '../Interfaces/ICoinLongShort';
 
-const allowsCoins = allCoins;
+// const allowsCoins = allCoins;
 const currentValue = ref('BTC');
 const currentTime = ref('24 hour');
 const coins = ref<Coin | []>([]);
@@ -95,7 +95,7 @@ onUnmounted(() => {
           <div class="long__short-chart-select-item long__short-theme" >
             <div class="long__short-symbol">Symbol</div>
             <div  class="long__short-dropdown">
-              <DropdownSmall :data="allowsCoins" @new-value:input="valueChange" />
+              <!-- <DropdownSmall :data="allowsCoins" @new-value:input="valueChange" /> -->
             </div>
           </div>
           <div class="long__short-chart-select-item">
