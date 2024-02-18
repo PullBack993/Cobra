@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { io } from 'socket.io-client';
+import { io,Socket } from 'socket.io-client';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import placeHolderLoader from '../components/PlaceHolderLoader.vue';
 import { IWebsocket, ITickVolume, ITick } from '../Interfaces/IWebsocket';
@@ -21,11 +21,7 @@ const loading = ref(true);
 const last20Coins: IWebsocket[] = [];
 const btcSelectedVolume = ref(0.5);
 
-const socket = io(baseApiUrl + '/volume/monitor', {
-  extraHeaders: {
-    'my-custom-header': 'test', // TODO Replace with your authentication token value
-  },
-});
+let socket: Socket;
 
 const sortAscending = (data: [ITickVolume] | [ITick], objProperty: string) => {
   data?.sort((a, b) => (b as any)[objProperty] - (a as any)[objProperty]);
@@ -156,7 +152,7 @@ const updateTableBoard = (): void => {
 const connectToSocket = () => {
   let connectionAttempts = 0;
   const maxConnectionAttempts = 5;
-
+  socket = io(`${baseApiUrl}/volume/monitor`);
   const attemptConnection = () => {
     socket.on('connect', () => {
       connectionAttempts = 0;

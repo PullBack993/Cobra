@@ -1,12 +1,10 @@
 const io = require("socket.io");
 const { calculateLongShortAverage, getLastLongShortData } = require("./store");
 const corsWhitelist = [
-  "http://127.0.0.1:5173",
   "http://localhost:3001",
   "http://localhost:5173",
   "http://localhost:8080",
   "https://www.one2hero.com",
-  " https://zth-p1d4c2ukk-pullback993.vercel.app",
   "https://zth.vercel.app",
   "https://one2hero.com",
   "www.one2hero.com",
@@ -17,7 +15,7 @@ const activeUsers = new Map();
 
 let longShortWS;
 async function createLongShortWS(server) {
-  const app = server
+  const app = server;
   longShortWS = app.of("/long-short");
   longShortWS.on("connection", (socket) => {
     // Handle the subscribe event
@@ -28,8 +26,7 @@ async function createLongShortWS(server) {
       immediatelySendDataOnSubscribe(currentUse);
       activeUsers.set(user, { socket, preferences: userPreferences });
     });
-    socket.on("disconnect", () => {
-    });
+    socket.on("disconnect", () => {});
     socket.on("removeUser", (userData) => {
       const userId = userData.user;
       const user = activeUsers.get(userId);
@@ -60,7 +57,7 @@ async function immediatelySendDataOnSubscribe(currentUserData) {
   const [userId, { socket, preferences }] = currentUserData;
   preferences.type === "last"
     ? emitLastUpdate(preferences.coin, socket)
-    : emitAverageUpdate(preferences.coin,socket, preferences.time);
+    : emitAverageUpdate(preferences.coin, socket, preferences.time);
 }
 
 module.exports = {

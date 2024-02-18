@@ -3,12 +3,10 @@ const { connectToBinanceWS, createVolumeWS } = require("../controllers/bigTransf
 const { createLongShortWS } = require("../controllers/coinsData/lonshShortWS");
 
 const corsWhitelist = [
-    "http://127.0.0.1:5173",
     "http://localhost:3001",
     "http://localhost:5173",
     "http://localhost:8080",
     "https://www.one2hero.com",
-    " https://zth-p1d4c2ukk-pullback993.vercel.app",
     "https://zth.vercel.app",
     "https://one2hero.com",
     "www.one2hero.com",

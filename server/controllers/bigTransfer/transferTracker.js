@@ -139,8 +139,6 @@ function convertTimestamp(timestamp) {
 
 async function createVolumeWS(app) {
   try {
-
-
     volumesNamespace = app.of("/volume/monitor");
 
     volumesNamespace.on("connection", async (socket) => {
@@ -210,7 +208,7 @@ async function getBtcPrice() {
   try {
     return new Promise((resolve, reject) => {
       https
-        .get(process.env.BINheANCE_BTC_PRICE, (response) => {
+        .get(process.env.BINANCE_BTC_PRICE, (response) => {
           let btcPrice = "";
 
           response.on("data", (chunk) => {
