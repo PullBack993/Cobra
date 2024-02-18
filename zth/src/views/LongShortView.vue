@@ -6,6 +6,7 @@ import GraphicLongShort from '@/components/GraphicLongShort.vue';
 // import allCoins from '../components/data/coinglass.json';
 import { Coin } from '../Interfaces/ICoinLongShort';
 
+
 // const allowsCoins = allCoins;
 const currentValue = ref('BTC');
 const currentTime = ref('24 hour');
