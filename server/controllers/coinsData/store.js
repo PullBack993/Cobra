@@ -164,7 +164,7 @@ const moveElementToFirstPosition = (array, name) => {
 
 async function removeOutdatedRates() {
   const currentTime = Date.now();
-  const cutoffTime = currentTime - 24 * 60 * 60 * 1000; // 24 hours
+  const cutoffTime = currentTime - 48 * 60 * 60 * 1000; // 24 hours
 
   await Coin.updateMany(
     { "exchanges.data.timestamp": { $lt: cutoffTime } },

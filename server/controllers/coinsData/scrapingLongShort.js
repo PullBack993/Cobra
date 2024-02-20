@@ -28,7 +28,7 @@ const wantedCoins = [
   "ATOM",
 ];
 
-const scrapeLongShort = new CronJob("*/10 * * * *", () => {
+const scrapeLongShort = new CronJob(" */2 * * * *", () => {
   const timeNow = new Date();
   console.log(
     "Start sraping",
@@ -37,6 +37,7 @@ const scrapeLongShort = new CronJob("*/10 * * * *", () => {
   startBrowser();
 });
 scrapeLongShort.start();
+
 
 async function startBrowser() {
   counter = 0; // retry browser
@@ -56,10 +57,17 @@ async function startBrowser() {
     );
     await configurateCoinTime(page);
     await browser.close();
+    const timeNow = new Date();
+    console.log(
+      "close sraping",
+      timeNow.getHours() + ":" + timeNow.getMinutes() + ":" + timeNow.getSeconds()
+    );
   } catch (error) {
     console.error("daily-returns", error);
     if (counter >= 7) {
-      throw new Error(error);
+    await browser.close();
+    console.log("longshort => ", error);
+
     }
     await startBrowser();
     counter++;

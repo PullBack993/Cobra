@@ -104,10 +104,10 @@ async function fetchCoinImage(coin) {
 
 function determineImage(image) {
   return image?.data?.image?.thumb
-    ? image.data.image?.thumb
-    : image.data.image?.large
-    ? image.data.image?.large
-    : image.data.image?.small;
+    ? image?.data?.image?.thumb
+    : image?.data?.image?.large
+    ? image?.data?.image?.large
+    : image?.data?.image?.small;
 }
 
 function findCoin(allCoins, searchParams) {
