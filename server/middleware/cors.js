@@ -5,7 +5,7 @@ module.exports = () => (req, res, next) => {
     "http://localhost:5173",
     "https://www.one2hero.com",
     "https://one2hero.com",
-    "www.one2hero.com",
+    "https://www.one2hero.com",
   ];
   if (corsWhitelist.indexOf(req.headers.origin) !== -1) {
     res.setHeader("Access-Control-Allow-Origin", req.headers.origin),

@@ -1,0 +1,14 @@
+{
+  "Binance": "https://cdn.coinglasscdn.com/static/exchanges/270.png",
+  "OKX": "https://cdn.coinglasscdn.com/static/exchanges/okx2.png",
+  "dYdX": "https://cdn.coinglasscdn.com/static/coins/DYDX.png",
+  "BingX": "https://cdn.coinglasscdn.com/static/exchanges/bingx.png",
+  "Deribit": "https://cdn.coinglasscdn.com/static/exchanges/deribit.png",
+  "Bybit": "https://cdn.coinglasscdn.com/static/exchanges/bybit2.png",
+  "Bitmex": "https://cdn.coinglasscdn.com/static/exchanges/157.png",
+  "Bitfinex": "https://cdn.coinglasscdn.com/static/exchanges/bitfinex.jpg",
+  "CoinEx": "https://cdn.coinglasscdn.com/static/exchanges/CoinEx.png",
+  "Kraken": "https://cdn.coinglasscdn.com/static/exchanges/k.jpg",
+  "Huobi": "https://cdn.coinglasscdn.com/static/exchanges/2502.png",
+  "Coinbase": "https://cdn.coinglasscdn.com/static/exchanges/CoinbasePro.png"
+}

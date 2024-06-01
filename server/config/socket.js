@@ -1,6 +1,5 @@
 const io = require("socket.io");
 const { connectToBinanceWS, createVolumeWS } = require("../controllers/bigTransfer/transferTracker");
-const { createLongShortWS } = require("../controllers/coinsData/lonshShortWS");
 
 const corsWhitelist = [
     "http://localhost:3001",
@@ -25,7 +24,6 @@ const app = io(server, {
 
 async function connectWs(app) {
     await createVolumeWS(app);
-    createLongShortWS(app);
     connectToBinanceWS();
   }
 

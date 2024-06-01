@@ -4,6 +4,7 @@ const articleSchema = new Schema({
   title: {
     type: String,
     required: true,
+    unique: true,
   },
   titleImage: { type: String, required: true },
   sections: [
@@ -12,9 +13,11 @@ const articleSchema = new Schema({
         type: String,
         default: "",
       },
-      text: [{
-        type: String,
-      }],
+      text: [
+        {
+          type: String,
+        },
+      ],
       paragraph: {
         type: String,
       },
@@ -32,8 +35,13 @@ const articleSchema = new Schema({
     },
   ],
   createTime: { type: String, required: true },
+  viewCount: { type: Number, default: 0 },
 });
+
+articleSchema.index({ title: 1 }, { unique: true });
+
 
 const Article = model("Article", articleSchema);
 
 module.exports = Article;
+ 

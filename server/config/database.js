@@ -21,3 +21,4 @@ module.exports = async (app) => {
     process.exit(1);
   }
 };
+ 

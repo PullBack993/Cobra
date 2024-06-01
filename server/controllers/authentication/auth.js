@@ -153,37 +153,36 @@ async function checkChanges(user, balance, userData, refreshToken) {
 }
 
 async function getIpData() {
-//   return new Promise((resolve, reject) => {
-//     https.get(process.env.IPAPIURL, (resp) => {
-//       resp.setEncoding("utf8");
-//       let userIp = "";
-//       resp.on("data", (chunk) => {
-//         userIp += chunk;
-//       });
-//       resp.on("end", () => {
-//         const parsedData = JSON.parse(userIp);
-//         const options = {
-//           path: `/${parsedData.ip}/json/`,
-//           host: process.env.HOSTIPAPI,
-//           port: process.env.PORTIPAPI,
-//           headers: { "User-Agent": "nodejs-ipapi-v1.02" },
-//         };
-//         https.get(options, (resp) => {
-//           let data = "";
-//           resp.on("data", (chunk) => {
-//             data += chunk;
-//           });
-//           resp.on("end", () => {
-//             resolve(JSON.parse(data));
-//           });
-//           resp.on("error", (err) => {
-//             reject(err);
-//           });
-//         });
-//       });
-//     });
-//   });
-return {ip: '123'}
+  return new Promise((resolve, reject) => {
+    https.get(process.env.IPAPIURL, (resp) => {
+      resp.setEncoding("utf8");
+      let userIp = "";
+      resp.on("data", (chunk) => {
+        userIp += chunk;
+      });
+      resp.on("end", () => {
+        const parsedData = JSON.parse(userIp);
+        const options = {
+          path: `/${parsedData.ip}/json/`,
+          host: process.env.HOSTIPAPI,
+          port: process.env.PORTIPAPI,
+          headers: { "User-Agent": "nodejs-ipapi-v1.02" },
+        };
+        https.get(options, (resp) => {
+          let data = "";
+          resp.on("data", (chunk) => {
+            data += chunk;
+          });
+          resp.on("end", () => {
+            resolve(JSON.parse(data));
+          });
+          resp.on("error", (err) => {
+            reject(err);
+          });
+        });
+      });
+    });
+  });
 }
 
 router.post("/login", async (req, res) => {

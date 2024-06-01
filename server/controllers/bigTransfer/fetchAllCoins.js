@@ -38,7 +38,4 @@ const cronJob = new Cron('0 0 * * *', () => {
     fetchAndSaveCoins();
   }, null, true, 'UTC'); // Set your desired timezone here
 
-  cronJob.start();
-
-// Initial fetch and save when the script is run
-fetchAndSaveCoins();
+cronJob.start();

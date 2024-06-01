@@ -16,15 +16,15 @@ router.post('/', async (req, res) => {
   })
       // Upload the image to Twitter
 
-      const mediaResponse = await xConfig.v1.uploadMedia(downStream.data,{ mimeType: 'png'});
-      // Append the website URL to the tweet text
-      const fullTweetText = `${tweetText}. Read more: ${websiteUrl}`;
+      // const mediaResponse = await xConfig.v1.uploadMedia(downStream.data,{ mimeType: 'png'});
+      // // Append the website URL to the tweet text
+      const fullTweetText = `${tweetText}. Read more: ${websiteUrl}`; 
       const content = createTweetContent(fullTweetText, hashTags)
   
       
       // Post the tweet with the attached image and website link
       await xConfig.v2.tweet({text: content,
-        media: {media_ids: [mediaResponse]},
+        // media: {media_ids: [mediaResponse]},
       });
   
       console.log('Tweet posted successfully');

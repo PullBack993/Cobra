@@ -6,6 +6,9 @@ const CronJob = require("cron").CronJob;
 const CoinGecko = require("coingecko-api");
 const allCoins = require("../../coins.json");
 const CoinGeckoClient = new CoinGecko();
+const { uploadImagesToFirebase} = require('../coinImages/coinImages');
+const CoinImages = require("../../models/CoinImage");
+
 
 let coinImageCache = {};
 let volumesNamespace;
@@ -40,15 +43,17 @@ async function connectToBinanceWS() {
       coins100.forEach(async (coin, index) => {
         if (msg.s === coin.symbol && msg.e === "trade" && msg.q >= coin.qEqBTC) {
           const searchedCoin = findCoin(allCoins, msg.s.split("USDT")[0]);
-          msg.image = await fetchCoinImage(searchedCoin);
-          const test = (msg.p * msg.q) / btcPrice;
-          msg.beq = test;
-          msg.T = convertTimestamp(msg.T);
-          last20Values.push(msg);
-          if (last20Values.length > maxValues) {
-            last20Values.shift();
+          if(searchedCoin){
+            msg.image = await fetchCoinImage(searchedCoin);
+            const test = (msg.p * msg.q) / btcPrice;
+            msg.beq = test;
+            msg.T = convertTimestamp(msg.T);
+            last20Values.push(msg);
+            if (last20Values.length > maxValues) {
+              last20Values.shift();
+            }
+            sendToClient(last20Values);
           }
-          sendToClient(last20Values);
         }
       });
 
@@ -76,8 +81,8 @@ async function reconnectToBinanceWS() {
 
 async function fetchCoinImage(coin) {
   try {
-    if (coinImageCache[coin?.id]) {
-      return coinImageCache[coin?.id];
+    if (coinImageCache[coin.id]) {
+      return coinImageCache[coin.id];
     } else {
       let image;
 
@@ -85,20 +90,25 @@ async function fetchCoinImage(coin) {
       let retries = 3;
       while (retries > 0) {
         try {
+          const existImage = await CoinImages.findOne({ symbol: coin.symbol })
+          if(existImage){
+            coinImageCache[coin.id] = existImage.path;
+            return existImage.path
+          }
           image = await CoinGeckoClient.coins.fetch(coin.id);
           break; // Break out of the loop if fetch succeeds
         } catch (error) {
-          console.error("fetchCoinImage", error);
+          console.error("fetchCoinImage", error.message);
           retries--;
         }
       }
-
-      const imageUrl = determineImage(image);
-      coinImageCache[coin.id] = imageUrl;
+        const imageUrl = determineImage(image);
+        coinImageCache[coin.id] = imageUrl;
+        uploadImagesToFirebase([imageUrl], coin.symbol)
       return imageUrl;
     }
   } catch (error) {
-    console.error("fetchCoinImage", error);
+    console.log('Fail big transfer =>', error.message)
   }
 }
 

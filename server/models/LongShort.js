@@ -11,7 +11,7 @@ const rateSchema = new Schema(
 
 const exchangeSchema = new Schema({
   exchangeName: { type: String, required: true },
-  exchangeLogo: { type: String, required: true },
+  exchangeLogo: { type: String, required: false },
   data: [rateSchema],
 });
 
